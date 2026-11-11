@@ -68,7 +68,7 @@ npm run prototype:assumptions   # measures what the prototype actually assumes
 
 - Never equate published mature height with annual shoot growth or the reachable route across a curved Bower.
 - Keep the manufactured Bower graph separate from the living plant graph. *Wood age* in flowering biology refers to the plant's own shoots, **not** manufactured Bower timber.
-- Primary timber is not a climbing surface by default. Plants travel secondary, replaceable supports.
+- The timber is the growing surface. Plants may climb any member; a sub-lattice of lighter timber and slender steel cables helps the finer ones. Keep visible steel to a minimum: cables, never rods.
 - Preserve lineage: removing a living stem also removes its attached leaves, buds, flowers and support contacts.
 - Differentiate `evidence`, `model assumption`, `design target`, `unresolved question` and `site-dependent decision`. The canonical status list, and how these words map on to it, is in [`packages/core/src/vocab.ts`](packages/core/src/vocab.ts).
 - Do not hard-code flowering months as proof of blooming; represent environmental and plant-history gating as the model matures.

@@ -23,7 +23,7 @@ Long woody leaders and subordinate laterals/spurs; flower buds start developing 
 
 ## What Bower must provide: local supports
 
-Strong continuous route, gardener tie points and woody-stem clearance; prefer trained leaders on separate supports rather than unregulated constriction around structural timber.
+Strong continuous route, gardener tie points and woody-stem clearance; leaders twine round or are tied along the glulam and its sub-lattice; track the places where thickening stems encircle a member.
 
 ## Global structure placement logic
 

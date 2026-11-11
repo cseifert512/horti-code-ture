@@ -1,6 +1,5 @@
 /**
- * The barrel-vault segment from the Wisteria prototype, rebuilt as a proper
- * two-graph Bower.
+ * The barrel-vault segment from the Wisteria prototype, as a Bower.
  *
  * Geometry is the prototype's parametric surface S(u, v) (its structure.js),
  * converted to the core frame:
@@ -9,27 +8,25 @@
  * Lattice nodes sit at u = k / 20, v = m / 12 with k + m even, between the two
  * eaves (k = 4 and k = 16).
  *
- * What changed from the prototype, and why:
- *   The prototype let trunk stems twine the glulam rib legs and laid 57% of
- *   the permanent framework directly on the diagrid timber. The specification
- *   makes primary structure a non-climbing surface by default (CONSTRAINTS
- *   section 7). Here every plant route lies on a SECONDARY element standing
- *   `layerM` clear of the timber:
- *     leader rods    up the outside of the planted rib legs
- *     training rods  along the diagonals and the eaves
- *     cables         level, node to node, as in the prototype
- *   The topology a shoot can travel is unchanged; what it touches is not.
+ * The structure is the growing surface, exactly as the prototype had it:
+ *   RIBS     five glulam arches, the primary structure. Below the eave the
+ *            legs stand free and trunk stems twine them.
+ *   LATTICE  a diagrid of lighter timber and two eave beams riding on the
+ *            ribs: the timber sub-lattice. Framework arms lie along the top
+ *            of these members, tied in by the gardener.
+ *   CABLES   slender steel cables, level, node to node inside the canopy: the
+ *            only steel. A young shoot can twine one unaided.
  *
- * Rod and cable sizes and the standoff are design choices for this reference
- * scene, not validated support specifications.
+ * Member and cable sizes are the prototype's and are placeholders for a
+ * structure that is still being designed, not a specification.
  */
 import { Polyline } from '../math/polyline.ts';
-import { type Vec3, addScaled, cross, fromYUp, normalize, sub, v3 } from '../math/vec3.ts';
+import { type Vec3, addScaled, cross, fromYUp, normalize, smoothstep, sub, v3 } from '../math/vec3.ts';
 import { unknown } from '../provenance.ts';
 import { SupportGraph } from './support-graph.ts';
-import type { Bower, LocalSupport, RootStation, StructuralMember, SupportEdge, Zone } from './types.ts';
+import { type Bower, type LocalSupport, type RootStation, type Section, type StructuralMember, type Zone, equivalentDiameterMm, materialSummary } from './types.ts';
 
-/** Dimensions carried over from the prototype (metres). */
+/** Dimensions carried over from the prototype. */
 export const VAULT = {
   lengthM: 5.2,
   halfSpanM: 2.1,
@@ -38,6 +35,8 @@ export const VAULT = {
   rib: { widthMm: 100, depthMm: 180 },
   diagrid: { widthMm: 50, depthMm: 70 },
   eave: { widthMm: 70, depthMm: 90 },
+  /** Cables sit at mid-depth of the lattice and stop short of each node. */
+  cable: { diameterMm: 5, heightM: 0.035, insetM: 0.045 },
   NA: 10,
   NB: 6,
   K0: 4,
@@ -54,10 +53,6 @@ export interface VaultStation {
 
 export interface VaultOptions {
   stations?: readonly VaultStation[];
-  /** Height of the plant-contact layer above the rib surface S. The diagrid's top face is at 0.07 m. */
-  layerM?: number;
-  cableDiameterMm?: number;
-  rodDiameterMm?: number;
   segmentsPerEdge?: number;
 }
 
@@ -89,6 +84,7 @@ export function vaultPoint(u: number, v: number, h: number): Vec3 {
 export const vaultNodeUV = (k: number, m: number): [number, number] => [k / (2 * VAULT.NA), m / (2 * VAULT.NB)];
 export const isVaultNode = (k: number, m: number): boolean => k >= VAULT.K0 && k <= VAULT.K1 && m >= 0 && m <= VAULT.MM && ((k + m) & 1) === 0;
 const nid = (k: number, m: number) => `n${k}.${m}`;
+type UV = [number, number];
 
 export function makeVaultBower(options: VaultOptions = {}): Bower {
   const {
@@ -96,60 +92,52 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
       { side: 0, rib: 1 },
       { side: 1, rib: 3 },
     ],
-    layerM = 0.11,
-    cableDiameterMm = 5,
-    rodDiameterMm = 10,
     segmentsPerEdge = 12,
   } = options;
   const { K0, K1, MM, NA, NB } = VAULT;
+  const isEave = (k: number) => k === K0 || k === K1;
+  /** Height of the top face of the timber above S at a lattice row: where a stem lies. */
+  const top = (k: number) => (isEave(k) ? VAULT.eave.depthMm : VAULT.diagrid.depthMm) / 1000;
 
   const members: StructuralMember[] = [];
   const supports: LocalSupport[] = [];
   const graph = new SupportGraph();
 
-  /** A curve drawn straight in (u, v) between two parameter points, `h` above the surface. */
-  const onSurface = (a: [number, number], b: [number, number], h: number, segments = segmentsPerEdge) =>
-    Polyline.sample((t) => vaultPoint(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, h), segments);
+  /** A curve drawn straight in (u, v) between two parameter points, `h(t)` above the surface. */
+  const onSurface = (a: UV, b: UV, h: (t: number) => number, segments = segmentsPerEdge) =>
+    Polyline.sample((t) => vaultPoint(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, h(t)), segments);
+  const level = (h: number) => () => h;
+  const blend = (h0: number, h1: number) => (t: number) => h0 + (h1 - h0) * smoothstep(0, 1, t);
 
-  // ---- primary timber --------------------------------------------------------
-  for (let r = 0; r < VAULT.ribs; r++) {
-    const v = r / (VAULT.ribs - 1);
-    members.push({
-      id: `rib.${r}`,
-      role: 'rib',
-      curve: Polyline.sample((t) => {
-        const p = vaultPoint(t, v, -VAULT.rib.depthMm / 2000);
-        return t === 0 || t === 1 ? v3(p.x, p.y, 0) : p;
-      }, 110),
-      section: { shape: 'rect', ...VAULT.rib },
-      material: 'glulam',
-      contact: 'prohibited',
-      inspectable: true,
-    });
-  }
-  for (const k of [K0, K1]) {
-    members.push({
-      id: `eave.${k === K0 ? 'west' : 'east'}`,
-      role: 'eave',
-      curve: onSurface([k / (2 * NA), 0], [k / (2 * NA), 1], VAULT.eave.depthMm / 2000, 40),
-      section: { shape: 'rect', ...VAULT.eave },
-      material: 'larch',
-      contact: 'prohibited',
-      inspectable: true,
-    });
-  }
-
-  // ---- lattice nodes ---------------------------------------------------------
-  for (let k = K0; k <= K1; k++) for (let m = 0; m <= MM; m++) if (isVaultNode(k, m)) graph.addNode({ id: nid(k, m), position: vaultPoint(...vaultNodeUV(k, m), layerM) });
-
-  const addSupportEdge = (id: string, from: string, to: string, curve: Polyline, kind: 'rod' | 'cable', mountedOn: string[]) => {
-    const diameterMm = kind === 'cable' ? cableDiameterMm : rodDiameterMm;
-    supports.push({ id: `${kind}.${id}`, kind, curve, diameterMm, surface: 'smooth', contact: 'permitted', replaceable: true, mountedOn });
-    const edge: SupportEdge = { id, from, to, curve, host: { type: 'support', id: `${kind}.${id}` }, kind, gripDiameterMm: diameterMm, surface: 'smooth', contact: 'permitted', zones: [] };
-    graph.addEdge(edge);
+  const timber = (id: string, tier: StructuralMember['tier'], role: string, curve: Polyline, section: Section, material: string): StructuralMember => {
+    const m: StructuralMember = { id, tier, role, curve, section, material, surface: 'textured', contact: 'permitted', inspectable: true };
+    members.push(m);
+    return m;
+  };
+  const timberRoute = (id: string, from: string, to: string, curve: Polyline, member: StructuralMember) => {
+    graph.addEdge({ id, from, to, curve, host: { type: 'member', id: member.id }, kind: 'timber', gripDiameterMm: equivalentDiameterMm(member.section), surface: member.surface, contact: member.contact, zones: [] });
   };
 
-  // ---- diagonals: timber member below, training rod above --------------------
+  // ---- primary structure: the glulam ribs --------------------------------------
+  const ribs: StructuralMember[] = [];
+  for (let r = 0; r < VAULT.ribs; r++) {
+    const v = r / (VAULT.ribs - 1);
+    const curve = Polyline.sample((t) => {
+      const p = vaultPoint(t, v, -VAULT.rib.depthMm / 2000);
+      return t === 0 || t === 1 ? v3(p.x, p.y, 0) : p;
+    }, 110);
+    ribs.push(timber(`rib.${r}`, 'primary', 'rib', curve, { shape: 'rect', ...VAULT.rib }, 'glulam'));
+  }
+
+  // ---- timber sub-lattice: eave beams and the diagrid --------------------------
+  const eaves = new Map<number, StructuralMember>();
+  for (const k of [K0, K1]) {
+    const u = k / (2 * NA);
+    eaves.set(k, timber(`eave.${k === K0 ? 'west' : 'east'}`, 'sub_lattice', 'eave', onSurface([u, 0], [u, 1], level(VAULT.eave.depthMm / 2000), 40), { shape: 'rect', ...VAULT.eave }, 'larch'));
+  }
+
+  for (let k = K0; k <= K1; k++) for (let m = 0; m <= MM; m++) if (isVaultNode(k, m)) graph.addNode({ id: nid(k, m), position: vaultPoint(...vaultNodeUV(k, m), top(k)) });
+
   for (let k = K0; k < K1; k++) {
     for (let m = 0; m <= MM; m++) {
       if (!isVaultNode(k, m)) continue;
@@ -158,48 +146,70 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
         const a = vaultNodeUV(k, m);
         const b = vaultNodeUV(k + 1, m + dm);
         const key = `${k}.${m}-${k + 1}.${m + dm}`;
-        members.push({
-          id: `diagrid.${key}`,
-          role: 'diagrid',
-          curve: onSurface(a, b, VAULT.diagrid.depthMm / 2000),
-          section: { shape: 'rect', ...VAULT.diagrid },
-          material: 'larch',
-          contact: 'prohibited',
-          inspectable: true,
-        });
-        addSupportEdge(`T.${key}`, nid(k, m), nid(k + 1, m + dm), onSurface(a, b, layerM), 'rod', [`diagrid.${key}`]);
+        const member = timber(`diagrid.${key}`, 'sub_lattice', 'diagrid', onSurface(a, b, level(VAULT.diagrid.depthMm / 2000)), { shape: 'rect', ...VAULT.diagrid }, 'larch');
+        // a stem lies along the top face of the member
+        timberRoute(`T.${key}`, nid(k, m), nid(k + 1, m + dm), onSurface(a, b, blend(top(k), top(k + 1))), member);
       }
     }
   }
 
-  // ---- level runs: cables inside the canopy, rods along the eaves ------------
+  // ---- level runs: eave beams (timber) and, inside the canopy, steel cables ----
   const stationRibM = (s: VaultStation) => Math.round((s.rib / (VAULT.ribs - 1)) * MM);
   for (let k = K0; k <= K1; k++) {
-    const eave = k === K0 || k === K1;
+    const u = k / (2 * NA);
     const side = k === K0 ? 0 : 1;
     // a planted rib that meets the eave between two lattice nodes adds a junction there
-    const junctions = eave ? stations.filter((s) => s.side === side && !isVaultNode(k, stationRibM(s))).map(stationRibM) : [];
-    for (const mj of junctions) graph.addNode({ id: nid(k, mj), position: vaultPoint(k / (2 * NA), mj / (2 * NB), layerM) });
+    const junctions = isEave(k) ? stations.filter((s) => s.side === side && !isVaultNode(k, stationRibM(s))).map(stationRibM) : [];
+    for (const mj of junctions) graph.addNode({ id: nid(k, mj), position: vaultPoint(u, mj / (2 * NB), top(k)) });
     for (let m = 0; m + 2 <= MM; m++) {
       if (!isVaultNode(k, m)) continue;
-      const u = k / (2 * NA);
-      if (!eave) {
-        // a tensioned cable runs straight from node to node
-        const a = graph.nodes.get(nid(k, m))!.position;
-        const b = graph.nodes.get(nid(k, m + 2))!.position;
-        addSupportEdge(`C.${k}.${m}-${k}.${m + 2}`, nid(k, m), nid(k, m + 2), new Polyline([a, b]), 'cable', []);
-      } else {
+      if (isEave(k)) {
         const stops = [m, ...junctions.filter((mj) => mj > m && mj < m + 2), m + 2];
         for (let i = 0; i + 1 < stops.length; i++) {
           const m0 = stops[i]!;
           const m1 = stops[i + 1]!;
-          addSupportEdge(`E.${k}.${m0}-${k}.${m1}`, nid(k, m0), nid(k, m1), onSurface([u, m0 / (2 * NB)], [u, m1 / (2 * NB)], layerM), 'rod', [`eave.${side === 0 ? 'west' : 'east'}`]);
+          timberRoute(`E.${k}.${m0}-${k}.${m1}`, nid(k, m0), nid(k, m1), onSurface([u, m0 / (2 * NB)], [u, m1 / (2 * NB)], level(top(k))), eaves.get(k)!);
         }
+        continue;
       }
+      // A tensioned cable runs straight between the sides of two nodes, at
+      // mid-depth of the lattice. A shoot crosses each node over its top,
+      // drops on to the wire, and climbs back up at the far end.
+      const aTop = graph.nodes.get(nid(k, m))!.position;
+      const bTop = graph.nodes.get(nid(k, m + 2))!.position;
+      const a0 = vaultPoint(u, m / (2 * NB), VAULT.cable.heightM);
+      const b0 = vaultPoint(u, (m + 2) / (2 * NB), VAULT.cable.heightM);
+      const dir = normalize(sub(b0, a0));
+      const a = addScaled(a0, dir, VAULT.cable.insetM);
+      const b = addScaled(b0, dir, -VAULT.cable.insetM);
+      const key = `${k}.${m}-${k}.${m + 2}`;
+      supports.push({
+        id: `cable.${key}`,
+        kind: 'cable',
+        curve: new Polyline([a, b]),
+        diameterMm: VAULT.cable.diameterMm,
+        material: 'stainless steel',
+        surface: 'smooth',
+        contact: 'permitted',
+        replaceable: true,
+        mountedOn: [],
+      });
+      graph.addEdge({
+        id: `C.${key}`,
+        from: nid(k, m),
+        to: nid(k, m + 2),
+        curve: new Polyline([aTop, a, b, bTop]),
+        host: { type: 'support', id: `cable.${key}` },
+        kind: 'cable',
+        gripDiameterMm: VAULT.cable.diameterMm,
+        surface: 'smooth',
+        contact: 'permitted',
+        zones: [],
+      });
     }
   }
 
-  // ---- root stations and their leader rods ------------------------------------
+  // ---- root stations: each at the foot of a rib leg, which is the way up -------
   const rootStations: RootStation[] = [];
   stations.forEach((s, index) => {
     const m = stationRibM(s);
@@ -208,12 +218,15 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
     const step = s.side === 0 ? 1 : -1;
     const uFoot = s.side === 0 ? 0.004 : 0.996;
     const uEave = K / (2 * NA);
+    const rib = ribs[s.rib];
+    if (!rib) throw new Error(`station ${index}: there is no rib ${s.rib}`);
     const footId = `foot.${index}`;
-    graph.addNode({ id: footId, position: vaultPoint(uFoot, v, layerM) });
-    addSupportEdge(`L.${index}.leg`, footId, nid(K, m), onSurface([uFoot, v], [uEave, v], layerM, 3 * segmentsPerEdge), 'rod', [`rib.${s.rib}`]);
-    // carry on up the rib to the first lattice node, where there is one
+    graph.addNode({ id: footId, position: vaultPoint(uFoot, v, 0) });
+    // up the outer face of the free-standing leg, rolling over the eave beam at the top
+    timberRoute(`L.${index}.leg`, footId, nid(K, m), onSurface([uFoot, v], [uEave, v], (t) => top(K) * smoothstep(0.88, 1, t), 3 * segmentsPerEdge), rib);
+    // and on up the rib to the first lattice node on its line, where there is one
     if (isVaultNode(K + step, m)) {
-      addSupportEdge(`L.${index}.head`, nid(K, m), nid(K + step, m), onSurface([uEave, v], [(K + step) / (2 * NA), v], layerM), 'rod', [`rib.${s.rib}`]);
+      timberRoute(`L.${index}.head`, nid(K, m), nid(K + step, m), onSurface([uEave, v], [(K + step) / (2 * NA), v], blend(top(K), top(K + step))), rib);
     }
     const foot = graph.nodes.get(footId)!.position;
     rootStations.push({
@@ -236,22 +249,19 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
     },
   ];
 
-  const crown = vaultSurface(0.5, 0.5);
+  const bower: Bower = { id: 'vault-segment', name: 'Barrel-vault segment (from the Wisteria prototype)', members, supports, graph, rootStations, zones, facts: {} };
+  const mat = materialSummary(bower);
   return {
-    id: 'vault-segment',
-    name: 'Barrel-vault segment (from the Wisteria prototype)',
-    members,
-    supports,
-    graph,
-    rootStations,
-    zones,
+    ...bower,
     facts: {
       lengthM: VAULT.lengthM,
       spanM: 2 * VAULT.halfSpanM,
-      crownHeightM: crown.z,
-      contactLayerAboveRibSurfaceM: layerM,
-      cableDiameterMm,
-      rodDiameterMm,
+      crownHeightM: vaultSurface(0.5, 0.5).z,
+      ribEquivalentDiameterMm: Math.round(equivalentDiameterMm({ shape: 'rect', ...VAULT.rib })),
+      cableDiameterMm: VAULT.cable.diameterMm,
+      steelCableM: Number(mat.steelCableM.toFixed(1)),
+      steelShareOfRoute: Number(mat.steelShareOfRoute.toFixed(3)),
+      sizes: 'placeholders carried over from the prototype',
     },
   };
 }

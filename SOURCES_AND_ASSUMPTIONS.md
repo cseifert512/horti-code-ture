@@ -38,7 +38,7 @@ Each `SPECIES_PROFILE.md` contains its direct RHS profile URL. The species profi
 | Target 25–40% of selected visible zones winter evergreen | **Bower visual design hypothesis** | Test with renderings and maintenance/ecology input |
 | Three wisteria root stations on a 15-m diameter reference shell | Preliminary design concept only | Recalculate with rooting plan and growth path analysis |
 | Stem extension, internode geometry, branching rate, wood thickening | Unknown for this system | Literature + physical observations + distributions |
-| Attachment diameter, pressure and slip limits | Unknown | Prototype with actual secondary supports and trained plants |
+| Attachment diameter, pressure and slip limits | Unknown | Prototype with actual timber members, cables and trained plants |
 | Floral chilling/forcing thresholds | Unknown by cultivar | Study and calibrate, do not manufacture thresholds |
 | Light/water competition coefficients | Unknown | Start qualitative/aggregated; measure later |
 | Structure biomass and wind action | **Not engineered** | Structural-engineer testing and design, not renderer data |

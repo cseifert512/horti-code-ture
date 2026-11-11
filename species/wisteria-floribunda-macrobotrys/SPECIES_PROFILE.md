@@ -24,7 +24,7 @@ Woody main axes with flowering spurs and long racemes; prior-season flower-bud i
 
 ## What Bower must provide: local supports
 
-Long, woody climbing routes with robust separated supports; leave vertical free space for racemes to hang without colliding with cross-members, lighting or visitors.
+Long, woody climbing routes along the glulam and its sub-lattice; leave vertical free space for racemes to hang without colliding with cross-members, lighting or visitors.
 
 ## Global structure placement logic
 

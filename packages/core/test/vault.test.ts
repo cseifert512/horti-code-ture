@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { analyseReach, shortestRoute } from '../src/bower/reach.ts';
+import { materialSummary, zoneContains } from '../src/bower/types.ts';
 import { makeVaultBower, vaultSurface } from '../src/bower/vault.ts';
-import { zoneContains } from '../src/bower/types.ts';
 import { v3 } from '../src/math/vec3.ts';
 
-describe('barrel-vault segment rebuilt from the prototype', () => {
+describe('barrel-vault segment from the prototype', () => {
   const vault = makeVaultBower();
   const edges = [...vault.graph.edges.values()];
   const byPrefix = (p: string) => edges.filter((e) => e.id.startsWith(p));
@@ -28,20 +28,9 @@ describe('barrel-vault segment rebuilt from the prototype', () => {
     expect(vaultSurface(0.5, 0).y - vaultSurface(0.5, 1).y).toBeCloseTo(5.2, 6);
     // spans measured on the prototype by scripts/assumptions.mjs
     for (const e of byPrefix('C.')) expect(e.curve.length).toBeGreaterThan(0.85);
-    for (const e of byPrefix('C.')) expect(e.curve.length).toBeLessThan(0.93);
+    for (const e of byPrefix('C.')) expect(e.curve.length).toBeLessThan(0.95);
     for (const e of byPrefix('T.')) expect(e.curve.length).toBeGreaterThan(0.5);
-    for (const e of byPrefix('T.')) expect(e.curve.length).toBeLessThan(0.75);
-  });
-
-  it('puts every plant route on a secondary support and none on primary timber', () => {
-    expect(vault.members.length).toBeGreaterThan(100);
-    for (const m of vault.members) expect(m.contact, m.id).toBe('prohibited');
-    for (const e of edges) {
-      expect(e.host.type, e.id).toBe('support');
-      expect(e.contact, e.id).toBe('permitted');
-      expect(['rod', 'cable'], e.id).toContain(e.kind);
-    }
-    expect(vault.supports.length).toBe(edges.length);
+    for (const e of byPrefix('T.')) expect(e.curve.length).toBeLessThan(0.7);
   });
 
   it('lets a plant at either station reach the whole canopy, given enough route', () => {
@@ -67,5 +56,52 @@ describe('barrel-vault segment rebuilt from the prototype', () => {
     expect(zoneContains(z, v3(0, 0, 1.8))).toBe(true);
     expect(zoneContains(z, v3(0, 0, 2.5))).toBe(false);
     expect(zoneContains(z, v3(2.0, 0, 1.8))).toBe(false);
+  });
+});
+
+// KEY.md section 5: the timber is the growing surface; steel is kept to slender cables.
+describe('the vault is the growing surface', () => {
+  const vault = makeVaultBower();
+  const edges = [...vault.graph.edges.values()];
+
+  it('declares nothing off-limits', () => {
+    for (const m of vault.members) expect(m.contact, m.id).toBe('permitted');
+    for (const e of edges) expect(e.contact, e.id).toBe('permitted');
+  });
+
+  it('starts every plant up a glulam rib leg, as a 178 mm post', () => {
+    for (const s of vault.rootStations) {
+      const leg = vault.graph.edgesAt(s.entryNodeIds[0]!);
+      expect(leg.length).toBe(1);
+      expect(leg[0]!.kind).toBe('timber');
+      expect(leg[0]!.host.id.startsWith('rib.')).toBe(true);
+      expect(leg[0]!.gripDiameterMm).toBeCloseTo(178, 0);
+    }
+  });
+
+  it('has glulam ribs as primary structure and the larch lattice as timber sub-lattice', () => {
+    const primary = vault.members.filter((m) => m.tier === 'primary');
+    expect(primary.length).toBe(5);
+    expect(primary.every((m) => m.role === 'rib' && m.material === 'glulam')).toBe(true);
+    expect(vault.members.filter((m) => m.tier === 'sub_lattice').length).toBe(146); // 144 diagrid pieces + 2 eaves
+  });
+
+  it('puts most plant route on timber and reports the steel', () => {
+    const mat = materialSummary(vault);
+    expect(mat.routeOnTimberM).toBeGreaterThan(mat.routeOnCableM);
+    // 60 spans of about 0.8 m of actual cable
+    expect(mat.steelCableM).toBeGreaterThan(40);
+    expect(mat.steelCableM).toBeLessThan(55);
+    expect(mat.steelShareOfRoute).toBeGreaterThan(0.25);
+    expect(mat.steelShareOfRoute).toBeLessThan(0.45);
+  });
+
+  it('contains no steel but slender cables: no rods, rails or frames', () => {
+    expect(vault.supports.length).toBe(60);
+    for (const s of vault.supports) {
+      expect(s.kind).toBe('cable');
+      expect(s.diameterMm).toBe(5);
+    }
+    for (const e of edges) expect(['timber', 'cable']).toContain(e.kind);
   });
 });

@@ -8,7 +8,7 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Evergreen woody twiner. |
-| Climbing or support mechanism | Stem twining (RHS: needs supporting wires or trellis); handedness is not documented. Aerial rootlets on damp rough surfaces are reported without citation and cannot be ruled out, which matters where timber contact is prohibited. |
+| Climbing or support mechanism | Stem twining (RHS: needs supporting wires or trellis); handedness is not documented. Aerial rootlets on damp rough surfaces are reported without citation and cannot be ruled out; if real, it could cling to timber as well as twine. |
 | RHS ultimate-height envelope | RHS: 8–12 m; 5–10 years to ultimate size category. |
 | Hardiness | H4 (RHS). |
 | Flower / leaf / fruit season | Glossy dark leaves, often bronze/red in winter; exceptionally fragrant white flowers mid to late summer. |
@@ -23,7 +23,7 @@ Evergreen leaf cohorts and woody extension with sensitivity to cold-wind exposur
 
 ## What Bower must provide: local supports
 
-Regular fine/medium wires, rods or trellis; sturdy tie-in during early establishment; no assumed ability to cling to flat timber.
+Regular fine to medium cables or timber laths; sturdy tie-in during early establishment; no assumed ability to cling to flat timber.
 
 ## Global structure placement logic
 

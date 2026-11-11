@@ -23,11 +23,11 @@ Can shift from juvenile climbing shoots to mature flowering, more shrubby shoots
 
 ## What Bower must provide: local supports
 
-Dedicated **replaceable engineered substrate**, not uncontrolled roots/stems into structural timber gaps, joints, inspection faces or drainage details.
+Clings to the timber unaided. Keep its roots and stems out of timber gaps, joints and drainage details, where they thicken and can force members apart (RHS).
 
 ## Global structure placement logic
 
-Only clearly bounded winter-green patches, normally secondary support or separate ground/stone surfaces.
+Only clearly bounded winter-green patches.
 
 ## Gardener intervention / pruning
 

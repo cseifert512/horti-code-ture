@@ -14,7 +14,7 @@ Extend the **already existing *Wisteria sinensis* generative algorithm** to a sc
 |---|---|---|
 | Botanical curator | Taxonomy, phenology, growth forms, evidence provenance, UK and site suitability | Reviewed species cards + disputed/unknown parameter list |
 | Simulation architecture lead | Shared data contract, plant-state continuity, time stepping and graph separation | Agreed conceptual schema and compatibility plan with existing wisteria code |
-| Attachment/geometry specialist | Contact mechanisms, secondary support graph, path routing, collision and exclusions | Attachment mechanism classes + calibration experiment plan |
+| Attachment/geometry specialist | Contact mechanisms, the timber and sub-lattice route graph, path routing, collision and exclusions | Attachment mechanism classes + calibration experiment plan |
 | Phenology specialist | Bud/cohort states, dormancy, flowering wood, leaves, weather response | Species flowering/foliage state diagrams and evidence labels |
 | Horticulture/operations specialist | Human gardener actions, realistic maintenance, intervention constraints | Action catalog + UK annual management calendar |
 | Scene/ecology specialist | Plant placement, light, shade, root-site resources and multi-plant overlap | Spatial placement/zoning rules + interactions list |
@@ -55,7 +55,7 @@ A single person or agent may combine several roles. No role is licensed to inser
 5. Manual scrambling/tie (rose).
 6. Non-climber (Sarcococca).
 
-Represent contact-permitted/prohibited zones and graft local support geometry to primary Bower geometry. Keep species-specific diameter and contact parameters uncalibrated until field evidence.
+Represent the glulam and its sub-lattice (lighter timber, slender cables) as one route graph that plants may use anywhere, with optional declared exclusions. Keep species-specific diameter and contact parameters uncalibrated until field evidence.
 
 **Exit check:** Each species can approach a support, attempt a biologically correct kind of contact, fail without support, and be rescued by an explicit gardener training event where legitimate.
 
@@ -69,7 +69,7 @@ Represent contact-permitted/prohibited zones and graft local support geometry to
 
 **Tasks:** Input Bower shell, cardinal orientation, light/shade map, root stations, climber paths, visitor clearances and service envelopes. Add qualitative light/space/root competition. Implement `KEY.md` reference palette as **a scenario**, not a universal planting mandate.
 
-**Exit check:** A 15-m diameter hemispherical shell checks its base-to-crown surface-path length (~11.78m) rather than vertical height (7.5m); a 4m clematis is not assumed to cover the crown; restricted ivy can't colonise primary timber.
+**Exit check:** A 15-m diameter hemispherical shell checks its base-to-crown surface-path length (~11.78m) rather than vertical height (7.5m); a 4m clematis is not assumed to cover the crown; ivy reaches timber joints unaided and the run reports where.
 
 ## Stage 6 — operationally credible gardeners
 
@@ -98,7 +98,7 @@ Only after basic geometry/season/maintenance works: plant carbon allocation, emp
 | 5 | *T. jasminoides* | Reuse evergreen twining; warm/sheltered microclimate constraints |
 | 6 | *Vitis coignetiae* | Add tendrils, large leaves, autumn colour |
 | 7 | *Rosa* 'The Generous Gardener' | Add manual tie/scramble and repeat blooms |
-| 8 | *Hedera helix* / *Hydrangea* | Add aerial-root surfaces and strict timber exclusions |
+| 8 | *Hedera helix* / *Hydrangea* | Add clinging to timber, with joint-reach alerts and bounded sectors |
 | 9 | *Thunbergia* / *Sarcococca* | Annual reset by gardener / ground-only companion |
 | 10 | All remaining optional taxa | Palette coverage and site-specific constraints |
 
@@ -108,7 +108,8 @@ Only after basic geometry/season/maintenance works: plant carbon allocation, emp
 - [ ] Persistent plant history, with growth cohort and bud ancestry.
 - [ ] Model's coordinate convention, handedness, time step and units written down.
 - [ ] Six attachment classes (including non-climber) with correct taxon mappings.
-- [ ] No successful attachment in forbidden timber/maintenance zones.
+- [ ] No attachment in a zone a project has declared off-limits; none is off-limits by default.
+- [ ] Visible steel is reported, and limited to slender cables.
 - [ ] Humans can train, attach, detach, prune, monitor and replant as explicit operations.
 - [ ] Old-wood and current-season flowering react differently to pruning.
 - [ ] Winter foliage and year-round flowering are not guaranteed merely by species label.
@@ -119,4 +120,4 @@ Only after basic geometry/season/maintenance works: plant carbon allocation, emp
 
 ## Smallest valuable first deliverable
 
-A **five-year, daily-step model** of one trained *W. sinensis* on a curved Bower segment with a separate wire/rod support, visible woody-stem persistence, flowering buds that survive or are removed by gardening, dormant/leafing seasons and a readable action log. Then add one evergreen honeysuckle and one Group 3 clematis on separate routes. That produces meaningful species diversity without tackling every research problem simultaneously.
+A **five-year, daily-step model** of one trained *W. sinensis* on a curved glulam Bower segment with its sub-lattice of timber and cables, visible woody-stem persistence, flowering buds that survive or are removed by gardening, dormant/leafing seasons and a readable action log. Then add one evergreen honeysuckle and one Group 3 clematis on separate routes. That produces meaningful species diversity without tackling every research problem simultaneously.

@@ -25,7 +25,8 @@ The prototype's dev server is pinned to port 5173, which another session may hol
 
 - **No bare numbers about plants.** Any growth rate, grasp diameter, threshold or probability enters as a `Sourced` value (`packages/core/src/provenance.ts`) with an evidence status. Unknown stays `unknown` with a null value; a number chosen to make the model run is `provisional_design_assumption` with a stated basis. Do not relabel a guess as published.
 - **Two graphs.** Manufactured structure (`bower/`) and living plant are separate. "Old wood" means the plant's own stems.
-- **Primary timber is not a climbing surface.** Plant routes lie on secondary supports unless a member's `contact` says otherwise.
+- **The timber is the growing surface.** Plants twine, lie along and cling to the glulam itself. The sub-lattice is timber first, with slender steel cables only where timber cannot give a hold. No steel rods or frames; visible steel is a cost to be reported and minimised. `contact: 'prohibited'` exists for exclusions a project declares, and nothing is prohibited by default.
+- **Visuals are proof.** The owners are architects and ecologists who sell buildings: every modelling step must end in something that can be rendered and shown.
 - **Height is not route length.** Reach is computed on the support graph.
 - **Pruning removes lineage**, not mesh: descendants, buds, organs and contacts go with the cut stem.
 - **A flowering month is an envelope, not a trigger.** Never show flowers because the calendar says so.

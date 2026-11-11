@@ -33,6 +33,8 @@ The intention is not to reproduce a conventional conservatory, cover a building 
 
 The shorthand **“Year 1: lattice; Year 2: leaves; Year 3: room”** communicates a desired narrative of transformation, **not a horticultural warranty**. Growth varies by species, plant size at installation, rooting conditions, microclimate, season, training intensity, and geometry. The modelling effort should help discover what is realistically achievable and at what cost and time, rather than force biology to match a slogan.
 
+**The timber is the growing surface.** The primary structure is curved glulam, and the plants are meant to grow on it: twining round it, lying along it, clinging to it, wherever they find a hold. Between the main beams a finer sub-lattice of lighter timber and, where timber cannot do the job, slender steel cables gives smaller plants something to grasp. Visible steel is kept to a minimum: cables, never steel rods or frames.
+
 This project exists because **the eventual form of a Bower is not fully determined when the timber is fabricated**. Architecture, horticulture, fabrication, operations, and time must be designed together.
 
 ## 2. The central problem
@@ -46,7 +48,7 @@ For Bower, these are architectural design questions:
 - What foliage and flowering will exist at specified dates, from specified visitor viewpoints?
 - Will the timber remain legible as designed, or become completely obscured?
 - Which species will outcompete or smother their neighbours?
-- Where should climbing wires, rods, ties, replacement substrates, planters, and maintenance access be designed into the structure?
+- Where does the glulam need a finer sub-lattice (lighter timber, slender steel cables), ties, planters and maintenance access for plants to occupy it as intended, with as little visible steel as possible?
 - How must gardeners train, prune, replace, and direct shoots to produce the intended composition?
 - What might change after 1, 3, 5, 10, and 20 years, and how uncertain are those projections?
 - When do vegetation, wet mass, potential wind exposure, stem thickening, or lack of access create reasons to revise the design or obtain engineering assessment?
@@ -59,7 +61,7 @@ The same tool should eventually support several connected activities:
 
 ### 3.1 Design a better Bower
 
-Design the timber lattice and the plant-contact system as **coordinated geometries**. The global curvature and support routes determine which species can reach which regions; the planting scheme, in turn, should influence local support density, clearances, exposure, roots, irrigation, and access. The two designs should inform one another, rather than being sequential and disconnected.
+Design the timber as the plants' **growing surface**. The global curvature, the size and spacing of members and the finer sub-lattice determine which species can reach and hold which regions; the planting scheme, in turn, should influence member spacing, sub-lattice density, clearances, exposure, roots, irrigation, and access. The two designs should inform one another, rather than being sequential and disconnected.
 
 ### 3.2 Make time visible to architects and clients
 
@@ -79,7 +81,7 @@ A composition that only works if nobody ever prunes, if plants magically attach 
 
 ### 3.5 Inform fabrication and engineering decisions
 
-Longer term, route placement, plant support details, access points, moisture exposure, and safe separation of living stems from primary timber connections may become inputs to detailing and fabrication. **Do not use unvalidated biological mass/force estimates as certified structural loads.** Structural engineers and qualified horticultural professionals remain responsible for real projects.
+Longer term, route placement, plant support details, access points, moisture exposure, and the way thickening stems meet timber connections may become inputs to detailing and fabrication. **Do not use unvalidated biological mass/force estimates as certified structural loads.** Structural engineers and qualified horticultural professionals remain responsible for real projects.
 
 ### 3.6 Build transferable design capability
 
@@ -138,7 +140,7 @@ Planting once should establish the permanent layer; **one annual replanting** ma
 
 Use the following hierarchy. A proposed change should identify which design criterion it improves and what it sacrifices.
 
-1. **Safety and longevity:** preserve inspection access, structural exclusions, human clearances, and separation from damaging attachment surfaces. Flag unresolved loads or biological hazards for specialists.
+1. **Safety and longevity:** preserve inspection access, human clearances and any exclusions a project declares; watch where thickening stems bear on connections. Flag unresolved loads or biological hazards for specialists.
 2. **Biological credibility:** mechanism-correct attachment, realistic seasonal behaviour, persistent plant history, and no invented growth rates presented as fact.
 3. **Spatial and aesthetic experience:** dynamic beauty from human viewpoints, recognisable timber, flowers/scent/shade where people encounter them, and meaningful seasonal difference.
 4. **Cultivability:** roots and water are available; supports are accessible; gardeners can actually keep the intended composition over decades.
@@ -152,7 +154,7 @@ Use the following hierarchy. A proposed change should identify which design crit
 
 An early release succeeds if it can:
 
-- Load a curved Bower region with a **primary timber graph** and a separate **plant-contact/support graph**.
+- Load a curved Bower region as **glulam members plus their sub-lattice** (lighter timber and cables), all of it available to plants as routes.
 - Introduce ***Wisteria sinensis*** at one or more root stations; preserve its woody stem history over multiple years.
 - Simulate plausible branching and attachment attempts to legitimate supports, with failure where contact is unsuitable.
 - Represent winter/spring/summer/autumn states, including old-wood flower-bud dependence for wisteria.

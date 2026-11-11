@@ -5,7 +5,7 @@
 A visually convincing vine simulation can be biologically wrong if every shoot attaches to every surface, flowers after its buds have been pruned away, or remains evergreen after cold-season leaf loss. These constraints should remain independent of the rendering method and be evaluated for each plant, support contact, organ and gardener action.
 
 **Three categories:**
-- **Hard constraints:** engineered no-attachment zones; a rose cannot self-twine; a non-climber cannot ascend; a pruned-off bud cannot bloom later.
+- **Hard constraints:** any no-attachment zone a project declares; a rose cannot self-twine; a non-climber cannot ascend; a pruned-off bud cannot bloom later.
 - **Probabilistic biological constraints:** contact success, tip exploration, flower induction, dormancy/forcing, frost damage, leaf persistence.
 - **Design/maintenance constraints:** access, allowable canopy occupation, species mixture, pruning and human training.
 
@@ -16,9 +16,9 @@ Do not use published RHS mature height, hardiness ratings or flower seasons as m
 | Class | Representative taxa | Required local conditions | Failure/management mode |
 |---|---|---|---|
 | `stem_twining` | *Wisteria*, *Lonicera*, *Trachelospermum*, *Akebia*, *Thunbergia* | Support contact, suitable cross-section/geometry, growing shoot flexibility and free winding path | Excessively large/smooth/inaccessible support, wind displacement, loss of contact; trained/tied leader can compensate |
-| `petiole_twining` | *Clematis* spp./cultivars | **Fine** reachable rods/wires for leaf stalks to grasp while growing | Coarse member too large for petiole clasp; untrained shoots hang or scramble |
+| `petiole_twining` | *Clematis* spp./cultivars | **Fine** reachable cables or laths for leaf stalks to grasp while growing | Coarse member too large for petiole clasp; untrained shoots hang or scramble |
 | `tendril` | *Vitis coignetiae* | Graspable local support within reach of developing tendrils | Failure to encounter/encircle a support; unsupported laterals |
-| `aerial_root` | *Hedera helix*, *Hydrangea anomala* subsp. *petiolaris*, *Campsis* | Compatible, often textured contact substrate; humidity/development and contact matter | Unsupported open smooth rods and forbidden timber surfaces; ties may be required during establishment |
+| `aerial_root` | *Hedera helix*, *Hydrangea anomala* subsp. *petiolaris*, *Campsis* | Compatible, often textured contact substrate; humidity/development and contact matter | A smooth cable offers nothing to cling to; ties may be required during establishment |
 | `scramble_and_tie` | *Rosa* 'The Generous Gardener' | Gardener-created attachments and open room for canes | No independent climb without human attachment |
 | `none` | *Sarcococca confusa* | Soil/bed only | Must not be routed into the climbing graph |
 
@@ -50,7 +50,7 @@ Two published accounts were found to contradict the table for the wisterias (one
 - Distance from growing tip to support; probability of a physical encounter; exposure/wind; tip age and flexibility.
 - Attachment status: `searching`, `contacted`, `grasped`, `trained_by_human`, `stable`, `detached`, `failed`, `prohibited`.
 - Contact location; attached stem length; winding turns/handedness if twining; stem thickening clearance; contact age and strength class.
-- Primary timber contact prohibition flag, tie-permitted flag, inspection/maintenance zone, support-removal policy.
+- Contact permission (permitted by default; a project may declare exclusions), tie-permitted flag, inspection/maintenance zone.
 
 ### Mechanical hypotheses, not fabricated thresholds
 
@@ -128,8 +128,9 @@ Represent leaf flush, expansion, senescence and abscission on organ/branch cohor
 
 ## 7. Initial engineering policy
 
-- **Primary structure is not a climbing substrate by default.** Surfaces have a contact permission state.
-- **Every active support is inspectable/replaceable where reasonable.** If it cannot be accessed, that section of plant routing needs explicit review.
+- **The timber is the climbing substrate.** Plants may grow on any member. Surfaces carry a contact permission state so that a project can declare an exclusion (a connection, an access hatch); none is assumed.
+- **Keep visible steel to a minimum.** The sub-lattice is timber first; steel appears only as slender cables where timber cannot give a plant a hold.
+- **Every stretch of route should be reachable for inspection.** If it cannot be accessed, that section of plant routing needs explicit review.
 - A successful attachment simulation means a plausible botanical contact, **not structural safety**.
 - Load/contact magnitudes remain unknown until measurement and structural-engineer review.
 

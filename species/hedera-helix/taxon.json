@@ -34,7 +34,7 @@
       "unit": "mm",
       "status": "unknown"
     },
-    "supportNeeds": "A replaceable, inspectable textured substrate of its own. It must not be allowed to enter gaps in timber."
+    "supportNeeds": "Clings to the timber unaided. Bound its sectors and inspect joints: stems that enter gaps thicken and can force members apart."
   },
   "flowering": {
     "wood": {

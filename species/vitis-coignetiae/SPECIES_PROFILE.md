@@ -23,7 +23,7 @@ Tendril-bearing nodes with large leaf-area accumulation and later autumn senesce
 
 ## What Bower must provide: local supports
 
-Tendril-graspable fine rods/cables and a **bounded high-vigour route**; maintenance access for powerful growth.
+Tendril-graspable fine cables or laths and a **bounded high-vigour route**; maintenance access for powerful growth.
 
 ## Global structure placement logic
 

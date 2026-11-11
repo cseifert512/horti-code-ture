@@ -10,9 +10,9 @@ A 2026 synthesis of FSPMs organizes the problem around **plant function, geometr
 
 **Graph A — manufactured architecture and local supports**
 
-- `GlobalBower`: whole-shell geometry, structural members, load zones, banned-contact surfaces and maintenance access.
+- `GlobalBower`: whole-shell geometry, structural members, load zones, any declared exclusion surfaces and maintenance access.
 - `StructuralMember`: member ID, 3-D curve/solid, material, diameter/profile, orientation, curvature, junctions, inspection needs and attachments permitted.
-- `LocalSupport`: cables, rods, mesh, textured replaceable strips, tie points; each has geometry, cross-section, roughness, strength specification, attachment permissions, failure/maintenance state and relationship to the main structure.
+- `LocalSupport`: the steel and fixings of the sub-lattice — slender cables and tie points (the timber part of the sub-lattice is `StructuralMember`s of a lighter tier); each has geometry, cross-section, roughness, strength specification, attachment permissions, failure/maintenance state and relationship to the main structure.
 - `RootStation`: geolocation/position, available soil volume, moisture, pH, microclimate, irrigation, crowding and access.
 
 **Graph B — each living individual**
@@ -66,7 +66,7 @@ A growing-degree-day formulation can approximate some developmental events; `T_b
 P(attach) = f_{mechanism}(d_{support},\kappa,\alpha,roughness,contact,ontogeny,training,wind)
 \]
 
-Evaluate each tip/contact against the local support and its mechanism (stem twining, petiole twining, tendril, aerial root, scrambling/tie, none). Enforce explicit **forbidden surfaces**, attachment duration, unsupported span, ageing/thickening and gardener-supplied tie events. A failed encounter cannot magically produce a stable climbing connection.
+Evaluate each tip/contact against the local support and its mechanism (stem twining, petiole twining, tendril, aerial root, scrambling/tie, none). Enforce any **declared exclusion surfaces**, attachment duration, unsupported span, ageing/thickening and gardener-supplied tie events. A failed encounter cannot magically produce a stable climbing connection.
 
 ### 4.4 Bud history / flowering for old-wood species
 
@@ -104,7 +104,7 @@ These are **bookkeeping and sensitivity equations**, not evidence of actual load
 
 ## 6. Recommended temporal and spatial fidelity
 
-**Start with daily biological time steps**, annual multi-year runs and monthly visual output. Do not begin with a minute-by-minute photosynthesis or CFD model. Spatially, preserve individual axes/internodes and their 3-D contact with secondary support geometry; use aggregated foliage/flower cohorts until measurements justify explicit every-leaf geometry.
+**Start with daily biological time steps**, annual multi-year runs and monthly visual output. Do not begin with a minute-by-minute photosynthesis or CFD model. Spatially, preserve individual axes/internodes and their 3-D contact with the timber and its sub-lattice; use aggregated foliage/flower cohorts until measurements justify explicit every-leaf geometry.
 
 Three distinct passes:
 
@@ -127,7 +127,7 @@ Required outputs for each run:
 1. 3-D architecture plus root-station and support-contact graph by plant and age cohort.
 2. Monthly projected foliage coverage and separate **winter evergreen** coverage from specified viewing points.
 3. Flower presence/colour density by species and height zone, with individual buds/flower ages tracked where supported.
-4. Support-route coverage, available/unoccupied routes and prohibited surface contacts.
+4. Route coverage on timber and cables, available/unoccupied routes, contacts with declared exclusions, and the length of visible steel.
 5. Chronological gardener action log and required maintenance hours/tasks (hours initially uncertain).
 6. Plant health alerts, shading conflicts, growth beyond inspection zones and failed attachment events.
 7. Mass/area *proxies* and sensitivity envelopes with explicit **not engineering validated** status.
@@ -143,7 +143,7 @@ Exact flowering dates, exact year-to-full-canopy prediction, 10–30-year timber
 - **Pruning response:** severing a flowering spur deletes its descendants/buds and changes predicted flowering.
 - **Clematis contrast:** Group 3 *Clematis* can regrow and flower on current-season shoots after late-winter hard pruning; *C. cirrhosa* responds differently.
 - **Attachment exclusivity:** a rose does not self-twine, an aerial-root species does not become a tendril climber, and a lost tie/contact can cause loss of support.
-- **No-fly zones:** no attachment onto structural exclusion surfaces or access hatches.
+- **No-fly zones:** where a project declares an exclusion (a connection, an access hatch) nothing attaches there. None is assumed: the timber is a growing surface.
 - **Hemisphere route:** 7.5 m hemisphere height requires ~11.78 m along the shortest meridian to the crown; a 7.5 m vine is **not** presumed to reach.
 - **Winter realism:** deciduous canopy leaf coverage decreases, winter green is mostly the evergreen subset.
 - **Human override:** a gardener training intervention can make an otherwise unsupported route attainable and is reflected in the audit trail.

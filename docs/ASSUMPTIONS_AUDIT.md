@@ -10,10 +10,13 @@ npm run prototype:audit                        # stem / structure / stem interfe
 npm run check                                  # the new core's tests
 ```
 
+> **Correction by the owner, later the same day.** The brief itself was wrong on one point, and this audit at first followed it. The original documents said in about twenty places that primary timber is *not* a climbing surface and that plants belong on a separate secondary support system of rods, cables and rails. That is the opposite of the design intent: **the timber is the growing surface**, steel is limited to slender cables where timber cannot give a plant a hold, and visible steel is to be minimised. The documents, the taxon data and the core have been corrected. The prototype, which grows its plant on the glulam and the timber lattice, had this right all along.
+
 ## 1. Verdicts at a glance
 
 | Assumption | Verdict | What was done |
 |---|---|---|
+| Primary timber is not a climbing surface; plants need a separate secondary support system (`CONSTRAINTS` section 7, `KEY` section 5, and elsewhere) | **Wrong in the brief** (owner's correction) | Rewritten throughout: timber is the growing surface, steel only as slender cables, no rods |
 | The repository is documentation only (`README`, `DEVELOPMENT_GUIDE`) | **False**: `Wisteria/` holds a working prototype | Both documents rewritten |
 | The folder is a git repository connected to GitHub | **False**: no repository; the GitHub repo existed but was empty | Initialised, as-found snapshot committed first, pushed |
 | The prototype builds, runs and is deterministic | **True** | — |
@@ -84,7 +87,7 @@ Seeds 7, 1, 42 and 999; values are ranges across the four unless one seed is nam
 1. **No state, so nothing can intervene.** The specification needs a plant that persists and is changed by gardener events, weather and its own bud history, on a daily step. The prototype has no step and no mutable plant: a cut cannot be made, so it cannot have consequences.
 2. **Pruning is cosmetic.** Summer whips carry preset death times. No pruning event exists, and nothing that is cut ever bore a bud, so the Stage 2 exit check ("a saved bud cannot bloom after its bearing shoot has been cut") is met only vacuously.
 3. **Flowering is a calendar switch.** A raceme shows when the date is in a window, the wood is old enough and a hash falls under a yearly ramp. `README.md` forbids exactly this ("do not hard-code flowering months as proof of blooming").
-4. **One graph, and the plant lives on the timber.** There is no separate plant-contact system with permissions. Trunk stems twine the structural rib legs and 56–59% of the permanent framework lies directly on primary timber. `CONSTRAINTS_AND_PHENOLOGY.md` section 7 makes primary structure a non-climbing surface by default, and `KEY.md` section 5 warns against woody stems constricting timber members.
+4. **The structure is not data.** Ribs, lattice and cables exist only as one parametric surface and a set of constants inside the growth code. There is no description of members, sizes, materials or routes that another structure could be substituted for, and nothing that could report how much of a design is timber and how much is steel. (An earlier version of this audit also counted "the plant lives on the timber" as a departure. It is not: growing on the glulam is the intent, and the prototype has it right. Of its permanent framework, 4% twines the rib legs, 56–59% lies along timber members and 36–38% is on cables.)
 5. **Unlabelled numbers.** Every growth rate, probability, capacity and phenology window is a bare constant (catalogued in 2.4). The specification requires each to be sourced, measured or visibly provisional.
 6. **One species, one structure, hard-wired.** `growWisteria` and the `ST` constants are the model; there is no taxon data, no site and no second mechanism.
 7. **Time is not dates.** Growing-season units and twelve equal months cannot be matched to weather records or a maintenance calendar.
@@ -230,6 +233,8 @@ These were choices, made so that work could proceed. Each is cheap to revisit no
 | World frame: right-handed, metres, x east, y north, z up | Matches the architectural models Bower geometry will arrive in; sun and aspect are direct | y up, as three.js and the prototype use |
 | Handedness as helix chirality | Independent of viewpoint, which the RHS wording is not | A signed "clockwise" flag with a stated viewpoint |
 | Whole-day clock on ISO dates | The specification's daily step; comparable with weather and maintenance records | The prototype's growing-season units |
-| Every plant route on a secondary support | `CONSTRAINTS_AND_PHENOLOGY.md` section 7 and `KEY.md` section 5 | Permit ties to diagrid timber (`tie_only`), closer to the prototype |
+| Plant routes are the glulam ribs, the timber sub-lattice and slender cables; nothing is off-limits by default | The owner's design intent. The first version of the core put every route on stand-off rods and cables, following the uncorrected brief; that was reversed the same day | A project may still declare an exclusion (`contact: 'prohibited'`) for a connection or hatch |
+| Visible steel is measured (`materialSummary`) | Minimising it is a stated design goal, so it has to be a number: 46 m of cable on the vault segment, 33% of plant route | — |
+| Timber is treated as rough enough for aerial roots to cling to | Ivy and climbing hydrangea cling to timber in gardens; the verdict records that this rests on an assumption about the finish | Measure on the actual glulam finish |
 | Folder ids from the working labels | Least surprise: the folder matches the name in the documents | Ids from the accepted names |
 | Evidence status on every value, enforced | The specification's central rule, otherwise unenforceable | Convention only |

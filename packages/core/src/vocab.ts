@@ -83,13 +83,35 @@ export type AttachmentStatus = (typeof ATTACHMENT_STATUS)[number];
 export const HANDEDNESS = ['right_handed', 'left_handed'] as const;
 export type Handedness = (typeof HANDEDNESS)[number];
 
-/** Whether a manufactured surface may be touched by a plant. Primary timber defaults to `prohibited`. */
+/**
+ * Whether a manufactured surface may be touched by a plant. Everything is
+ * `permitted` by default: the timber is the growing surface. `prohibited` and
+ * `tie_only` exist so a project can declare an exclusion (a connection that
+ * must stay visible, an access hatch).
+ */
 export const CONTACT_PERMISSION = ['prohibited', 'tie_only', 'permitted'] as const;
 export type ContactPermission = (typeof CONTACT_PERMISSION)[number];
 
-/** Secondary, replaceable plant-contact elements: KEY.md section 5, SIMULATION_KEY.md section 2. */
-export const SUPPORT_KIND = ['cable', 'rod', 'rail', 'mesh', 'trellis', 'textured_panel', 'tie_point'] as const;
+/**
+ * How much of the structure a timber member is. KEY.md section 5.
+ *   primary      the curved glulam beams that carry the building
+ *   sub_lattice  lighter timber members and laths between them, there to
+ *                refine the growing surface to the scale plants need
+ */
+export const MEMBER_TIER = ['primary', 'sub_lattice'] as const;
+export type MemberTier = (typeof MEMBER_TIER)[number];
+
+/**
+ * The steel and fixings of the sub-lattice. Deliberately short: steel appears
+ * only as slender cables where timber cannot give a plant a hold, and as tie
+ * points. There are no steel rods, rails or frames in a Bower.
+ */
+export const SUPPORT_KIND = ['cable', 'tie_point'] as const;
 export type SupportKind = (typeof SUPPORT_KIND)[number];
+
+/** What a stretch of plant route is made of. */
+export const ROUTE_MATERIAL = ['timber', ...SUPPORT_KIND] as const;
+export type RouteMaterial = (typeof ROUTE_MATERIAL)[number];
 
 // ---------------------------------------------------------------------------
 // Plant habit

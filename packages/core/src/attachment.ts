@@ -1,10 +1,11 @@
 /**
- * Can a plant hold a given stretch of support, and how?
+ * Can a plant hold a given stretch of route, and how?
  * CONSTRAINTS_AND_PHENOLOGY.md section 2; SIMULATION_KEY.md section 4.3.
  *
- * Each attachment mechanism is assessed by its own rule. Nothing is shared
- * between them except the hard constraints that apply to every plant: a
- * prohibited surface is never touched, and a non-climber never climbs.
+ * Routes are timber members and slender cables, and a plant may use any of
+ * them that its attachment mechanism can hold. Each mechanism is assessed by
+ * its own rule. Only two things are absolute: a non-climber never climbs, and
+ * nothing attaches where a project has declared an exclusion.
  *
  * The largest support a mechanism can grasp unaided has not been measured for
  * any taxon here. Where the answer turns on that number the verdict says so
@@ -20,9 +21,9 @@ export type AttachmentOutcome =
   | 'self'
   /** Self-attachment depends on a grasp limit nobody has measured. */
   | 'unverified'
-  /** The plant cannot hold on, but a gardener may legitimately tie it here. */
+  /** The plant cannot hold on here, but a gardener can tie it in. */
   | 'needs_tie'
-  /** Not possible by any means: forbidden surface, or a plant that does not climb. */
+  /** Not possible by any means: a declared exclusion, or a plant that does not climb. */
   | 'impossible';
 
 export interface AttachmentVerdict {
@@ -33,42 +34,41 @@ export interface AttachmentVerdict {
   restsOn: string[];
 }
 
-/** Supports a tie can be made to. A flat panel offers nothing to tie round. */
-const TIEABLE: ReadonlySet<SupportEdge['kind']> = new Set(['cable', 'rod', 'rail', 'mesh', 'trellis', 'tie_point', 'timber']);
-/** Supports with a slender element a stem, petiole or tendril can pass round. */
-const ENCIRCLABLE: ReadonlySet<SupportEdge['kind']> = new Set(['cable', 'rod', 'rail', 'mesh', 'trellis']);
-
 const verdict = (outcome: AttachmentOutcome, reason: string, restsOn: string[] = []): AttachmentVerdict => ({ outcome, reason, restsOn });
 
-function tieOrNothing(edge: SupportEdge, why: string): AttachmentVerdict {
-  return TIEABLE.has(edge.kind) ? verdict('needs_tie', `${why}; a gardener can tie it in here`) : verdict('impossible', `${why}, and a ${edge.kind.replace('_', ' ')} offers nothing to tie to`);
-}
+const describe = (edge: SupportEdge): string => {
+  const d = Math.round(edge.gripDiameterMm);
+  if (edge.kind === 'timber') return `a timber member ${d} mm round`;
+  if (edge.kind === 'cable') return `a ${d} mm cable`;
+  return 'a tie point';
+};
 
-/** Grasping by passing round the support: twining stems, twining petioles and tendrils. */
+const tie = (why: string, restsOn: string[] = []): AttachmentVerdict => verdict('needs_tie', `${why}; a gardener can tie it in here`, restsOn);
+
+/** Grasping by passing round the support: twining stems, twining leaf stalks and tendrils. */
 function encircle(what: string, edge: SupportEdge, limit: Sourced<number>): AttachmentVerdict {
-  if (!ENCIRCLABLE.has(edge.kind)) return tieOrNothing(edge, `${what} cannot pass round a ${edge.kind.replace('_', ' ')}`);
+  if (edge.kind === 'tie_point') return tie(`${what} cannot pass round a tie point`);
   const d = edge.gripDiameterMm;
   if (limit.value === null) {
-    return verdict('unverified', `${what} may grasp this ${d} mm ${edge.kind}, but the largest diameter it can hold has not been measured`, ['maximum graspable diameter is unknown']);
+    return verdict('unverified', `${what} may grasp ${describe(edge)}, but the largest diameter it can hold has not been measured`, ['maximum graspable diameter is unknown']);
   }
   const restsOn = limit.status === 'measured' || limit.status === 'calibrated' || limit.status === 'peer_reviewed' ? [] : [`maximum graspable diameter taken as ${limit.value} mm (${limit.status})`];
-  if (d <= limit.value) return verdict('self', `${what} can grasp a ${d} mm ${edge.kind} (limit ${limit.value} mm)`, restsOn);
-  const tied = tieOrNothing(edge, `a ${d} mm ${edge.kind} is too thick for ${what} to grasp (limit ${limit.value} mm)`);
-  return { ...tied, restsOn };
+  if (d <= limit.value) return verdict('self', `${what} can grasp ${describe(edge)} (limit ${limit.value} mm)`, restsOn);
+  return tie(`${describe(edge)} is too thick for ${what} to grasp (limit ${limit.value} mm)`, restsOn);
 }
 
 /**
- * Assess one mechanism against one support edge.
+ * Assess one mechanism against one stretch of route.
  * `maxGraspDiameterMm` is the taxon's value, or a scenario's provisional
- * stand-in for it; it is ignored by mechanisms that do not encircle.
+ * stand-in for it; mechanisms that do not encircle ignore it.
  */
 export function assessAttachment(mechanism: AttachmentMechanism, edge: SupportEdge, maxGraspDiameterMm: Sourced<number>): AttachmentVerdict {
-  // hard constraints first: they hold whatever the plant and whoever is asking
+  // absolutes first: they hold whatever the plant and whoever is asking
   if (mechanism === 'none') return verdict('impossible', 'a shrub is not a climber and is never routed into the climbing graph');
-  if (edge.contact === 'prohibited') return verdict('impossible', 'contact with this surface is prohibited');
+  if (edge.contact === 'prohibited') return verdict('impossible', 'this stretch is a declared exclusion: nothing attaches here');
 
-  if (mechanism === 'scramble_and_tie') return tieOrNothing(edge, 'a scrambling cane cannot hold on by itself');
-  if (edge.contact === 'tie_only') return tieOrNothing(edge, 'plants may only be tied to this surface, not left to attach themselves');
+  if (mechanism === 'scramble_and_tie') return tie('a scrambling cane cannot hold on by itself');
+  if (edge.contact === 'tie_only') return tie('plants may only be tied here, not left to attach themselves');
 
   switch (mechanism) {
     case 'stem_twining':
@@ -78,12 +78,14 @@ export function assessAttachment(mechanism: AttachmentMechanism, edge: SupportEd
     case 'tendril':
       return encircle('a tendril', edge, maxGraspDiameterMm);
     case 'aerial_root':
-      if (edge.surface === 'textured') return verdict('self', `aerial roots can cling to a textured ${edge.kind.replace('_', ' ')}`);
-      return tieOrNothing(edge, `aerial roots cannot cling to a smooth ${edge.kind.replace('_', ' ')}`);
+      if (edge.kind === 'timber' && edge.surface === 'textured') {
+        return verdict('self', 'aerial roots cling to timber', ['clinging to this timber finish is assumed, not measured']);
+      }
+      return tie(`aerial roots cannot cling to ${edge.kind === 'timber' ? 'a smooth timber finish' : describe(edge)}`);
   }
 }
 
-/** An edge filter for route finding: which edges this plant may use at all, and on what terms. */
+/** An edge filter for route finding: which stretches this plant may use, and on what terms. */
 export function routeFilter(
   mechanism: AttachmentMechanism,
   maxGraspDiameterMm: Sourced<number>,
