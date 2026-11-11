@@ -17,6 +17,7 @@
     "check": "npm run typecheck && npm test",
     "simulate": "node packages/core/scripts/simulate.ts",
     "export-bower": "node packages/core/scripts/export-bower.ts",
+    "sensitivity": "node packages/core/scripts/sensitivity.ts",
     "viewer:dev": "npm --workspace @horti/viewer run dev",
     "viewer:build": "npm --workspace @horti/viewer run build",
     "prototype:dev": "npm --prefix Wisteria run dev",
