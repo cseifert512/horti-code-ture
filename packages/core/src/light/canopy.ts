@@ -8,16 +8,20 @@ import type { RenderData } from '../render/contract.ts';
 import { leafSilhouetteAreaM2 } from '../sim/view.ts';
 import { type Foliage, clumpLeaves, foliageOf } from './exposure.ts';
 
-/** The leaf that was on the plants in the summer of `year`; undefined where there was none. */
+/**
+ * The leaf the plants carried in `year` and had not lost to a cut by its end:
+ * the same leaf the run itself shades by (`LightField.canopy`). Undefined where
+ * there was none.
+ */
 export function foliageFromRenderData(data: RenderData, year: number): Foliage | undefined {
   const cal = new Calendar(data.start);
-  const midsummer = cal.dayOf(`${year}-07-01`);
+  const yearEnd = cal.dayOf(`${year}-12-31`);
   const number = new Map(data.plants.map((p, i) => [p.id, i]));
   const deciduous = new Map<string, number>();
   const leaves: { x: number; y: number; z: number; areaM2: number; evergreen: boolean; plant: number }[] = [];
   for (const leaf of data.leaves) {
     if (leaf.firstYear > year || (leaf.lastYear !== null && leaf.lastYear < year)) continue;
-    if (leaf.bornDay > midsummer || (leaf.removedDay >= 0 && leaf.removedDay <= midsummer)) continue;
+    if (leaf.bornDay > yearEnd || (leaf.removedDay >= 0 && leaf.removedDay <= yearEnd)) continue;
     const areaM2 = leafSilhouetteAreaM2(leaf.lengthM);
     leaves.push({ x: leaf.position[0], y: leaf.position[1], z: leaf.position[2], areaM2, evergreen: leaf.evergreen, plant: number.get(leaf.plantId) ?? -2 });
     if (!leaf.evergreen) deciduous.set(leaf.plantId, (deciduous.get(leaf.plantId) ?? 0) + areaM2);

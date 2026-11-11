@@ -440,3 +440,28 @@ describe('the light section of the design report', () => {
     expect(formatDesignReport(r)).toContain('was told not to act');
   });
 });
+
+// A viewer has a run's render data and not the simulation: the same leaf has to shade the same way from either.
+describe('the leaf of a season, read from render data', () => {
+  it('shades the structure as the run itself was shaded, and is absent before anything has grown', async () => {
+    const { foliageFromRenderData } = await import('../src/light/canopy.ts');
+    const { toRenderData } = await import('../src/sim/render-data.ts');
+    const sim = new Simulation(referencePalette({ taxa, years: 6 })).runUntil('2032-12-31');
+    const data = toRenderData(sim);
+    expect(foliageFromRenderData(data, 2026)).toBeUndefined();
+    const leaf = foliageFromRenderData(data, 2032)!;
+    expect(leaf.clumps.length).toBeGreaterThan(50);
+    // deciduous leaf is out in June and down in January
+    expect(leaf.deciduousOut[JUN]!).toBe(1);
+    expect(leaf.deciduousOut[0]!).toBe(0);
+    const bare = exposureField(sim.scenario.bower, DEFAULT_SITE);
+    const clothed = exposureField(sim.scenario.bower, DEFAULT_SITE, leaf);
+    const mean = (f: typeof bare, m: number) => f.points.reduce((s, p) => s + p.share[m]!, 0) / f.points.length;
+    expect(mean(clothed, JUN)).toBeLessThan(mean(bare, JUN));
+    for (let i = 0; i < bare.points.length; i++) expect(clothed.points[i]!.share[JUN]!).toBeLessThanOrEqual(bare.points[i]!.share[JUN]! + 1e-9);
+    // and it is the same leaf the run's own canopy holds
+    const own = sim.light.canopy(2032)!;
+    const area = (f: { clumps: readonly { evergreenM2: number; deciduousM2: number }[] }) => f.clumps.reduce((s, c) => s + c.evergreenM2 + c.deciduousM2, 0);
+    expect(area(leaf)).toBeCloseTo(area(own), 1);
+  });
+});

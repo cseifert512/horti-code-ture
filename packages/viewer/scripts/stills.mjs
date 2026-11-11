@@ -47,7 +47,9 @@ mkdirSync(out, { recursive: true });
 const SCENES = [
   { key: 'vault', name: 'vault-mixed', query: 'bower=vault&plants=mixed-trained&ui=0', dates: { may: '2036-05-15', jan: '2036-01-15' } },
   { key: 'hemisphere', name: 'hemisphere-palette', query: 'bower=hemisphere&plants=palette-trained&ui=0', dates: { may: '2038-05-15', jan: '2038-01-15' } },
-].filter((s) => !only || s.key === only);
+  // a designed structure on a site that declares its shade: only when asked for by name
+  { key: 'yard', name: 'arbour-in-a-yard', query: 'bower=yard&ui=0', dates: { may: '2036-05-15', jan: '2036-01-15' } },
+].filter((s) => (only ? s.key === only : s.key !== 'yard'));
 
 const BROWSERS = [
   'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
@@ -125,7 +127,7 @@ const frames = (ms) =>
  * anything else times a scrub of the timeline.
  */
 const drawTime = (n, step) =>
-  js(`(() => { const B = __bower; const gl = B.stage.renderer.getContext(); const px = new Uint8Array(4); const day0 = B.state.day; const t = []; for (let i = 0; i < ${n}; i++) { const t0 = performance.now(); if (${step}) B.showDay(day0 - i * ${step}); B.stage.invalidateShadows(); B.stage.render(); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); t.push(performance.now() - t0); } B.showDay(day0); t.sort((a, b) => a - b); return { medianMs: +t[Math.floor(t.length / 2)].toFixed(1), p95Ms: +t[Math.floor(t.length * 0.95)].toFixed(1), worstMs: +t[t.length - 1].toFixed(1) }; })()`);
+  js(`(() => { const B = __bower; const gl = B.stage.renderer.getContext(); const px = new Uint8Array(4); const day0 = B.state.day; const t = []; for (let i = 0; i < ${n}; i++) { const t0 = performance.now(); if (${step}) B.showDay(day0 - i * ${step}); B.stage.invalidateShadows(); B.stage.render(${step} !== 0); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); t.push(performance.now() - t0); } B.showDay(day0); t.sort((a, b) => a - b); return { medianMs: +t[Math.floor(t.length / 2)].toFixed(1), p95Ms: +t[Math.floor(t.length * 0.95)].toFixed(1), worstMs: +t[t.length - 1].toFixed(1) }; })()`);
 
 const report = { tag, size: [width, height], scenes: {}, problems };
 try {

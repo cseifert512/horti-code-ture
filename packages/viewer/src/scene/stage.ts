@@ -76,7 +76,8 @@ function makeSky(): Sky {
 }
 
 export function createStage(canvas: HTMLCanvasElement, quality: Partial<PipelineSettings> = {}): Stage {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+  // the scene is multisampled in the pipeline's own target; the window's buffer only receives the finished picture
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: true });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;
@@ -250,12 +251,15 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
     render(moving = false) {
       freshShadows();
       const buffer = renderer.getDrawingBufferSize(new THREE.Vector2());
-      const atRest = pipeline.settings.samples;
-      if (moving) pipeline.settings.samples = pipeline.settings.samplesMoving;
+      const atRest = { samples: pipeline.settings.samples, ambientOcclusion: pipeline.settings.ambientOcclusion };
+      if (moving) {
+        pipeline.settings.samples = pipeline.settings.samplesMoving;
+        pipeline.settings.ambientOcclusion = pipeline.settings.ambientOcclusionMoving;
+      }
       try {
         pipeline.render(scene, overlayScene.children.some((c) => c.visible) ? overlayScene : null, camera, buffer.x, buffer.y, null);
       } finally {
-        pipeline.settings.samples = atRest;
+        Object.assign(pipeline.settings, atRest);
       }
     },
     renderTo(target, width, height) {

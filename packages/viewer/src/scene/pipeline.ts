@@ -189,12 +189,14 @@ export interface PipelineSettings {
   samplesMoving: number;
   /** Shading of corners and crevices, 0 (off) to 1. */
   ambientOcclusion: number;
+  /** The same while the picture is moving. */
+  ambientOcclusionMoving: number;
   /** Reach of that shading, metres. */
   occlusionRadiusM: number;
   exposure: number;
 }
 
-export const DEFAULT_PIPELINE: PipelineSettings = { samples: 4, samplesMoving: 0, ambientOcclusion: 0.9, occlusionRadiusM: 0.4, exposure: 0.62 };
+export const DEFAULT_PIPELINE: PipelineSettings = { samples: 4, samplesMoving: 0, ambientOcclusion: 0.9, ambientOcclusionMoving: 0, occlusionRadiusM: 0.4, exposure: 0.62 };
 
 export class Pipeline {
   readonly settings: PipelineSettings;

@@ -4,6 +4,8 @@
 // calls core functions.
 import * as THREE from 'three';
 import { type Bower, Calendar, DEFAULT_SITE, type DesignReport, type ExposureField, type RenderData, type Site, type SupportEdge, type Viewpoint, compassWords, exposureField, foliageFromRenderData, makeHemisphereBower, makeVaultBower, sunAt } from '@horti/core';
+import yardBower from '../../../examples/arbour-in-a-yard.bower.json?raw';
+import arbourPlanting from '../../../examples/arbour.planting.json?raw';
 import { ARBOUR_EXAMPLE, DesignDesk, type DesignFile } from './design/open.ts';
 import { type ReachView, type StationField, materials, reachView, routeInfo, stationField } from './overlay/model.ts';
 import { ExposureOverlay, type LightMeasure, type LightMonth, type LightScale } from './overlay/exposure.ts';
@@ -62,8 +64,8 @@ const canvas = el<HTMLCanvasElement>('scene');
 let stage: ReturnType<typeof createStage>;
 try {
   // ?quality=draft leaves out the multisampling and the shading of corners, for a slow machine;
-  // ?quality=full keeps the multisampling on even while the picture moves
-  stage = createStage(canvas, url.get('quality') === 'draft' ? { samples: 0, samplesMoving: 0, ambientOcclusion: 0 } : url.get('quality') === 'full' ? { samplesMoving: 4 } : {});
+  // ?quality=full keeps both on even while the picture moves
+  stage = createStage(canvas, url.get('quality') === 'draft' ? { samples: 0, samplesMoving: 0, ambientOcclusion: 0, ambientOcclusionMoving: 0 } : url.get('quality') === 'full' ? { samplesMoving: 4, ambientOcclusionMoving: 0.9 } : {});
 } catch (e) {
   const box = el('error');
   box.style.display = 'flex';
@@ -137,7 +139,23 @@ function defaultView(key: BowerKey, bounds: THREE.Box3): ViewPreset {
   const sphere = bounds.getBoundingSphere(new THREE.Sphere());
   const distance = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(stage.camera.fov) / 2)) * 0.92;
   const target = new THREE.Vector3(sphere.center.x, bounds.max.y * 0.4, sphere.center.z);
-  const dir = new THREE.Vector3(0.74, 0.26, 0.62).normalize();
+  // from the south-east, unless something the site declares stands in the way: then from the first corner that is clear
+  const corners = [new THREE.Vector3(0.74, 0.26, 0.62), new THREE.Vector3(-0.74, 0.26, 0.62), new THREE.Vector3(0.74, 0.26, -0.62), new THREE.Vector3(-0.74, 0.26, -0.62)];
+  const walls: [number, number, number, number][] = [];
+  for (const o of bower?.site?.obstructions ?? []) {
+    // on the ground plan of the three.js frame: x east, z = -north
+    if (o.kind === 'wall') walls.push([o.from[0], -o.from[1], o.to[0], -o.to[1]]);
+    else if (o.kind === 'building') o.footprint.forEach((p, i) => walls.push([p[0], -p[1], o.footprint[(i + 1) % o.footprint.length]![0], -o.footprint[(i + 1) % o.footprint.length]![1]]));
+  }
+  const crosses = (ax: number, az: number, bx: number, bz: number, w: [number, number, number, number]) => {
+    const side = (px: number, pz: number, qx: number, qz: number, rx: number, rz: number) => Math.sign((qx - px) * (rz - pz) - (qz - pz) * (rx - px));
+    return side(ax, az, bx, bz, w[0], w[1]) !== side(ax, az, bx, bz, w[2], w[3]) && side(w[0], w[1], w[2], w[3], ax, az) !== side(w[0], w[1], w[2], w[3], bx, bz);
+  };
+  const clear = (dir: THREE.Vector3) => {
+    const at = target.clone().addScaledVector(dir.clone().normalize(), distance);
+    return !walls.some((w) => crosses(at.x, at.z, target.x, target.z, w));
+  };
+  const dir = (corners.find(clear) ?? corners[0]!).normalize();
   return { position: target.clone().addScaledVector(dir, distance), target };
 }
 
@@ -1064,7 +1082,13 @@ function render(): void {
 }
 
 // ?bower=arbour opens the example design, planted unless the address says otherwise
-if (url.get('bower') === 'arbour' && desk.open(ARBOUR_EXAMPLE)) {
+/** The arbour again, on a site that declares what shades it: a wall, a house and a tree. */
+const YARD_EXAMPLE: readonly DesignFile[] = [
+  { name: 'arbour-in-a-yard.bower.json', text: yardBower },
+  { name: 'arbour.planting.json', text: arbourPlanting },
+];
+// ?bower=arbour opens the example design, ?bower=yard the same arbour in a walled yard
+if ((url.get('bower') === 'arbour' && desk.open(ARBOUR_EXAMPLE)) || (url.get('bower') === 'yard' && desk.open(YARD_EXAMPLE))) {
   state.bowerKey = 'design';
   if (!url.has('plants')) state.plants = 'trained';
 }
