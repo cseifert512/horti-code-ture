@@ -1,0 +1,13 @@
+{
+  "name": "@horti/core",
+  "version": "0.2.0",
+  "description": "Simulation core: data contract, manufactured and living graphs, growth, phenology and gardener events. No rendering dependencies.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

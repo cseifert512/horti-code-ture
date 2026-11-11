@@ -1,0 +1,27 @@
+{
+  "name": "horti-code-ture",
+  "version": "0.2.0",
+  "description": "Bower's computational horticulture: a multi-species, gardener-managed, structure-aware plant growth simulator",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p packages/core --noEmit",
+    "check": "npm run typecheck && npm test",
+    "prototype:dev": "npm --prefix Wisteria run dev",
+    "prototype:audit": "npm --prefix Wisteria run audit",
+    "prototype:assumptions": "npm --prefix Wisteria run assumptions"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}
