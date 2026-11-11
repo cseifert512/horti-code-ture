@@ -129,7 +129,7 @@ const PROGRAMS: Record<ProgramKind, Program> = {
         vec3 grey = tex * uWoodOld;
         diffuseColor.rgb = mix( mix( grey, brown, mid ), green, yng );
         // little light reaches the side of a stem that lies against timber or cable
-        diffuseColor.rgb *= 1.0 - 0.5 * vContact * vContact;
+        diffuseColor.rgb *= 1.0 - 0.45 * vContact * vContact * vContact * vContact;
       }
     `,
   },

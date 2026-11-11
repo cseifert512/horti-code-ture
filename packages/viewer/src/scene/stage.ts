@@ -38,6 +38,8 @@ export interface Stage {
   setSunDirection(direction: THREE.Vector3): void;
   /** Degrees the sun stands above the horizon now; negative at night. */
   sunElevation(): number;
+  /** Draw the sky with or without its cloud. Returns whether it had cloud before. */
+  setClouds(on: boolean): boolean;
   /**
    * Fit the shadow frustum, haze and orbit limits to a subject, and optionally move the camera.
    * `shadowBoxM` is the least half-width of the box the shadows are drawn in: smaller for a small
@@ -133,8 +135,10 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
   su['rayleigh']!.value = 1.5;
   su['mieCoefficient']!.value = 0.004;
   su['mieDirectionalG']!.value = 0.82;
-  // fair-weather cloud, high and thin: enough that the sky is a sky
-  if (su['cloudCoverage']) su['cloudCoverage'].value = 0.34;
+  // Fair-weather cloud, high and thin: enough that the sky is a sky. It is worked out afresh at every pixel of sky in
+  // every frame, which a moving picture cannot afford: it is off until asked for (setClouds), which stills, a specimen's
+  // portrait and ?quality=high do.
+  if (su['cloudCoverage']) su['cloudCoverage'].value = 0;
   if (su['cloudDensity']) su['cloudDensity'].value = 0.32;
   if (su['cloudElevation']) su['cloudElevation'].value = 0.42;
   if (su['time']) su['time'].value = 40;
@@ -267,6 +271,17 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
     setSun,
     setSunDirection,
     sunElevation: () => elevationNow,
+    setClouds(on) {
+      const cover = su['cloudCoverage'];
+      if (!cover) return false;
+      const had = cover.value > 0;
+      if (had !== on) {
+        cover.value = on ? 0.34 : 0;
+        // the sky lights the scene: with its cloud changed, that light is worked out again
+        refreshSkyLight();
+      }
+      return had;
+    },
     frame,
     invalidateShadows() {
       shadowsStale = true;

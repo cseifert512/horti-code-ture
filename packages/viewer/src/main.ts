@@ -851,7 +851,13 @@ async function exportStill(options: { width: number; height: number; supersample
   try {
     if (plant) plant.update(stage.camera, state.day, 1);
     stage.camera.clearViewOffset();
-    return await renderStill(stage, options);
+    // a still is drawn with everything: the sky has its cloud, whatever the picture on screen is drawn with
+    const cloud = stage.setClouds(true);
+    try {
+      return await renderStill(stage, options);
+    } finally {
+      stage.setClouds(cloud);
+    }
   } finally {
     exporting = false;
     invalidate();
@@ -1125,6 +1131,8 @@ function careful(): boolean {
   return !moving && !swaying;
 }
 let drawnCareful = false;
+// the sky's cloud is dear to draw: it is there where the picture is always drawn the careful way
+stage.setClouds(QUALITY === 'high' || specimen !== null);
 function render(): void {
   applyViewOffset();
   overlay.update(stage.camera, window.innerWidth, window.innerHeight, stage.renderer.getPixelRatio());
