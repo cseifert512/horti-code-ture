@@ -126,6 +126,7 @@ describe('an inflorescence through its days', () => {
   it('is a lengthening bud, with no flower open, until the day it opens', () => {
     const s = t.flowerDraw(flower(), 470);
     expect(s.visible).toBe(true);
+    expect(s.open).toBe(false);
     expect(s.bloom).toBe(0);
     expect(s.shed).toBe(0);
     expect(s.elongation).toBeGreaterThan(0);
@@ -134,7 +135,7 @@ describe('an inflorescence through its days', () => {
 
   it('opens from the base before any petals fall, and has shed nearly all of them on its last day', () => {
     expect(t.flowerDraw(flower(), 483).bloom).toBeLessThan(1);
-    expect(t.flowerDraw(flower(), 492)).toEqual({ visible: true, elongation: 1, bloom: 1, shed: 0 });
+    expect(t.flowerDraw(flower(), 492)).toEqual({ visible: true, open: true, elongation: 1, bloom: 1, shed: 0 });
     expect(t.flowerDraw(flower(), 504).shed).toBeGreaterThan(0.9);
   });
 
@@ -143,7 +144,7 @@ describe('an inflorescence through its days', () => {
   });
 
   it('sheds nothing if the run ended while it was open', () => {
-    expect(t.flowerDraw(flower({ spentDay: -1 }), 729)).toEqual({ visible: true, elongation: 1, bloom: 1, shed: 0 });
+    expect(t.flowerDraw(flower({ spentDay: -1 }), 729)).toEqual({ visible: true, open: true, elongation: 1, bloom: 1, shed: 0 });
   });
 });
 

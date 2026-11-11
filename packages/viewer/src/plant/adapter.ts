@@ -86,6 +86,8 @@ export interface LeafDraw {
 
 export interface FlowerDraw {
   visible: boolean;
+  /** True once the core says it is open; false while it is a bud still lengthening. */
+  open: boolean;
   /** 0 a bud that has just begun to lengthen, 1 full length. */
   elongation: number;
   /** Share of the flowers that have opened, counted from the base. */
@@ -120,7 +122,7 @@ export interface FruitDraw {
 }
 
 const HIDDEN_LEAF: LeafDraw = { visible: false, expansion: 0, colour: 0 };
-const HIDDEN_FLOWER: FlowerDraw = { visible: false, elongation: 0, bloom: 0, shed: 0 };
+const HIDDEN_FLOWER: FlowerDraw = { visible: false, open: false, elongation: 0, bloom: 0, shed: 0 };
 
 /**
  * The core says an inflorescence is open and how far through its time in
@@ -191,13 +193,13 @@ export class RenderTimeline {
   flowerDraw(flower: RenderFlower, day: number): FlowerDraw {
     const s = flowerState(flower, day);
     if (s.phase === 'absent') return HIDDEN_FLOWER;
-    if (s.phase === 'in_bud') return { visible: true, elongation: smooth(s.progress), bloom: 0, shed: 0 };
+    if (s.phase === 'in_bud') return { visible: true, open: false, elongation: smooth(s.progress), bloom: 0, shed: 0 };
     // open. A flower the run ended on has no spent day, so the core gives no progress:
     // pace its opening by the time it took to develop instead, and shed nothing.
     const progress = flower.spentDay >= 0 ? s.progress : (day - flower.openDay) / Math.max(1, flower.openDay - flower.developDay);
     const bloom = clamp01(progress / WITHIN_FLOWERING.bloomBy);
     const shed = flower.spentDay >= 0 ? clamp01((progress - WITHIN_FLOWERING.shedFrom) / (1 - WITHIN_FLOWERING.shedFrom)) : 0;
-    return { visible: true, elongation: 1, bloom, shed };
+    return { visible: true, open: true, elongation: 1, bloom, shed };
   }
 
   fruitDraw(fruit: FruitSite, day: number): FruitDraw {

@@ -465,7 +465,10 @@ function showDay(day: number): void {
   el<HTMLInputElement>('plant-day').value = String(Math.round(state.day));
   el('plant-date').textContent = t.dateLabel(state.day);
   const stats = plant.stats();
-  el('plant-caption').textContent = `${stats.stems.toLocaleString()} stems · ${stats.leaves.toLocaleString()} leaves · ${stats.flowers.toLocaleString()} in flower${stats.fruit ? ` · ${stats.fruit} fruit` : ''}`;
+  // "in flower" is what the core counts as open, so it agrees with the calendar beside it; buds are said apart
+  el('plant-caption').textContent =
+    `${stats.stems.toLocaleString()} stems · ${stats.leaves.toLocaleString()} leaves · ${stats.flowers.toLocaleString()} in flower` +
+    `${stats.buds ? ` · ${stats.buds.toLocaleString()} in bud` : ''}${stats.fruit ? ` · ${stats.fruit} fruit` : ''}`;
   markLog();
   el('play').innerHTML = state.playing ? '&#10073;&#10073;' : '&#9654;';
   stage.invalidateShadows();

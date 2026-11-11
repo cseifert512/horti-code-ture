@@ -230,6 +230,29 @@ describe('the palette in flower', () => {
     for (const id of ['rose', 'honeysuckle', 'evergreen-honeysuckle', 'star-jasmine']) expect(count(id), id).toBeGreaterThan(0);
   });
 
+  // render/presence.ts: "a picture and a number computed from the same run agree".
+  it('counts as in flower, on the 15th of each month, exactly the flowers the report counts as open', () => {
+    const report = run.report();
+    const view = new PlantView(run.data, materials());
+    let open = 0;
+    for (const month of report.months) {
+      view.update(camera, view.timeline.calendar.dayOf(month.date), 1);
+      const counted = Object.values(month.flowers).reduce((a, b) => a + b, 0);
+      expect(view.stats().flowers, month.date).toBe(counted);
+      open += counted;
+    }
+    expect(open).toBeGreaterThan(0);
+    // and a bud is not a flower: before anything opens, buds are counted apart
+    const firstOpen = Math.min(...run.data.flowers.map((f) => f.openDay));
+    const justBefore = run.data.flowers.filter((f) => f.developDay < firstOpen);
+    if (justBefore.length) {
+      view.update(camera, firstOpen - 1, 1);
+      expect(view.stats().flowers).toBe(0);
+      expect(view.stats().buds).toBeGreaterThan(0);
+    }
+    view.dispose();
+  });
+
   it('draws every plant that flowers in the run with a flower model of its own', () => {
     const view = new PlantView(run.data, materials());
     expect(view.withoutFlowers).toEqual([]);

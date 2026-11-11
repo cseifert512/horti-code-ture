@@ -4,5 +4,5 @@ import { defineConfig } from 'vite';
 // there is no build step between the simulation core and the viewer.
 export default defineConfig({
   server: { port: 5193, strictPort: true },
-  build: { target: 'es2023', chunkSizeWarningLimit: 1200 },
+  build: { target: 'es2023', chunkSizeWarningLimit: 1600 },
 });

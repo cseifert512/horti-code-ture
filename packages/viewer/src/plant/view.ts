@@ -87,7 +87,9 @@ interface FruitRecord extends LodRecord {
 export interface PlantStats {
   stems: number;
   leaves: number;
+  /** Flowers and flowerheads the core counts as open, and those still in bud. Both are drawn. */
   flowers: number;
+  buds: number;
   fruit: number;
   triangles: number;
 }
@@ -106,6 +108,7 @@ export class PlantView {
   /** Day the base of each stem was laid down and day it was removed (-1: never). */
   private readonly stemSpans: [number, number][];
   private day = 0;
+  private open = 0;
 
   constructor(data: RenderData, mats: PlantMaterials, extras: { fruit?: readonly FruitSite[] } = {}) {
     this.timeline = new RenderTimeline(data);
@@ -300,11 +303,13 @@ export class PlantView {
       });
     }
 
+    this.open = 0;
     for (const { asset, pool } of this.flowerPools) {
       pool.update(camera, {
         alive: (r) => {
           const s = t.flowerDraw(r.flower, day);
           if (!s.visible) return false;
+          if (s.open) this.open++;
           const a = r.a;
           a[0] = s.elongation;
           a[1] = s.bloom;
@@ -338,7 +343,8 @@ export class PlantView {
     return {
       stems: this.stemSpans.reduce((n, [born, removed]) => n + (born <= day && (removed < 0 || day < removed) ? 1 : 0), 0),
       leaves: sum(this.leafPools, 'visible'),
-      flowers: sum(this.flowerPools, 'visible'),
+      flowers: this.open,
+      buds: sum(this.flowerPools, 'visible') - this.open,
       fruit: this.fruit.visible,
       triangles: (this.woodGeometry.index?.count ?? 0) / 3 + sum(this.leafPools, 'triangles') + sum(this.flowerPools, 'triangles') + this.fruit.triangles,
     };

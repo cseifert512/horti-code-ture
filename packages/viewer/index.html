@@ -165,7 +165,13 @@
       #controls {
         flex: none;
         display: grid;
+        /* one column no wider than the card, whatever the longest choice in a list */
+        grid-template-columns: minmax(0, 1fr);
         gap: 10px;
+      }
+      #controls select {
+        width: 100%;
+        min-width: 0;
       }
       #log {
         flex: 0 1 auto;
