@@ -304,6 +304,13 @@ export interface GrowthModel {
 }
 
 export function parseGrowthModel(json: unknown, origin = 'growth model'): GrowthModel {
+  // An optional parameter that a file leaves out is unknown, and the part it describes is left out of a run. A new
+  // optional parameter can therefore be added to the engine without touching every taxon's file.
+  if (typeof json === 'object' && json !== null && 'params' in json && typeof json.params === 'object' && json.params !== null) {
+    const params: Record<string, unknown> = { ...json.params };
+    for (const key of GROWTH_PARAMS_OPTIONAL) if (!(key in params)) params[key] = { value: null, status: 'unknown' };
+    json = { ...json, params };
+  }
   const result = growthModelSchema.safeParse(json);
   if (!result.success) {
     const lines = result.error.issues.map((i) => `  ${i.path.join('.') || '(root)'}: ${i.message}`);
