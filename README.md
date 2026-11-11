@@ -45,7 +45,7 @@ Requires Node 24 or later.
 ```bash
 npm install          # workspace tooling for packages/*
 npm run check        # type-check and run the core tests
-npm run simulate     # ten years of trained wisteria on the vault: yearly account, gardener's log, render data in out/
+npm run simulate     # ten years of trained wisteria on the vault: yearly account, gardener's log, design report; files in out/
 npm run simulate -- untended 10   # the same plants with nobody gardening
 npm run simulate -- mixed trained 8   # wisteria, evergreen honeysuckle and summer clematis together
 ```

@@ -346,6 +346,10 @@ export class Simulation {
     // a deciduous leaf lasts its one season; an evergreen one stays for as many as the model gives it
     const seasons = Math.max(1, Math.round(param(model, 'organs.leafLifespanYears')));
     this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1);
+    // where leaves stand in opposite pairs, the second faces the other way
+    if (param(model, 'organs.leavesPerNode') >= 2) {
+      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1);
+    }
   }
 
   private addLeaf(plant: Plant, axis: Axis, i: number, direction: Vec3, lengthM: number, firstYear: number, lastYear: number | null): void {
@@ -1048,7 +1052,8 @@ export class Simulation {
         r2 += from?.get(i) ?? 0;
         axis.radiusMm[i] = Math.max(axis.radiusMm[i]!, Math.sqrt(r2));
       }
-      if (axis.parent) {
+      // only the permanent framework thickens what bears it: spurs and the year's shoots are too slight to count
+      if (axis.parent && (axis.role === 'leader' || axis.role === 'lateral')) {
         let m = carried.get(axis.parent.axisId);
         if (!m) carried.set(axis.parent.axisId, (m = new Map()));
         m.set(axis.parent.pointIndex, (m.get(axis.parent.pointIndex) ?? 0) + share * r2);

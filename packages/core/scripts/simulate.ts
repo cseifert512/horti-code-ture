@@ -8,6 +8,7 @@ import { summariseProvenance } from '../src/provenance.ts';
 import { Simulation } from '../src/sim/engine.ts';
 import { modelProvenance } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
+import { designReport, formatDesignReport } from '../src/sim/report.ts';
 import { mixedOnVault, wisteriaOnVault } from '../src/sim/scenarios.ts';
 
 const args = process.argv.slice(2);
@@ -50,7 +51,13 @@ for (const taxonId of new Set(scenario.plantings.map((p) => p.taxonId))) {
 }
 console.log('Every growth model here is a running model, not a calibrated one: compare scenarios with it, do not predict dates, sizes or loads.');
 
+const report = designReport(sim);
+const text = formatDesignReport(report);
+console.log(`\n${'='.repeat(72)}\nDESIGN REPORT\n${'='.repeat(72)}\n${text}`);
+
 mkdirSync(`${root}out`, { recursive: true });
-const file = `${root}out/${which}-${care}-${years}y.json`;
-writeFileSync(file, JSON.stringify(toRenderData(sim)));
-console.log(`\nrender data written to ${file}`);
+const file = `${root}out/${which}-${care}-${years}y`;
+writeFileSync(`${file}.json`, JSON.stringify(toRenderData(sim)));
+writeFileSync(`${file}.report.json`, JSON.stringify(report, null, 2));
+writeFileSync(`${file}.report.txt`, `${text}\n`);
+console.log(`\nwritten: ${file}.json (render data), .report.txt and .report.json`);

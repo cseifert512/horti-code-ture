@@ -256,6 +256,11 @@
       "status": "provisional_design_assumption",
       "basis": "Of the order given in descriptions of the species. Not checked against a source here."
     },
+    "organs.leavesPerNode": {
+      "value": 2,
+      "status": "provisional_design_assumption",
+      "basis": "Honeysuckles bear their leaves in opposite pairs. A character of the family, not sourced here."
+    },
     "organs.spurChance": {
       "value": 0.5,
       "status": "provisional_design_assumption",

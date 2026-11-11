@@ -7,9 +7,11 @@
  * add one evergreen honeysuckle and one Group 3 clematis on separate routes."
  */
 import { makeVaultBower } from '../bower/vault.ts';
+import { v3 } from '../math/vec3.ts';
 import type { TaxonProfile } from '../taxon.ts';
 import type { GrowthModel } from './model.ts';
 import type { GardenerEvent, Planting, Scenario } from './types.ts';
+import type { Viewpoint } from './view.ts';
 
 export type Growable = ReadonlyMap<string, { profile: TaxonProfile; model: GrowthModel }>;
 
@@ -28,6 +30,13 @@ export interface VaultScenarioOptions {
 }
 /** Kept for callers written against the first scenario. */
 export type WisteriaVaultOptions = VaultScenarioOptions;
+
+/** Three places a visitor to the vault segment stands. Eye height 1.6 m; the vault runs north to south. */
+export const VAULT_VIEWPOINTS: readonly Viewpoint[] = [
+  { id: 'approach', label: 'Walking in from the south end', eye: v3(0, -7, 1.6), target: v3(0, 0, 2.4), fovDeg: 50 },
+  { id: 'inside', label: 'Standing inside, looking up and along', eye: v3(0, -1.2, 1.6), target: v3(0, 1.5, 3.1), fovDeg: 70 },
+  { id: 'lawn', label: 'From the lawn to the west', eye: v3(-9, -2, 1.6), target: v3(0, 0, 2), fovDeg: 40 },
+];
 
 function need(taxa: Growable, ...ids: string[]): void {
   for (const id of ids) if (!taxa.has(id)) throw new Error(`this scenario needs the profile and growth model of ${id}`);
@@ -62,7 +71,7 @@ export function wisteriaOnVault(options: VaultScenarioOptions): Scenario {
   const bower = makeVaultBower();
   const plantings: Planting[] = bower.rootStations.map((s, i) => ({ plantId: `wisteria.${i}`, taxonId: 'wisteria-sinensis', stationId: s.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
   const events = care === 'trained' ? plantings.flatMap((p) => wisteriaRoutine(p.plantId, plantingYear, years)) : [];
-  return { name: `Wisteria sinensis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events };
+  return { name: `Wisteria sinensis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
 }
 
 /**
@@ -91,5 +100,5 @@ export function mixedOnVault(options: VaultScenarioOptions): Scenario {
     { plantId: 'clematis', taxonId: 'clematis-viticella-etoile-violette', stationId: 'station.3', date, tieToTimber },
   ];
   const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('clematis', plantingYear, years)] : [];
-  return { name: `Wisteria, evergreen honeysuckle and summer clematis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events };
+  return { name: `Wisteria, evergreen honeysuckle and summer clematis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
 }

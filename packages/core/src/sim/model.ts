@@ -69,6 +69,8 @@ export const GROWTH_PARAMS = {
   // ---- organs
   'organs.leafSpacingM': 'range',
   'organs.leafLengthM': 'range',
+  /** 1 where leaves stand singly at a node, 2 where they stand in opposite pairs. */
+  'organs.leavesPerNode': 'number',
   /** Chance that a leaf node on last year's wood forms a spur. */
   'organs.spurChance': 'number',
   'organs.spurLengthM': 'range',

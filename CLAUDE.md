@@ -7,7 +7,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 - Root `*.md` — the specification. `README.md` gives the reading order.
 - `docs/ASSUMPTIONS_AUDIT.md` — tested state of the spec and prototype, with the prototype model map.
 - `species/<id>/` — `SPECIES_PROFILE.md` (prose) and `taxon.json` (validated data) per taxon.
-- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/render/contract.ts` is what a viewer draws from; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
+- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/sim/report.ts` turns a run into the design report; `src/render/contract.ts` is what a viewer draws from and `src/render/presence.ts` says what is on the plant on a given day (use it; do not re-derive seasons); `species/<id>/model.json` holds the numbers a taxon's growth assumes.
 - `Wisteria/` — the original three.js prototype. Reference only; it has its own `node_modules`.
 
 ## Commands
@@ -15,7 +15,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 ```bash
 npm run check                   # tsc + vitest for packages/*
 npm test                        # vitest only
-npm run simulate                # reference scenario: yearly account, gardener's log, render data in out/
+npm run simulate                # reference scenario: yearly account, gardener's log, design report; render data and report in out/
 npm run prototype:audit         # prototype interference audit
 npm run prototype:assumptions   # prototype behaviour baseline
 ```

@@ -13,6 +13,7 @@ import type { AttachmentStatus, BudEnd, BudStage, GardenerEventType } from '../v
 import type { GrowthModel } from './model.ts';
 import type { Rng } from './rng.ts';
 import type { StemPath } from './stem-path.ts';
+import type { Viewpoint } from './view.ts';
 
 export type AxisRole = 'leader' | 'lateral' | 'whip' | 'spur';
 /** How a stretch of stem sits: wound round its support, running along it, or unsupported. Who holds it is the run's `by`. */
@@ -225,6 +226,8 @@ export interface Scenario {
   taxa: ReadonlyMap<string, { profile: TaxonProfile; model: GrowthModel }>;
   plantings: readonly Planting[];
   events: readonly GardenerEvent[];
+  /** Where people stand and look: the design report measures coverage from each. */
+  viewpoints?: readonly Viewpoint[];
 }
 
 // ---------------------------------------------------------------------------

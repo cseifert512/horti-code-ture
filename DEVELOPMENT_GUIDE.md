@@ -110,18 +110,20 @@ Only after basic geometry/season/maintenance works: plant carbon allocation, emp
 
 ## Model acceptance checklist
 
-- [ ] Separate manufactured and living graphs.
-- [ ] Persistent plant history, with growth cohort and bud ancestry.
-- [ ] Model's coordinate convention, handedness, time step and units written down.
-- [ ] Six attachment classes (including non-climber) with correct taxon mappings.
+Status on 11 November 2026 is marked on each line: done, part, or not yet.
+
+- [x] Separate manufactured and living graphs.
+- [x] Persistent plant history, with growth cohort and bud ancestry.
+- [x] Model's coordinate convention, handedness, time step and units written down.
+- [ ] Six attachment classes (including non-climber) with correct taxon mappings. *Part: all six have attachment rules; three are grown (twining stem, leaf stalk, and the shrub that stays put). Tendril, aerial root and tied cane are not grown yet.*
 - [ ] No attachment in a zone a project has declared off-limits; none is off-limits by default.
 - [ ] Visible steel is reported, and limited to slender cables.
-- [ ] Humans can train, attach, detach, prune, monitor and replant as explicit operations.
-- [ ] Old-wood and current-season flowering react differently to pruning.
-- [ ] Winter foliage and year-round flowering are not guaranteed merely by species label.
-- [ ] Curved shell uses support-path length, not vertical height alone.
-- [ ] Multi-species paths can be separate, overlapping or conflicting by explicit rules.
-- [ ] Each numeric parameter is sourced, measured or visibly provisional.
+- [ ] Humans can train, attach, detach, prune, monitor and replant as explicit operations. *Part: train, prune (three kinds) and monitor act on the plant; detaching a tie and replanting are recorded but not yet acted on.*
+- [x] Old-wood and current-season flowering react differently to pruning.
+- [ ] Winter foliage and year-round flowering are not guaranteed merely by species label. *Part: flowers need surviving buds; evergreen leaves persist by a labelled assumption, with no exposure damage yet.*
+- [x] Curved shell uses support-path length, not vertical height alone.
+- [ ] Multi-species paths can be separate, overlapping or conflicting by explicit rules. *Part: plants compete for members through a stated capacity per member; no light or root competition.*
+- [x] Each numeric parameter is sourced, measured or visibly provisional.
 - [ ] Outputs are interpretable by an architect, gardener and structural engineer **without claiming false physical precision**.
 
 ## Smallest valuable first deliverable

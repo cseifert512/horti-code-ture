@@ -257,6 +257,11 @@
       "status": "provisional_design_assumption",
       "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured."
     },
+    "organs.leavesPerNode": {
+      "value": 1,
+      "status": "provisional_design_assumption",
+      "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured. One compound leaf to a node, as the prototype draws them."
+    },
     "organs.spurChance": {
       "value": 0.62,
       "status": "provisional_design_assumption",

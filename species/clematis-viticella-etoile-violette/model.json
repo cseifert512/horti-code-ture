@@ -257,6 +257,11 @@
       "status": "provisional_design_assumption",
       "basis": "A placeholder."
     },
+    "organs.leavesPerNode": {
+      "value": 2,
+      "status": "provisional_design_assumption",
+      "basis": "Clematis bear their leaves in opposite pairs. A character of the genus, not sourced here."
+    },
     "organs.spurChance": {
       "value": 0,
       "status": "provisional_design_assumption",
