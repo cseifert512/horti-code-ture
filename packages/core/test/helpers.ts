@@ -19,9 +19,10 @@ export function withFloweringWood(library: Growable, woods: Readonly<Record<stri
 }
 
 /**
- * Flowering wood for the taxa whose files leave it unknown, as the taxon
- * research of November 2026 resolved it (each an inference, stated as such in
- * that research).
+ * Flowering wood for the taxa that had none until the taxon research of
+ * November 2026, as that research entered it. Most are inferences and may
+ * change; tests that depend on them fix them through this table, and
+ * palette.test.ts checks that the table still matches the library.
  */
 export const RESOLVED_WOOD = {
   'lonicera-henryi': 'current_season',
