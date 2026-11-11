@@ -77,8 +77,17 @@ function streaks(size: number, rng: RNG, { base, dark, light, count, width, wobb
   return c;
 }
 
-export function makeBarkTextures(): TexturePair {
-  const o = { count: 520, width: 3.2, wobble: 16 };
+/** The grain of a bark: how many streaks, how wide (pixels of 512), and how far they wander. */
+export interface BarkGrain {
+  streaks: number;
+  width: number;
+  wobble: number;
+}
+/** The fissured bark the prototype drew for wisteria, and the default for a taxon that states no grain. */
+export const FISSURED: BarkGrain = { streaks: 520, width: 3.2, wobble: 16 };
+
+export function makeBarkTextures(grain: BarkGrain = FISSURED): TexturePair {
+  const o = { count: grain.streaks, width: grain.width, wobble: grain.wobble };
   const map = streaks(512, new RNG(11), { base: '#9c958b', dark: '#2c2723', light: '#d9d3ca', ...o });
   const bump = streaks(512, new RNG(11), { base: '#909090', dark: '#000000', light: '#ffffff', ...o });
   return { map: tex(map), bump: tex(bump, { srgb: false }) };

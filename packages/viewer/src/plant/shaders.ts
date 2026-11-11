@@ -12,24 +12,14 @@
 //            adapter computes from the engine's dates
 // Also left out: the circumnutation of shoot tips. Its direction is a trait
 // of one twiner and must not be applied to every stem.
+//
+// The programs belong to no taxon. What differs between taxa reaches them as
+// uniforms, set per material from the taxon's look (look.ts): a leaf's
+// palette, the tint of a bud, the colours and ages of the wood, the colour a
+// fruit ripens to.
 import * as THREE from 'three';
 import { CLOCK_GLSL, clock } from './adapter.ts';
-import type { LeafPalette, Triple } from './assets.ts';
-
-/**
- * How Wisteria sinensis wood LOOKS as it ages: the ages, in days, over which
- * the bark material blends from green shoot to smooth brown to grey fissured
- * bark, over which furrows deepen, and over which a stem stops swaying.
- * Carried over from the prototype's wood shader (0.3 to 1.2, 1.5 to 5.5, 0.8
- * to 5 and 0.15 to 1.6 growing seasons). These colour a material; nothing in
- * the simulation reads them.
- */
-export const WISTERIA_WOOD_LOOK = {
-  greenDays: [110, 440],
-  brownDays: [550, 2000],
-  furrowDays: [290, 1825],
-  swayDays: [55, 585],
-} as const;
+import type { LeafPalette, Triple, WoodLook } from './look.ts';
 
 export const shared = {
   uTime: { value: 0 },
@@ -37,16 +27,11 @@ export const shared = {
   uWindDir: { value: new THREE.Vector2(0.92, 0.39) },
   uSunDirView: { value: new THREE.Vector3(0, 1, 0) },
   uSunColor: { value: new THREE.Color(1, 1, 1) },
-  uGreenDays: { value: new THREE.Vector2(...WISTERIA_WOOD_LOOK.greenDays) },
-  uBrownDays: { value: new THREE.Vector2(...WISTERIA_WOOD_LOOK.brownDays) },
-  uFurrowDays: { value: new THREE.Vector2(...WISTERIA_WOOD_LOOK.furrowDays) },
-  uSwayDays: { value: new THREE.Vector2(...WISTERIA_WOOD_LOOK.swayDays) },
 };
 
 const COMMON = /* glsl */ `
 uniform float uTime, uWind;
 uniform vec2 uWindDir;
-uniform vec2 uGreenDays, uBrownDays, uFurrowDays, uSwayDays;
 ${CLOCK_GLSL}
 
 vec2 swayVec(float ph, vec2 xz) {
@@ -87,7 +72,7 @@ interface Program {
   fragColor?: string;
 }
 
-export type ProgramKind = 'wood' | 'leaf' | 'raceme' | 'pod' | 'litter';
+export type ProgramKind = 'wood' | 'leaf' | 'flower' | 'fruit' | 'appendage' | 'litter';
 
 const PROGRAMS: Record<ProgramKind, Program> = {
   // ---- stems: there or not, and how thick, by the adapter's clock -------------
@@ -96,6 +81,8 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       attribute vec4 aLife;    // day born, day removed, radius at the end of the run (m), furrow depth
       attribute vec4 aSup;     // direction away from the support (zero if unsupported), radius scale
       attribute vec4 aAnchor;  // base of the stem, phase
+      uniform vec2 uFurrowDays, uSwayDays;  // the taxon's: ages over which furrows deepen and a stem stiffens
+      uniform float uFurrow;                // the taxon's: how deep its furrows get
       varying float vAge;
     `,
     // position is where the stem TOUCHES its support. The centre stands one
@@ -107,7 +94,7 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       float r = stemRadius( aLife.x, aLife.z );
       vec3 centre = position + aSup.xyz * r;
       // bark furrows deepen with age and only ever cut inwards
-      float skin = r * aSup.w * ( 1.0 - aLife.w * smoothstep( uFurrowDays.x, uFurrowDays.y, age ) );
+      float skin = r * aSup.w * max( 0.1, 1.0 - aLife.w * uFurrow * smoothstep( uFurrowDays.x, uFurrowDays.y, age ) );
       vec3 transformed = centre + normal * ( skin * alive );
       vAge = age;
     `,
@@ -115,16 +102,16 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       float flex = 1.0 - smoothstep( uSwayDays.x, uSwayDays.y, uDay - aLife.x );
       vec3 wOff = offSupport( hostOffset( position, aAnchor.xyz, aAnchor.w, flex ), aSup.xyz );
     `,
-    fragHead: /* glsl */ `varying float vAge; uniform vec2 uGreenDays, uBrownDays;`,
-    // green shoot -> smooth brown -> grey fissured bark
+    fragHead: /* glsl */ `varying float vAge; uniform vec2 uGreenDays, uBrownDays; uniform vec3 uWoodYoung, uWoodMature, uWoodOld;`,
+    // young shoot -> smooth mature bark -> old bark, in the taxon's colours (WoodLook)
     fragColor: /* glsl */ `
       {
         vec3 tex = diffuseColor.rgb;
         float yng = 1.0 - smoothstep( uGreenDays.x, uGreenDays.y, vAge );
         float mid = 1.0 - smoothstep( uBrownDays.x, uBrownDays.y, vAge );
-        vec3 green = vec3( 0.21, 0.30, 0.085 ) * ( 0.75 + 0.6 * tex.g );
-        vec3 brown = vec3( 0.30, 0.20, 0.115 ) * ( 0.5 + 1.1 * tex.g );
-        vec3 grey = tex * vec3( 0.80, 0.76, 0.71 );
+        vec3 green = uWoodYoung * ( 0.75 + 0.6 * tex.g );
+        vec3 brown = uWoodMature * ( 0.5 + 1.1 * tex.g );
+        vec3 grey = tex * uWoodOld;
         diffuseColor.rgb = mix( mix( grey, brown, mid ), green, yng );
       }
     `,
@@ -161,7 +148,7 @@ const PROGRAMS: Record<ProgramKind, Program> = {
                 + pendulum( wp, org, 0.07 );
       wOff.y -= fall * fall * 0.35;
     `,
-    // the colours are the taxon's (assets.ts): mature, newly unfolded, autumn
+    // the colours are the taxon's (LeafPalette): mature, newly unfolded, autumn
     fragHead: /* glsl */ `varying vec3 vLeaf; uniform vec3 uLeafGreenA, uLeafGreenB, uLeafYoung, uLeafAutumnA, uLeafAutumnB;`,
     fragColor: /* glsl */ `
       {
@@ -176,8 +163,8 @@ const PROGRAMS: Record<ProgramKind, Program> = {
     `,
   },
 
-  // ---- racemes --------------------------------------------------------------------
-  raceme: {
+  // ---- flowers and inflorescences (first written for the wisteria raceme) ---------
+  flower: {
     head: /* glsl */ `
       attribute vec4 aPart;   // flower base, t along the raceme (<0: rachis)
       attribute vec4 aState;  // elongation, share opened, share shed, stalk present
@@ -209,10 +196,10 @@ const PROGRAMS: Record<ProgramKind, Program> = {
     `,
   },
 
-  // ---- pods -------------------------------------------------------------------------
-  pod: {
+  // ---- fruit (first written for the wisteria pod) --------------------------------------
+  fruit: {
     head: /* glsl */ `
-      attribute vec4 aState;  // size, ripeness, -, -
+      attribute vec4 aState;  // size, ripeness, how freely it swings, -
       varying float vRipe;
     `,
     begin: /* glsl */ `
@@ -220,11 +207,36 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       vRipe = aState.y;
     `,
     world: /* glsl */ `
-      vec3 wOff = pendulum( wp, instanceMatrix[3].xyz, 0.08 );
+      vec3 wOff = pendulum( wp, instanceMatrix[3].xyz, 0.13 * aState.z );
     `,
-    fragHead: /* glsl */ `varying float vRipe;`,
+    // the vertex colours are the unripe fruit; it turns to the taxon's ripe colour, still shaded by them
+    fragHead: /* glsl */ `varying float vRipe; uniform vec3 uFruitRipe; uniform vec2 uFruitShade;`,
     fragColor: /* glsl */ `
-      diffuseColor.rgb = mix( diffuseColor.rgb, vec3( 0.20, 0.145, 0.085 ) * ( 0.6 + diffuseColor.g * 2.0 ), vRipe );
+      diffuseColor.rgb = mix( diffuseColor.rgb, uFruitRipe * ( uFruitShade.x + diffuseColor.g * uFruitShade.y ), vRipe );
+    `,
+  },
+
+  // ---- what a plant holds on with: tendrils, coiled stalks, rootlets, prickles ---------
+  appendage: {
+    head: /* glsl */ `
+      attribute vec4 aState;  // -, how far it has aged (0..1), how freely it moves, random
+      attribute vec4 aHost;   // base of the bearing stem, stem phase
+      attribute vec4 aSup;    // the stem's direction away from its support, how freely the stem sways
+      attribute vec4 aSeat;   // from the stem's contact line out to its surface, where it stands
+      varying float vAged;
+    `,
+    begin: /* glsl */ `
+      vec3 transformed = position;
+      vAged = aState.y;
+    `,
+    world: /* glsl */ `
+      vec3 org = instanceMatrix[3].xyz;
+      vec3 wOff = aSeat.xyz + offSupport( hostOffset( org, aHost.xyz, aHost.w, aSup.w ), aSup.xyz )
+                + pendulum( wp, org, 0.07 * aState.z );
+    `,
+    fragHead: /* glsl */ `varying float vAged; uniform vec3 uAged; uniform float uAges;`,
+    fragColor: /* glsl */ `
+      diffuseColor.rgb = mix( diffuseColor.rgb, uAged, vAged * uAges );
     `,
   },
 
@@ -268,22 +280,35 @@ export interface PatchOptions {
   sheen?: number;
   /** For the leaf program: the taxon's leaf colours. */
   palette?: LeafPalette;
-  /** For the raceme program: the tint of an unopened flower. */
+  /** For the flower program: the tint of an unopened flower. */
   budTint?: Triple;
+  /** For the wood program: the taxon's wood. */
+  wood?: WoodLook;
+  /** For the fruit program: what the fruit ripens to (FruitAsset.ripe and ripeShade). */
+  ripe?: Triple;
+  ripeShade?: readonly [number, number];
+  /** For the appendage program: what it turns to with age, or null if it keeps its colours. */
+  aged?: Triple | null;
 }
 
 /** The colours of the leaf the prototype was built for; used where a material names none. */
 const DEFAULT_PALETTE: LeafPalette = { greenA: [0.145, 0.3, 0.05], greenB: [0.19, 0.36, 0.065], young: [0.4, 0.27, 0.085], autumnA: [0.8, 0.56, 0.05], autumnB: [0.62, 0.36, 0.06] };
 const DEFAULT_BUD_TINT: Triple = [0.62, 0.55, 0.86];
+/** Wood for a material that names none (a test's stand-in material): the ages and colours the prototype's one bark had. */
+const DEFAULT_WOOD: WoodLook = { young: [0.21, 0.3, 0.085], mature: [0.3, 0.2, 0.115], old: [0.8, 0.76, 0.71], woodyDays: [110, 440], oldDays: [550, 2000], furrowDays: [290, 1825], furrow: 1, stiffDays: [55, 585], relief: 3, roughness: 0.94 };
 
 /** How much litter lies on the ground, shared by every litter material. */
 export const litter = { uLitter: { value: new THREE.Vector2(0, 0) } };
 
 /** Splice an organ program into a built-in material. */
-export function patch<M extends THREE.Material>(material: M, kind: ProgramKind, { translucency = 0, sheen = 0, palette = DEFAULT_PALETTE, budTint = DEFAULT_BUD_TINT }: PatchOptions = {}): M {
+export function patch<M extends THREE.Material>(
+  material: M,
+  kind: ProgramKind,
+  { translucency = 0, sheen = 0, palette = DEFAULT_PALETTE, budTint = DEFAULT_BUD_TINT, wood = DEFAULT_WOOD, ripe = [0.2, 0.145, 0.085], ripeShade = [0.6, 2], aged = null }: PatchOptions = {},
+): M {
   const prog = PROGRAMS[kind];
-  // one compiled program per kind; the colours are uniforms, so each material keeps its own
-  const colours: Record<string, { value: THREE.Vector3 }> =
+  // one compiled program per kind; what is the taxon's is in uniforms, so each material keeps its own
+  const own: Record<string, { value: THREE.Vector3 | THREE.Vector2 | number }> =
     kind === 'leaf'
       ? {
           uLeafGreenA: { value: new THREE.Vector3(...palette.greenA) },
@@ -292,22 +317,33 @@ export function patch<M extends THREE.Material>(material: M, kind: ProgramKind, 
           uLeafAutumnA: { value: new THREE.Vector3(...palette.autumnA) },
           uLeafAutumnB: { value: new THREE.Vector3(...palette.autumnB) },
         }
-      : kind === 'raceme'
+      : kind === 'flower'
         ? { uBudTint: { value: new THREE.Vector3(...budTint) } }
-        : {};
+        : kind === 'wood'
+          ? {
+              uGreenDays: { value: new THREE.Vector2(...wood.woodyDays) },
+              uBrownDays: { value: new THREE.Vector2(...wood.oldDays) },
+              uFurrowDays: { value: new THREE.Vector2(...wood.furrowDays) },
+              uSwayDays: { value: new THREE.Vector2(...wood.stiffDays) },
+              uFurrow: { value: wood.furrow },
+              uWoodYoung: { value: new THREE.Vector3(...wood.young) },
+              uWoodMature: { value: new THREE.Vector3(...wood.mature) },
+              uWoodOld: { value: new THREE.Vector3(...wood.old) },
+            }
+          : kind === 'fruit'
+            ? { uFruitRipe: { value: new THREE.Vector3(...ripe) }, uFruitShade: { value: new THREE.Vector2(...ripeShade) } }
+            : kind === 'appendage'
+              ? { uAged: { value: new THREE.Vector3(...(aged ?? [0, 0, 0])) }, uAges: { value: aged ? 1 : 0 } }
+              : {};
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, {
       uTime: shared.uTime,
       uWind: shared.uWind,
       uWindDir: shared.uWindDir,
-      uGreenDays: shared.uGreenDays,
-      uBrownDays: shared.uBrownDays,
-      uFurrowDays: shared.uFurrowDays,
-      uSwayDays: shared.uSwayDays,
       ...clock,
     });
     if (kind === 'litter') shader.uniforms['uLitter'] = litter.uLitter;
-    Object.assign(shader.uniforms, colours);
+    Object.assign(shader.uniforms, own);
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\n' + COMMON + prog.head)
       .replace('#include <begin_vertex>', prog.begin)
@@ -341,6 +377,7 @@ export function patch<M extends THREE.Material>(material: M, kind: ProgramKind, 
   return material;
 }
 
-export function depthMaterial(kind: ProgramKind): THREE.MeshDepthMaterial {
-  return patch(new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking }), kind);
+/** The material an organ's shadow is cast with. Wood needs the taxon's look here too: its furrows and its sway shape the shadow. */
+export function depthMaterial(kind: ProgramKind, options: PatchOptions = {}): THREE.MeshDepthMaterial {
+  return patch(new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking }), kind, options);
 }

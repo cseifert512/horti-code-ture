@@ -76,6 +76,16 @@ export type AttachmentMechanism = (typeof ATTACHMENT_MECHANISM)[number];
 export const APPENDAGE_KIND = ['tendril', 'leaf_stalk_coil', 'aerial_roots', 'prickle'] as const;
 export type AppendageKind = (typeof APPENDAGE_KIND)[number];
 
+/**
+ * How an inflorescence or a fruit is held from where it is attached.
+ * `hanging`: it droops under its own weight (a wisteria raceme, a pod).
+ * `facing_out`: it faces away from the support, or carries on the line of the
+ * short shoot it ends (a clematis flower, a rose at the end of its side shoot).
+ * `upright`: it stands above the shoot that bears it.
+ */
+export const ORGAN_HELD = ['hanging', 'facing_out', 'upright'] as const;
+export type OrganHeld = (typeof ORGAN_HELD)[number];
+
 export const ATTACHMENT_STATUS = ['searching', 'contacted', 'grasped', 'trained_by_human', 'stable', 'detached', 'failed', 'prohibited'] as const;
 export type AttachmentStatus = (typeof ATTACHMENT_STATUS)[number];
 

@@ -18,17 +18,27 @@
  *
  * Every rate, chance and date comes from the taxon's GrowthModel, where each
  * is labelled with its evidence status. Almost all are provisional.
+ *
+ * Four things a taxon may or may not have are switched on by its model alone,
+ * and are left out where the model leaves their numbers unknown:
+ *   fruit                  a flower that went over on the plant may set
+ *   appendages             tendrils, coiled leaf stalks, clinging rootlets, prickles
+ *   forms and hold         which leaf, flower or fruit form; how an inflorescence is held
+ *   flowering side shoots  short free-standing shoots from established stems
+ * None of them draws from a plant's three random streams: each is decided from
+ * the place it happens (`placeRng`), so that switching one on, or cutting one
+ * off, moves nothing else on the plant.
  */
 import { assessAttachment } from '../attachment.ts';
 import type { SupportEdge } from '../bower/types.ts';
 import { Calendar, type CalendarDate } from '../calendar.ts';
-import { type Vec3, UP, ZERO, add, addScaled, cross, distance, dot, length, normalize, scale, smoothstep, sub, v3 } from '../math/vec3.ts';
-import type { GardenerEventType, MemberTier } from '../vocab.ts';
+import { type Vec3, UP, ZERO, add, addScaled, anyPerpendicular, cross, distance, dot, length, lerp, normalize, scale, smoothstep, sub, v3 } from '../math/vec3.ts';
+import type { AppendageKind, GardenerEventType, MemberTier, OrganHeld } from '../vocab.ts';
 import { LightField } from './light.ts';
-import { type GrowthModel, listAt, param } from './model.ts';
-import { Rng } from './rng.ts';
+import { type GrowthModel, type OptionalParamKey, known, listAt, param } from './model.ts';
+import { Rng, placeRng } from './rng.ts';
 import { liePath, pathAt, pathLength, twinePath } from './stem-path.ts';
-import type { Axis, AxisRole, Decision, DecisionKind, EventRecord, FloralBud, GardenerEvent, Intent, LeafSite, Plant, Planting, Run, Scenario, YearSummary } from './types.ts';
+import type { AppendageSite, Axis, AxisRole, Decision, DecisionKind, EventRecord, FloralBud, FruitSite, GardenerEvent, Intent, LeafSite, Plant, Planting, Run, Scenario, Spacing, YearSummary } from './types.ts';
 
 /** Metres of stem between stored points. */
 const STEP = 0.04;
@@ -36,6 +46,12 @@ const STEP = 0.04;
 const LANE_M = 0.022;
 
 const mid = (r: readonly [number, number]) => (r[0] + r[1]) / 2;
+
+/** What tells one decision made at a place from another made at the same place. */
+const SALT = { fruit: 101, tendril: 211, leafStalk: 307, rootlets: 401, prickle: 503, sideShoot: 601, sideShootGrowth: 701, sideShootLeaf: 809, sideShootBud: 907, held: 1009 } as const;
+/** Everything fruit needs before any can set. */
+const FRUIT_KEYS = ['fruit.setShare', 'fruit.lengthM', 'fruit.swellDays', 'fruit.ripenDoy', 'fruit.fallDoy'] as const satisfies readonly OptionalParamKey[];
+const newSpacing = (): Spacing => ({ sinceM: 0, nextM: null, count: 0 });
 
 export class Simulation {
   readonly scenario: Scenario;
@@ -46,6 +62,8 @@ export class Simulation {
   readonly axes = new Map<string, Axis>();
   readonly leaves: LeafSite[] = [];
   readonly buds: FloralBud[] = [];
+  readonly fruits: FruitSite[] = [];
+  readonly appendages: AppendageSite[] = [];
   readonly events: EventRecord[] = [];
   readonly decisions: Decision[] = [];
   readonly summaries: YearSummary[] = [];
@@ -59,10 +77,14 @@ export class Simulation {
   private readonly tierOf = new Map<string, MemberTier>();
   private readonly budsByAxis = new Map<string, FloralBud[]>();
   private readonly leavesByAxis = new Map<string, LeafSite[]>();
+  private readonly fruitsByAxis = new Map<string, FruitSite[]>();
+  private readonly appendagesByAxis = new Map<string, AppendageSite[]>();
+  /** Fruit still on each plant, waiting for its day to fall. */
+  private readonly hanging = new Map<string, FruitSite[]>();
   private readonly topZ: number;
   private readonly routeTotalM: number;
   private serial = 0;
-  private yearStats = new Map<string, { initiated: number; opened: number; lost: number }>();
+  private yearStats = new Map<string, { initiated: number; opened: number; lost: number; fruits: number }>();
 
   constructor(scenario: Scenario) {
     this.scenario = scenario;
@@ -137,6 +159,7 @@ export class Simulation {
         organ: new Rng(this.scenario.seed * 7919 + this.plants.size * 104729 + 1013),
         flower: new Rng(this.scenario.seed * 7919 + this.plants.size * 104729 + 2013),
       },
+      placeSeed: this.scenario.seed * 7919 + this.plants.size * 104729 + 3013,
       axisIds: [],
       leafNodes: [],
       pendingLaterals: [],
@@ -148,7 +171,7 @@ export class Simulation {
       budding: null,
     };
     this.plants.set(plant.id, plant);
-    this.yearStats.set(plant.id, { initiated: 0, opened: 0, lost: 0 });
+    this.yearStats.set(plant.id, { initiated: 0, opened: 0, lost: 0, fruits: 0 });
     const { profile, model } = this.taxon(plant);
     this.events.push(this.record({ id: `plant:${plant.id}`, date: date.iso, type: 'plant', plantId: plant.id }, date, `planted ${profile.names.label} at ${station.id}`, true));
     if (profile.attachment.mechanism === 'none') {
@@ -158,9 +181,36 @@ export class Simulation {
     if (profile.attachment.mechanism === 'stem_twining' && (profile.attachment.handedness?.value ?? null) === null) {
       this.note('assumed', plant, null, `which way ${profile.names.label} twines is not known: it is drawn right-handed so that it can be drawn at all, and that direction is not a finding`);
     }
+    this.noteMissingParts(plant);
     // the plant arrives as a cane already some way up
     const cane = this.newTrunkStem(plant, 0);
     if (cane) this.advance(plant, cane, param(model, 'architecture.nurseryCaneM'));
+  }
+
+  /**
+   * Say once, on planting day, which parts of this plant the run leaves out
+   * because its growth model gives no numbers for them. Fruit is said of every
+   * plant; an appendage only of a plant whose way of climbing has it.
+   */
+  private noteMissingParts(plant: Plant): void {
+    const { profile, model } = this.taxon(plant);
+    const missing = (keys: readonly OptionalParamKey[]) => keys.filter((k) => known(model, k) === null);
+    const say = (part: string, keys: readonly OptionalParamKey[]) => {
+      const gaps = missing(keys);
+      if (gaps.length) this.note('part_not_modelled', plant, null, `no ${part} modelled for ${profile.names.label}: its growth model leaves ${gaps.join(', ')} unknown`);
+    };
+    // a model that says outright that nothing sets has said enough
+    if (known(model, 'fruit.setShare') !== 0) say('fruit is', FRUIT_KEYS);
+    const mechanism = profile.attachment.mechanism;
+    if (mechanism === 'tendril') say('tendrils are', ['appendages.tendrilNodePattern', 'appendages.tendrilLengthM']);
+    if (mechanism === 'petiole_twining') say('coiled leaf stalks are', ['appendages.leafStalkCoilShare', 'appendages.leafStalkLengthM']);
+    if (mechanism === 'aerial_root') say('clinging rootlets are', ['appendages.aerialRootPatchSpacingM', 'appendages.aerialRootLengthM']);
+    if (mechanism === 'scramble_and_tie') say('prickles are', ['appendages.prickleSpacingM', 'appendages.prickleLengthM']);
+  }
+
+  /** A random stream that belongs to one decision at one place on this plant, and to nothing else. */
+  private at(plant: Plant, p: Vec3, salt: number): Rng {
+    return placeRng(plant.placeSeed, p.x, p.y, p.z, salt);
   }
 
   private newTrunkStem(plant: Plant, index: number): Axis | null {
@@ -177,7 +227,11 @@ export class Simulation {
     return axis;
   }
 
-  private newAxis(plant: Plant, role: AxisRole, order: number, parent: Axis['parent'], targetLengthM: number, ratePerSeasonM: number): Axis {
+  /**
+   * `leaves` gives the new axis its first leaf spacing and side outright; left
+   * out, they are drawn from the plant's organ stream as they always were.
+   */
+  private newAxis(plant: Plant, role: AxisRole, order: number, parent: Axis['parent'], targetLengthM: number, ratePerSeasonM: number, leaves?: { nextLeafM: number; leafSide: 1 | -1 }): Axis {
     const axis: Axis = {
       id: `${plant.id}/${role}${this.serial++}`,
       plantId: plant.id,
@@ -204,9 +258,14 @@ export class Simulation {
       avoid: new Set(),
       nodesPassed: [],
       sinceLeafM: 0,
-      nextLeafM: plant.rng.organ.range(0.03, 0.1),
-      leafSide: plant.rng.organ.sign(),
+      nextLeafM: leaves ? leaves.nextLeafM : plant.rng.organ.range(0.03, 0.1),
+      leafSide: leaves ? leaves.leafSide : plant.rng.organ.sign(),
       summerPrunedYear: null,
+      leafNodeCount: 0,
+      prickles: newSpacing(),
+      rootlets: newSpacing(),
+      lastYear: null,
+      owedM: 0,
     };
     this.axes.set(axis.id, axis);
     plant.axisIds.push(axis.id);
@@ -232,6 +291,7 @@ export class Simulation {
     if (doy === param(model, 'phenology.floralInitiationDoy')[1]) this.initiateFloralBuds(plant, date);
     if (doy === param(model, 'phenology.leafFallDoy')[1]) for (const b of this.liveBuds(plant)) if (b.stage === 'initiated') b.stage = 'dormant';
     this.flowerDay(plant, date);
+    this.fruitDay(plant);
 
     // whips whose day has come
     if (plant.pendingWhips.length) {
@@ -251,8 +311,16 @@ export class Simulation {
     for (const id of [...plant.axisIds]) {
       const axis = this.axes.get(id)!;
       if (axis.removedDay !== null || axis.tip.state === 'stopped') continue;
-      // a whip grows at its own pace: it is the plant's vigour looking for somewhere to go
-      const delta = axis.ratePerSeasonM * share * (axis.role === 'whip' ? 1 : est) * lit;
+      // a whip grows at its own pace: it is the plant's vigour looking for somewhere to go.
+      // So does a flowering side shoot, which only an established stem throws.
+      let delta = axis.ratePerSeasonM * share * (axis.role === 'whip' || axis.role === 'side_shoot' ? 1 : est) * lit;
+      if (axis.role === 'side_shoot') {
+        // it lengthens by millimetres a day: lay the stem down a step at a time, not a point a day
+        axis.owedM += delta;
+        if (axis.owedM < STEP && axis.owedM < axis.targetLengthM - this.lengthOf(axis)) continue;
+        delta = axis.owedM;
+        axis.owedM = 0;
+      }
       this.advance(plant, axis, delta);
     }
   }
@@ -354,11 +422,12 @@ export class Simulation {
       }
       const fr = tip.planM > 0 ? tip.grownM / tip.planM : 1;
       const d = tip.dir;
-      const dir = normalize(v3(d.x + plant.rng.organ.range(-0.03, 0.03), d.y + plant.rng.organ.range(-0.03, 0.03), d.z - go * (0.3 + 1.7 * fr) * plant.rng.organ.range(0.6, 1.4)));
+      const last = axis.contact[axis.contact.length - 1]!;
+      // a flowering side shoot is stiff and short: it holds its line and turns up a little towards the light
+      const dir = axis.role === 'side_shoot' ? this.sideShootHeading(plant, last, d, go) : normalize(v3(d.x + plant.rng.organ.range(-0.03, 0.03), d.y + plant.rng.organ.range(-0.03, 0.03), d.z - go * (0.3 + 1.7 * fr) * plant.rng.organ.range(0.6, 1.4)));
       tip.dir = dir;
       tip.grownM += go;
       left -= go;
-      const last = axis.contact[axis.contact.length - 1]!;
       const from = axis.contact.length === 1 ? addScaled(last, axis.away[0]!, axis.radiusMm[0]! / 1000) : last;
       this.appendPoint(plant, axis, addScaled(from, dir, go), ZERO);
     }
@@ -379,7 +448,13 @@ export class Simulation {
     axis.lengthAt.push(n > 0 ? axis.lengthAt[n - 1]! + seg : 0);
     axis.radiusMm.push(Math.sqrt(param(model, 'thickening.tipRadiusSquaredMm2')));
     axis.alive = n + 1;
-    if (axis.role === 'spur' || n === 0) return;
+    if (n === 0) return;
+    this.alongStem(plant, axis, n, seg);
+    if (axis.role === 'spur') return;
+    if (axis.role === 'side_shoot') {
+      this.sideShootLeaves(plant, axis, n, seg);
+      return;
+    }
     axis.sinceLeafM += seg;
     if (axis.sinceLeafM >= axis.nextLeafM) {
       axis.sinceLeafM = 0;
@@ -404,24 +479,138 @@ export class Simulation {
     const up = length(axis.away[i]!) > 0.5 ? axis.away[i]! : UP;
     let side = cross(t, up);
     side = length(side) > 1e-6 ? scale(normalize(side), axis.leafSide) : v3(1, 0, 0);
-    plant.leafNodes.push({ axisId: axis.id, pointIndex: i, year, side: axis.leafSide, taken: false });
+    plant.leafNodes.push({ axisId: axis.id, pointIndex: i, year, side: axis.leafSide, taken: false, sideShootId: null });
     this.lateBud(plant, axis, i);
     // a deciduous leaf lasts its one season; an evergreen one stays for as many as the model gives it
     const seasons = Math.max(1, Math.round(param(model, 'organs.leafLifespanYears')));
-    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1);
+    const form = model.names.leafForm;
+    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
     // where leaves stand in opposite pairs, the second faces the other way
     if (param(model, 'organs.leavesPerNode') >= 2) {
-      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1);
+      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
     }
+    this.atLeafNode(plant, axis, i, t, side);
   }
 
-  private addLeaf(plant: Plant, axis: Axis, i: number, direction: Vec3, lengthM: number, firstYear: number, lastYear: number | null): void {
+  private addLeaf(plant: Plant, axis: Axis, i: number, direction: Vec3, lengthM: number, firstYear: number, lastYear: number | null, form?: string): void {
     const evergreen = this.taxon(plant).profile.leafHabit.value === 'evergreen';
     const leaf: LeafSite = { plantId: plant.id, axisId: axis.id, pointIndex: i, position: axis.contact[i]!, direction, lengthM, firstYear, lastYear, evergreen, bornDay: this.day, removedDay: null };
+    if (form !== undefined) leaf.form = form;
     this.leaves.push(leaf);
     const list = this.leavesByAxis.get(axis.id);
     if (list) list.push(leaf);
     else this.leavesByAxis.set(axis.id, [leaf]);
+  }
+
+  // =========================================================================
+  // Appendages: what the plant holds on with, or defends itself with
+  // =========================================================================
+  /** True while the shoot is laying stem on a stretch it took hold of by itself. */
+  private holdsItself(axis: Axis): boolean {
+    return axis.tip.state === 'on_route' && axis.runs[axis.tip.run]!.by === 'plant';
+  }
+
+  private addAppendage(plant: Plant, axis: Axis, i: number, kind: AppendageKind, position: Vec3, direction: Vec3, lengthM: number, holding: boolean): void {
+    // what it has hold of is the stretch its shoot is on
+    const held = holding && axis.tip.state === 'on_route' ? (this.scenario.bower.graph.edges.get(axis.tip.edgeId)?.gripDiameterMm ?? null) : null;
+    const site: AppendageSite = { plantId: plant.id, axisId: axis.id, pointIndex: i, kind, position, direction, lengthM, holding, heldDiameterMm: held, bornDay: this.day, removedDay: null };
+    this.appendages.push(site);
+    const list = this.appendagesByAxis.get(axis.id);
+    if (list) list.push(site);
+    else this.appendagesByAxis.set(axis.id, [site]);
+  }
+
+  /**
+   * What stands at a leaf node besides the leaf: a tendril, opposite the leaf,
+   * on the nodes the taxon's pattern gives one to; or the leaf's own stalk,
+   * coiled round the support where the shoot holds it by itself. `side` is the
+   * side of the stem the leaf stands on.
+   */
+  private atLeafNode(plant: Plant, axis: Axis, i: number, t: Vec3, side: Vec3): void {
+    const { model } = this.taxon(plant);
+    const nth = axis.leafNodeCount++;
+    const at = axis.contact[i]!;
+    const away = axis.away[i]!;
+    const supported = length(away) > 0.5;
+    const holds = supported && this.holdsItself(axis);
+
+    const pattern = known(model, 'appendages.tendrilNodePattern');
+    const tendrilM = known(model, 'appendages.tendrilLengthM');
+    if (pattern && tendrilM && pattern[nth % pattern.length] === 1 && tendrilM[1] > 0) {
+      const rng = this.at(plant, at, SALT.tendril);
+      // one that holds has gone round the support; one that does not reaches out and forward from the far side of the stem
+      const reach = holds ? add(add(scale(away, -1), scale(t, 0.45)), scale(side, -0.25)) : add(add(scale(side, -0.8), scale(t, 0.55)), scale(supported ? away : UP, 0.3));
+      this.addAppendage(plant, axis, i, 'tendril', at, normalize(reach), rng.range(...tendrilM), holds);
+    }
+
+    const coilShare = known(model, 'appendages.leafStalkCoilShare');
+    const stalkM = known(model, 'appendages.leafStalkLengthM');
+    if (coilShare && stalkM && holds && stalkM[1] > 0) {
+      const rng = this.at(plant, at, SALT.leafStalk);
+      if (rng.chance(coilShare)) this.addAppendage(plant, axis, i, 'leaf_stalk_coil', at, normalize(add(scale(away, -1), scale(side, 0.35))), rng.range(...stalkM), true);
+    }
+  }
+
+  /**
+   * How many of something set at intervals fall on the stretch of stem that
+   * ends at point `i`, as distances back from that point.
+   */
+  private spaced(plant: Plant, axis: Axis, salt: number, state: Spacing, spacing: readonly [number, number], seg: number): number[] {
+    state.sinceM += seg;
+    const out: number[] = [];
+    while (out.length < 64) {
+      // each interval is drawn once, from where the axis starts and how many have gone before
+      if (state.nextM === null) state.nextM = Math.max(0.002, this.at(plant, axis.contact[0]!, salt + 7919 * state.count).range(spacing[0], spacing[1]));
+      if (state.sinceM < state.nextM) break;
+      state.sinceM -= state.nextM;
+      state.nextM = null;
+      state.count++;
+      out.push(Math.min(seg, state.sinceM));
+    }
+    return out;
+  }
+
+  /**
+   * What stands along a stem whatever its leaves do: prickles on every stem
+   * of a plant that has them, and patches of clinging rootlets where the shoot
+   * holds a stretch by itself, on the side that touches the timber.
+   */
+  private alongStem(plant: Plant, axis: Axis, i: number, seg: number): void {
+    const { model } = this.taxon(plant);
+    const a = axis.contact[i - 1]!;
+    const b = axis.contact[i]!;
+    const away = axis.away[i]!;
+    const supported = length(away) > 0.5;
+
+    const prickleEvery = known(model, 'appendages.prickleSpacingM');
+    const prickleM = known(model, 'appendages.prickleLengthM');
+    if (prickleEvery && prickleM && prickleEvery[1] > 0 && prickleM[1] > 0) {
+      const t = this.tangent(axis, i);
+      for (const back of this.spaced(plant, axis, SALT.prickle, axis.prickles, prickleEvery, seg)) {
+        const p = seg > 0 ? lerp(b, a, back / seg) : b;
+        const rng = this.at(plant, p, SALT.prickle);
+        // outwards, on any side but the one against the support, and hooked back a little towards the base
+        const out = supported ? away : anyPerpendicular(t);
+        const across = normalize(cross(t, out));
+        const turn = rng.range(-1, 1) * (supported ? 0.45 : 1) * Math.PI;
+        const dir = normalize(add(add(scale(out, Math.cos(turn)), scale(across, Math.sin(turn))), scale(t, -0.3)));
+        this.addAppendage(plant, axis, i, 'prickle', p, dir, rng.range(...prickleM), false);
+      }
+    }
+
+    const rootEvery = known(model, 'appendages.aerialRootPatchSpacingM');
+    const rootM = known(model, 'appendages.aerialRootLengthM');
+    if (rootEvery && rootM && rootEvery[1] > 0 && rootM[1] > 0) {
+      if (!supported || !this.holdsItself(axis)) {
+        // rootlets form against a surface; a shoot in the air, or one a gardener tied, starts again when it next clings
+        axis.rootlets.sinceM = 0;
+        return;
+      }
+      for (const back of this.spaced(plant, axis, SALT.rootlets, axis.rootlets, rootEvery, seg)) {
+        const p = seg > 0 ? lerp(b, a, back / seg) : b;
+        this.addAppendage(plant, axis, i, 'aerial_roots', p, scale(away, -1), this.at(plant, p, SALT.rootlets).range(...rootM), true);
+      }
+    }
   }
 
   /** How many stems an edge will carry before the next looks elsewhere. */
@@ -631,6 +820,162 @@ export class Simulation {
       thisYear.add(n);
       plant.pendingWhips.push({ hostId: n.axisId, pointIndex: n.pointIndex, startDay: this.day + Math.round(plant.rng.organ.range(0.06, 0.4) * seasonDays), planM: plant.rng.organ.range(...param(model, 'organs.whipLengthM')) });
     }
+
+    // last, and drawing nothing from the plant's streams: side shoots that have had their time go, and new ones start
+    this.sideShootSeason(plant, date);
+  }
+
+  // =========================================================================
+  // Flowering side shoots
+  // =========================================================================
+  /** The numbers a taxon's flowering side shoots need, or null where its model gives none or says it makes none. */
+  private sideShootRule(model: GrowthModel): { ageYears: number; perNode: number; lengthM: [number, number]; seasons: number; terminalShare: number } | null {
+    const ageYears = known(model, 'sideShoots.bearingWoodAgeYears');
+    const perM = known(model, 'sideShoots.perMetrePerYear');
+    const lengthM = known(model, 'sideShoots.lengthM');
+    const seasons = known(model, 'sideShoots.lifespanYears');
+    const terminalShare = known(model, 'sideShoots.terminalFlowerShare');
+    if (ageYears === null || perM === null || lengthM === null || seasons === null || terminalShare === null) return null;
+    if (perM <= 0 || lengthM[1] <= 0) return null;
+    // side shoots break from leaf nodes, so a rate for each metre of stem is a chance at each node
+    return { ageYears, perNode: Math.min(1, perM * mid(param(model, 'organs.leafSpacingM'))), lengthM, seasons: Math.max(1, seasons), terminalShare };
+  }
+
+  /**
+   * Once a stretch of framework stem is old enough it throws short shoots that
+   * stand clear of the support, carry leaves and end in the inflorescence.
+   * Each lives the seasons its model gives it and is then shed; while it lives,
+   * the node that bears it bears no other.
+   */
+  private sideShootSeason(plant: Plant, date: CalendarDate): void {
+    const { profile, model } = this.taxon(plant);
+    const year = date.year;
+
+    // those whose last year is behind them are shed before growth starts, with their leaves and whatever fruit still hangs on them
+    const old = plant.axisIds.map((id) => this.axes.get(id)!).filter((a) => a.role === 'side_shoot' && a.removedDay === null && a.lastYear !== null && a.lastYear < year);
+    if (old.length) {
+      const fx: EventRecord['effects'] = { axesCut: 0, axesRemoved: 0, stemRemovedM: 0, floralBudsRemoved: 0, leafSitesRemoved: 0 };
+      const cause = `shed:${year}`;
+      const stats = this.yearStats.get(plant.id)!;
+      const lostToPruning = stats.lost;
+      for (const a of old) this.removeAxis(a, cause, fx);
+      // what the plant sheds was not pruned off
+      stats.lost = lostToPruning;
+      for (const b of this.buds) if (b.plantId === plant.id && b.endedBy === cause) b.end = 'aborted';
+      this.note('shed', plant, null, `${old.length} flowering side shoot${old.length === 1 ? '' : 's'} of ${profile.names.label} had lived out ${old.length === 1 ? 'its' : 'their'} time and ${old.length === 1 ? 'was' : 'were'} shed`);
+    }
+
+    const rule = this.sideShootRule(model);
+    if (!rule) return;
+    const clear = param(model, 'organs.clearStemHeightM');
+    const burst = param(model, 'phenology.budburstDoy');
+    const end = param(model, 'phenology.growthEndDoy');
+    const open0 = param(model, 'phenology.flowerOpenDoy')[0];
+    // a shoot that is to flower this season has made its length by the time the first flowers open
+    const share = open0 > burst && open0 <= end ? Math.max(0.05, smoothstep(burst, end, open0)) : 1;
+    let made = 0;
+    for (const n of plant.leafNodes) {
+      if (n.taken || year - n.year < rule.ageYears) continue;
+      const host = this.axes.get(n.axisId)!;
+      if (host.removedDay !== null || n.pointIndex >= host.alive) continue;
+      if (host.role !== 'leader' && host.role !== 'lateral') continue;
+      const base = host.contact[n.pointIndex]!;
+      if (base.z < clear) continue;
+      if (n.sideShootId !== null) {
+        if (this.axes.get(n.sideShootId)!.removedDay === null) continue;
+        n.sideShootId = null;
+      }
+      const rng = this.at(plant, base, SALT.sideShoot + year);
+      if (!rng.chance(rule.perNode)) continue;
+      const planM = rng.range(...rule.lengthM);
+      if (planM <= 0) continue;
+
+      const shoot = this.newAxis(plant, 'side_shoot', host.order + 1, { axisId: host.id, pointIndex: n.pointIndex }, planM, planM / share, { nextLeafM: rng.range(...param(model, 'organs.leafSpacingM')), leafSide: n.side });
+      shoot.lastYear = year + rule.seasons - 1;
+      n.sideShootId = shoot.id;
+      // out from the support, to the side the leaf stood on, and up a little
+      const t = this.tangent(host, n.pointIndex);
+      const out = length(host.away[n.pointIndex]!) > 0.5 ? host.away[n.pointIndex]! : UP;
+      let side = cross(t, out);
+      side = length(side) > 1e-6 ? scale(normalize(side), n.side) : v3(n.side, 0, 0);
+      const dir = normalize(add(add(add(scale(out, rng.range(0.7, 1)), scale(side, rng.range(0.2, 0.7))), scale(UP, rng.range(0.1, 0.4))), scale(t, rng.range(-0.2, 0.3))));
+      // it stands free of the support from its first point: no direction away from anything
+      this.appendPoint(plant, shoot, base, ZERO);
+      shoot.tip = { state: 'free', dir, grownM: 0, planM };
+      made++;
+    }
+    if (made) this.note('side_shoots_broke', plant, null, `${made} flowering side shoot${made === 1 ? '' : 's'} broke from stems of ${profile.names.label} ${rule.ageYears} year${rule.ageYears === 1 ? '' : 's'} old or more`);
+  }
+
+  /** The next heading of a growing side shoot: its own line, a little unsteady, turning up. */
+  private sideShootHeading(plant: Plant, from: Vec3, d: Vec3, go: number): Vec3 {
+    const rng = this.at(plant, from, SALT.sideShootGrowth);
+    return normalize(v3(d.x + rng.range(-0.04, 0.04), d.y + rng.range(-0.04, 0.04), d.z + go * rng.range(0.4, 1.2)));
+  }
+
+  /**
+   * Leaves along a side shoot. They are renewed every year the shoot lives,
+   * as a spur's are, and are of the form the model names for side shoots.
+   * No bud, spur or shoot of the plant's ordinary kinds forms at them.
+   */
+  private sideShootLeaves(plant: Plant, axis: Axis, i: number, seg: number): void {
+    axis.sinceLeafM += seg;
+    if (axis.sinceLeafM < axis.nextLeafM) return;
+    const { model } = this.taxon(plant);
+    const at = axis.contact[i]!;
+    const rng = this.at(plant, at, SALT.sideShootLeaf);
+    axis.sinceLeafM = 0;
+    axis.nextLeafM = rng.range(...param(model, 'organs.leafSpacingM'));
+    axis.leafSide = axis.leafSide === 1 ? -1 : 1;
+    const year = this.calendar.dateOf(this.day).year;
+    const t = this.tangent(axis, i);
+    let side = cross(t, UP);
+    side = length(side) > 1e-6 ? scale(normalize(side), axis.leafSide) : v3(axis.leafSide, 0, 0);
+    const form = model.names.sideShootLeafForm ?? model.names.leafForm;
+    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...param(model, 'organs.leafLengthM')), year, null, form);
+    if (param(model, 'organs.leavesPerNode') >= 2) {
+      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...param(model, 'organs.leafLengthM')), year, null, form);
+    }
+  }
+
+  /**
+   * Flower buds at the ends of side shoots, formed on the day the plant's
+   * other flower buds form and opening in its next flowering window. A bud is
+   * the plant's own: it goes with its shoot, and with the stem that bears the
+   * shoot, if either is cut before it opens.
+   */
+  private budsOnSideShoots(plant: Plant, date: CalendarDate): void {
+    const { model } = this.taxon(plant);
+    const rule = this.sideShootRule(model);
+    if (!rule || rule.terminalShare <= 0) return;
+    const year = date.year;
+    const [open0, open1] = param(model, 'phenology.flowerOpenDoy');
+    const [fall0, fall1] = param(model, 'phenology.petalFallDoy');
+    const lasts = param(model, 'phenology.flowerLastsDays');
+    // an opening date earlier in the year than today means next year, as for flowers along the shoots
+    const openYear = open0 >= date.dayOfYear ? year : year + 1;
+    const fallYear = fall0 >= open0 ? openYear : openYear + 1;
+    const ramp = openYear - plant.plantedYear - param(model, 'flowering.competenceYears');
+    if (ramp < 0) return;
+    const chance = Math.min(1, rule.terminalShare * listAt(model, 'flowering.maturityRamp', ramp));
+    const form = model.names.sideShootFlowerForm ?? model.names.flowerForm;
+    let shoots = 0;
+    let made = 0;
+    for (const id of plant.axisIds) {
+      const a = this.axes.get(id)!;
+      // only a shoot that will still be there when its flower opens
+      if (a.role !== 'side_shoot' || a.removedDay !== null || a.alive < 2 || (a.lastYear ?? year) < openYear) continue;
+      shoots++;
+      const rng = this.at(plant, a.contact[0]!, SALT.sideShootBud + year);
+      if (!rng.chance(chance)) continue;
+      const opens = this.calendar.dayOfYearDay(openYear, rng.int(open0, open1));
+      const drops = lasts[1] > 0 ? opens + rng.int(lasts[0], lasts[1]) : this.calendar.dayOfYearDay(fallYear, rng.int(fall0, fall1));
+      this.newBud(plant, a, null, 'developing', openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops), { lengthM: rng.range(...param(model, 'organs.racemeLengthM')), form });
+      made++;
+    }
+    if (!shoots) return;
+    this.yearStats.get(plant.id)!.initiated += made;
+    this.note('floral_initiated', plant, null, `${made} flower bud${made === 1 ? '' : 's'} formed at the ends of ${shoots} flowering side shoot${shoots === 1 ? '' : 's'}, to open from ${this.calendar.dateOf(this.calendar.dayOfYearDay(openYear, open0)).iso}`);
   }
 
   private newSpur(plant: Plant, host: Axis, i: number, side: 1 | -1): Axis {
@@ -661,9 +1006,10 @@ export class Simulation {
   private spurLeaves(plant: Plant, spur: Axis, fromYear: number): void {
     const { model } = this.taxon(plant);
     const n = plant.rng.organ.int(...param(model, 'organs.spurLeafCount'));
+    const form = model.names.spurLeafForm ?? model.names.leafForm;
     for (let k = 0; k < n; k++) {
       const dir = normalize(v3(plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(0.45, 1)));
-      this.addLeaf(plant, spur, 0, dir, plant.rng.organ.range(...param(model, 'organs.leafLengthM')) * 0.9, fromYear, null);
+      this.addLeaf(plant, spur, 0, dir, plant.rng.organ.range(...param(model, 'organs.leafLengthM')) * 0.9, fromYear, null, form);
     }
   }
 
@@ -702,6 +1048,8 @@ export class Simulation {
     else if (date.year === plant.plantedYear) {
       this.note('not_modelled', plant, null, `no flowers are modelled for ${profile.names.label}: which of its wood flowers is not established`);
     }
+    // a plant whose flowering wood is not known flowers nowhere, its side shoots included
+    if (wood !== null) this.budsOnSideShoots(plant, date);
   }
 
   /**
@@ -736,7 +1084,7 @@ export class Simulation {
     const grown = new Map<string, number>();
     for (const id of plant.axisIds) {
       const a = this.axes.get(id)!;
-      if (a.removedDay !== null || a.role === 'spur' || a.alive < 2) continue;
+      if (a.removedDay !== null || a.role === 'spur' || a.role === 'side_shoot' || a.alive < 2) continue;
       let first = a.alive;
       while (first > 0 && a.bornDayAt[first - 1]! >= jan1) first--;
       if (first < a.alive) grown.set(a.id, a.lengthAt[a.alive - 1]! - a.lengthAt[Math.max(0, first - 1)]!);
@@ -757,7 +1105,7 @@ export class Simulation {
       // either each flower lasts its own few weeks, or the whole display falls together
       const drops = lasts[1] > 0 ? opens + plant.rng.flower.int(lasts[0], lasts[1]) : this.calendar.dayOfYearDay(fallYear, plant.rng.flower.int(fall0, fall1));
       // buds show for about a month before they open, or from now if that is sooner
-      this.newBud(plant, a, n.pointIndex, 'developing', openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops));
+      this.newBud(plant, a, n.pointIndex, 'developing', openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops), { form: old ? (model.names.firstFlushFlowerForm ?? model.names.flowerForm) : model.names.flowerForm });
       made++;
     }
     this.yearStats.get(plant.id)!.initiated += made;
@@ -799,11 +1147,15 @@ export class Simulation {
     const [fall0, fall1] = param(model, 'phenology.petalFallDoy');
     const opens = this.calendar.dayOfYearDay(f.openYear, plant.rng.flower.int(from, f.lastOpenDoy));
     const drops = lasts[1] > 0 ? opens + plant.rng.flower.int(lasts[0], lasts[1]) : this.calendar.dayOfYearDay(f.fallYear, plant.rng.flower.int(fall0, fall1));
-    this.newBud(plant, axis, pointIndex, 'developing', f.openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops));
+    this.newBud(plant, axis, pointIndex, 'developing', f.openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops), { form: model.names.flowerForm });
     this.yearStats.get(plant.id)!.initiated++;
   }
 
-  private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, developDay: number, openPlannedDay: number, spentPlannedDay: number): FloralBud {
+  /**
+   * `given.lengthM` fixes the length of the inflorescence; left out, it is
+   * drawn from the plant's flower stream as it always was.
+   */
+  private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, developDay: number, openPlannedDay: number, spentPlannedDay: number, given: { lengthM?: number; form?: string | undefined } = {}): FloralBud {
     const { model } = this.taxon(plant);
     const bud: FloralBud = {
       id: `${plant.id}/bud${this.serial++}`,
@@ -820,11 +1172,13 @@ export class Simulation {
       endedDay: null,
       endedBy: null,
       position: null,
-      lengthM: plant.rng.flower.range(...param(model, 'organs.racemeLengthM')),
+      direction: null,
+      lengthM: given.lengthM ?? plant.rng.flower.range(...param(model, 'organs.racemeLengthM')),
       developDay,
       openPlannedDay,
       spentPlannedDay,
     };
+    if (given.form !== undefined) bud.form = given.form;
     this.buds.push(bud);
     const list = this.budsByAxis.get(bearer.id);
     if (list) list.push(bud);
@@ -852,7 +1206,7 @@ export class Simulation {
       if (!(a.role === 'spur' || (a.role === 'whip' && a.summerPrunedYear === year))) continue;
       sites++;
       if (!plant.rng.flower.chance(chance)) continue;
-      this.newBud(plant, a, null, 'initiated', year + 1, -1, -1, -1);
+      this.newBud(plant, a, null, 'initiated', year + 1, -1, -1, -1, { form: model.names.flowerForm });
       made++;
     }
     this.yearStats.get(plant.id)!.initiated += made;
@@ -870,13 +1224,118 @@ export class Simulation {
         // a spur's raceme hangs from the end of the spur, wherever pruning has left that end;
         // a flower on the year's growth stands at its own node
         b.position = bearer.contact[b.pointIndex === null ? bearer.alive - 1 : b.pointIndex]!;
+        b.direction = this.heldDirection(plant, this.taxon(plant).model.names.flowerHeld, bearer, b.pointIndex);
         opened++;
       } else if (b.stage === 'open' && this.day >= b.spentPlannedDay) {
         b.stage = 'spent';
         b.spentDay = this.day;
+        this.setFruit(plant, b, date);
       }
     }
     if (opened) this.yearStats.get(plant.id)!.opened += opened;
+  }
+
+  /**
+   * The direction an inflorescence or a fruit is held in from its place on a
+   * stem: `pointIndex` null means the end of the stem. Null where it hangs, or
+   * where the model does not say how it is held.
+   */
+  private heldDirection(plant: Plant, held: OrganHeld | undefined, bearer: Axis, pointIndex: number | null): Vec3 | null {
+    if (held === undefined || held === 'hanging') return null;
+    const i = pointIndex === null ? bearer.alive - 1 : pointIndex;
+    const t = this.tangent(bearer, i);
+    const away = bearer.away[i]!;
+    const supported = length(away) > 0.5;
+    if (held === 'upright') return normalize(add(UP, scale(supported ? away : ZERO, 0.25)));
+    // facing out: at the end of a shoot it carries on the shoot's own line
+    if (pointIndex === null) return t;
+    // at a node, away from the support; on a shoot in the air, square off it on one side or the other
+    const out = supported ? away : scale(anyPerpendicular(t), this.at(plant, bearer.contact[i]!, SALT.held).sign());
+    return normalize(add(out, scale(UP, 0.35)));
+  }
+
+  // =========================================================================
+  // Seasonal: fruit
+  // =========================================================================
+  /** The numbers fruit needs, or null where the model leaves any of them unknown or says that nothing sets. */
+  private fruitRule(model: GrowthModel): { setShare: number; lengthM: [number, number]; swellDays: [number, number]; ripenDoy: [number, number]; fallDoy: [number, number] } | null {
+    const setShare = known(model, 'fruit.setShare');
+    const lengthM = known(model, 'fruit.lengthM');
+    const swellDays = known(model, 'fruit.swellDays');
+    const ripenDoy = known(model, 'fruit.ripenDoy');
+    const fallDoy = known(model, 'fruit.fallDoy');
+    if (!setShare || !lengthM || !swellDays || !ripenDoy || !fallDoy) return null;
+    return { setShare, lengthM, swellDays, ripenDoy, fallDoy };
+  }
+
+  /**
+   * A flower that has gone over on the plant may set. Fruit never comes from
+   * the calendar: it needs a flower that formed, opened and was still on its
+   * wood when its petals fell. What sets then swells, ripens in the taxon's
+   * ripening window and falls in its fall window, unless its stem is cut first.
+   */
+  private setFruit(plant: Plant, bud: FloralBud, date: CalendarDate): void {
+    const { model } = this.taxon(plant);
+    const rule = this.fruitRule(model);
+    if (!rule || !bud.position) return;
+    const rng = this.at(plant, bud.position, SALT.fruit + bud.floweringYear);
+    if (!rng.chance(rule.setShare)) return;
+    const bearer = this.axes.get(bud.axisId)!;
+    const cal = this.calendar;
+    const full = this.day + Math.max(1, rng.int(...rule.swellDays));
+    // ripening: the first window that is still open once the fruit is full grown
+    const [r0, r1] = rule.ripenDoy;
+    let ry = cal.dateOf(full).year;
+    if (cal.dayOfYearDay(ry, r1) <= full) ry++;
+    const w0 = Math.max(full, cal.dayOfYearDay(ry, r0));
+    const w1 = Math.max(w0 + 1, cal.dayOfYearDay(ry, r1));
+    const ripens = rng.int(w0, w1 - 1);
+    const ripe = rng.int(ripens + 1, w1);
+    // falling: a day in the first window after that
+    const [f0, f1] = rule.fallDoy;
+    let fy = cal.dateOf(ripe).year;
+    if (cal.dayOfYearDay(fy, f1) <= ripe) fy++;
+    const falls = rng.int(Math.max(ripe + 1, cal.dayOfYearDay(fy, f0)), Math.max(ripe + 1, cal.dayOfYearDay(fy, f1)));
+    const fruit: FruitSite = {
+      // numbered apart from stems and buds, so that fruit setting changes no other name in the run
+      id: `${plant.id}/fruit${this.fruits.length}`,
+      plantId: plant.id,
+      axisId: bearer.id,
+      pointIndex: bud.pointIndex === null ? bearer.alive - 1 : bud.pointIndex,
+      position: bud.position,
+      direction: this.heldDirection(plant, model.names.fruitHeld, bearer, bud.pointIndex),
+      lengthM: rng.range(...rule.lengthM),
+      year: date.year,
+      swell: [this.day, full],
+      ripen: [ripens, ripe],
+      fallPlannedDay: falls,
+      removedDay: null,
+      removedBy: null,
+    };
+    if (model.names.fruitForm !== undefined) fruit.form = model.names.fruitForm;
+    this.fruits.push(fruit);
+    const onAxis = this.fruitsByAxis.get(bearer.id);
+    if (onAxis) onAxis.push(fruit);
+    else this.fruitsByAxis.set(bearer.id, [fruit]);
+    const onPlant = this.hanging.get(plant.id);
+    if (onPlant) onPlant.push(fruit);
+    else this.hanging.set(plant.id, [fruit]);
+    this.yearStats.get(plant.id)!.fruits++;
+  }
+
+  /** Fruit whose day has come falls; what a cut has already taken is forgotten. */
+  private fruitDay(plant: Plant): void {
+    const list = this.hanging.get(plant.id);
+    if (!list || !list.length) return;
+    let gone = false;
+    for (const f of list) {
+      if (f.removedDay === null && this.day >= f.fallPlannedDay) {
+        f.removedDay = this.day;
+        f.removedBy = 'fell';
+      }
+      if (f.removedDay !== null) gone = true;
+    }
+    if (gone) this.hanging.set(plant.id, list.filter((f) => f.removedDay === null));
   }
 
   // =========================================================================
@@ -1119,12 +1578,26 @@ export class Simulation {
         fx.leafSitesRemoved++;
       }
     }
+    this.loseParts(axis, keep, eventId);
     const plant = this.plants.get(axis.plantId)!;
     for (const bud of this.budsByAxis.get(axis.id) ?? []) {
       if (bud.pointIndex !== null && bud.pointIndex >= keep) this.loseBud(plant, bud, eventId, fx);
     }
     plant.pendingLaterals = plant.pendingLaterals.filter((b) => !(b.parentId === axis.id && b.pointIndex >= keep));
     plant.pendingWhips = plant.pendingWhips.filter((w) => !(w.hostId === axis.id && w.pointIndex >= keep));
+  }
+
+  /** Fruit and appendages from point `keep` of an axis onwards go with the stem that carried them. */
+  private loseParts(axis: Axis, keep: number, causeId: string): void {
+    for (const f of this.fruitsByAxis.get(axis.id) ?? []) {
+      if (f.removedDay === null && f.pointIndex >= keep) {
+        f.removedDay = this.day;
+        f.removedBy = causeId;
+      }
+    }
+    for (const a of this.appendagesByAxis.get(axis.id) ?? []) {
+      if (a.removedDay === null && a.pointIndex >= keep) a.removedDay = this.day;
+    }
   }
 
   /** A bud cannot outlive the wood it sits on. */
@@ -1161,6 +1634,7 @@ export class Simulation {
         fx.leafSitesRemoved++;
       }
     }
+    this.loseParts(axis, 0, eventId);
     const plant = this.plants.get(axis.plantId)!;
     for (const bud of this.budsByAxis.get(axis.id) ?? []) this.loseBud(plant, bud, eventId, fx);
     plant.pendingLaterals = plant.pendingLaterals.filter((b) => b.parentId !== axis.id);
@@ -1176,7 +1650,7 @@ export class Simulation {
       // a plant that died during the year still has that year to account for
       if (plant.status === 'alive') this.thicken(plant);
       this.summaries.push(this.summarise(plant, date.year));
-      this.yearStats.set(plant.id, { initiated: 0, opened: 0, lost: 0 });
+      this.yearStats.set(plant.id, { initiated: 0, opened: 0, lost: 0, fruits: 0 });
     }
   }
 
@@ -1207,10 +1681,11 @@ export class Simulation {
   }
 
   summarise(plant: Plant, year: number): YearSummary {
-    const stats = this.yearStats.get(plant.id) ?? { initiated: 0, opened: 0, lost: 0 };
+    const stats = this.yearStats.get(plant.id) ?? { initiated: 0, opened: 0, lost: 0, fruits: 0 };
     let frameworkM = 0;
     let whipM = 0;
     let spurs = 0;
+    let sideShoots = 0;
     let runsSelf = 0;
     let runsTied = 0;
     let highestM = 0;
@@ -1223,6 +1698,7 @@ export class Simulation {
         // shoots of the year wave about above the framework and are not what has been reached
         for (let i = 0; i < a.alive; i++) highestM = Math.max(highestM, a.contact[i]!.z);
       } else if (a.role === 'whip') whipM += this.lengthOf(a);
+      else if (a.role === 'side_shoot') sideShoots++;
       else spurs++;
       for (const run of a.runs) {
         if (run.status === 'detached') continue;
@@ -1233,6 +1709,6 @@ export class Simulation {
     }
     let heldM = 0;
     for (const id of held) heldM += this.scenario.bower.graph.edges.get(id)!.curve.length;
-    return { year, plantId: plant.id, frameworkM, whipM, spurs, floralBudsInitiated: stats.initiated, flowersOpened: stats.opened, floralBudsLostToPruning: stats.lost, runsSelf, runsTied, routeShare: this.routeTotalM > 0 ? heldM / this.routeTotalM : 0, highestM };
+    return { year, plantId: plant.id, frameworkM, whipM, spurs, sideShoots, floralBudsInitiated: stats.initiated, flowersOpened: stats.opened, fruitsSet: stats.fruits, floralBudsLostToPruning: stats.lost, runsSelf, runsTied, routeShare: this.routeTotalM > 0 ? heldM / this.routeTotalM : 0, highestM };
   }
 }

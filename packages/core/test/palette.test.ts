@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { loadGrowable, loadTaxa } from '../src/node/load-taxa.ts';
 import { Simulation } from '../src/sim/engine.ts';
+import { GROWTH_PARAMS_OPTIONAL } from '../src/sim/model.ts';
 import { type DesignReport, designReport, formatDesignReport } from '../src/sim/report.ts';
 import { REFERENCE_PALETTE, plantsOnHemisphere, referencePalette } from '../src/sim/scenarios.ts';
 import type { GardenerEvent } from '../src/sim/types.ts';
@@ -34,26 +35,34 @@ describe('growth models for the climbing palette', () => {
     for (const [id, t] of all) expect(t.flowering.wood.value, id).not.toBeNull();
     for (const [id, wood] of Object.entries(RESOLVED_WOOD)) {
       expect(all.get(id)!.flowering.wood.value, id).toBe(wood);
-      // none of these is a measurement, and only the rose's is a published statement
-      expect(all.get(id)!.flowering.wood.status, id).toBe(id === 'rosa-the-generous-gardener' ? 'published_plant_profile' : 'provisional_design_assumption');
+      // none of these is a measurement: each is a published statement or an inference labelled as one
+      expect(['published_plant_profile', 'peer_reviewed', 'provisional_design_assumption'], id).toContain(all.get(id)!.flowering.wood.status);
     }
     // a run on the library as it stands therefore leaves no plant without a flowering rule
     expect(designReport(new Simulation(referencePalette({ taxa: library, years: 3 })).runUntil('2029-12-31')).alerts.filter((a) => a.kind === 'not_modelled')).toEqual([]);
   });
 
-  it('say of themselves that they are borrowed, all but the one carried over from the prototype', () => {
+  it('say of themselves that they are borrowed, for as long as they hold a number copied from the wisteria', () => {
     for (const [id, { model }] of library) {
       if (id === 'wisteria-sinensis') continue;
-      expect(model.statement, id).toContain('thinner than the wisteria model');
+      const copied = Object.values(model.params).filter((p) => (p.basis ?? '').startsWith('Copied from the Wisteria sinensis model'));
+      if (copied.length) expect(model.statement, id).toContain('thinner than the wisteria model');
     }
   });
 
   it('hold no number that is not labelled as an assumption or tied to a source', () => {
     for (const [id, { model }] of library) {
       for (const [key, p] of Object.entries(model.params)) {
-        expect(['provisional_design_assumption', 'published_plant_profile'], `${id} ${key}`).toContain(p.status);
-        if (p.status === 'published_plant_profile') expect(p.source, `${id} ${key}`).toMatch(/^https:\/\//);
-        else expect(p.basis, `${id} ${key}`).toBeTruthy();
+        // a part the plant may or may not have (fruit, appendages, side shoots) stays unknown until it is researched:
+        // an unknown holds no number, so there is nothing to label
+        if (p.status === 'unknown' && (GROWTH_PARAMS_OPTIONAL as readonly string[]).includes(key)) {
+          expect(p.value, `${id} ${key}`).toBeNull();
+          continue;
+        }
+        // a number is tied to a source, or it is labelled as an assumption with its basis: nothing in between
+        expect(['measured', 'peer_reviewed', 'published_plant_profile', 'calibrated', 'provisional_design_assumption'], `${id} ${key}`).toContain(p.status);
+        if (p.status === 'provisional_design_assumption') expect((p.basis ?? '').length, `${id} ${key}`).toBeGreaterThan(10);
+        else expect(p.source, `${id} ${key}`).toMatch(/^https:\/\//);
       }
     }
   });

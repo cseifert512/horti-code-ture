@@ -1,5 +1,7 @@
 // Stem geometry: one tube per stem of the render data. Ported from
-// buildWoodGeometry in the prototype (Wisteria/src/skeleton.js).
+// buildWoodGeometry in the prototype (Wisteria/src/skeleton.js). The stems of
+// each taxon are built into a mesh of their own, so that each can be drawn in
+// its own wood (WoodLook); the geometry itself is the same for every taxon.
 //
 // Vertices sit ON the contact line; the vertex shader moves each ring out to
 // its centre and then to its surface, both by amounts that depend on the day
@@ -30,7 +32,12 @@ export interface WoodGeometry {
   points: number;
 }
 
-export function buildWoodGeometry(stems: readonly RenderStem[]): WoodGeometry {
+/**
+ * `indexOf` gives each stem's place in the whole render data, where the stems
+ * given are only some of it (those of one taxon): a stem's phase in the wind
+ * is drawn from that place, and its leaves are given the same one.
+ */
+export function buildWoodGeometry(stems: readonly RenderStem[], indexOf: (at: number) => number = (at) => at): WoodGeometry {
   const pos: number[] = [];
   const nor: number[] = [];
   const uv: number[] = [];
@@ -47,7 +54,8 @@ export function buildWoodGeometry(stems: readonly RenderStem[]): WoodGeometry {
   const q = new THREE.Quaternion();
   const box = new THREE.Box3();
 
-  stems.forEach((stem, stemIndex) => {
+  stems.forEach((stem, at) => {
+    const stemIndex = indexOf(at);
     const n = stem.bornDay.length;
     if (n < 2) return;
     points += n;

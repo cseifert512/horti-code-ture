@@ -38,8 +38,12 @@ export interface Stage {
   setSunDirection(direction: THREE.Vector3): void;
   /** Degrees the sun stands above the horizon now; negative at night. */
   sunElevation(): number;
-  /** Fit the shadow frustum, haze and orbit limits to a subject, and optionally move the camera. */
-  frame(bounds: THREE.Box3, view?: ViewPreset): void;
+  /**
+   * Fit the shadow frustum, haze and orbit limits to a subject, and optionally move the camera.
+   * `shadowBoxM` is the least half-width of the box the shadows are drawn in: smaller for a small
+   * subject seen close, where the default would leave its shadows coarse.
+   */
+  frame(bounds: THREE.Box3, view?: ViewPreset, shadowBoxM?: number): void;
   /** Mark the shadow map stale (the subject or the sun changed). */
   invalidateShadows(): void;
   /** Draw a frame. `moving`: the picture is changing (playing, scrubbing, turning), so it is drawn the quicker way. */
@@ -194,11 +198,11 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
   const ground = makeGround();
   scene.add(ground.group);
 
-  function frame(bounds: THREE.Box3, view?: ViewPreset): void {
+  function frame(bounds: THREE.Box3, view?: ViewPreset, shadowBoxM = 6.5): void {
     const sphere = bounds.getBoundingSphere(new THREE.Sphere());
     const r = Math.max(sphere.radius, 1);
     // shadows: an orthographic box round the subject, looking down the sun
-    const half = Math.max(6.5, r * 1.25);
+    const half = Math.max(shadowBoxM, r * 1.25);
     const cam = sun.shadow.camera;
     cam.left = -half;
     cam.right = half;

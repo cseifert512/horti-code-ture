@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "taxonId": "vitis-coignetiae",
   "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {},
   "params": {
     "phenology.budburstDoy": {
       "value": 105,
@@ -416,6 +417,92 @@
       "value": 0.9,
       "status": "provisional_design_assumption",
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "fruit.setShare": {
+      "value": null,
+      "status": "unknown"
+    },
+    "fruit.lengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "fruit.swellDays": {
+      "value": null,
+      "unit": "days",
+      "status": "unknown"
+    },
+    "fruit.ripenDoy": {
+      "value": null,
+      "unit": "day of year",
+      "status": "unknown"
+    },
+    "fruit.fallDoy": {
+      "value": null,
+      "unit": "day of year",
+      "status": "unknown"
+    },
+    "appendages.tendrilNodePattern": {
+      "value": null,
+      "status": "unknown"
+    },
+    "appendages.tendrilLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "appendages.leafStalkCoilShare": {
+      "value": null,
+      "status": "unknown"
+    },
+    "appendages.leafStalkLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "appendages.aerialRootPatchSpacingM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "appendages.aerialRootLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "appendages.prickleSpacingM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "appendages.prickleLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "sideShoots.bearingWoodAgeYears": {
+      "value": null,
+      "unit": "years",
+      "status": "unknown"
+    },
+    "sideShoots.perMetrePerYear": {
+      "value": null,
+      "unit": "per m per year",
+      "status": "unknown"
+    },
+    "sideShoots.lengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "sideShoots.lifespanYears": {
+      "value": null,
+      "unit": "growing seasons",
+      "status": "unknown"
+    },
+    "sideShoots.terminalFlowerShare": {
+      "value": null,
+      "status": "unknown"
     }
   }
 }

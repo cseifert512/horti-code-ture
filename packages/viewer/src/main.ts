@@ -1,18 +1,20 @@
 // Bower viewer: renders a Bower from @horti/core, a design overlay that
-// answers reach and material questions from the core, and (as a renderer test)
-// a hand-made plant. The viewer holds no growth logic: it reads core data and
-// calls core functions.
+// answers reach and material questions from the core, the plants the engine
+// grows on it, and (as a renderer test) a hand-made plant. It can also show one
+// plant of one taxon closely, on a small standard frame (?specimen=<taxonId>).
+// The viewer holds no growth logic: it reads core data and calls core functions.
 import * as THREE from 'three';
 import { type Bower, Calendar, DEFAULT_SITE, type DesignReport, type ExposureField, type RenderData, type Site, type SupportEdge, type Viewpoint, compassWords, exposureField, foliageFromRenderData, makeHemisphereBower, makeVaultBower, sunAt } from '@horti/core';
 import yardBower from '../../../examples/arbour-in-a-yard.bower.json?raw';
 import arbourPlanting from '../../../examples/arbour.planting.json?raw';
+import specimenFrame from '../../../examples/specimen-frame.bower.json?raw';
 import { ARBOUR_EXAMPLE, DesignDesk, type DesignFile } from './design/open.ts';
 import { type ReachView, type StationField, materials, reachView, routeInfo, stationField } from './overlay/model.ts';
 import { ExposureOverlay, type LightMeasure, type LightMonth, type LightScale } from './overlay/exposure.ts';
 import { ReachOverlay } from './overlay/view.ts';
-import type { FruitSite } from './plant/adapter.ts';
 import { makeTestPlant } from './plant/fixture.ts';
-import { type Care, type Planting, canGrow, growDesign, growScenario } from './plant/scenario.ts';
+import { loadLooks, lookFault, lookFor } from './plant/registry.ts';
+import { type Care, type Planting, SPECIES_IDS, canGrow, growDesign, growFault, growScenario } from './plant/scenario.ts';
 import { shared } from './plant/shaders.ts';
 import { PlantView, makePlantMaterials } from './plant/view.ts';
 import { renderReport } from './report/panel.ts';
@@ -20,6 +22,8 @@ import { makeSiteMaterials, makeStructureMaterials } from './scene/materials.ts'
 import { type BuiltSite, buildSite } from './scene/site.ts';
 import { DEFAULT_SUN, type ViewPreset, createStage } from './scene/stage.ts';
 import { renderStill, saveBlob } from './scene/still.ts';
+import { frameSubject, frameWhole } from './specimen/framing.ts';
+import { SPECIMEN_VIEWS, SPECIMEN_YEARS, type SpecimenView, type Subject, describeSubject, findSubject, specimenPlan } from './specimen/specimen.ts';
 import { type BuiltStructure, buildStructure } from './structure/build.ts';
 import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
@@ -42,8 +46,8 @@ const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>
 const FIELD_OF_VIEW = 40;
 /** Tells two Bowers apart: a scenario may be grown on a Bower with more root stations than the default. */
 const signature = (b: Bower) => `${b.id}|${b.rootStations.map((s) => `${s.id}@${s.entryNodeIds.join('+')}`).join(',')}|${b.graph.edges.size}`;
-/** Detail of the organ pools, 0 to 1 (see PlantView.update). */
-const PLANT_DETAIL = 0.75;
+/** Detail of the organ pools, 0 to 1 (see PlantView.update). A specimen, seen close, is drawn at full detail. */
+let plantDetail = 0.75;
 /** Time-lapse speed, days per second. */
 const DAYS_PER_SECOND = 40;
 const BOWERS: Record<'vault' | 'hemisphere', () => Bower> = {
@@ -60,6 +64,31 @@ const metres = (x: number, digits = 2) => `${x.toFixed(digits)} m`;
 
 const url = new URLSearchParams(location.search);
 const canvas = el<HTMLCanvasElement>('scene');
+
+/** What ?specimen=<taxonId> asks for: one plant of that taxon on the specimen frame, on a date, seen whole or close on one organ. */
+interface SpecimenRequest {
+  taxonId: string;
+  years: number;
+  care: Care;
+  /** ISO date, or null for the day the viewer would open on. */
+  date: string | null;
+  view: SpecimenView;
+  /** Hide the interface, for a clean picture. */
+  bare: boolean;
+  /** Draw the final frame and stop: for a screenshot taken by a script. */
+  still: boolean;
+}
+const specimen: SpecimenRequest | null = url.has('specimen')
+  ? {
+      taxonId: url.get('specimen') ?? '',
+      years: Math.min(30, Math.max(1, Math.round(Number(url.get('years')) || SPECIMEN_YEARS))),
+      care: url.get('care') === 'untended' ? 'untended' : 'trained',
+      date: url.get('date'),
+      view: SPECIMEN_VIEWS.find((v) => v === url.get('view')) ?? 'whole',
+      bare: url.get('bare') === '1',
+      still: url.get('still') === '1',
+    }
+  : null;
 
 let stage: ReturnType<typeof createStage>;
 try {
@@ -105,8 +134,11 @@ const state = {
   plants: (PLANT_SOURCES.find((p) => p === url.get('plants')) ?? 'none') as PlantSource,
   day: url.has('day') ? Number(url.get('day')) : NaN,
   playing: false,
-  wind: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.6,
+  // a specimen is a still study: no wind unless it is asked for
+  wind: url.has('wind') ? Math.max(0, Number(url.get('wind')) || 0) : specimen || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.6,
 };
+// a wind given in the address is there from the first frame, so that a still taken by a script is the same every time
+if (url.has('wind') || specimen) shared.uWind.value = state.wind;
 
 /** The design last opened without fault. A file that is refused leaves it, and the scene, as they were. */
 const desk = new DesignDesk();
@@ -492,12 +524,9 @@ function showPlants(source: PlantSource, keepDay = false): void {
     return;
   }
 
-  let data: RenderData;
-  let fruit: FruitSite[] = [];
-  if (run) data = run.data;
-  else ({ data, fruit } = makeTestPlant(bower));
-  plantMaterials ??= makePlantMaterials({ bark: makeBarkTextures(), leafTex: makeLeafTexture() });
-  plant = new PlantView(data, plantMaterials, { fruit });
+  const data: RenderData = run ? run.data : makeTestPlant(bower).data;
+  plantMaterials ??= makePlantMaterials({ bark: (grain) => makeBarkTextures(grain), leafTex: makeLeafTexture() });
+  plant = new PlantView(data, plantMaterials);
   stage.scene.add(plant.group);
 
   const slider = el<HTMLInputElement>('plant-day');
@@ -506,11 +535,20 @@ function showPlants(source: PlantSource, keepDay = false): void {
   const taxa = data.plants.map((p) => p.label).filter((l, i, all) => all.indexOf(l) === i);
   // a long palette is counted rather than listed: the calendar beside it names every plant
   const labels = taxa.length > 4 ? [`${data.plants.length} plants of ${taxa.length} taxa`] : taxa;
-  const missing = plant.provisionalLooks.filter((l, i, all) => all.indexOf(l) === i);
-  const flowerless = plant.withoutFlowers.filter((l, i, all) => all.indexOf(l) === i);
+  const once = (list: readonly string[]) => list.filter((l, i, all) => all.indexOf(l) === i);
+  const missing = once(plant.provisionalLooks);
+  const flowerless = once(plant.withoutFlowers);
+  const fruitless = once(plant.withoutFruit);
+  const holdless = once(plant.withoutAppendages);
+  // a look that could not be loaded is a fault to be put right, not a look that is wanting: say which and why
+  const faulty = once(data.plants.map((p) => p.taxonId)).flatMap((id) => (lookFault(id) ? [`${id} (${lookFault(id)})`] : []));
   const stemsOnly =
     (missing.length ? ` Provisional look (a plain stand-in leaf, no flowers), for want of models of its own: ${missing.join(', ')}.` : '') +
-    (flowerless.length ? ` Shown without its flowers, for want of a flower model: ${flowerless.join(', ')}.` : '');
+    (flowerless.length ? ` Shown without its flowers, for want of a flower model: ${flowerless.join(', ')}.` : '') +
+    (fruitless.length ? ` Shown without its fruit, for want of a fruit model: ${fruitless.join(', ')}.` : '') +
+    (holdless.length ? ` Shown without what it holds on with, for want of a model: ${holdless.join(', ')}.` : '') +
+    (plant.unknownForms.length ? ` Drawn in its ordinary form, for want of a model of the form the run names: ${plant.unknownForms.join('; ')}.` : '') +
+    (faulty.length ? ` The look could not be loaded, and the stand-in is drawn instead: ${faulty.join('; ')}.` : '');
   // how many of the numbers behind the run have each evidence status; "measured" is always said, even when none is
   const counted = Object.entries(data.assumptions).filter(([status, n]) => n > 0 || status === 'measured');
   const behind = counted.some(([, n]) => n > 0) ? ` Numbers behind this run: ${counted.map(([status, n]) => `${n} ${status.replaceAll('_', ' ')}`).join(', ')}.` : '';
@@ -519,8 +557,8 @@ function showPlants(source: PlantSource, keepDay = false): void {
   clearTimeline();
   showDay(keepDay && Number.isFinite(state.day) ? state.day : openingDay(data));
 
-  // the design report takes about as long as the run: read it once the picture is up
-  if (run) {
+  // the design report takes about as long as the run: read it once the picture is up. A bare specimen is a picture only.
+  if (run && !specimen?.bare) {
     const box = el('report');
     box.hidden = false;
     box.replaceChildren(Object.assign(document.createElement('p'), { className: 'note', textContent: 'Reading the run for its design report...' }));
@@ -612,7 +650,7 @@ function showDay(day: number): void {
   const t = plant.timeline;
   if (Math.abs(day - state.day) > 0.01) lastMoved = performance.now();
   state.day = Math.min(t.lastDay, Math.max(t.firstDay, day));
-  plant.update(stage.camera, state.day, PLANT_DETAIL);
+  plant.update(stage.camera, state.day, plantDetail);
   lastPlantUpdate = performance.now();
   el<HTMLInputElement>('plant-day').value = String(Math.round(state.day));
   el('plant-date').textContent = t.dateLabel(state.day);
@@ -620,7 +658,7 @@ function showDay(day: number): void {
   // "in flower" is what the core counts as open, so it agrees with the calendar beside it; buds are said apart
   el('plant-caption').textContent =
     `${stats.stems.toLocaleString()} stems · ${stats.leaves.toLocaleString()} leaves · ${stats.flowers.toLocaleString()} in flower` +
-    `${stats.buds ? ` · ${stats.buds.toLocaleString()} in bud` : ''}${stats.fruit ? ` · ${stats.fruit} fruit` : ''}`;
+    `${stats.buds ? ` · ${stats.buds.toLocaleString()} in bud` : ''}${stats.fruit ? ` · ${stats.fruit.toLocaleString()} fruit` : ''}${stats.appendages ? ` · ${stats.appendages.toLocaleString()} holds and prickles` : ''}`;
   markLog();
   el('play').innerHTML = state.playing ? '&#10073;&#10073;' : '&#9654;';
   placeSun();
@@ -1081,22 +1119,111 @@ function render(): void {
   lastRender = performance.now();
 }
 
-// ?bower=arbour opens the example design, planted unless the address says otherwise
 /** The arbour again, on a site that declares what shades it: a wall, a house and a tree. */
 const YARD_EXAMPLE: readonly DesignFile[] = [
   { name: 'arbour-in-a-yard.bower.json', text: yardBower },
   { name: 'arbour.planting.json', text: arbourPlanting },
 ];
-// ?bower=arbour opens the example design, ?bower=yard the same arbour in a walled yard
-if ((url.get('bower') === 'arbour' && desk.open(ARBOUR_EXAMPLE)) || (url.get('bower') === 'yard' && desk.open(YARD_EXAMPLE))) {
-  state.bowerKey = 'design';
-  if (!url.has('plants')) state.plants = 'trained';
+
+// ---- a specimen: one plant on the small standard frame, seen whole or close ---------------
+/** The specimen on show, and whether its picture is final yet (the frames drawn since it was set up are counted). */
+let specimenShown: { subject: Subject; frames: number; ready: boolean } | null = null;
+
+/** Tell a script that waits on the page how it stands: true once the frame shown is final, 'error' if there will be none. */
+function markReady(value: true | 'error'): void {
+  (window as unknown as { __ready: boolean | string }).__ready = value;
+  document.body.dataset['ready'] = String(value);
 }
-showBower(state.bowerKey, viewFromUrl(), Number.isFinite(state.budgetM), true);
-showOverlay(state.overlay);
-bindSun();
-showLight(state.light);
-if (url.get('ui') === '0') document.body.classList.add('bare');
+
+/** How the page's own script (index.html) begins what it copies on to the curtain from the development server's error panel. */
+const SERVER_SAYS = 'The development server says:';
+
+/** There will be no picture: say why where the picture would be, in words a screenshot carries. */
+function refuseSpecimen(why: string): void {
+  const curtain = el('curtain');
+  // the development server may already have written on the curtain why a module did not compile (index.html): keep that
+  const told = curtain.textContent ?? '';
+  const said = told.includes(SERVER_SAYS) ? told.slice(told.indexOf(SERVER_SAYS)) : '';
+  curtain.textContent = said ? `${why}\n\n${said}` : why;
+  curtain.classList.add('refused');
+  document.documentElement.classList.add('curtained');
+  markReady('error');
+}
+
+function openSpecimen(request: SpecimenRequest): void {
+  document.body.classList.toggle('bare', request.bare);
+  const id = request.taxonId;
+  if (!SPECIES_IDS.includes(id)) return refuseSpecimen(`There is no taxon "${id}" under species/.\n\nThe taxa are:\n${SPECIES_IDS.join('\n')}`);
+  if (lookFault(id)) return refuseSpecimen(`The look of ${id} could not be loaded.\n\npackages/viewer/src/plant/taxa/${id}.ts:\n${lookFault(id)}`);
+  const files = [
+    { name: 'specimen-frame.bower.json', text: specimenFrame },
+    { name: `${id}.planting.json`, text: JSON.stringify(specimenPlan(id)) },
+  ];
+  if (!desk.open(files)) return refuseSpecimen(`${id} cannot be grown on the specimen frame.\n\n${growFault(id) ?? desk.error ?? ''}`);
+  state.bowerKey = 'design';
+  state.plants = request.care;
+  state.years = request.years;
+  plantDetail = 1;
+  showBower('design');
+  if (!plant || !structure) return refuseSpecimen(`${id} was not grown.`);
+  const t = plant.timeline;
+  let day = state.day;
+  if (request.date !== null) {
+    const wanted = /^\d{4}-\d{2}-\d{2}$/.test(request.date) ? t.calendar.dayOf(request.date) : NaN;
+    if (!Number.isFinite(wanted) || wanted < 0 || wanted > t.lastDay) {
+      return refuseSpecimen(`"${request.date}" is not a day of this run, which goes from ${t.calendar.dateOf(0).iso} to ${t.calendar.dateOf(t.lastDay).iso}. Give date=YYYY-MM-DD.`);
+    }
+    day = wanted;
+  }
+
+  // what to look at: a real organ of the run that is there on that day, or the reason there is none
+  const subject = findSubject(t.data, request.view, day);
+  const close = viewFromUrl() ?? frameSubject(t.data, subject, day, lookFor(id), FIELD_OF_VIEW);
+  stage.controls.minDistance = 0.03;
+  stage.camera.fov = FIELD_OF_VIEW;
+  stage.camera.updateProjectionMatrix();
+  // shadows drawn in a box that fits this small frame, so that they are sharp enough to be seen close
+  stage.frame(structure.bounds, close ?? frameWhole(t.data, FIELD_OF_VIEW, stage.camera.aspect), 2.4);
+  // the level of detail follows the camera: show the day once the camera stands where it will
+  showDay(day);
+
+  const label = t.data.plants[0]?.label ?? id;
+  const about = `${label} on the specimen frame, ${request.care}, in year ${t.yearOf(day) - t.yearOf(0) + 1} of ${request.years} · ${t.dateLabel(day)}`;
+  el('specimen-caption').hidden = false;
+  el('specimen-caption').textContent = subject.kind === 'none' ? `${about} · the whole plant` : `${about} · ${describeSubject(t.data, subject, day)}`;
+  const note = el('specimen-note');
+  note.hidden = subject.kind !== 'none';
+  if (subject.kind === 'none') note.textContent = `${subject.why} The whole plant is shown instead.`;
+  clearTimeline();
+  specimenShown = { subject, frames: 0, ready: false };
+}
+
+// The looks are loaded before anything is drawn; one that fails costs only its own plant its look. A specimen loads
+// its own taxon's and no other, so that work in progress on another taxon cannot reach its picture.
+await loadLooks(specimen ? [specimen.taxonId] : undefined);
+
+if (specimen) {
+  try {
+    openSpecimen(specimen);
+  } catch (e) {
+    refuseSpecimen(`The specimen could not be shown.\n\n${e instanceof Error ? (e.stack ?? e.message) : String(e)}`);
+  }
+  // with the interface on show another planting can be chosen from it: have the other looks ready for that
+  if (!specimen.bare) void loadLooks();
+} else {
+  // ?bower=arbour opens the example design, ?bower=yard the same arbour in a walled yard, planted unless the address says otherwise
+  if ((url.get('bower') === 'arbour' && desk.open(ARBOUR_EXAMPLE)) || (url.get('bower') === 'yard' && desk.open(YARD_EXAMPLE))) {
+    state.bowerKey = 'design';
+    if (!url.has('plants')) state.plants = 'trained';
+  }
+  showBower(state.bowerKey, viewFromUrl(), Number.isFinite(state.budgetM), true);
+  showOverlay(state.overlay);
+  if (url.get('ui') === '0') document.body.classList.add('bare');
+}
+if (structure) {
+  bindSun();
+  showLight(state.light);
+}
 
 const timer = new THREE.Timer();
 const sunView = new THREE.Vector3();
@@ -1125,7 +1252,7 @@ stage.renderer.setAnimationLoop(() => {
       showDay(next);
     } else if (performance.now() - lastPlantUpdate > 180) {
       // level of detail follows the camera
-      plant.update(stage.camera, state.day, PLANT_DETAIL);
+      plant.update(stage.camera, state.day, plantDetail);
       lastPlantUpdate = performance.now();
     }
     if (frameNo % 2 === 0 && shared.uWind.value > 0.001) stage.invalidateShadows();
@@ -1138,6 +1265,15 @@ stage.renderer.setAnimationLoop(() => {
   if (!dirty && performance.now() - lastRender < 500) return;
   dirty = false;
   render();
+
+  // a specimen's picture is final once a few frames have been drawn with nothing left to change:
+  // the curtain is lifted and a waiting script is told. A still then stops, so that nothing after it can differ.
+  if (specimenShown && !specimenShown.ready && ++specimenShown.frames >= 4) {
+    specimenShown.ready = true;
+    document.documentElement.classList.remove('curtained');
+    markReady(true);
+    if (specimen?.still) stage.renderer.setAnimationLoop(null);
+  }
 });
 
 // handy for debugging and screenshots
@@ -1160,6 +1296,9 @@ Object.assign(window, {
     openFiles,
     desk,
     invalidate,
+    get specimen() {
+      return specimenShown;
+    },
     get plant() {
       return plant;
     },

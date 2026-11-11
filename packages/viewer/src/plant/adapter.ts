@@ -13,11 +13,30 @@
 //   stems    a few uniforms and lines of GLSL: is this point there yet, and
 //            how thick is it (the contract's interpolation rule)
 //   organs   explicit states between 0 and 1 (how far a leaf has unfolded,
-//            how far a raceme has opened), computed here on the CPU
+//            how far a raceme has opened, how ripe a fruit is), computed here
+//            on the CPU
+//   ages     how old a point of a stem or a tendril is, in days, for the looks
+//            that change with age (a shoot turning woody, a tendril browning)
 //
 // Nothing else in the viewer knows what a day is. If the contract changes,
 // this is the file that changes with it. It adds no dates of its own.
-import { Calendar, type RenderData, type RenderFlower, type RenderLeaf, type RenderSeason, type RenderStem, flowerState, leafState, seasonsOf, stemPointAlive, stemRadiusM } from '@horti/core';
+import {
+  Calendar,
+  type RenderAppendage,
+  type RenderData,
+  type RenderFlower,
+  type RenderFruit,
+  type RenderLeaf,
+  type RenderSeason,
+  type RenderStem,
+  appendagePresent,
+  flowerState,
+  fruitState,
+  leafState,
+  seasonsOf,
+  stemPointAlive,
+  stemRadiusM,
+} from '@horti/core';
 
 /** Stands in for "never removed" in vertex attributes, where the contract uses -1. */
 export const NEVER = 1e9;
@@ -96,23 +115,6 @@ export interface FlowerDraw {
   shed: number;
 }
 
-/**
- * A fruit. The render contract does not carry fruit yet, so this is the
- * viewer's own stand-in, used only by the hand-made test plant; when the
- * contract gains fruit, map it on to this here.
- */
-export interface FruitSite {
-  plantId: string;
-  /** Where it hangs from, core frame. */
-  position: [number, number, number];
-  lengthM: number;
-  /** It swells from the first day to the second, and ripens (dries, browns) from the third to the fourth. */
-  swell: [number, number];
-  ripen: [number, number];
-  /** -1 if never removed. */
-  removedDay: number;
-}
-
 export interface FruitDraw {
   visible: boolean;
   /** 0 just set, 1 full size. */
@@ -121,8 +123,27 @@ export interface FruitDraw {
   ripeness: number;
 }
 
+export interface AppendageDraw {
+  visible: boolean;
+  /** Days since it formed. */
+  ageDays: number;
+}
+
 const HIDDEN_LEAF: LeafDraw = { visible: false, expansion: 0, colour: 0 };
 const HIDDEN_FLOWER: FlowerDraw = { visible: false, open: false, elongation: 0, bloom: 0, shed: 0 };
+const HIDDEN_FRUIT: FruitDraw = { visible: false, size: 0, ripeness: 0 };
+const HIDDEN_APPENDAGE: AppendageDraw = { visible: false, ageDays: 0 };
+
+/**
+ * How far through a range of ages something is, 0 before it and 1 after,
+ * eased at both ends. A look states such ranges (a shoot turns woody between
+ * 110 and 440 days old); the age it is applied to comes from the data's days,
+ * through this module.
+ */
+export function agedShare(ageDays: number, over: readonly [number, number]): number {
+  const t = clamp01((ageDays - over[0]) / (over[1] - over[0]));
+  return t * t * (3 - 2 * t);
+}
 
 /**
  * The core says an inflorescence is open and how far through its time in
@@ -202,10 +223,20 @@ export class RenderTimeline {
     return { visible: true, open: true, elongation: 1, bloom, shed };
   }
 
-  fruitDraw(fruit: FruitSite, day: number): FruitDraw {
-    if (day < fruit.swell[0] || (fruit.removedDay >= 0 && day >= fruit.removedDay)) return { visible: false, size: 0, ripeness: 0 };
-    const through = (a: number, b: number) => smooth((day - a) / Math.max(1e-6, b - a));
-    return { visible: true, size: through(fruit.swell[0], fruit.swell[1]), ripeness: through(fruit.ripen[0], fruit.ripen[1]) };
+  /** A fruit as the core says it is on `day`: its size as a share of full grown, and how ripe. */
+  fruitDraw(fruit: RenderFruit, day: number): FruitDraw {
+    const s = fruitState(fruit, day);
+    return s.phase === 'absent' ? HIDDEN_FRUIT : { visible: true, size: s.size, ripeness: s.ripeness };
+  }
+
+  /** A tendril, coiled stalk, patch of rootlets or prickle: there or not, and how old. */
+  appendageDraw(appendage: RenderAppendage, day: number): AppendageDraw {
+    return appendagePresent(appendage, day) ? { visible: true, ageDays: day - appendage.bornDay } : HIDDEN_APPENDAGE;
+  }
+
+  /** How long ago point `i` of a stem was laid down, in days. */
+  stemAgeDays(stem: RenderStem, i: number, day: number): number {
+    return day - stem.bornDay[i]!;
   }
 
   /** The gardener's log in the order it happened. */

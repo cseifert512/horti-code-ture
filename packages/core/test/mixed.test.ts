@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { loadGrowable } from '../src/node/load-taxa.ts';
 import { Simulation } from '../src/sim/engine.ts';
-import { GROWTH_PARAMS } from '../src/sim/model.ts';
+import { GROWTH_PARAMS, GROWTH_PARAMS_OPTIONAL } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
 import { type Growable, mixedOnVault, wisteriaOnVault } from '../src/sim/scenarios.ts';
 import { type StemPath, turnsOf } from '../src/sim/stem-path.ts';
@@ -302,17 +302,24 @@ describe('a plant whose flowering wood is not established', () => {
 });
 
 describe('borrowed growth models', () => {
-  it('say plainly that they are thinner than the wisteria model', () => {
+  it('say plainly that they are thinner than the wisteria model, for as long as they copy a number from it', () => {
     for (const id of ['lonicera-henryi', 'clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles']) {
       const { model } = library.get(id)!;
-      expect(model.statement, id).toContain('thinner than the wisteria model');
       const copied = Object.values(model.params).filter((p) => (p.basis ?? '').startsWith('Copied from the Wisteria sinensis model'));
-      expect(copied.length, id).toBeGreaterThan(10);
+      if (copied.length) expect(model.statement, id).toContain('thinner than the wisteria model');
       for (const key of Object.keys(GROWTH_PARAMS)) {
         const p = model.params[key as keyof typeof GROWTH_PARAMS];
+        // a part the plant may or may not have (fruit, appendages, side shoots) stays unknown until it is researched:
+        // an unknown holds no number, so there is nothing to label
+        if (p.status === 'unknown' && (GROWTH_PARAMS_OPTIONAL as readonly string[]).includes(key)) {
+          expect(p.value, `${id} ${key}`).toBeNull();
+          continue;
+        }
         expect(p.value, `${id} ${key}`).not.toBeNull();
-        expect((p.basis ?? '').length, `${id} ${key}`).toBeGreaterThan(10);
-        expect(['provisional_design_assumption', 'published_plant_profile'], `${id} ${key}`).toContain(p.status);
+        // a number is tied to a source, or it is labelled as an assumption with its basis: nothing in between
+        expect(['measured', 'peer_reviewed', 'published_plant_profile', 'calibrated', 'provisional_design_assumption'], `${id} ${key}`).toContain(p.status);
+        if (p.status === 'provisional_design_assumption') expect((p.basis ?? '').length, `${id} ${key}`).toBeGreaterThan(10);
+        else expect(p.source, `${id} ${key}`).toMatch(/^https:\/\//);
       }
     }
   });

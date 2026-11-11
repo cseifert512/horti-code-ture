@@ -1,13 +1,17 @@
 /** Turn the state of a simulation into the render-data contract. */
 import type { Vec3 } from '../math/vec3.ts';
 import { summariseProvenance } from '../provenance.ts';
-import { RENDER_CONTRACT, type RenderData, type RenderSeason, type RenderStem, type Triple } from '../render/contract.ts';
+import { RENDER_CONTRACT, type RenderAppendage, type RenderData, type RenderFlower, type RenderFruit, type RenderLeaf, type RenderSeason, type RenderStem, type Triple } from '../render/contract.ts';
 import type { Simulation } from './engine.ts';
 import { modelProvenance, param } from './model.ts';
 
 const triple = (v: Vec3): Triple => [v.x, v.y, v.z];
 // adding zero turns a rounded -0 into 0, which is what JSON would make of it anyway
 const round = (x: number, places: number) => Math.round(x * 10 ** places) / 10 ** places + 0;
+/** A direction, to four places: enough to draw by, and a quarter of the text. */
+const unit = (v: Vec3): Triple => [round(v.x, 4), round(v.y, 4), round(v.z, 4)];
+/** A place, to a hundredth of a millimetre. */
+const point = (v: Vec3): Triple => [round(v.x, 5), round(v.y, 5), round(v.z, 5)];
 
 export function toRenderData(sim: Simulation): RenderData {
   const cal = sim.calendar;
@@ -65,6 +69,7 @@ export function toRenderData(sim: Simulation): RenderData {
     for (const id of plant.axisIds) {
       const a = sim.axes.get(id)!;
       if (a.contact.length < 2) continue;
+      // the contract has no word for a flowering side shoot yet: it is short flowering wood, which is what it calls a spur
       const stem: RenderStem = { id: a.id, plantId: plant.id, parentId: a.parent?.axisId ?? null, role: a.role, order: a.order, contact: [], away: [], bornDay: [], removedDay: [], radiusMm: [] };
       for (let i = 0; i < a.contact.length; i++) {
         const c = a.contact[i]!;
@@ -80,14 +85,15 @@ export function toRenderData(sim: Simulation): RenderData {
   }
 
   for (const leaf of sim.leaves) {
-    data.leaves.push({ plantId: leaf.plantId, stemId: leaf.axisId, position: triple(leaf.position), direction: triple(leaf.direction), lengthM: round(leaf.lengthM, 3), firstYear: leaf.firstYear, lastYear: leaf.lastYear, evergreen: leaf.evergreen, bornDay: leaf.bornDay, removedDay: leaf.removedDay ?? -1 });
+    const out: RenderLeaf = { plantId: leaf.plantId, stemId: leaf.axisId, position: triple(leaf.position), direction: triple(leaf.direction), lengthM: round(leaf.lengthM, 3), firstYear: leaf.firstYear, lastYear: leaf.lastYear, evergreen: leaf.evergreen, bornDay: leaf.bornDay, removedDay: leaf.removedDay ?? -1 };
+    if (leaf.form !== undefined) out.form = leaf.form;
+    out.stemPoint = leaf.pointIndex;
+    data.leaves.push(out);
   }
 
   for (const bud of sim.buds) {
     if (bud.openDay === null || !bud.position) continue;
-    const plant = sim.plants.get(bud.plantId)!;
-    const { model } = sim.scenario.taxa.get(plant.taxonId)!;
-    data.flowers.push({
+    const out: RenderFlower = {
       plantId: bud.plantId,
       stemId: bud.axisId,
       position: triple(bud.position),
@@ -97,7 +103,25 @@ export function toRenderData(sim: Simulation): RenderData {
       openDay: bud.openDay,
       // a flower cut off, or killed with its plant, is gone from that day
       spentDay: bud.spentDay ?? bud.endedDay ?? -1,
-    });
+    };
+    if (bud.direction) out.direction = unit(bud.direction);
+    if (bud.form !== undefined) out.form = bud.form;
+    if (bud.pointIndex !== null) out.stemPoint = bud.pointIndex;
+    data.flowers.push(out);
+  }
+
+  for (const fruit of sim.fruits) {
+    const out: RenderFruit = { plantId: fruit.plantId, stemId: fruit.axisId, position: point(fruit.position), lengthM: round(fruit.lengthM, 3), year: fruit.year, swell: [fruit.swell[0], fruit.swell[1]], ripen: [fruit.ripen[0], fruit.ripen[1]], removedDay: fruit.removedDay ?? -1 };
+    if (fruit.direction) out.direction = unit(fruit.direction);
+    out.stemPoint = fruit.pointIndex;
+    if (fruit.form !== undefined) out.form = fruit.form;
+    data.fruits.push(out);
+  }
+
+  for (const a of sim.appendages) {
+    const out: RenderAppendage = { plantId: a.plantId, stemId: a.axisId, kind: a.kind, position: point(a.position), direction: unit(a.direction), lengthM: round(a.lengthM, 4), holding: a.holding, stemPoint: a.pointIndex, bornDay: a.bornDay, removedDay: a.removedDay ?? -1 };
+    if (a.heldDiameterMm !== null) out.heldDiameterMm = round(a.heldDiameterMm, 1);
+    data.appendages.push(out);
   }
 
   data.assumptions = summariseProvenance(provenance);

@@ -20,6 +20,7 @@
     "sensitivity": "node packages/core/scripts/sensitivity.ts",
     "viewer:dev": "npm --workspace @horti/viewer run dev",
     "viewer:build": "npm --workspace @horti/viewer run build",
+    "portrait": "node packages/viewer/scripts/portrait.ts",
     "prototype:dev": "npm --prefix Wisteria run dev",
     "prototype:audit": "npm --prefix Wisteria run audit",
     "prototype:assumptions": "npm --prefix Wisteria run assumptions"

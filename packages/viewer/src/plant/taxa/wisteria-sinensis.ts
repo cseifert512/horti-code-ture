@@ -1,104 +1,52 @@
-// Ported from the Wisteria prototype (Wisteria/src/parts.js).
+// Wisteria sinensis (Chinese wisteria).
 //
-// These are the shapes and colours of Wisteria sinensis organs: a pendulous
-// papilionaceous raceme, an odd-pinnate leaf, a velvety legume. They must not
-// be reused for other taxa (project rule: mechanism traits do not transfer);
-// another taxon gets its own organ module.
-
+// The organ models are ported from the Wisteria prototype (Wisteria/src/parts.js)
+// and are the standard the other taxa are to be brought up to.
+//
+//   raceme   a whole pendulous inflorescence (rachis, about sixty papilionaceous
+//            flowers, the tip still in bud), hanging along -Y from the origin,
+//            in metres: 0.26 m as authored, scaled to the length in the data
+//   leaf     a whole odd-pinnate leaf (rachis and 9, 11 or 13 leaflets). By the
+//            prototype's convention one unit is the rachis, and the end leaflet
+//            reaches past it; every other taxon's leaf is one unit over all
+//   pod      a pair of velvety legumes on a stalk, constricted between the
+//            seeds, 0.125 m as authored
+//   wood     green shoot, then smooth brown, then grey fissured bark, the
+//            trunk fluted with age
+//
+// Whole organs are instanced (not single flowers), so one instance carries one
+// organ's life history and the level of detail can be chosen per organ.
+//
+// These shapes and colours are Wisteria sinensis's. No other taxon module may
+// import this one (project rule: mechanism traits do not transfer, and neither
+// do looks).
 import * as THREE from 'three';
-import { RNG, lerp, smoothstep } from '../util.ts';
+import { characterNumber, parseMorphology } from '@horti/core';
+import morphologyJson from '../../../../../species/wisteria-sinensis/morphology.json';
+import { RNG, lerp, smoothstep } from '../../util.ts';
+import { Merge, Surf, lin, mix } from '../kit.ts';
+import { type FlowerAsset, type FruitAsset, type LeafAsset, THIN_LEAF, type TaxonLook, type WoodLook } from '../look.ts';
 
-// ---------------------------------------------------------------------------
-// Organ geometry, each at several levels of detail.
-//
-//   raceme  - a whole pendulous inflorescence (rachis + ~60 flowers + buds),
-//             authored hanging along -Y from the origin, in metres
-//   leaf    - a whole odd-pinnate leaf (rachis + 9/11/13 leaflets), unit
-//             length along +Z, upper side +Y
-//   pod     - a pair of velvety legumes on a stalk
-//
-// Whole organs are instanced (not single flowers), so one instance carries
-// one organ's life history and the level of detail can be chosen per organ.
-// ---------------------------------------------------------------------------
+/**
+ * What floras record of the shape of this plant's parts, each number with its
+ * source and evidence status: species/wisteria-sinensis/morphology.json. A
+ * count or a size of the real plant is read from there and not typed in here;
+ * asking for a character the file does not have stops the module from
+ * loading, with the key named.
+ */
+const morphology = parseMorphology(morphologyJson, 'species/wisteria-sinensis/morphology.json');
 
 const TAU = Math.PI * 2;
 const V3 = THREE.Vector3;
 type V3 = THREE.Vector3;
-
-/** Linear-space colour triple. */
-type RGB = [number, number, number];
-/** Point as a plain triple. */
-type XYZ = [number, number, number];
-type UV = [number, number];
 /** Segment counts of a parametric surface: [nu, nv]. */
 type Segs = [number, number];
-
-/** One sample of a parametric surface; the colour defaults to white. */
-interface SurfPoint {
-  p: XYZ;
-  c?: Readonly<RGB>;
-}
-type SurfFn = (u: number, v: number) => SurfPoint;
-
-type AnyAttribute = THREE.BufferAttribute | THREE.InterleavedBufferAttribute;
-
-const lin = (hex: string): RGB => {
-  const c = new THREE.Color(hex);
-  return [c.r, c.g, c.b];
-};
-const mix = (a: Readonly<RGB>, b: Readonly<RGB>, t: number): RGB => [
-  a[0] + (b[0] - a[0]) * t,
-  a[1] + (b[1] - a[1]) * t,
-  a[2] + (b[2] - a[2]) * t,
-];
-
-class Surf {
-  pos: number[] = [];
-  col: number[] = [];
-  uv: number[] = [];
-  idx: number[] = [];
-  n = 0;
-
-  // fn(u01, v01) -> { p:[x,y,z], c:[r,g,b] }
-  surf(nu: number, nv: number, fn: SurfFn): void {
-    const base = this.n;
-    for (let j = 0; j <= nv; j++) {
-      for (let i = 0; i <= nu; i++) {
-        const u = i / nu;
-        const v = j / nv;
-        const o = fn(u, v);
-        this.pos.push(o.p[0], o.p[1], o.p[2]);
-        const c: Readonly<RGB> = o.c ?? [1, 1, 1];
-        this.col.push(c[0], c[1], c[2]);
-        this.uv.push(u, v);
-      }
-    }
-    const w = nu + 1;
-    for (let j = 0; j < nv; j++) {
-      for (let i = 0; i < nu; i++) {
-        const a = base + j * w + i;
-        this.idx.push(a, a + 1, a + w, a + 1, a + w + 1, a + w);
-      }
-    }
-    this.n += (nu + 1) * (nv + 1);
-  }
-
-  build(): THREE.BufferGeometry {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
-    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
-    g.setIndex(this.idx);
-    g.computeVertexNormals();
-    return g;
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Flower (papilionaceous). +Z forward along the keel, +Y to the standard.
 // 1 unit ~ width of the standard, ~22 mm in life. Origin = pedicel base.
 // ---------------------------------------------------------------------------
-export const FLOWER_SIZE = 0.0225;
+const FLOWER_SIZE = 0.0225;
 const PEDICEL = 0.95;
 
 const C = {
@@ -272,116 +220,16 @@ function makeBud(lod: number): THREE.BufferGeometry {
 }
 
 // ---------------------------------------------------------------------------
-// Merging helper: bakes transformed copies of small geometries into one,
-// tagging every vertex with the sub-organ it belongs to.
-//   aPart = (pivot xyz, t)   t >= 0: flower/leaflet index 0..1
-//                            t <  0: axis (rachis), encoded as -1 - t
-// ---------------------------------------------------------------------------
-class Merge {
-  pos: number[] = [];
-  nor: number[] = [];
-  col: number[] = [];
-  /** null when the merged geometry carries no texture coordinates */
-  uv: number[] | null;
-  part: number[] = [];
-  idx: number[] = [];
-  n = 0;
-
-  constructor(withUv: boolean) {
-    this.uv = withUv ? [] : null;
-  }
-
-  add(geo: THREE.BufferGeometry, m: THREE.Matrix4, colorMul: Readonly<RGB>, pivot: V3, t: number): void {
-    const p = geo.getAttribute('position');
-    const nr = geo.getAttribute('normal');
-    const c = geo.getAttribute('color');
-    // only read when this merge keeps UVs; every Surf geometry has them
-    const uv = geo.getAttribute('uv') as AnyAttribute | undefined;
-    const v = new V3();
-    const nm = new THREE.Matrix3().getNormalMatrix(m);
-    for (let i = 0; i < p.count; i++) {
-      v.fromBufferAttribute(p, i).applyMatrix4(m);
-      this.pos.push(v.x, v.y, v.z);
-      v.fromBufferAttribute(nr, i).applyMatrix3(nm).normalize();
-      this.nor.push(v.x, v.y, v.z);
-      this.col.push(c.getX(i) * colorMul[0], c.getY(i) * colorMul[1], c.getZ(i) * colorMul[2]);
-      if (this.uv) this.uv.push(uv!.getX(i), uv!.getY(i));
-      this.part.push(pivot.x, pivot.y, pivot.z, t);
-    }
-    const ix = geo.index!;
-    for (let i = 0; i < ix.count; i++) this.idx.push(ix.getX(i) + this.n);
-    this.n += p.count;
-  }
-
-  // tube along pts; every ring pivots on its own centre
-  tube(
-    pts: readonly V3[],
-    radii: readonly number[],
-    radial: number,
-    c0: Readonly<RGB>,
-    c1: Readonly<RGB>,
-    uvAt?: Readonly<UV>,
-  ): void {
-    const base = this.n;
-    const T = new V3();
-    const N = new V3();
-    const B = new V3();
-    const m = pts.length;
-    for (let i = 0; i < m; i++) {
-      const pt = pts[i]!;
-      const rad = radii[i]!;
-      T.subVectors(pts[Math.min(m - 1, i + 1)]!, pts[Math.max(0, i - 1)]!).normalize();
-      N.set(1, 0, 0);
-      if (Math.abs(T.x) > 0.9) N.set(0, 0, 1);
-      N.addScaledVector(T, -N.dot(T)).normalize();
-      B.crossVectors(T, N);
-      const f = i / (m - 1);
-      const c = mix(c0, c1, f);
-      for (let j = 0; j <= radial; j++) {
-        const th = ((j % radial) / radial) * TAU;
-        const nx = N.x * Math.cos(th) + B.x * Math.sin(th);
-        const ny = N.y * Math.cos(th) + B.y * Math.sin(th);
-        const nz = N.z * Math.cos(th) + B.z * Math.sin(th);
-        this.pos.push(pt.x + nx * rad, pt.y + ny * rad, pt.z + nz * rad);
-        this.nor.push(nx, ny, nz);
-        this.col.push(c[0], c[1], c[2]);
-        if (this.uv) this.uv.push(uvAt![0], uvAt![1]);
-        this.part.push(pt.x, pt.y, pt.z, -1 - f);
-      }
-    }
-    const ring = radial + 1;
-    for (let i = 0; i < m - 1; i++) {
-      for (let j = 0; j < radial; j++) {
-        const a = base + i * ring + j;
-        this.idx.push(a, a + 1, a + ring, a + 1, a + ring + 1, a + ring);
-      }
-    }
-    this.n += m * ring;
-  }
-
-  build(): THREE.BufferGeometry {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
-    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.nor, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
-    if (this.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
-    g.setAttribute('aPart', new THREE.Float32BufferAttribute(this.part, 4));
-    g.setIndex(this.idx);
-    return g;
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Raceme
 // ---------------------------------------------------------------------------
-export const RACEME_LEN = 0.26; // nominal; instances scale 0.78-1.3 => 20-34 cm
-export const RACEME_VARIANTS = 4;
-export const RACEME_LODS = 4;
+const RACEME_LEN = 0.26; // nominal; instances scale 0.78-1.3 => 20-34 cm
+const RACEME_VARIANTS = 4;
+const RACEME_LODS = 4;
 
 const flowerCache: THREE.BufferGeometry[] = [];
 const budCache: THREE.BufferGeometry[] = [];
 
-export function makeRacemeGeometry(variant: number, lod: number): THREE.BufferGeometry {
+function makeRacemeGeometry(variant: number, lod: number): THREE.BufferGeometry {
   flowerCache[lod] ??= makeFlower(lod);
   budCache[lod] ??= makeBud(lod);
   const rng = new RNG(1000 + variant * 17);
@@ -451,8 +299,11 @@ export function makeRacemeGeometry(variant: number, lod: number): THREE.BufferGe
 // ---------------------------------------------------------------------------
 // Compound leaf
 // ---------------------------------------------------------------------------
-export const LEAF_VARIANTS: readonly number[] = [9, 11, 13];
-export const LEAF_LODS = 3;
+/** The usual number of leaflets (Bean: "consisting usually of eleven leaflets"), from the morphology file. */
+const USUAL_LEAFLETS = characterNumber(morphology, 'leaf.leafletCount');
+/** Leaflets per variant: the usual number, and a leaf with one pair fewer and one with one pair more. */
+const LEAF_VARIANTS: readonly number[] = [USUAL_LEAFLETS - 2, USUAL_LEAFLETS, USUAL_LEAFLETS + 2];
+const LEAF_LODS = 3;
 const LEAF_K = 0.28; // rachis arch: p(t) = (0, -K t^2, t)
 
 const LEAFLET_SEGS: Segs[] = [
@@ -495,7 +346,7 @@ function makeLeaflet(lod: number): THREE.BufferGeometry {
 }
 
 const leafletCache: THREE.BufferGeometry[] = [];
-export function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
+function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   leafletCache[lod] ??= makeLeaflet(lod);
   const nLeaflets = LEAF_VARIANTS[variant]!;
   const rng = new RNG(500 + variant * 31);
@@ -549,7 +400,10 @@ export function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeom
 // ---------------------------------------------------------------------------
 // Seed pods: flattened, velvety, constricted between the seeds, 10-15 cm.
 // ---------------------------------------------------------------------------
-export function makePodGeometry(): THREE.BufferGeometry {
+/** The length the pods are authored at; an instance is scaled to the length in the data. */
+const POD_LEN = 0.125;
+
+function makePodGeometry(): THREE.BufferGeometry {
   const mg = new Merge(false);
   const green = lin('#8d9a6a');
   const pod = (() => {
@@ -584,15 +438,85 @@ export function makePodGeometry(): THREE.BufferGeometry {
   return mg.build();
 }
 
-/** A scrap of litter (fallen petal / leaflet) for the ground. */
-export function makeLitterGeometry(): THREE.BufferGeometry {
-  const g = new THREE.CircleGeometry(0.5, 6);
-  g.scale(1, 0.62, 1);
-  g.rotateX(-Math.PI / 2);
-  return g;
-}
+// ---------------------------------------------------------------------------
+// The look
+// ---------------------------------------------------------------------------
+const leaf: LeafAsset = {
+  key: 'wisteria-sinensis/leaf',
+  variants: LEAF_VARIANTS.length,
+  lods: LEAF_LODS,
+  make: makeLeafGeometry,
+  budget: [1800, 250, 120],
+  // short leaves and one in five of the rest have nine leaflets; most have eleven
+  pick: (lengthM, r) => (lengthM < 0.1 || r < 0.2 ? 0 : r < 0.8 ? 1 : 2),
+  palette: { greenA: [0.145, 0.3, 0.05], greenB: [0.19, 0.36, 0.065], young: [0.4, 0.27, 0.085], autumnA: [0.8, 0.56, 0.05], autumnB: [0.62, 0.36, 0.06] },
+  roughness: 0.5,
+  translucency: THIN_LEAF,
+  detailReach: 1,
+};
 
-// The surface and merge builders are plain geometry tools, shared with the organ
-// modules of other taxa. The shapes above stay Wisteria sinensis's.
-export { Merge, Surf, lin, mix };
-export type { RGB };
+const raceme: FlowerAsset = {
+  key: 'wisteria-sinensis/raceme',
+  variants: RACEME_VARIANTS,
+  lods: RACEME_LODS,
+  make: makeRacemeGeometry,
+  budget: [22500, 5800, 1420, 520],
+  pick: (r) => Math.floor(r * RACEME_VARIANTS),
+  authoredSize: RACEME_LEN,
+  poise: 'hangs',
+  centreAlong: 0.5,
+  budTint: [0.62, 0.55, 0.86],
+  swing: 0.6,
+  translucency: 0.3,
+  sheen: 0.1,
+  detailAt: [1.3, 3.2, 6.5],
+  detailCaps: [26, 130, 800],
+};
+
+const pod: FruitAsset = {
+  key: 'wisteria-sinensis/pod',
+  variants: 1,
+  lods: 1,
+  make: () => makePodGeometry(),
+  budget: [400],
+  pick: () => 0,
+  authoredSize: POD_LEN,
+  poise: 'hangs',
+  centreAlong: 0.5,
+  // green and velvety, drying to brown
+  ripe: [0.2, 0.145, 0.085],
+  ripeShade: [0.6, 2],
+  roughness: 0.9,
+  swing: 0.6,
+  detailAt: [],
+  detailCaps: [],
+};
+
+/**
+ * How Wisteria sinensis wood looks as it ages: green shoot, smooth brown, grey
+ * fissured bark. The ages are the prototype's (0.3 to 1.2, 1.5 to 5.5, 0.8 to
+ * 5 and 0.15 to 1.6 growing seasons), in days.
+ */
+const wood: WoodLook = {
+  young: [0.21, 0.3, 0.085],
+  mature: [0.3, 0.2, 0.115],
+  old: [0.8, 0.76, 0.71],
+  woodyDays: [110, 440],
+  oldDays: [550, 2000],
+  furrowDays: [290, 1825],
+  furrow: 1,
+  stiffDays: [55, 585],
+  relief: 3,
+  roughness: 0.94,
+};
+
+export const look: TaxonLook = {
+  taxonId: 'wisteria-sinensis',
+  provisional: false,
+  leaves: { default: leaf },
+  flowers: { default: raceme },
+  fruits: { default: pod },
+  // a twiner: it holds on with its stems, and has no tendrils, rootlets or prickles
+  appendages: {},
+  wood,
+};

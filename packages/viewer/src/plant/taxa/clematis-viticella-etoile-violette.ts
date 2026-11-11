@@ -1,28 +1,26 @@
-// Organ shapes of three clematis. Not to be reused for other taxa: mechanism
-// traits do not transfer, and the three here differ from one another too.
+// Clematis 'Etoile Violette' (Viticella Group), a deciduous leaf-stalk climber
+// that flowers on the growth of the year.
 //
-//   leaf            a compound leaf of stalked leaflets on a wiry axis: five
-//                   plain leaflets (Clematis 'Etoile Violette'), three lobed
-//                   ones (Clematis cirrhosa 'Freckles'), or three long,
-//                   leathery, drooping ones (Clematis armandii). Unit length
-//                   along +Z, upper side +Y.
-//   open flower     'Etoile Violette': a single flat flower of four to six
-//                   velvety tepals round a boss of cream stamens, held out on
-//                   a long stalk that rises from the node. One unit is the
-//                   width of the flower, which is what the render data gives.
-//   star flower     C. armandii: the same build, but a white star of narrower
-//                   tepals on a shorter stalk.
-//   bell flower     'Freckles': a nodding bell of four cream tepals speckled
-//                   red-maroon, hanging on its stalk. One unit is the width of
-//                   the mouth of the bell.
+//   leaf     a compound leaf of five plain, stalked leaflets on a wiry axis.
+//            Unit length along +Z, upper side +Y.
+//   flower   a single flat flower of four to six velvety violet tepals round a
+//            boss of cream stamens, held out on a long stalk that rises from
+//            the node. One unit is the width of the flower, which is what the
+//            render data gives.
+//   hold     a leaf stalk wound round what it met (a first, plain model)
+//   wood     first values, from descriptions: thin ribbed shoots, green
+//            flushed purple, ripening to a pale stringy brown
 //
-// Both flowers are drawn by the same program as a raceme: tepals are tagged as
+// The flower is drawn by the same program as a raceme: tepals are tagged as
 // flowers of an inflorescence that all open nearly together, the stalk and the
 // stamens as its axis. When the tepals drop, the stamens stay: the seed head.
+//
+// Made from descriptions, not from specimens. This module is this clematis's
+// alone: the other clematis have their own copies of whatever they once shared.
 import * as THREE from 'three';
-import { hash2, RNG } from '../util.ts';
-import { type CompoundLayout, blade, compoundLeaf } from './kit.ts';
-import { Merge, type RGB, Surf, lin, mix } from './organs.ts';
+import { RNG, hash2 } from '../../util.ts';
+import { Merge, type RGB, Surf, lin, mix, tendrilPath } from '../kit.ts';
+import { type AppendageAsset, type FlowerAsset, type LeafAsset, THIN_LEAF, type TaxonLook, type WoodLook } from '../look.ts';
 
 const V3 = THREE.Vector3;
 const TAU = Math.PI * 2;
@@ -30,7 +28,7 @@ const TAU = Math.PI * 2;
 // ---------------------------------------------------------------------------
 // Leaf
 // ---------------------------------------------------------------------------
-export const CLEMATIS_LEAF_LODS = 3;
+const CLEMATIS_LEAF_LODS = 3;
 
 const LEAFLET_SEGS: [number, number][] = [
   [6, 9],
@@ -55,7 +53,7 @@ function leaflet(lod: number, lobed: boolean): THREE.BufferGeometry {
 }
 
 /** `leaflets` 3 or 5; `lobed` gives each leaflet a shallowly lobed outline. */
-export function makeClematisLeafGeometry(leaflets: 3 | 5, lobed: boolean, lod: number): THREE.BufferGeometry {
+function makeClematisLeafGeometry(leaflets: 3 | 5, lobed: boolean, lod: number): THREE.BufferGeometry {
   const rng = new RNG(700 + leaflets * 13 + (lobed ? 1 : 0));
   const mg = new Merge(true);
   const blade = leaflet(lod, lobed);
@@ -109,34 +107,6 @@ export function makeClematisLeafGeometry(leaflets: 3 | 5, lobed: boolean, lod: n
   return g;
 }
 
-/**
- * Clematis armandii: three long, leathery leaflets, widest near the base and
- * drawn out to a point, hanging from a stalk.
- */
-const ARMANDII_SEGS: [number, number][] = [
-  [6, 10],
-  [3, 5],
-  [2, 3],
-];
-export function makeArmandiiLeafGeometry(_variant: number, lod: number): THREE.BufferGeometry {
-  const leaflet = blade({ halfWidth: 0.17, widest: 0.6, taper: 0.8, fold: 0.22, arch: 0.22, wave: 0.01 }, ARMANDII_SEGS[lod]!, lod === 0);
-  const layout: CompoundLayout = {
-    axisEnd: 0.3,
-    axisRadius: 0.012,
-    arch: 0.06,
-    leaflets: [
-      { at: 1, side: -1, length: 0.66 },
-      { at: 1, side: 1, length: 0.66 },
-      { at: 1, side: 0, length: 0.72 },
-    ],
-    stalk: 0.06,
-    forward: [0.7, 0.95],
-    droop: [0.25, 0.5],
-    seed: 811,
-  };
-  return compoundLeaf(leaflet, layout, lod);
-}
-
 // ---------------------------------------------------------------------------
 // Shared: a tuft of stamens, tagged as axis so it outlasts the tepals
 // ---------------------------------------------------------------------------
@@ -168,8 +138,8 @@ const TEPAL_SEGS: [number, number][] = [
 // Open flower: Clematis 'Etoile Violette'
 // ---------------------------------------------------------------------------
 /** Tepals per variant. */
-export const OPEN_FLOWER_TEPALS: readonly number[] = [6, 5, 4];
-export const CLEMATIS_FLOWER_LODS = 3;
+const OPEN_FLOWER_TEPALS: readonly number[] = [6, 5, 4];
+const CLEMATIS_FLOWER_LODS = 3;
 
 /** What sets one flat clematis flower apart from another. */
 interface StarLook {
@@ -200,28 +170,8 @@ const VIOLET: StarLook = {
   stalk: 0.82,
 };
 
-export function makeOpenFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry {
+function makeOpenFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry {
   return starFlower(OPEN_FLOWER_TEPALS[variant]!, variant, lod, VIOLET);
-}
-
-/** Tepals per variant of the C. armandii flower. */
-export const STAR_FLOWER_TEPALS: readonly number[] = [5, 6, 4];
-
-const ARMANDII: StarLook = {
-  deep: lin('#ece9d6'),
-  mid: lin('#f8f6ea'),
-  bar: lin('#f1eecf'),
-  base: lin('#e4e8c4'),
-  stamenA: lin('#efe9b6'),
-  stamenB: lin('#d6d48e'),
-  stalkA: lin('#6f7d48'),
-  stalkB: lin('#8d9a62'),
-  tepalHalfWidth: 0.125,
-  stalk: 0.55,
-};
-
-export function makeStarFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry {
-  return starFlower(STAR_FLOWER_TEPALS[variant]!, variant + 10, lod, ARMANDII);
 }
 
 function starFlower(n: number, variant: number, lod: number, look: StarLook): THREE.BufferGeometry {
@@ -277,73 +227,95 @@ function starFlower(n: number, variant: number, lod: number, look: StarLook): TH
 }
 
 // ---------------------------------------------------------------------------
-// Bell flower: Clematis cirrhosa 'Freckles'
+// The hold: a leaf stalk wound round what it met. A first, plain model.
 // ---------------------------------------------------------------------------
-export const BELL_FLOWER_VARIANTS = 2;
+const COIL_LODS = 2;
+const COIL = { green: lin('#6f7d48'), tip: lin('#5a5a3a') };
 
-const FRECKLES = {
-  cream: lin('#efe9c4'),
-  flush: lin('#e2cfae'),
-  spot: lin('#7d2233'),
-  stamenA: lin('#e6e3b0'),
-  stamenB: lin('#c9cf8c'),
-  stalkA: lin('#6a7445'),
-  stalkB: lin('#7b6a55'),
-};
-
-const BELL_SEGS: [number, number][] = [
-  [10, 14],
-  [5, 6],
-  [2, 2],
-];
-
-export function makeBellFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry {
+/** Variant 0 has hold and is wound round its support; variant 1 found nothing and is only crooked. */
+function makeStalkCoilGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const mg = new Merge(false);
-  const [nu, nv] = BELL_SEGS[lod]!;
-  // it hangs: the stalk curves over and down
-  const stalk = (s: number) => new V3(0.1 * Math.sin((Math.PI / 2) * s), -0.7 * s, 0);
-  const top = stalk(1);
-  const down = new V3(0, -1, 0);
-
-  const NS = [6, 3, 2][lod]!;
-  const pts: THREE.Vector3[] = [];
-  const radii: number[] = [];
-  for (let i = 0; i <= NS; i++) {
-    pts.push(stalk(i / NS));
-    radii.push(0.02);
-  }
-  mg.tube(pts, radii, [5, 4, 3][lod]!, FRECKLES.stalkA, FRECKLES.stalkB);
-
-  const id = new THREE.Matrix4();
-  for (let k = 0; k < 4; k++) {
-    const theta = (k / 4) * TAU + Math.PI / 4 + variant * 0.4;
-    const er = new V3(Math.cos(theta), 0, Math.sin(theta));
-    const et = new V3(-Math.sin(theta), 0, Math.cos(theta));
-    const sb = new Surf();
-    sb.surf(nu, nv, (u01, v) => {
-      const u = u01 * 2 - 1;
-      // a bell: out from the stalk and down, flaring at the mouth, the tip turned out
-      // the tips stand half a unit from the axis: the mouth is one unit across
-      const r = 0.06 + 0.4 * Math.pow(v, 1.5) + 0.04 * v ** 4;
-      const drop = 0.8 * v - 0.08 * v * v * v;
-      const hw = 0.34 * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.7)), 0.7) + 0.004;
-      // wrapped round the bell rather than flat across it
-      const bend = (u * hw) / Math.max(r, 0.12);
-      const p = top
-        .clone()
-        .addScaledVector(er, r * Math.cos(bend))
-        .addScaledVector(et, r * Math.sin(bend))
-        .addScaledVector(down, drop);
-      // cream, flushed towards the base, freckled most heavily through the middle
-      let c = mix(FRECKLES.cream, FRECKLES.flush, Math.max(0, 1 - v * 2.2));
-      const cell = hash2(Math.round(u01 * nu) + k * 17 + variant * 101, Math.round(v * nv));
-      if (cell < 0.5 * Math.sin(Math.PI * Math.min(1, v * 1.15)) * (1 - 0.4 * Math.abs(u))) c = mix(c, FRECKLES.spot, 0.5 + 0.45 * hash2(k + 5, Math.round(v * nv) * 7 + Math.round(u01 * nu)));
-      return { p: [p.x, p.y, p.z], c };
-    });
-    mg.add(sb.build(), id, [1, 1, 1], top, (k / 4) * 0.2);
-  }
-  if (lod < 2) stamens(mg, top.clone().addScaledVector(down, 0.08), down, lod === 0 ? 12 : 6, 0.42, 0.28, lod === 0 ? 4 : 3, FRECKLES.stamenA, FRECKLES.stamenB, 57 + variant);
+  const n = [18, 8][lod]!;
+  const pts = tendrilPath({ bow: 0.06, turns: variant === 0 ? 1.5 : 0, coilRadius: 0.16, creep: 0.09 }, n);
+  mg.tube(pts, pts.map((_, i) => 0.035 * (1 - 0.35 * (i / (pts.length - 1)))), [5, 3][lod]!, COIL.green, COIL.tip);
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(top.clone().addScaledVector(down, 0.4), 0.9);
+  g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.7);
   return g;
 }
+
+const stalkCoil: AppendageAsset = {
+  key: 'clematis-viticella-etoile-violette/leaf-stalk-coil',
+  variants: 2,
+  lods: COIL_LODS,
+  make: makeStalkCoilGeometry,
+  budget: [200, 60],
+  pick: (_r, holding) => (holding ? 0 : 1),
+  // a stalk that has hold hardens and browns, and outlasts its leaf
+  aged: [0.22, 0.14, 0.08],
+  agedDays: [60, 240],
+  roughness: 0.8,
+  swing: 0,
+  detailAt: [1.2],
+  detailCaps: [200],
+};
+
+// ---------------------------------------------------------------------------
+// The look
+// ---------------------------------------------------------------------------
+const leaf: LeafAsset = {
+  key: 'clematis-viticella-etoile-violette/leaf',
+  variants: 1,
+  lods: CLEMATIS_LEAF_LODS,
+  make: (_variant, lod) => makeClematisLeafGeometry(5, false, lod),
+  budget: [700, 200, 56],
+  pick: () => 0,
+  palette: { greenA: [0.12, 0.26, 0.06], greenB: [0.16, 0.32, 0.075], young: [0.26, 0.34, 0.1], autumnA: [0.62, 0.5, 0.1], autumnB: [0.42, 0.3, 0.08] },
+  roughness: 0.55,
+  translucency: THIN_LEAF,
+  detailReach: 0.7,
+};
+
+const flower: FlowerAsset = {
+  key: 'clematis-viticella-etoile-violette/flower',
+  variants: OPEN_FLOWER_TEPALS.length,
+  lods: CLEMATIS_FLOWER_LODS,
+  make: makeOpenFlowerGeometry,
+  budget: [800, 230, 64],
+  // most flowers have six tepals, some five, a few four
+  pick: (r) => (r < 0.6 ? 0 : r < 0.87 ? 1 : 2),
+  authoredSize: 1,
+  poise: 'held',
+  centreAlong: 0.7,
+  budTint: [0.6, 0.55, 0.8],
+  swing: 0.3,
+  translucency: 0.1,
+  sheen: 0.22,
+  detailAt: [1.1, 3.2],
+  detailCaps: [60, 500],
+};
+
+/** First values, from descriptions: to be checked against the plant. */
+const wood: WoodLook = {
+  young: lin('#7f8a50'),
+  mature: lin('#9a7a55'),
+  old: [0.96, 0.84, 0.66],
+  woodyDays: [60, 200],
+  oldDays: [300, 900],
+  furrowDays: [200, 900],
+  furrow: 0.25,
+  stiffDays: [40, 300],
+  relief: 2,
+  roughness: 0.9,
+  // fine, straight fibres
+  grain: { streaks: 700, width: 1.6, wobble: 5 },
+};
+
+export const look: TaxonLook = {
+  taxonId: 'clematis-viticella-etoile-violette',
+  provisional: false,
+  leaves: { default: leaf },
+  flowers: { default: flower },
+  fruits: null,
+  appendages: { leaf_stalk_coil: stalkCoil },
+  wood,
+};

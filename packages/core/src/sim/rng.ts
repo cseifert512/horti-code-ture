@@ -34,3 +34,27 @@ export class Rng {
     return items[Math.floor(this.next() * items.length)]!;
   }
 }
+
+/**
+ * A stream of its own for one decision at one place: seeded from the place
+ * (to a tenth of a millimetre), a number that tells plants apart and a number
+ * that tells decisions apart.
+ *
+ * A plant's three running streams are consumed in order, so one more draw
+ * anywhere moves everything decided after it. What is decided here instead
+ * depends on nothing but where it is: fruit, tendrils, prickles and flowering
+ * side shoots can be switched on, or cut off, without moving a leaf or a
+ * flower anywhere else on the plant, and two scenarios stay comparable.
+ */
+export function placeRng(base: number, x: number, y: number, z: number, salt: number): Rng {
+  let h = Math.imul(base | 0, 0x9e3779b1) ^ Math.imul(Math.round(x * 10000), 73856093) ^ Math.imul(Math.round(y * 10000), 19349663) ^ Math.imul(Math.round(z * 10000), 83492791) ^ Math.imul(salt | 0, 0x85ebca6b);
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x7feb352d);
+  h ^= h >>> 15;
+  h = Math.imul(h, 0x846ca68b);
+  h ^= h >>> 16;
+  const rng = new Rng(h);
+  // the first number of a stream follows its seed closely; let it go
+  rng.next();
+  return rng;
+}

@@ -1,76 +1,34 @@
-// Organ shapes of two honeysuckles. Not to be reused for other taxa: mechanism
-// traits do not transfer, and the two here differ from each other too.
+// Lonicera periclymenum 'Graham Thomas' (a woodbine), a deciduous twiner.
 //
-//   Lonicera henryi (Henry's honeysuckle)
-//     leaf   simple, leathery, lanceolate, widest below the middle and drawn
-//            out to a point, on a short stalk
-//   Lonicera periclymenum 'Graham Thomas' (a woodbine)
-//     leaf   simple, soft and dull, oval and blunt, widest about the middle
+//   leaf      simple, soft and dull, oval and blunt, widest about the middle.
+//             Unit length along +Z, upper side +Y.
+//   flowers   a full whorl of long white two-lipped tubes ageing to yellow,
+//             with a tier of buds standing in the middle. One unit is the
+//             width of the cluster, which is what the render data gives.
+//   wood      first values, from descriptions: green shoots flushed red, pale
+//             buff bark that shreds in strips
 //
-// Both flower in clusters of slender two-lipped tubes, but not alike:
-//     woodbine   a full whorl of long white tubes ageing to yellow, with a
-//                tier of buds standing in the middle
-//     henryi     a few pairs of short tubes, yellow in the throat and
-//                purplish-red on the lips
-// One unit is the width of the cluster, which is what the render data gives.
-// A cluster is drawn by the same program as a raceme: each tube is one of its
+// The cluster is drawn by the same program as a raceme: each tube is one of its
 // flowers, opening in turn; the stalk is its axis.
 //
-// Unit length along +Z, upper side +Y, the same frame as every leaf model.
-// The real length comes from the render data.
+// Made from descriptions, not from specimens. This module is this woodbine's
+// alone: the other honeysuckle has its own copy of whatever the two once shared.
 import * as THREE from 'three';
-import { hash2 } from '../util.ts';
-import { type Segs, blade as plainBlade, simpleLeaf } from './kit.ts';
-import { Merge, type RGB, Surf, lin, mix } from './organs.ts';
+import { hash2 } from '../../util.ts';
+import { Merge, type RGB, type Segs, Surf, blade as plainBlade, lin, mix, simpleLeaf } from '../kit.ts';
+import { type FlowerAsset, type LeafAsset, THIN_LEAF, type TaxonLook, type WoodLook } from '../look.ts';
 
 const V3 = THREE.Vector3;
 
-export const LONICERA_LEAF_VARIANTS = 2;
-export const LONICERA_LEAF_LODS = 3;
-
-const SEGS: [number, number][] = [
-  [6, 10],
-  [4, 5],
-  [2, 3],
-];
-
-function blade(variant: number, lod: number): THREE.BufferGeometry {
-  const sb = new Surf();
-  const [nu, nv] = SEGS[lod]!;
-  const halfWidth = variant === 0 ? 0.165 : 0.195;
-  sb.surf(nu, nv, (u01, v) => {
-    const u = u01 * 2 - 1;
-    // rounded at the base, widest at about two fifths, long-pointed
-    const profile = Math.pow(Math.sin(Math.PI * Math.pow(v, 0.72)), 0.8);
-    const x = u * (halfWidth * profile + 0.003);
-    // folded a little along the midrib, arching down towards the tip
-    let y = 0.2 * Math.abs(x) - 0.1 * v * v + 0.02 * Math.sin(Math.PI * v);
-    if (lod === 0) y += 0.012 * Math.sin(v * 11 + u * 1.3) * u * u;
-    return { p: [x, y, v] };
-  });
-  return sb.build();
-}
-
-export function makeLoniceraLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
-  const mg = new Merge(true);
-  const stalkEnd = new V3(0, 0.006, 0.1);
-  mg.tube([new V3(0, 0, 0), new V3(0, 0.004, 0.05), stalkEnd], [0.016, 0.013, 0.011], [5, 4, 3][lod]!, [1, 1, 1], [1, 1, 1], [0.5, 0.02]);
-  const m = new THREE.Matrix4().compose(stalkEnd, new THREE.Quaternion(), new V3(0.9, 0.9, 0.9));
-  mg.add(blade(variant, lod), m, [1, 1, 1], stalkEnd, 0.3 + 0.4 * variant);
-  const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.7);
-  return g;
-}
-
-export const WOODBINE_LEAF_VARIANTS = 2;
-export const WOODBINE_LEAF_LODS = 3;
+const WOODBINE_LEAF_VARIANTS = 2;
+const WOODBINE_LEAF_LODS = 3;
 const WOODBINE_SEGS: Segs[] = [
   [6, 8],
   [4, 4],
   [2, 2],
 ];
 
-export function makeWoodbineLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
+function makeWoodbineLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const shape = { halfWidth: variant === 0 ? 0.24 : 0.27, widest: 0.9, taper: 0.58, fold: 0.14, arch: 0.09, wave: 0.012 };
   return simpleLeaf(plainBlade(shape, WOODBINE_SEGS[lod]!, lod === 0), 0.07, lod, 0.3 + 0.4 * variant);
 }
@@ -78,7 +36,7 @@ export function makeWoodbineLeafGeometry(variant: number, lod: number): THREE.Bu
 // ---------------------------------------------------------------------------
 // Flower clusters
 // ---------------------------------------------------------------------------
-export const HONEYSUCKLE_CLUSTER_LODS = 3;
+const HONEYSUCKLE_CLUSTER_LODS = 3;
 
 interface TubeLook {
   tube: RGB;
@@ -182,7 +140,7 @@ function cluster(variant: number, lod: number, look: ClusterLook): THREE.BufferG
   return g;
 }
 
-export const WOODBINE_CLUSTER_VARIANTS = 2;
+const WOODBINE_CLUSTER_VARIANTS = 2;
 const WOODBINE: ClusterLook = {
   tube: lin('#f0ecc4'),
   lip: lin('#fbf8ea'),
@@ -195,23 +153,68 @@ const WOODBINE: ClusterLook = {
   stalkA: lin('#6e7c47'),
   stalkB: lin('#8f9a5e'),
 };
-export function makeWoodbineClusterGeometry(variant: number, lod: number): THREE.BufferGeometry {
+function makeWoodbineClusterGeometry(variant: number, lod: number): THREE.BufferGeometry {
   return cluster(variant, lod, WOODBINE);
 }
 
-export const HENRYI_CLUSTER_VARIANTS = 2;
-const HENRYI: ClusterLook = {
-  tube: lin('#d8b04e'),
-  lip: lin('#a23448'),
-  throat: lin('#e9cf62'),
-  roll: 1.9,
-  flowers: 6,
-  buds: 2,
-  lift: 0.45,
-  aged: null,
-  stalkA: lin('#5c6b3c'),
-  stalkB: lin('#7a8650'),
+// ---------------------------------------------------------------------------
+// The look
+// ---------------------------------------------------------------------------
+const leaf: LeafAsset = {
+  key: 'lonicera-periclymenum-graham-thomas/leaf',
+  variants: WOODBINE_LEAF_VARIANTS,
+  lods: WOODBINE_LEAF_LODS,
+  make: makeWoodbineLeafGeometry,
+  budget: [120, 52, 24],
+  pick: (_lengthM, r) => (r < 0.5 ? 0 : 1),
+  // soft, dull green, yellowing a little before it drops
+  palette: { greenA: [0.1, 0.22, 0.07], greenB: [0.13, 0.27, 0.085], young: [0.2, 0.32, 0.1], autumnA: [0.45, 0.42, 0.1], autumnB: [0.3, 0.3, 0.08] },
+  roughness: 0.65,
+  translucency: THIN_LEAF,
+  detailReach: 0.6,
 };
-export function makeHenryiClusterGeometry(variant: number, lod: number): THREE.BufferGeometry {
-  return cluster(variant + 4, lod, HENRYI);
-}
+
+const flowerCluster: FlowerAsset = {
+  key: 'lonicera-periclymenum-graham-thomas/flower-cluster',
+  variants: WOODBINE_CLUSTER_VARIANTS,
+  lods: HONEYSUCKLE_CLUSTER_LODS,
+  make: makeWoodbineClusterGeometry,
+  budget: [1950, 580, 180],
+  pick: (r) => Math.floor(r * WOODBINE_CLUSTER_VARIANTS),
+  authoredSize: 1,
+  poise: 'held',
+  centreAlong: 0.15,
+  budTint: [0.95, 0.9, 0.7],
+  swing: 0.3,
+  translucency: 0.35,
+  sheen: 0.03,
+  detailAt: [1.1, 3.2],
+  detailCaps: [60, 500],
+};
+
+/** First values, from descriptions: to be checked against the plant. */
+const wood: WoodLook = {
+  young: lin('#8a8a55'),
+  mature: lin('#9a7450'),
+  old: [0.93, 0.86, 0.74],
+  woodyDays: [70, 260],
+  oldDays: [400, 1300],
+  furrowDays: [300, 1500],
+  furrow: 0.35,
+  stiffDays: [40, 320],
+  relief: 2.6,
+  roughness: 0.93,
+  // long, straight shreds
+  grain: { streaks: 560, width: 2.6, wobble: 6 },
+};
+
+export const look: TaxonLook = {
+  taxonId: 'lonicera-periclymenum-graham-thomas',
+  provisional: false,
+  leaves: { default: leaf },
+  flowers: { default: flowerCluster },
+  fruits: null,
+  // a twiner: it holds on with its stems
+  appendages: {},
+  wood,
+};

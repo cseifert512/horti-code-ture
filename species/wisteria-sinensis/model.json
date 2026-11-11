@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "taxonId": "wisteria-sinensis",
   "statement": "A running model, not a calibrated one. Nearly every number is carried over from the original prototype or chosen so that the model can run; none has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "hanging",
+    "fruitHeld": "hanging",
+    "basis": "The racemes hang: the RHS record describes \"drooping racemes to 30cm in length\" (https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details). That the pods hang as the racemes did is not stated in any source read; it is assumed, a pod forming on the stalk of a flower in a drooping raceme."
+  },
   "params": {
     "phenology.budburstDoy": {
       "value": 95,
@@ -417,6 +422,146 @@
       "value": 0.9,
       "status": "provisional_design_assumption",
       "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured."
+    },
+    "fruit.setShare": {
+      "value": 0.08,
+      "status": "provisional_design_assumption",
+      "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured. The prototype gives 8% of racemes a pod. No source read says how freely the plant sets pods in Britain. The prototype also showed only six in ten of those pods in any one year; that second thinning is not carried over."
+    },
+    "fruit.lengthM": {
+      "value": [
+        0.127,
+        0.152
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean (Trees and Shrubs Online): \"Pod rather like that of a kidney bean, 5 or 6 in. long, club-shaped, 3/4 in. wide towards the end, covered with a velvety pile, and containing two or three seeds.\" Five and six inches, in metres. One pod stands for what a raceme sets: how many pods a raceme carries is not given."
+    },
+    "fruit.swellDays": {
+      "value": [
+        75,
+        95
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured. The prototype swells its pods from 10 June to 29 August, which is 75 to 95 days after petal fall as this model dates it."
+    },
+    "fruit.ripenDoy": {
+      "value": [
+        263,
+        314
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured. The prototype turns its pods from green to brown between 20 September and 10 November."
+    },
+    "fruit.fallDoy": {
+      "value": [
+        37,
+        55
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured. The prototype keeps its pods hanging on the bare plant through the winter and takes them off between 6 and 24 February of the following year."
+    },
+    "appendages.tendrilNodePattern": {
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria climbs by twining its stems and has no tendrils."
+    },
+    "appendages.tendrilLengthM": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.tendrilNodePattern."
+    },
+    "appendages.leafStalkCoilShare": {
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria climbs by twining its stems; its leaf stalks do not coil round a support."
+    },
+    "appendages.leafStalkLengthM": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.leafStalkCoilShare."
+    },
+    "appendages.aerialRootPatchSpacingM": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria climbs by twining its stems and makes no clinging rootlets."
+    },
+    "appendages.aerialRootLengthM": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.aerialRootPatchSpacingM."
+    },
+    "appendages.prickleSpacingM": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Wisteria is taken to be unarmed: neither the RHS record nor Bean describes prickles or thorns on it."
+    },
+    "appendages.prickleLengthM": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.prickleSpacingM."
+    },
+    "sideShoots.bearingWoodAgeYears": {
+      "value": 0,
+      "unit": "years",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
+    },
+    "sideShoots.perMetrePerYear": {
+      "value": 0,
+      "unit": "per m per year",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria’s short flowering wood is the spur, which this model already grows (organs.spurChance). It throws no separate flowering side shoots."
+    },
+    "sideShoots.lengthM": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
+    },
+    "sideShoots.lifespanYears": {
+      "value": 0,
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
+    },
+    "sideShoots.terminalFlowerShare": {
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
     }
   }
 }

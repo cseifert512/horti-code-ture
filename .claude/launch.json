@@ -26,6 +26,18 @@
       "port": 5193
     },
     {
+      "name": "bower-viewer-portraits",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "node_modules/vite/bin/vite.js",
+        "packages/viewer",
+        "--port",
+        "5197",
+        "--strictPort"
+      ],
+      "port": 5197
+    },
+    {
       "name": "bower-viewer-light",
       "runtimeExecutable": "node",
       "runtimeArgs": [
