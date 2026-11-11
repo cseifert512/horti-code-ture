@@ -276,6 +276,19 @@ describe('four climbers on the arbour, eight years on', () => {
     expect(checked).toBeGreaterThan(2000);
   });
 
+  it('leaves the cut-down clematis its three stubs each February, however many years it is done', () => {
+    // one of its three stems finds the cable full and stalls at the foot: it must not stand as a stub of
+    // no length whose regrowth becomes more stubs every year (the log once read "2264 stubs left")
+    const cuts = sim.events.filter((e) => e.plantId === 'clematis' && e.type === 'hard_prune');
+    expect(cuts).toHaveLength(7);
+    for (const c of cuts) expect(c.outcome, c.date).toContain('3 stubs left to shoot again');
+    const standing = sim.plants
+      .get('clematis')!
+      .axisIds.map((id) => sim.axes.get(id)!)
+      .filter((a) => a.role === 'leader' && a.removedDay === null);
+    expect(standing.length).toBeLessThanOrEqual(9);
+  });
+
   it('hangs the wisteria from the rafters in May and reports what the arbour is made of', () => {
     expect(report.months.find((m) => m.month === 5)!.flowers.wisteria).toBeGreaterThan(50);
     expect(report.flowersByHeight.find((f) => f.plantId === 'wisteria' && f.zone === '2 to 3 m')!.count).toBeGreaterThan(50);

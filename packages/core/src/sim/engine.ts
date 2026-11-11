@@ -970,15 +970,18 @@ export class Simulation {
           for (const a of leaders) {
             if (a.removedDay !== null) continue;
             const below = this.lineageLength(a);
-            // a shoot that starts at or just under the cut height goes entirely: it is this year's growth, not a stub
-            if (below >= e.keepM - STEP) this.removeAxis(a, e.id, fx);
+            // a shoot that starts at or just under the cut height goes entirely: it is this year's growth, not a stub.
+            // So does a shoot from a stub that came to nothing, or it would stand as a stub of no length and shoot again.
+            if (below >= e.keepM - STEP || (a.parent !== null && this.lengthOf(a) < STEP)) this.removeAxis(a, e.id, fx);
             else if (this.lengthOf(a) > e.keepM - below + 1e-9) {
               this.cutAt(a, e.keepM - below, e.id, fx);
               a.tip = { state: 'stopped', reason: 'hard pruned' };
             }
           }
-          // every stub left standing shoots again
-          const stubs = leaders.filter((a) => a.removedDay === null);
+          // every stub left standing shoots again. A short stub carrying a younger one is the lower part
+          // of one stem: only the top of each stem shoots.
+          const standing = (a: Axis) => a.removedDay === null;
+          const stubs = leaders.filter((a) => standing(a) && !a.children.some((id) => this.axes.get(id)!.role === 'leader' && standing(this.axes.get(id)!)));
           for (const a of stubs) if (!plant.pendingRegrowth.includes(a.id)) plant.pendingRegrowth.push(a.id);
           this.events.push(this.record(e, date, `all stems cut back to ${e.keepM.toFixed(2)} m above the ground: ${fx.stemRemovedM.toFixed(1)} m of stem and ${fx.floralBudsRemoved} flower bud${fx.floralBudsRemoved === 1 ? '' : 's'} removed, ${stubs.length} stub${stubs.length === 1 ? '' : 's'} left to shoot again`, true, fx));
           return;
