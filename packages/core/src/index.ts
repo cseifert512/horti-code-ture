@@ -25,5 +25,6 @@ export * from './sim/scenarios.ts';
 export * from './sim/planting.ts';
 export * from './sim/view.ts';
 export * from './sim/report.ts';
+export * from './sim/sensitivity.ts';
 export * from './render/presence.ts';
 export { Rng } from './sim/rng.ts';

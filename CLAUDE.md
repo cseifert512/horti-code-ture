@@ -18,6 +18,7 @@ npm run check                   # tsc + vitest for packages/*
 npm test                        # vitest only
 npm run simulate                # reference scenario: yearly account, gardener's log, design report; render data and report in out/
 npm run simulate -- design examples/arbour.bower.json examples/arbour.planting.json   # a designed structure from two files
+npm run sensitivity -- palette  # how far the readings move when unmeasured leaf and shoot densities are multiplied
 npm run prototype:audit         # prototype interference audit
 npm run prototype:assumptions   # prototype behaviour baseline
 ```

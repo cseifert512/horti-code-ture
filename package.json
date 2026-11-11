@@ -17,6 +17,7 @@
     "check": "npm run typecheck && npm test",
     "simulate": "node packages/core/scripts/simulate.ts",
     "export-bower": "node packages/core/scripts/export-bower.ts",
+    "sensitivity": "node packages/core/scripts/sensitivity.ts",
     "prototype:dev": "npm --prefix Wisteria run dev",
     "prototype:audit": "npm --prefix Wisteria run audit",
     "prototype:assumptions": "npm --prefix Wisteria run assumptions"

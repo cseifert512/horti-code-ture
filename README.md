@@ -52,6 +52,7 @@ npm run simulate -- mixed trained 8   # wisteria, evergreen honeysuckle, summer 
 npm run simulate -- dome trained 12   # three wisterias on the 15 m hemisphere
 npm run simulate -- trial untended 7  # one plant of each way of climbing, nobody gardening
 npm run simulate -- palette trained 12  # the KEY.md reference palette, one plant at each of the dome's twelve ribs
+npm run sensitivity -- palette trained 12  # the same run with leaf area and side shoots multiplied: which readings hold
 ```
 
 ### Your own Bower

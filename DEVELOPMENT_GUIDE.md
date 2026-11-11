@@ -93,6 +93,8 @@ Represent the glulam and its sub-lattice (lighter timber, slender cables) as one
 
 **Exit check:** Each calibrated parameter has taxon/cultivar, context, measurement method, uncertainty and source. Unsupported parameters remain labelled assumptions; the simulator does not claim engineering reliability.
 
+**Status (11 November 2026): not started, with one tool in place.** No parameter is calibrated: nothing has been measured on a plant. What exists is a way to see which readings depend on the unmeasured numbers (`sim/sensitivity.ts`, `npm run sensitivity`): the same scenario is run with every leaf at two and four times its area and with three times as many side shoots a year, and the winter cover, summer leaf, timber legibility and flower counts are set side by side. On the reference palette the winter evergreen reading rises from 1.6% to 9.8% from the approach at the most generous multiple and stays under the 25–40% target, so that shortfall is a finding about the planting and not about the placeholders; summer leaf cover moves from 7% to 29%, so that reading is not yet worth quoting. First to measure: leaf area carried per metre of stem, and side shoots thrown per metre of old stem each year, for each evergreen.
+
 ## Stage 8 — longer-term research (explicitly optional)
 
 Only after basic geometry/season/maintenance works: plant carbon allocation, empirical stem pressure/stress, bark/support injury, dynamic vegetation drag and water loads, soil/root competition, habitat metrics, climate scenario ensembles, automatic planting optimisation and gardener scheduling agents. These are **research opportunities**, not dependencies of the initial version.
