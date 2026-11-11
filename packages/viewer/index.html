@@ -280,12 +280,161 @@
       }
 
       /* ---- right: the design overlay ------------------------------------------- */
-      #overlay-panel {
+      #right {
+        position: fixed;
         right: 20px;
         top: 18px;
+        bottom: 18px;
         width: 318px;
-        max-height: calc(100vh - 36px);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        pointer-events: none;
+      }
+      #right .card {
+        position: static;
+        pointer-events: auto;
+        flex: 0 1 auto;
+        min-height: 0;
         overflow-y: auto;
+      }
+      body.plants #right {
+        bottom: 150px;
+      }
+
+      /* ---- the design report ------------------------------------------------------ */
+      table.calendar {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 2px;
+        table-layout: fixed;
+      }
+      table.calendar th:first-child {
+        width: 96px;
+        text-align: left;
+        font-weight: 400;
+        font-size: 11px;
+        color: var(--ink-2);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      table.calendar thead button {
+        width: 100%;
+        height: 18px;
+        padding: 0;
+        border: 0;
+        border-radius: 4px;
+        background: none;
+        font-size: 11px;
+        color: var(--ink-2);
+      }
+      table.calendar thead button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--ink);
+      }
+      table.calendar td {
+        height: 12px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      /* one hue, from near the surface up to bright: more flowers, brighter */
+      .s1 {
+        background: #5c2f55 !important;
+      }
+      .s2 {
+        background: #96357c !important;
+      }
+      .s3 {
+        background: #d04a9f !important;
+      }
+      .s4 {
+        background: #ff9ad0 !important;
+      }
+      .unknown {
+        background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 5px) !important;
+      }
+      table.calendar tfoot th,
+      table.calendar tfoot td {
+        border-top: 4px solid transparent;
+      }
+      table.calendar td.some {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      table.calendar td.bare {
+        background: none;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      }
+      .key {
+        margin-top: 6px !important;
+      }
+      .key i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        margin: 0 1px -1px;
+      }
+      .finding {
+        margin-top: 8px !important;
+        padding: 8px 10px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .finding b {
+        font-weight: 600;
+      }
+      .meter-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3px;
+        margin-bottom: 9px;
+      }
+      .meter-row .where {
+        height: auto;
+        padding: 2px 6px;
+        margin-left: -6px;
+        border: 0;
+        background: none;
+        text-align: left;
+        justify-self: start;
+        text-decoration: underline;
+        text-decoration-color: rgba(255, 255, 255, 0.4);
+        text-underline-offset: 2px;
+      }
+      .meter-row .where:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+      .meter {
+        position: relative;
+        height: 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+      .meter .band {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.24);
+      }
+      .meter .fill {
+        position: absolute;
+        left: 0;
+        top: 2px;
+        bottom: 2px;
+        min-width: 3px;
+        border-radius: 3px;
+        background: #fff;
+      }
+      .meter-row .reading {
+        font-size: 12px;
+        color: var(--ink-2);
+        font-variant-numeric: tabular-nums;
+      }
+      .meter-row .reading b {
+        color: var(--ink);
+        font-weight: 600;
       }
       #overlay-panel select {
         width: 100%;
@@ -553,10 +702,7 @@
       body.plants #hint {
         display: none;
       }
-      /* leave the timeline clear of the overlay panel */
-      body.plants #overlay-panel {
-        max-height: calc(100vh - 150px);
-      }
+
       #hint {
         position: fixed;
         left: 24px;
@@ -589,7 +735,7 @@
         #log {
           display: none;
         }
-        #overlay-panel {
+        #right {
           top: auto;
           bottom: 12px;
           right: 12px;
@@ -626,6 +772,9 @@
             <option value="untended">Wisteria, untended</option>
             <option value="mixed-trained">Mixed planting, trained</option>
             <option value="mixed-untended">Mixed planting, untended</option>
+            <option value="palette-trained">Reference palette, trained</option>
+            <option value="palette-untended">Reference palette, untended</option>
+            <option value="palette-ivy">Reference palette with ivy, trained</option>
           </optgroup>
           <optgroup label="Not a simulation">
             <option value="fixture">Render test plant (hand-made)</option>
@@ -657,6 +806,7 @@
     </div>
     </div>
 
+    <div id="right">
     <div id="overlay-panel" class="card" hidden>
       <h2>Reach from a root station</h2>
       <select id="station" aria-label="Root station"></select>
@@ -729,6 +879,9 @@
         <span><i style="background: var(--steel)"></i><span id="mat-route-steel"></span></span>
       </div>
 
+    </div>
+
+    <div id="report" class="card" hidden></div>
     </div>
 
     <div id="plant-bar" class="card" hidden>

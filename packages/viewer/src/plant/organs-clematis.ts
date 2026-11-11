@@ -1,14 +1,17 @@
-// Organ shapes of two clematis. Not to be reused for other taxa: mechanism
-// traits do not transfer, and the two here differ from each other too.
+// Organ shapes of three clematis. Not to be reused for other taxa: mechanism
+// traits do not transfer, and the three here differ from one another too.
 //
 //   leaf            a compound leaf of stalked leaflets on a wiry axis: five
-//                   plain leaflets (Clematis 'Etoile Violette') or three lobed
-//                   ones (Clematis cirrhosa 'Freckles'). Unit length along +Z,
-//                   upper side +Y.
+//                   plain leaflets (Clematis 'Etoile Violette'), three lobed
+//                   ones (Clematis cirrhosa 'Freckles'), or three long,
+//                   leathery, drooping ones (Clematis armandii). Unit length
+//                   along +Z, upper side +Y.
 //   open flower     'Etoile Violette': a single flat flower of four to six
 //                   velvety tepals round a boss of cream stamens, held out on
 //                   a long stalk that rises from the node. One unit is the
 //                   width of the flower, which is what the render data gives.
+//   star flower     C. armandii: the same build, but a white star of narrower
+//                   tepals on a shorter stalk.
 //   bell flower     'Freckles': a nodding bell of four cream tepals speckled
 //                   red-maroon, hanging on its stalk. One unit is the width of
 //                   the mouth of the bell.
@@ -18,6 +21,7 @@
 // stamens as its axis. When the tepals drop, the stamens stay: the seed head.
 import * as THREE from 'three';
 import { hash2, RNG } from '../util.ts';
+import { type CompoundLayout, blade, compoundLeaf } from './kit.ts';
 import { Merge, type RGB, Surf, lin, mix } from './organs.ts';
 
 const V3 = THREE.Vector3;
@@ -105,6 +109,34 @@ export function makeClematisLeafGeometry(leaflets: 3 | 5, lobed: boolean, lod: n
   return g;
 }
 
+/**
+ * Clematis armandii: three long, leathery leaflets, widest near the base and
+ * drawn out to a point, hanging from a stalk.
+ */
+const ARMANDII_SEGS: [number, number][] = [
+  [6, 10],
+  [3, 5],
+  [2, 3],
+];
+export function makeArmandiiLeafGeometry(_variant: number, lod: number): THREE.BufferGeometry {
+  const leaflet = blade({ halfWidth: 0.17, widest: 0.6, taper: 0.8, fold: 0.22, arch: 0.22, wave: 0.01 }, ARMANDII_SEGS[lod]!, lod === 0);
+  const layout: CompoundLayout = {
+    axisEnd: 0.3,
+    axisRadius: 0.012,
+    arch: 0.06,
+    leaflets: [
+      { at: 1, side: -1, length: 0.66 },
+      { at: 1, side: 1, length: 0.66 },
+      { at: 1, side: 0, length: 0.72 },
+    ],
+    stalk: 0.06,
+    forward: [0.7, 0.95],
+    droop: [0.25, 0.5],
+    seed: 811,
+  };
+  return compoundLeaf(leaflet, layout, lod);
+}
+
 // ---------------------------------------------------------------------------
 // Shared: a tuft of stamens, tagged as axis so it outlasts the tepals
 // ---------------------------------------------------------------------------
@@ -139,7 +171,23 @@ const TEPAL_SEGS: [number, number][] = [
 export const OPEN_FLOWER_TEPALS: readonly number[] = [6, 5, 4];
 export const CLEMATIS_FLOWER_LODS = 3;
 
-const VIOLET = {
+/** What sets one flat clematis flower apart from another. */
+interface StarLook {
+  deep: RGB;
+  mid: RGB;
+  bar: RGB;
+  base: RGB;
+  stamenA: RGB;
+  stamenB: RGB;
+  stalkA: RGB;
+  stalkB: RGB;
+  /** Half the width of a tepal, as a share of the flower's width. */
+  tepalHalfWidth: number;
+  /** Length of the stalk, in flower widths. */
+  stalk: number;
+}
+
+const VIOLET: StarLook = {
   deep: lin('#340d4e'),
   mid: lin('#4f1672'),
   bar: lin('#6b1c70'),
@@ -148,14 +196,39 @@ const VIOLET = {
   stamenB: lin('#d4c97c'),
   stalkA: lin('#5f6c3c'),
   stalkB: lin('#4b3a5c'),
+  tepalHalfWidth: 0.168,
+  stalk: 0.82,
 };
 
 export function makeOpenFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry {
-  const n = OPEN_FLOWER_TEPALS[variant]!;
+  return starFlower(OPEN_FLOWER_TEPALS[variant]!, variant, lod, VIOLET);
+}
+
+/** Tepals per variant of the C. armandii flower. */
+export const STAR_FLOWER_TEPALS: readonly number[] = [5, 6, 4];
+
+const ARMANDII: StarLook = {
+  deep: lin('#ece9d6'),
+  mid: lin('#f8f6ea'),
+  bar: lin('#f1eecf'),
+  base: lin('#e4e8c4'),
+  stamenA: lin('#efe9b6'),
+  stamenB: lin('#d6d48e'),
+  stalkA: lin('#6f7d48'),
+  stalkB: lin('#8d9a62'),
+  tepalHalfWidth: 0.125,
+  stalk: 0.55,
+};
+
+export function makeStarFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry {
+  return starFlower(STAR_FLOWER_TEPALS[variant]!, variant + 10, lod, ARMANDII);
+}
+
+function starFlower(n: number, variant: number, lod: number, look: StarLook): THREE.BufferGeometry {
   const mg = new Merge(false);
   const [nu, nv] = TEPAL_SEGS[lod]!;
   // the stalk rises from the node and leans out; the flower looks out and a little up
-  const stalk = (s: number) => new V3(0, 0.78 * s, 0.26 * s * s);
+  const stalk = (s: number) => new V3(0, 0.95 * look.stalk * s, 0.32 * look.stalk * s * s);
   const centre = stalk(1);
   const axis = new V3(0, 0.34, 1).normalize();
   const right = new V3(1, 0, 0);
@@ -168,7 +241,7 @@ export function makeOpenFlowerGeometry(variant: number, lod: number): THREE.Buff
     pts.push(stalk(i / NS));
     radii.push(0.014);
   }
-  mg.tube(pts, radii, [5, 4, 3][lod]!, VIOLET.stalkA, VIOLET.stalkB);
+  mg.tube(pts, radii, [5, 4, 3][lod]!, look.stalkA, look.stalkB);
 
   const id = new THREE.Matrix4();
   for (let k = 0; k < n; k++) {
@@ -180,7 +253,7 @@ export function makeOpenFlowerGeometry(variant: number, lod: number): THREE.Buff
       const u = u01 * 2 - 1;
       const r = 0.03 + 0.47 * v;
       // broad in the middle, narrowed to the base, drawn to a short point
-      const hw = 0.168 * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.85)), 0.65) + 0.004;
+      const hw = look.tepalHalfWidth * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.85)), 0.65) + 0.004;
       // a little cupped, the tip turned back, a channel down the middle
       let h = 0.05 * Math.sin(Math.PI * v) - 0.1 * v * v * v - 0.018 * Math.exp(-((u / 0.3) ** 2)) * (1 - v) + 0.03 * u * u * (1 - v);
       if (lod === 0) h += 0.012 * Math.sin(v * 14 + k) * u * u;
@@ -189,15 +262,15 @@ export function makeOpenFlowerGeometry(variant: number, lod: number): THREE.Buff
         .addScaledVector(er, r)
         .addScaledVector(et, u * hw)
         .addScaledVector(axis, h);
-      let c = mix(VIOLET.base, VIOLET.mid, Math.min(1, v * 3));
-      c = mix(c, VIOLET.deep, Math.pow(Math.abs(u), 2) * 0.6 + Math.max(0, v - 0.7));
-      c = mix(c, VIOLET.bar, 0.5 * Math.exp(-((u / 0.22) ** 2)) * (1 - 0.5 * v));
+      let c = mix(look.base, look.mid, Math.min(1, v * 3));
+      c = mix(c, look.deep, Math.pow(Math.abs(u), 2) * 0.6 + Math.max(0, v - 0.7));
+      c = mix(c, look.bar, 0.5 * Math.exp(-((u / 0.22) ** 2)) * (1 - 0.5 * v));
       return { p: [p.x, p.y, p.z], c };
     });
     const tone = 0.94 + 0.12 * hash2(variant + 3, k);
     mg.add(sb.build(), id, [tone, tone, tone], centre, (k / n) * 0.25);
   }
-  if (lod < 2) stamens(mg, centre, axis, lod === 0 ? 18 : 8, 0.11, 0.75, lod === 0 ? 4 : 3, VIOLET.stamenA, VIOLET.stamenB, 31 + variant);
+  if (lod < 2) stamens(mg, centre, axis, lod === 0 ? 18 : 8, 0.11, 0.75, lod === 0 ? 4 : 3, look.stamenA, look.stamenB, 31 + variant);
   const g = mg.build();
   g.boundingSphere = new THREE.Sphere(centre.clone(), 0.9);
   return g;

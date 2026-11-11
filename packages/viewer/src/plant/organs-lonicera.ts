@@ -1,14 +1,16 @@
-// Organ shapes of Lonicera henryi (Henry's honeysuckle). Not to be reused for
-// other taxa: mechanism traits do not transfer.
+// Organ shapes of two honeysuckles. Not to be reused for other taxa: mechanism
+// traits do not transfer, and the two here differ from each other too.
 //
-//   leaf   a simple, leathery, lanceolate leaf on a short stalk, widest below
-//          the middle and drawn out to a point. Unit length along +Z, upper
-//          side +Y, the same frame as every leaf asset. Its real length comes
-//          from the render data.
+//   Lonicera henryi (Henry's honeysuckle)
+//     leaf   simple, leathery, lanceolate, widest below the middle and drawn
+//            out to a point, on a short stalk
+//   Lonicera periclymenum 'Graham Thomas' (a woodbine)
+//     leaf   simple, soft and dull, oval and blunt, widest about the middle
 //
-// There is no flower here yet: the taxon's flowering habit is not settled in
-// the library, and the engine gives it no flowers to draw.
+// Unit length along +Z, upper side +Y, the same frame as every leaf model.
+// The real length comes from the render data.
 import * as THREE from 'three';
+import { type Segs, blade as plainBlade, simpleLeaf } from './kit.ts';
 import { Merge, Surf } from './organs.ts';
 
 const V3 = THREE.Vector3;
@@ -48,4 +50,17 @@ export function makeLoniceraLeafGeometry(variant: number, lod: number): THREE.Bu
   const g = mg.build();
   g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.7);
   return g;
+}
+
+export const WOODBINE_LEAF_VARIANTS = 2;
+export const WOODBINE_LEAF_LODS = 3;
+const WOODBINE_SEGS: Segs[] = [
+  [6, 8],
+  [4, 4],
+  [2, 2],
+];
+
+export function makeWoodbineLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
+  const shape = { halfWidth: variant === 0 ? 0.24 : 0.27, widest: 0.9, taper: 0.58, fold: 0.14, arch: 0.09, wave: 0.012 };
+  return simpleLeaf(plainBlade(shape, WOODBINE_SEGS[lod]!, lod === 0), 0.07, lod, 0.3 + 0.4 * variant);
 }

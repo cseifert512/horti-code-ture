@@ -3,7 +3,7 @@
 // a hand-made plant. The viewer holds no growth logic: it reads core data and
 // calls core functions.
 import * as THREE from 'three';
-import { type Bower, type RenderData, type SupportEdge, makeHemisphereBower, makeVaultBower } from '@horti/core';
+import { type Bower, type RenderData, type SupportEdge, type Viewpoint, makeHemisphereBower, makeVaultBower } from '@horti/core';
 import { type ReachView, type StationField, materials, reachView, routeInfo, stationField } from './overlay/model.ts';
 import { ReachOverlay } from './overlay/view.ts';
 import type { FruitSite } from './plant/adapter.ts';
@@ -11,6 +11,7 @@ import { makeTestPlant } from './plant/fixture.ts';
 import { type Care, type Planting, canGrow, growScenario } from './plant/scenario.ts';
 import { shared } from './plant/shaders.ts';
 import { PlantView, makePlantMaterials } from './plant/view.ts';
+import { renderReport } from './report/panel.ts';
 import { makeSiteMaterials, makeStructureMaterials } from './scene/materials.ts';
 import { type BuiltSite, buildSite } from './scene/site.ts';
 import { DEFAULT_SUN, type ViewPreset, createStage } from './scene/stage.ts';
@@ -19,15 +20,20 @@ import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
 type BowerKey = 'vault' | 'hemisphere';
 /** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
-type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'fixture';
-const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'fixture'];
+type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'fixture';
+const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'fixture'];
 /** The sources that are scenarios of the growth engine. */
 const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>> = {
   trained: { planting: 'wisteria', care: 'trained' },
   untended: { planting: 'wisteria', care: 'untended' },
   'mixed-trained': { planting: 'mixed', care: 'trained' },
   'mixed-untended': { planting: 'mixed', care: 'untended' },
+  'palette-trained': { planting: 'palette', care: 'trained' },
+  'palette-untended': { planting: 'palette', care: 'untended' },
+  'palette-ivy': { planting: 'palette-ivy', care: 'trained' },
 };
+/** The camera's field of view when it is not standing at one of a report's viewpoints, degrees. */
+const FIELD_OF_VIEW = 40;
 /** Tells two Bowers apart: a scenario may be grown on a Bower with more root stations than the default. */
 const signature = (b: Bower) => `${b.id}|${b.rootStations.map((s) => `${s.id}@${s.entryNodeIds.join('+')}`).join(',')}|${b.graph.edges.size}`;
 /** Detail of the organ pools, 0 to 1 (see PlantView.update). */
@@ -327,6 +333,8 @@ function showPlants(source: PlantSource, keepDay = false): void {
   document.body.classList.toggle('plants', source !== 'none');
   el('plant-bar').hidden = source === 'none';
   el('log').hidden = true;
+  el('report').hidden = true;
+  const asked = ++reportAsked;
   stage.invalidateShadows();
   invalidate();
   // a scenario is drawn on the Bower it was grown on; anything else on the default one
@@ -348,10 +356,10 @@ function showPlants(source: PlantSource, keepDay = false): void {
   slider.min = String(plant.timeline.firstDay);
   slider.max = String(plant.timeline.lastDay);
   const labels = data.plants.map((p) => p.label).filter((l, i, all) => all.indexOf(l) === i);
-  const missing = plant.withoutOrgans.filter((l, i, all) => all.indexOf(l) === i);
+  const missing = plant.provisionalLooks.filter((l, i, all) => all.indexOf(l) === i);
   const flowerless = plant.withoutFlowers.filter((l, i, all) => all.indexOf(l) === i);
   const stemsOnly =
-    (missing.length ? ` Shown as stems only, for want of leaf and flower models: ${missing.join(', ')}.` : '') +
+    (missing.length ? ` Provisional look (a plain stand-in leaf, no flowers), for want of models of its own: ${missing.join(', ')}.` : '') +
     (flowerless.length ? ` Shown without its flowers, for want of a flower model: ${flowerless.join(', ')}.` : '');
   // how many of the numbers behind the run have each evidence status; "measured" is always said, even when none is
   const counted = Object.entries(data.assumptions).filter(([status, n]) => n > 0 || status === 'measured');
@@ -359,6 +367,40 @@ function showPlants(source: PlantSource, keepDay = false): void {
   el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}${behind}${stemsOnly}`;
   showLog();
   showDay(keepDay && Number.isFinite(state.day) ? state.day : openingDay(data));
+
+  // the design report takes about as long as the run: read it once the picture is up
+  if (run) {
+    const box = el('report');
+    box.hidden = false;
+    box.replaceChildren(Object.assign(document.createElement('p'), { className: 'note', textContent: 'Reading the run for its design report...' }));
+    setTimeout(() => {
+      if (asked !== reportAsked || !plant) return;
+      const timeline = plant.timeline;
+      renderReport(box, run.report(), {
+        goTo: (iso) => {
+          state.playing = false;
+          showDay(timeline.calendar.dayOf(iso));
+        },
+        standAt,
+      });
+      invalidate();
+    }, 60);
+  }
+}
+
+/** Counts requests for a report, so that one that arrives after the plants have changed is dropped. */
+let reportAsked = 0;
+
+/** Stand where one of a report's viewpoints stands, looking where it looks, with its field of view. */
+function standAt(viewpoint: Viewpoint): void {
+  stage.controls.maxPolarAngle = Math.PI * 0.98; // a visitor inside looks up
+  stage.controls.minDistance = 0.05;
+  stage.camera.fov = viewpoint.fovDeg;
+  stage.camera.updateProjectionMatrix();
+  stage.camera.position.set(viewpoint.eye.x, viewpoint.eye.z, -viewpoint.eye.y);
+  stage.controls.target.set(viewpoint.target.x, viewpoint.target.z, -viewpoint.target.y);
+  stage.controls.update();
+  invalidate();
 }
 
 // ---- the gardener's log, beside the picture -----------------------------------------
@@ -485,6 +527,10 @@ el<HTMLInputElement>('orbit').addEventListener('change', (e) => {
   stage.controls.autoRotate = state.orbit;
 });
 el('reset-view').addEventListener('click', () => {
+  stage.controls.maxPolarAngle = Math.PI * 0.53;
+  stage.controls.minDistance = 0.3;
+  stage.camera.fov = FIELD_OF_VIEW;
+  stage.camera.updateProjectionMatrix();
   if (structure) stage.frame(structure.bounds, defaultView(state.bowerKey, structure.bounds));
   invalidate();
 });
@@ -568,8 +614,9 @@ stage.controls.addEventListener('change', invalidate);
 function applyViewOffset(): void {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const panel = el('overlay-panel');
-  const covered = state.overlay && !document.body.classList.contains('bare') && w > 760 ? panel.offsetWidth + 20 : 0;
+  const right = el('right');
+  const shown = state.overlay || !el('report').hidden;
+  const covered = shown && !document.body.classList.contains('bare') && w > 760 ? right.offsetWidth + 20 : 0;
   if (covered > 0) stage.camera.setViewOffset(w, h, covered / 2, 0, w, h);
   else stage.camera.clearViewOffset();
 }

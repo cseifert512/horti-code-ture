@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
-import { leafState, makeVaultBower, seasonsOf } from '@horti/core';
-import { assetsFor } from '../src/plant/assets.ts';
-import { canGrow, growScenario } from '../src/plant/scenario.ts';
+import { REFERENCE_PALETTE, leafState, makeHemisphereBower, makeVaultBower, seasonsOf } from '@horti/core';
+import { MODELLED_TAXA, assetsFor } from '../src/plant/assets.ts';
+import { canGrow, growScenario, growable } from '../src/plant/scenario.ts';
 import { type PlantMaterials, PlantView } from '../src/plant/view.ts';
 
 /** Stand-ins for the real materials, which need a canvas for their textures. */
@@ -14,31 +14,48 @@ const materials = (): PlantMaterials => {
 const camera = new THREE.PerspectiveCamera();
 camera.position.set(6, 2, 8);
 
+/** The widest the flower-tagged parts of a model reach, tip to opposite tip. */
+function across(g: THREE.BufferGeometry): number {
+  const pos = g.getAttribute('position');
+  const part = g.getAttribute('aPart');
+  const points: THREE.Vector3[] = [];
+  for (let i = 0; i < pos.count; i++) if (part.getW(i) >= 0) points.push(new THREE.Vector3().fromBufferAttribute(pos, i));
+  let widest = 0;
+  for (let i = 0; i < points.length; i += 3) for (let j = i + 1; j < points.length; j += 3) widest = Math.max(widest, points[i]!.distanceTo(points[j]!));
+  return widest;
+}
+
 // CLAUDE.md: "Mechanism traits do not transfer. Spurs, handedness and old-wood
 // flowering are wisteria's; each mechanism and flowering class is implemented
 // separately." The same goes for what a plant looks like.
 describe('organ models are per taxon', () => {
-  const taxa = ['wisteria-sinensis', 'lonicera-henryi', 'clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles'];
-
-  it('gives each taxon that can be grown leaf models of its own', () => {
-    const leaves = taxa.map((id) => assetsFor(id)!.leaf.key);
-    expect(new Set(leaves).size).toBe(taxa.length);
+  it('has models for taxa that can be grown, and for nothing that cannot', () => {
+    const can = growable();
+    for (const id of MODELLED_TAXA) expect(can.has(id), id).toBe(true);
   });
 
-  it('gives no two taxa the same flower model, and the honeysuckle none until its habit is settled', () => {
-    const flowers = taxa.map((id) => assetsFor(id)!.flower?.key ?? null);
-    expect(flowers[1]).toBeNull();
-    const drawn = flowers.filter((k) => k !== null);
-    expect(new Set(drawn).size).toBe(drawn.length);
+  it('gives each modelled taxon a leaf of its own', () => {
+    const leaves = MODELLED_TAXA.map((id) => assetsFor(id).leaf.key);
+    expect(new Set(leaves).size).toBe(MODELLED_TAXA.length);
+    for (const id of MODELLED_TAXA) expect(assetsFor(id).provisional).toBe(false);
   });
 
-  it('has no models for a taxon it does not know, rather than borrowing another plant\'s', () => {
-    expect(assetsFor('rosa-banksiae-lutea')).toBeNull();
+  it('gives no two taxa the same flower model', () => {
+    const flowers = MODELLED_TAXA.map((id) => assetsFor(id).flower?.key).filter((k) => k !== undefined);
+    expect(flowers.length).toBeGreaterThanOrEqual(5);
+    expect(new Set(flowers).size).toBe(flowers.length);
+  });
+
+  it('gives a taxon it does not know a plain stand-in leaf and no flowers, marked provisional, rather than the organs of another plant', () => {
+    const unknown = assetsFor('thunbergia-alata');
+    expect(unknown.provisional).toBe(true);
+    expect(unknown.flower).toBeNull();
+    expect(MODELLED_TAXA.map((id) => assetsFor(id).leaf.key)).not.toContain(unknown.leaf.key);
   });
 
   it('builds every model at every level of detail, finite and tagged for the organ programs', () => {
-    for (const id of taxa) {
-      const { leaf, flower } = assetsFor(id)!;
+    for (const id of [...MODELLED_TAXA, 'thunbergia-alata']) {
+      const { leaf, flower } = assetsFor(id);
       for (const asset of flower ? [leaf, flower] : [leaf]) {
         let finest = Infinity;
         for (let lod = 0; lod < asset.lods; lod++) {
@@ -46,12 +63,12 @@ describe('organ models are per taxon', () => {
             const g = asset.make(v, lod);
             const pos = g.getAttribute('position');
             expect(pos.count).toBeGreaterThan(3);
-            for (let i = 0; i < pos.array.length; i++) expect(Number.isFinite(pos.array[i])).toBe(true);
+            for (let i = 0; i < pos.array.length; i++) expect(Number.isFinite(pos.array[i]), `${asset.key} ${v}/${lod}`).toBe(true);
             expect(g.getAttribute('aPart').count).toBe(pos.count);
             expect(g.getAttribute('normal').count).toBe(pos.count);
             if (v === 0) {
               // each coarser level is no heavier than the one before
-              expect(g.index!.count).toBeLessThanOrEqual(finest);
+              expect(g.index!.count, asset.key).toBeLessThanOrEqual(finest);
               finest = g.index!.count;
             }
           }
@@ -60,36 +77,35 @@ describe('organ models are per taxon', () => {
     }
   });
 
-  it('authors the new leaves one unit long, so that the length in the data is the length drawn', () => {
-    for (const id of taxa.slice(1)) {
-      const g = assetsFor(id)!.leaf.make(0, 0);
-      g.computeBoundingBox();
-      expect(g.boundingBox!.max.z).toBeGreaterThan(0.9);
-      expect(g.boundingBox!.max.z).toBeLessThan(1.12);
+  it('authors each leaf one unit long, so that the length in the data is the length drawn', () => {
+    for (const id of [...MODELLED_TAXA, 'thunbergia-alata']) {
+      if (id === 'wisteria-sinensis') continue;
+      const { leaf } = assetsFor(id);
+      for (let v = 0; v < leaf.variants; v++) {
+        const g = leaf.make(v, 0);
+        g.computeBoundingBox();
+        expect(g.boundingBox!.max.z, leaf.key).toBeGreaterThan(0.9);
+        expect(g.boundingBox!.max.z, leaf.key).toBeLessThan(1.12);
+      }
     }
   });
 
   it('keeps the convention of the prototype for the wisteria leaf: one unit is its axis, and the end leaflet reaches past it', () => {
-    const g = assetsFor('wisteria-sinensis')!.leaf.make(0, 0);
+    const g = assetsFor('wisteria-sinensis').leaf.make(0, 0);
     g.computeBoundingBox();
     expect(g.boundingBox!.max.z).toBeGreaterThan(1.1);
     expect(g.boundingBox!.max.z).toBeLessThan(1.35);
   });
 
-  it('authors the two clematis flowers one unit across, which is what their lengthM means', () => {
-    for (const id of ['clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles']) {
-      const flower = assetsFor(id)!.flower!;
+  it('authors single flowers and flowerheads one unit across, which is what their lengthM means', () => {
+    for (const id of ['clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles', 'clematis-armandi', 'hydrangea-anomala-subsp-petiolaris']) {
+      const flower = assetsFor(id).flower!;
       expect(flower.authoredSize).toBe(1);
-      const g = flower.make(0, 0);
-      // the widest the tepals reach, tip to opposite tip
-      const pos = g.getAttribute('position');
-      const part = g.getAttribute('aPart');
-      const tepals: THREE.Vector3[] = [];
-      for (let i = 0; i < pos.count; i++) if (part.getW(i) >= 0) tepals.push(new THREE.Vector3().fromBufferAttribute(pos, i));
-      let across = 0;
-      for (let i = 0; i < tepals.length; i += 3) for (let j = i + 1; j < tepals.length; j += 3) across = Math.max(across, tepals[i]!.distanceTo(tepals[j]!));
-      expect(across).toBeGreaterThan(0.93);
-      expect(across).toBeLessThan(1.08);
+      for (let v = 0; v < flower.variants; v++) {
+        const width = across(flower.make(v, 0));
+        expect(width, flower.key).toBeGreaterThan(0.92);
+        expect(width, flower.key).toBeLessThan(1.08);
+      }
     }
   });
 });
@@ -110,9 +126,9 @@ describe('the mixed planting', () => {
     for (const p of run.data.plants) expect(stations.has(p.stationId)).toBe(true);
   });
 
-  it('draws every plant with models of its own taxon: none is left as bare stems', () => {
+  it('draws every plant with models of its own taxon', () => {
     const view = new PlantView(run.data, materials());
-    expect(view.withoutOrgans).toEqual([]);
+    expect(view.provisionalLooks).toEqual([]);
     expect(view.withoutFlowers).toEqual([]);
     view.dispose();
   });
@@ -130,21 +146,64 @@ describe('the mixed planting', () => {
 
     const summer = view.timeline.calendar.dayOf('2030-07-20');
     view.update(camera, summer, 1);
-    const seasonsThen = seasonsOf(run.data, 2030);
-    expect(view.stats().leaves).toBe(run.data.leaves.filter((l) => leafState(l, seasonsThen.get(l.plantId), summer).present).length);
+    expect(view.stats().leaves).toBe(run.data.leaves.filter((l) => leafState(l, seasons.get(l.plantId), summer).present).length);
     expect(view.stats().leaves).toBeGreaterThan(out.length);
     view.dispose();
   });
 
-  it('leaves a plant of an unknown taxon as stems, and says so', () => {
+  it('still draws a plant of an unknown taxon in leaf, and says its look is provisional', () => {
     const data = structuredClone(run.data);
-    data.plants[0]!.taxonId = 'rosa-banksiae-lutea';
+    data.plants[0]!.taxonId = 'thunbergia-alata';
     const view = new PlantView(data, materials());
-    expect(view.withoutOrgans).toEqual([data.plants[0]!.label]);
-    view.update(camera, view.timeline.calendar.dayOf('2030-07-20'), 1);
+    expect(view.provisionalLooks).toEqual([data.plants[0]!.label]);
+    // it has flowers in the data and no flower model: said too
+    expect(view.withoutFlowers).toEqual([data.plants[0]!.label]);
+    const day = view.timeline.calendar.dayOf('2030-07-20');
+    view.update(camera, day, 1);
     const seasons = seasonsOf(data, 2030);
-    const others = data.leaves.filter((l) => l.plantId !== data.plants[0]!.id && leafState(l, seasons.get(l.plantId), view.timeline.calendar.dayOf('2030-07-20')).present);
-    expect(view.stats().leaves).toBe(others.length);
+    expect(view.stats().leaves).toBe(data.leaves.filter((l) => leafState(l, seasons.get(l.plantId), day).present).length);
     view.dispose();
+  });
+});
+
+// KEY.md section 6, the reference palette; section 7 step 7: "Render monthly
+// time slices, check winter appearance and repeat with the gardener model active."
+describe('the reference palette', () => {
+  it('is offered on the hemisphere only', () => {
+    expect(canGrow('palette', 'hemisphere')).toBe(true);
+    expect(canGrow('palette-ivy', 'hemisphere')).toBe(true);
+    expect(canGrow('palette', 'vault')).toBe(false);
+  });
+
+  const run = growScenario('palette', 'hemisphere', 'trained', 3);
+
+  it('puts one plant at the foot of each of the twelve ribs, on a Bower with a station for each', () => {
+    expect(run.data.plants).toHaveLength(REFERENCE_PALETTE.length);
+    expect(run.bower.rootStations).toHaveLength(REFERENCE_PALETTE.length);
+    expect(run.bower.rootStations.length).toBeGreaterThan(makeHemisphereBower().rootStations.length);
+    expect(new Set(run.data.plants.map((p) => p.stationId)).size).toBe(REFERENCE_PALETTE.length);
+  });
+
+  it('has organ models of its own for every plant of the palette, with ivy or without', () => {
+    for (const p of REFERENCE_PALETTE) expect(assetsFor(p.taxonId).provisional, p.taxonId).toBe(false);
+    expect(assetsFor('hedera-helix').provisional).toBe(false);
+    const view = new PlantView(run.data, materials());
+    expect(view.provisionalLooks).toEqual([]);
+    expect(view.withoutFlowers).toEqual([]);
+    view.dispose();
+    const withIvy = growScenario('palette-ivy', 'hemisphere', 'trained', 1);
+    expect(withIvy.data.plants.find((p) => p.id === 'north-evergreen')!.taxonId).toBe('hedera-helix');
+  });
+
+  it('carries the design report of the core: twelve months of flowering by plant, and winter cover read against the target', () => {
+    const report = run.report();
+    expect(report.months).toHaveLength(12);
+    for (const m of report.months) for (const id of Object.keys(m.flowers)) expect(run.data.plants.some((p) => p.id === id)).toBe(true);
+    for (const m of report.flowerlessMonths) expect(Object.values(report.months[m - 1]!.flowers).every((n) => n === 0)).toBe(true);
+    expect(report.winter).not.toBeNull();
+    expect(report.winter!.target.status).toBe('design_target');
+    expect(report.winter!.views.map((v) => v.viewpointId)).toEqual(report.viewpoints.map((v) => v.id));
+    // asked for twice, worked out once
+    expect(run.report()).toBe(report);
   });
 });

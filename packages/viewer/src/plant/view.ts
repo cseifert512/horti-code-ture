@@ -5,8 +5,8 @@
 // state" is answered by the adapter (adapter.ts) from the engine's days.
 //
 // Each plant is drawn with the leaf and flower models of its own taxon
-// (assets.ts). A plant whose taxon has none is drawn as stems only, and
-// `withoutOrgans` names it so the caption can say what is missing.
+// (assets.ts). A plant whose taxon has none gets a plain stand-in leaf, and
+// `provisionalLooks` names it so the caption can say so.
 import * as THREE from 'three';
 import type { RenderData, RenderFlower, RenderLeaf, RenderStem } from '@horti/core';
 import type { TexturePair } from '../textures.ts';
@@ -95,8 +95,8 @@ export interface PlantStats {
 export class PlantView {
   readonly group = new THREE.Group();
   readonly timeline: RenderTimeline;
-  /** Labels of plants drawn as stems only, because there are no organ models for their taxon. */
-  readonly withoutOrgans: string[];
+  /** Labels of plants drawn with the stand-in leaf, because there are no organ models for their taxon. */
+  readonly provisionalLooks: string[];
   /** Labels of plants that flower in the data but have no flower model, so are drawn in leaf only. */
   readonly withoutFlowers: string[];
   private readonly woodGeometry: THREE.BufferGeometry;
@@ -112,10 +112,10 @@ export class PlantView {
     this.group.name = `plants:${data.scenario}`;
     this.stemSpans = data.stems.filter((s) => s.bornDay.length >= 2).map((s) => [s.bornDay[0]!, s.removedDay[0]!]);
 
-    const assets = new Map<string, TaxonAssets | null>(data.plants.map((p) => [p.id, assetsFor(p.taxonId)]));
-    this.withoutOrgans = data.plants.filter((p) => !assets.get(p.id)).map((p) => p.label);
+    const assets = new Map<string, TaxonAssets>(data.plants.map((p) => [p.id, assetsFor(p.taxonId)]));
+    this.provisionalLooks = data.plants.filter((p) => assets.get(p.id)!.provisional).map((p) => p.label);
     const flowering = new Set(data.flowers.map((f) => f.plantId));
-    this.withoutFlowers = data.plants.filter((p) => flowering.has(p.id) && assets.get(p.id) && !assets.get(p.id)!.flower).map((p) => p.label);
+    this.withoutFlowers = data.plants.filter((p) => flowering.has(p.id) && !assets.get(p.id)!.flower).map((p) => p.label);
 
     // ---- wood ------------------------------------------------------------------
     this.woodGeometry = buildWoodGeometry(data.stems).geometry;
