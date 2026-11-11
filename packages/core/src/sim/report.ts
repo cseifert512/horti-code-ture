@@ -162,7 +162,7 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
 
     if (watch) alerts.push({ kind: 'thickening_watch', plantId: plant.id, count: watch, text: `${watch} stretch${watch === 1 ? '' : 'es'} where a stem of ${watchMm} mm or more is wound round a timber member (thickest ${Math.round(thickest)} mm): it will go on thickening there, so keep these in view` });
     const stalled = sim.decisions.filter((d) => d.plantId === plant.id && d.kind === 'no_route' && d.text.includes('nobody ties it in'));
-    if (stalled.length) alerts.push({ kind: 'no_hold', plantId: plant.id, count: stalled.length, text: `${stalled.length} shoot${stalled.length === 1 ? '' : 's'} stopped for want of a hold: the member was too stout to grasp, or its grasp could not be shown, and nobody tied the shoot in` });
+    if (stalled.length) alerts.push({ kind: 'no_hold', plantId: plant.id, count: stalled.length, text: `${stalled.length} shoot${stalled.length === 1 ? '' : 's'} stopped for want of a hold, and nobody tied the shoot in. First: ${stalled[0]!.text}` });
     if (acc.frameworkM > 0 && acc.highestM < crown * 0.97) alerts.push({ kind: 'crown_not_reached', plantId: plant.id, count: 1, text: `reached ${acc.highestM.toFixed(1)} m on a structure whose routes go to ${crown.toFixed(1)} m: route length, not height, is what ran out` });
     for (const d of sim.decisions) if (d.plantId === plant.id && d.kind === 'not_modelled') alerts.push({ kind: 'not_modelled', plantId: plant.id, count: 1, text: d.text });
   }

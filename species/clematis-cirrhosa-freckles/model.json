@@ -70,6 +70,15 @@
       "status": "provisional_design_assumption",
       "basis": "Placed at the end of the RHS flowering envelope, in the following year (14 February to 21 March)."
     },
+    "phenology.flowerLastsDays": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
     "extension.leaderMPerSeason": {
       "value": 1.5,
       "unit": "m",

@@ -25,6 +25,12 @@ export const GROWTH_PARAMS = {
   'phenology.floralInitiationDoy': 'range',
   'phenology.flowerOpenDoy': 'range',
   'phenology.petalFallDoy': 'range',
+  /**
+   * How long one flower lasts, for plants whose flowers come and go in
+   * succession through a long season. [0, 0] where the whole display falls
+   * together, within `petalFallDoy`.
+   */
+  'phenology.flowerLastsDays': 'range',
   // ---- extension: metres of stem per growing season
   'extension.leaderMPerSeason': 'number',
   'extension.lateralMPerSeasonByOrder': 'list',

@@ -403,14 +403,16 @@ export class Simulation {
       let mode: 'twine' | 'along';
       let tied = false;
       if (verdict.outcome === 'self') {
-        // a gardener who is training the plant lays its framework flat along the lattice instead of letting it coil
-        tied = plant.training.tieToTimber && subLattice && axis.role !== 'whip';
+        // a gardener who is training a twiner lays its framework flat along the lattice instead of letting it coil;
+        // a plant that clings or clasps by itself is left to
+        tied = profile.attachment.mechanism === 'stem_twining' && plant.training.tieToTimber && subLattice && axis.role !== 'whip';
         mode = tied || profile.attachment.mechanism !== 'stem_twining' ? 'along' : 'twine';
       } else if ((verdict.outcome === 'needs_tie' || verdict.outcome === 'unverified') && plant.training.tieToTimber && axis.role !== 'whip') {
         tied = true;
         mode = 'along';
       } else {
-        refuse(verdict.outcome === 'impossible' ? 'a declared exclusion' : verdict.outcome === 'unverified' ? 'cannot be shown to grasp it, and nobody ties it in' : 'too stout to grasp, and nobody ties it in');
+        // give the reason in the plant's own terms: a twiner's is not a rose's
+        refuse(verdict.outcome === 'impossible' ? 'a declared exclusion' : verdict.outcome === 'unverified' ? 'cannot be shown to grasp it, and nobody ties it in' : `${verdict.reason.split(';')[0]}, and nobody ties it in`);
         continue;
       }
       const other = graph.nodes.get(graph.otherEnd(edge, nodeId))!.position;
@@ -654,6 +656,7 @@ export class Simulation {
     // an opening date earlier in the year than today means next year; a fall date earlier than the opening means the year after it
     const openYear = open0 >= date.dayOfYear ? year : year + 1;
     const fallYear = fall0 >= open0 ? openYear : openYear + 1;
+    const lasts = param(model, 'phenology.flowerLastsDays');
     const ramp = year - plant.plantedYear - param(model, 'flowering.competenceYears');
     if (ramp < 0) return;
     const chance = Math.min(1, param(model, 'flowering.currentSeasonFlowersPerM') * listAt(model, 'flowering.maturityRamp', ramp) * mid(param(model, 'organs.leafSpacingM')));
@@ -675,7 +678,8 @@ export class Simulation {
       const flowers = plant.rng.flower.chance(chance);
       if (!flowers || a.removedDay !== null || n.pointIndex >= a.alive || (grown.get(a.id) ?? 0) < minShoot) continue;
       const opens = this.calendar.dayOfYearDay(openYear, plant.rng.flower.int(open0, open1));
-      const drops = this.calendar.dayOfYearDay(fallYear, plant.rng.flower.int(fall0, fall1));
+      // either each flower lasts its own few weeks, or the whole display falls together
+      const drops = lasts[1] > 0 ? opens + plant.rng.flower.int(lasts[0], lasts[1]) : this.calendar.dayOfYearDay(fallYear, plant.rng.flower.int(fall0, fall1));
       // buds show for about a month before they open, or from now if that is sooner
       this.newBud(plant, a, n.pointIndex, 'developing', openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops));
       made++;

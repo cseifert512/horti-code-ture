@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "wisteria-floribunda-macrobotrys",
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "params": {
+    "phenology.budburstDoy": {
+      "value": 95,
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.growthEndDoy": {
+      "value": 270,
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.leafFlushDoy": {
+      "value": [
+        100,
+        155
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.autumnColourDoy": {
+      "value": [
+        283,
+        310
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.leafFallDoy": {
+      "value": [
+        310,
+        344
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.floralInitiationDoy": {
+      "value": [
+        213,
+        258
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.flowerOpenDoy": {
+      "value": [
+        135,
+        150
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Placed inside the RHS flowering envelope of late spring to early summer, a fortnight after W. sinensis. No dated source."
+    },
+    "phenology.petalFallDoy": {
+      "value": [
+        160,
+        180
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Placed inside the RHS flowering envelope (9 to 29 June). No dated source."
+    },
+    "phenology.flowerLastsDays": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "extension.leaderMPerSeason": {
+      "value": 2.6,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "extension.lateralMPerSeasonByOrder": {
+      "value": [
+        2.4,
+        2,
+        1.6
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "extension.whipMPerSeason": {
+      "value": 3.2,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "extension.establishmentFactorByYear": {
+      "value": [
+        0.5,
+        0.8
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.trunkStemStartYears": {
+      "value": [
+        0,
+        0,
+        1
+      ],
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.nurseryCaneM": {
+      "value": 1.2,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.maxBranchOrder": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.leaderLengthM": {
+      "value": [
+        7,
+        8.6
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.lateralLengthMByOrder": {
+      "value": [
+        3.4,
+        1.9,
+        1
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.lateralLengthSpread": {
+      "value": 0.3,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.lateralChanceByParentOrder": {
+      "value": [
+        0.9,
+        0.75,
+        0.55
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.budExtraDormancyChance": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.budExtraDormancyYears": {
+      "value": [
+        1,
+        3
+      ],
+      "unit": "years",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.maxStemsPerRoute": {
+      "value": 2,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.maxStemsPerPrimaryMember": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.occupancyCost": {
+      "value": 1.6,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.downhillCostPerM": {
+      "value": 5,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.uphillBonusPerM": {
+      "value": 1.2,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.straightOnBonus": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.riserBonus": {
+      "value": 1.4,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.tierBonus": {
+      "value": 1.2,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.roleDropChance": {
+      "value": 0.12,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.noise": {
+      "value": 0.9,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.giveUpCost": {
+      "value": 4.2,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "attachment.maxGraspDiameterMm": {
+      "value": 200,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "attachment.minPitchM": {
+      "value": 0.3,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "attachment.pitchPerCircumference": {
+      "value": 1.46,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.leafSpacingM": {
+      "value": [
+        0.075,
+        0.11
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.leafLengthM": {
+      "value": [
+        0.16,
+        0.28
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.leavesPerNode": {
+      "value": 1,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.spurChance": {
+      "value": 0.62,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.spurLengthM": {
+      "value": [
+        0.09,
+        0.16
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.spurLeafCount": {
+      "value": [
+        2,
+        3
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.racemeLengthM": {
+      "value": [
+        0.6,
+        1.1
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "RHS: racemes to 1 m or more. The lower figure is a placeholder."
+    },
+    "organs.whipShareOfNodes": {
+      "value": 0.022,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.whipsPerYearMax": {
+      "value": 44,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.whipLengthM": {
+      "value": [
+        0.9,
+        2
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.leafLifespanYears": {
+      "value": 1,
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "organs.clearStemHeightM": {
+      "value": 2,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "flowering.competenceYears": {
+      "value": 3,
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "flowering.maturityRamp": {
+      "value": [
+        0.3,
+        0.55,
+        0.8,
+        0.92,
+        1
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "flowering.spurFloralChance": {
+      "value": 0.85,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "flowering.unprunedFactor": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "flowering.currentSeasonFlowersPerM": {
+      "value": 0,
+      "unit": "per m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "flowering.currentSeasonMinShootM": {
+      "value": 0,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "pruning.summerLeavesKept": {
+      "value": [
+        5,
+        6
+      ],
+      "unit": "leaves",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "pruning.winterBudsKept": {
+      "value": [
+        2,
+        3
+      ],
+      "unit": "buds",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "regrowth.shootsPerCut": {
+      "value": [
+        1,
+        2
+      ],
+      "unit": "shoots",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "thickening.tipRadiusSquaredMm2": {
+      "value": 4,
+      "unit": "mm2",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "thickening.radiusSquaredPerMetreMm2": {
+      "value": 26,
+      "unit": "mm2 per m",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "thickening.branchShare": {
+      "value": 0.9,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    }
+  }
+}

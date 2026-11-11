@@ -22,7 +22,7 @@ This is **not** a verified biological prediction model, a planting specification
 | `PROJECT_CONTEXT.md` and the other root `.md` files | The specification. Read these before making global decisions. |
 | `species/<id>/` | One folder per taxon. Folder names are ASCII ids; botanical names, accepted names and synonyms are recorded inside. |
 | `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the structure as timber and cables with its route graph, reference Bowers, attachment rules, the daily-step growth engine, and the render-data contract a viewer draws from. |
-| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Four so far: *Wisteria sinensis* (carried over from the prototype), and *Lonicera henryi*, *Clematis* 'Étoile Violette' and *Clematis cirrhosa* 'Freckles' (mostly copied from wisteria or placeholders, and marked as such). |
+| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Eight so far: *Wisteria sinensis* (carried over from the prototype), its sister *W. floribunda* 'Macrobotrys', and *Lonicera henryi*, *Clematis* 'Étoile Violette', *Clematis cirrhosa* 'Freckles', *Hedera helix*, *Rosa* 'The Generous Gardener' and *Vitis coignetiae* (mostly copied from wisteria or placeholders, and marked as such). |
 | `packages/viewer/` | `@horti/viewer` — three.js and Vite. Renders a Bower from the core at the prototype's visual quality, a design overlay (reach from a root station under a route budget, material summary), and the plants of any render data: the growth engine's scenarios, run in the browser, or a hand-made render test. Holds no growth logic. |
 | `Wisteria/` | The original three.js prototype of *W. sinensis* on a glulam vault. Self-contained (`npm install` inside it). |
 | `docs/ASSUMPTIONS_AUDIT.md` | What was tested on 11 November 2026, what held, what did not, and what was changed. |
@@ -50,6 +50,7 @@ npm run simulate     # ten years of trained wisteria on the vault: yearly accoun
 npm run simulate -- untended 10   # the same plants with nobody gardening
 npm run simulate -- mixed trained 8   # wisteria, evergreen honeysuckle, summer clematis and winter clematis together
 npm run simulate -- dome trained 12   # three wisterias on the 15 m hemisphere
+npm run simulate -- trial untended 7  # one plant of each way of climbing, nobody gardening
 npm run viewer:dev   # the viewer on http://localhost:5193: both reference Bowers, the design overlay, plants through time
 npm run viewer:build # static build in packages/viewer/dist
 ```
