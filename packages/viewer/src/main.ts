@@ -20,8 +20,8 @@ import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
 type BowerKey = 'vault' | 'hemisphere';
 /** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
-type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'palette-preview' | 'fixture';
-const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'palette-preview', 'fixture'];
+type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'fixture';
+const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'fixture'];
 /** The sources that are scenarios of the growth engine. */
 const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>> = {
   trained: { planting: 'wisteria', care: 'trained' },
@@ -31,7 +31,6 @@ const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>
   'palette-trained': { planting: 'palette', care: 'trained' },
   'palette-untended': { planting: 'palette', care: 'untended' },
   'palette-ivy': { planting: 'palette-ivy', care: 'trained' },
-  'palette-preview': { planting: 'palette-preview', care: 'trained' },
 };
 /** The camera's field of view when it is not standing at one of a report's viewpoints, degrees. */
 const FIELD_OF_VIEW = 40;
@@ -367,7 +366,7 @@ function showPlants(source: PlantSource, keepDay = false): void {
   // how many of the numbers behind the run have each evidence status; "measured" is always said, even when none is
   const counted = Object.entries(data.assumptions).filter(([status, n]) => n > 0 || status === 'measured');
   const behind = counted.some(([, n]) => n > 0) ? ` Numbers behind this run: ${counted.map(([status, n]) => `${n} ${status.replaceAll('_', ' ')}`).join(', ')}.` : '';
-  el('plant-statement').textContent = `${run?.note ? `${run.note} ` : ''}${labels.join(', ')} · ${data.scenario}. ${data.statement}${behind}${stemsOnly}`;
+  el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}${behind}${stemsOnly}`;
   showLog();
   clearTimeline();
   showDay(keepDay && Number.isFinite(state.day) ? state.day : openingDay(data));

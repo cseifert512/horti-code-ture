@@ -3,8 +3,6 @@
 // All growth happens in @horti/core; the taxon profiles and growth models are
 // the repository's own files, validated by the core as it loads them.
 import { type Bower, type DesignReport, type Growable, type RenderData, Simulation, designReport, mixedOnVault, parseGrowthModel, parseTaxon, referencePalette, toRenderData, wisteriaOnHemisphere, wisteriaOnVault } from '@horti/core';
-// what the taxon research settled about flowering wood, kept with the core's tests until it is in the library
-import { RESOLVED_WOOD, withFloweringWood } from '../../../core/test/helpers.ts';
 
 // every taxon folder under species/: the profile, and the growth model where there is one
 const PROFILES = import.meta.glob('../../../../species/*/taxon.json', { eager: true, import: 'default' });
@@ -17,11 +15,8 @@ export type Care = 'trained' | 'untended';
  * 'mixed'         the first mixed planting, on the vault
  * 'palette'       the KEY.md reference palette, twelve plants round the hemisphere
  * 'palette-ivy'   the same with ivy in place of the second evergreen honeysuckle
- * 'palette-preview'  the palette with the flowering wood of the taxa that leave
- *                 it unknown filled in from taxon research that is not yet in
- *                 the library: a preview, to be labelled as one
  */
-export type Planting = 'wisteria' | 'mixed' | 'palette' | 'palette-ivy' | 'palette-preview';
+export type Planting = 'wisteria' | 'mixed' | 'palette' | 'palette-ivy';
 
 export interface ScenarioRun {
   data: RenderData;
@@ -31,11 +26,7 @@ export interface ScenarioRun {
   report(): DesignReport;
   /** Time the simulation took, ms. */
   ms: number;
-  /** Something that must be said with this run wherever it is shown, beyond the data's own statement. */
-  note: string | null;
 }
-
-const PREVIEW_NOTE = `PREVIEW: which wood they flower on is not yet in the taxon library for ${Object.keys(RESOLVED_WOOD).length} taxa (rose, both honeysuckles, star jasmine, ivy, vine, akebia). This run fills it in from taxon research still to be merged, each an inference, so their flowers here are provisional.`;
 
 let TAXA: Growable | null = null;
 /** Every taxon that has both a profile and a growth model. */
@@ -58,7 +49,7 @@ export function canGrow(planting: Planting, on: 'vault' | 'hemisphere'): boolean
 }
 
 /** Years each planting is run for, as the core's command line runs it. */
-const YEARS: Record<Planting, number> = { wisteria: 10, mixed: 10, palette: 12, 'palette-ivy': 12, 'palette-preview': 12 };
+const YEARS: Record<Planting, number> = { wisteria: 10, mixed: 10, palette: 12, 'palette-ivy': 12 };
 
 /**
  * Grow a reference scenario as `npm run simulate` does:
@@ -71,10 +62,9 @@ const YEARS: Record<Planting, number> = { wisteria: 10, mixed: 10, palette: 12, 
 export function growScenario(planting: Planting, on: 'vault' | 'hemisphere', care: Care, years = YEARS[planting], seed = 7): ScenarioRun {
   if (!canGrow(planting, on)) throw new Error(`there is no ${planting} scenario on the ${on}`);
   const plantingYear = 2027;
-  const preview = planting === 'palette-preview';
-  const options = { taxa: preview ? withFloweringWood(growable(), RESOLVED_WOOD) : growable(), care, years, seed, plantingYear };
+  const options = { taxa: growable(), care, years, seed, plantingYear };
   const scenario =
-    planting === 'palette' || planting === 'palette-ivy' || preview
+    planting === 'palette' || planting === 'palette-ivy'
       ? referencePalette({ ...options, ivy: planting === 'palette-ivy' })
       : planting === 'mixed'
         ? mixedOnVault(options)
@@ -86,5 +76,5 @@ export function growScenario(planting: Planting, on: 'vault' | 'hemisphere', car
   const data = toRenderData(sim);
   const ms = performance.now() - t0;
   let report: DesignReport | null = null;
-  return { data, bower: scenario.bower, report: () => (report ??= designReport(sim)), ms, note: preview ? PREVIEW_NOTE : null };
+  return { data, bower: scenario.bower, report: () => (report ??= designReport(sim)), ms };
 }

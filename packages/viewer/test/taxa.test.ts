@@ -220,27 +220,24 @@ describe('the reference palette', () => {
   });
 });
 
-// The wood five palette taxa flower on is not settled in the taxon library, so
-// on main they carry no flowers. The preview fills it in from research still to
-// be merged, and must say so wherever it is shown.
-describe('the flowering preview of the palette', () => {
-  const plain = growScenario('palette', 'hemisphere', 'trained', 6);
-  const preview = growScenario('palette-preview', 'hemisphere', 'trained', 6);
-  const waiting = ['rose', 'honeysuckle', 'evergreen-honeysuckle', 'star-jasmine'];
+// CLAUDE.md: "A flowering month is an envelope, not a trigger." What flowers is
+// what the run grew, and every plant that flowers in it is drawn in flower.
+describe('the palette in flower', () => {
+  const run = growScenario('palette', 'hemisphere', 'trained', 6);
+  const count = (id: string) => run.data.flowers.filter((f) => f.plantId === id).length;
 
-  it('carries a note that it is a preview, and the plain run carries none', () => {
-    expect(plain.note).toBeNull();
-    expect(preview.note).toMatch(/^PREVIEW/);
-    expect(preview.note).toMatch(/provisional/);
+  it('has flowers on the rose, both honeysuckles and the star jasmine, now that the library records the wood they flower on', () => {
+    for (const id of ['rose', 'honeysuckle', 'evergreen-honeysuckle', 'star-jasmine']) expect(count(id), id).toBeGreaterThan(0);
   });
 
-  it('gives flowers to plants that have none in the plain run, and the viewer has a model for each', () => {
-    const count = (run: typeof plain, id: string) => run.data.flowers.filter((f) => f.plantId === id).length;
-    for (const id of waiting) expect(count(plain, id), id).toBe(0);
-    expect(waiting.reduce((n, id) => n + count(preview, id), 0)).toBeGreaterThan(0);
-    const view = new PlantView(preview.data, materials());
+  it('draws every plant that flowers in the run with a flower model of its own', () => {
+    const view = new PlantView(run.data, materials());
     expect(view.withoutFlowers).toEqual([]);
     expect(view.provisionalLooks).toEqual([]);
+    // each flowering plant's taxon has its own model, and no two taxa share one
+    const flowering = [...new Set(run.data.flowers.map((f) => f.plantId))].map((id) => run.data.plants.find((p) => p.id === id)!.taxonId);
+    const models = new Map(flowering.map((taxonId) => [taxonId, assetsFor(taxonId).flower!.key]));
+    expect(new Set(models.values()).size).toBe(models.size);
     view.dispose();
   });
 });

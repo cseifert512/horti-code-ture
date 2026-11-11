@@ -226,9 +226,6 @@ const held = (key: string, variants: number, lods: number, make: FlowerAsset['ma
   ...look,
 });
 
-// The four below have no flowers in the data on main yet: the wood their taxa
-// flower on is not settled in the library. They are drawn when it is, and in
-// the flowering preview.
 const roseFlower = held('rose-flower', ROSE_FLOWER_VARIANTS, ROSE_FLOWER_LODS, makeRoseFlowerGeometry, { centreDrop: -0.55, budTint: [0.95, 0.72, 0.74], swing: 0.25, translucency: 0.4, sheen: 0.08 });
 const woodbineCluster = held('woodbine-cluster', WOODBINE_CLUSTER_VARIANTS, HONEYSUCKLE_CLUSTER_LODS, makeWoodbineClusterGeometry, { centreDrop: -0.15, budTint: [0.95, 0.9, 0.7], swing: 0.3, translucency: 0.35, sheen: 0.03 });
 const henryiCluster = held('henryi-cluster', HENRYI_CLUSTER_VARIANTS, HONEYSUCKLE_CLUSTER_LODS, makeHenryiClusterGeometry, { centreDrop: -0.15, budTint: [0.9, 0.8, 0.6], swing: 0.3, translucency: 0.3, sheen: 0.03 });
