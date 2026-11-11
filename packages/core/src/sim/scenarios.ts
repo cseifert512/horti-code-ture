@@ -46,7 +46,7 @@ function need(taxa: Growable, ...ids: string[]): void {
 }
 
 /** RHS routine for wisteria: winter prune in January or February, summer prune in July or August. */
-function wisteriaRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+export function wisteriaRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
   const events: GardenerEvent[] = [];
   for (let y = 0; y < years; y++) {
     const year = plantingYear + y;
@@ -58,7 +58,7 @@ function wisteriaRoutine(plantId: string, plantingYear: number, years: number): 
 }
 
 /** RHS routine for a Group 3 clematis: every stem cut to 15-30 cm in February or March. */
-function groupThreeRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+export function groupThreeRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
   const events: GardenerEvent[] = [];
   for (let y = 1; y < years; y++) {
     const year = plantingYear + y;
@@ -68,7 +68,7 @@ function groupThreeRoutine(plantId: string, plantingYear: number, years: number)
 }
 
 /** An annual is set out again each year in late spring (RHS: once the risk of frost has passed). */
-function annualRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+export function annualRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
   const events: GardenerEvent[] = [];
   for (let y = 1; y < years; y++) events.push({ id: `replant-${plantingYear + y}-${plantId}`, date: `${plantingYear + y}-05-20`, type: 'annual_replant', plantId, author: 'gardener', reason: 'set out this year\'s plant once frost is past' });
   return events;

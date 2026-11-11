@@ -24,6 +24,7 @@ This is **not** a verified biological prediction model, a planting specification
 | `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the structure as timber and cables with its route graph, reference Bowers, attachment rules, the daily-step growth engine, and the render-data contract a viewer draws from. |
 | `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Sixteen: every climber in the library. *Wisteria sinensis* is carried over from the prototype; the other fifteen are derived from it or from one another, mostly copies and placeholders and marked as such. The shrub has none, because it does not climb. |
 | `Wisteria/` | The original three.js prototype of *W. sinensis* on a glulam vault. Self-contained (`npm install` inside it). |
+| `examples/` | A small arbour and the 15 m hemisphere as Bower descriptions, each with a planting plan: the two files a design is run from. |
 | `docs/ASSUMPTIONS_AUDIT.md` | What was tested on 11 November 2026, what held, what did not, and what was changed. |
 
 ## Reading order
@@ -52,6 +53,23 @@ npm run simulate -- dome trained 12   # three wisterias on the 15 m hemisphere
 npm run simulate -- trial untended 7  # one plant of each way of climbing, nobody gardening
 npm run simulate -- palette trained 12  # the KEY.md reference palette, one plant at each of the dome's twelve ribs
 ```
+
+### Your own Bower
+
+A structure does not have to be one of the two reference shells. Two small JSON files describe a design:
+
+- **what is built** (`*.bower.json`): the centre line of every timber member as a list of points, with its section and whether it is primary glulam or sub-lattice; the line and diameter of every cable; where the root stations are; optionally headroom or exclusion zones and the places a visitor stands. Points are metres, x east, y north, z up, and the file has to say so.
+- **what is planted** (`*.planting.json`): which taxon goes in at which station.
+
+Nothing in the first file names a joint or a route. Elements are joined where their bodies touch, each is cut into stretches between its joints, and those stretches are the routes plants travel, so the file can be written straight out of a CAD model. Reading it reports what a designer should check: a cable fixed to nothing, or timber no plant can arrive at.
+
+```bash
+npm run simulate -- design examples/arbour.bower.json examples/arbour.planting.json trained 8
+npm run simulate -- design examples/hemisphere-15m.bower.json examples/hemisphere-15m.planting.json
+npm run export-bower -- hemisphere examples/hemisphere-15m.bower.json   # how the second example was written
+```
+
+[`examples/arbour.bower.json`](examples/arbour.bower.json) is short enough to read as the format's documentation; the schema is in [`packages/core/src/bower/description.ts`](packages/core/src/bower/description.ts).
 
 The prototype is separate:
 
