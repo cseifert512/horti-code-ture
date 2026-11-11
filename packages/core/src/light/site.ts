@@ -129,6 +129,7 @@ export const TREE_CROWN_TRANSMISSION: { inLeaf: Sourced<number>; bare: Sourced<n
     unit: 'share of direct sun passing through the crown',
     status: 'peer_reviewed',
     source: 'https://doi.org/10.1007/s00704-013-1000-3',
+    basis: 'Measured on single street trees in Gothenburg on clear days. Taken here for any tree a site declares, which is a reading across species and places and not what the paper claims.',
     range: [0.013, 0.053],
   },
   bare: {
@@ -136,6 +137,7 @@ export const TREE_CROWN_TRANSMISSION: { inLeaf: Sourced<number>; bare: Sourced<n
     unit: 'share of direct sun passing through the crown',
     status: 'peer_reviewed',
     source: 'https://doi.org/10.1007/s00704-013-1000-3',
+    basis: 'Measured on single street trees in Gothenburg on clear days. Taken here for any tree a site declares, which is a reading across species and places and not what the paper claims.',
     range: [0.402, 0.519],
   },
 };
