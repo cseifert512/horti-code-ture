@@ -158,8 +158,9 @@
         position: static;
         pointer-events: auto;
       }
+      /* the side columns stop above the timeline, however tall its statement makes it */
       body.plants #left {
-        bottom: 150px;
+        bottom: var(--bar-clear, 150px);
       }
       #controls {
         flex: none;
@@ -299,7 +300,7 @@
         overflow-y: auto;
       }
       body.plants #right {
-        bottom: 150px;
+        bottom: var(--bar-clear, 150px);
       }
 
       /* ---- the design report ------------------------------------------------------ */
@@ -775,6 +776,7 @@
             <option value="palette-trained">Reference palette, trained</option>
             <option value="palette-untended">Reference palette, untended</option>
             <option value="palette-ivy">Reference palette with ivy, trained</option>
+            <option value="palette-preview">Reference palette, flowering preview</option>
           </optgroup>
           <optgroup label="Not a simulation">
             <option value="fixture">Render test plant (hand-made)</option>

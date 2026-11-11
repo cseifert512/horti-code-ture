@@ -20,8 +20,8 @@ import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
 type BowerKey = 'vault' | 'hemisphere';
 /** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
-type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'fixture';
-const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'fixture'];
+type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'palette-preview' | 'fixture';
+const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'palette-preview', 'fixture'];
 /** The sources that are scenarios of the growth engine. */
 const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>> = {
   trained: { planting: 'wisteria', care: 'trained' },
@@ -31,6 +31,7 @@ const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>
   'palette-trained': { planting: 'palette', care: 'trained' },
   'palette-untended': { planting: 'palette', care: 'untended' },
   'palette-ivy': { planting: 'palette-ivy', care: 'trained' },
+  'palette-preview': { planting: 'palette-preview', care: 'trained' },
 };
 /** The camera's field of view when it is not standing at one of a report's viewpoints, degrees. */
 const FIELD_OF_VIEW = 40;
@@ -355,7 +356,9 @@ function showPlants(source: PlantSource, keepDay = false): void {
   const slider = el<HTMLInputElement>('plant-day');
   slider.min = String(plant.timeline.firstDay);
   slider.max = String(plant.timeline.lastDay);
-  const labels = data.plants.map((p) => p.label).filter((l, i, all) => all.indexOf(l) === i);
+  const taxa = data.plants.map((p) => p.label).filter((l, i, all) => all.indexOf(l) === i);
+  // a long palette is counted rather than listed: the calendar beside it names every plant
+  const labels = taxa.length > 4 ? [`${data.plants.length} plants of ${taxa.length} taxa`] : taxa;
   const missing = plant.provisionalLooks.filter((l, i, all) => all.indexOf(l) === i);
   const flowerless = plant.withoutFlowers.filter((l, i, all) => all.indexOf(l) === i);
   const stemsOnly =
@@ -364,8 +367,9 @@ function showPlants(source: PlantSource, keepDay = false): void {
   // how many of the numbers behind the run have each evidence status; "measured" is always said, even when none is
   const counted = Object.entries(data.assumptions).filter(([status, n]) => n > 0 || status === 'measured');
   const behind = counted.some(([, n]) => n > 0) ? ` Numbers behind this run: ${counted.map(([status, n]) => `${n} ${status.replaceAll('_', ' ')}`).join(', ')}.` : '';
-  el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}${behind}${stemsOnly}`;
+  el('plant-statement').textContent = `${run?.note ? `${run.note} ` : ''}${labels.join(', ')} · ${data.scenario}. ${data.statement}${behind}${stemsOnly}`;
   showLog();
+  clearTimeline();
   showDay(keepDay && Number.isFinite(state.day) ? state.day : openingDay(data));
 
   // the design report takes about as long as the run: read it once the picture is up
@@ -386,6 +390,11 @@ function showPlants(source: PlantSource, keepDay = false): void {
       invalidate();
     }, 60);
   }
+}
+
+/** Keep the side columns clear of the timeline, whose height follows the length of its statement. */
+function clearTimeline(): void {
+  document.body.style.setProperty('--bar-clear', `${el('plant-bar').offsetHeight + 30}px`);
 }
 
 /** Counts requests for a report, so that one that arrives after the plants have changed is dropped. */
@@ -641,7 +650,10 @@ stage.renderer.setAnimationLoop(() => {
   const dt = Math.min(timer.getDelta(), 0.1);
   frameNo++;
   stage.controls.update();
-  if (stage.syncSize()) dirty = true;
+  if (stage.syncSize()) {
+    dirty = true;
+    if (plant) clearTimeline();
+  }
 
   if (plant) {
     // living things move: wind, and the time-lapse while it plays

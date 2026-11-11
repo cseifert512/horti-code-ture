@@ -25,9 +25,21 @@ import {
 import { GENERIC_LEAF_LODS, makeGenericLeafGeometry } from './organs-generic.ts';
 import { IVY_LEAF_LODS, IVY_LEAF_VARIANTS, makeIvyLeafGeometry } from './organs-hedera.ts';
 import { HYDRANGEA_LEAF_LODS, LACECAP_LODS, LACECAP_VARIANTS, makeHydrangeaLeafGeometry, makeLacecapGeometry } from './organs-hydrangea.ts';
-import { LONICERA_LEAF_LODS, LONICERA_LEAF_VARIANTS, WOODBINE_LEAF_LODS, WOODBINE_LEAF_VARIANTS, makeLoniceraLeafGeometry, makeWoodbineLeafGeometry } from './organs-lonicera.ts';
-import { ROSE_LEAFLETS, ROSE_LEAF_LODS, makeRoseLeafGeometry } from './organs-rosa.ts';
-import { JASMINE_LEAF_LODS, JASMINE_LEAF_VARIANTS, makeJasmineLeafGeometry } from './organs-trachelospermum.ts';
+import {
+  HENRYI_CLUSTER_VARIANTS,
+  HONEYSUCKLE_CLUSTER_LODS,
+  LONICERA_LEAF_LODS,
+  LONICERA_LEAF_VARIANTS,
+  WOODBINE_CLUSTER_VARIANTS,
+  WOODBINE_LEAF_LODS,
+  WOODBINE_LEAF_VARIANTS,
+  makeHenryiClusterGeometry,
+  makeLoniceraLeafGeometry,
+  makeWoodbineClusterGeometry,
+  makeWoodbineLeafGeometry,
+} from './organs-lonicera.ts';
+import { ROSE_FLOWER_LODS, ROSE_FLOWER_VARIANTS, ROSE_LEAFLETS, ROSE_LEAF_LODS, makeRoseFlowerGeometry, makeRoseLeafGeometry } from './organs-rosa.ts';
+import { JASMINE_CLUSTER_LODS, JASMINE_CLUSTER_VARIANTS, JASMINE_LEAF_LODS, JASMINE_LEAF_VARIANTS, makeJasmineClusterGeometry, makeJasmineLeafGeometry } from './organs-trachelospermum.ts';
 import { VINE_LEAF_LODS, VINE_LEAF_VARIANTS, makeVineLeafGeometry } from './organs-vitis.ts';
 import { LEAF_LODS, LEAF_VARIANTS, RACEME_LEN, RACEME_LODS, RACEME_VARIANTS, makeLeafGeometry, makeRacemeGeometry } from './organs.ts';
 
@@ -201,6 +213,27 @@ const lacecap: FlowerAsset = {
   detailCaps: [30, 200],
 };
 
+/** A single flower or a small cluster held on a stalk, one unit across. */
+const held = (key: string, variants: number, lods: number, make: FlowerAsset['make'], look: Pick<FlowerAsset, 'centreDrop' | 'budTint' | 'swing' | 'translucency' | 'sheen'>): FlowerAsset => ({
+  key,
+  variants,
+  lods,
+  make,
+  pick: (r) => Math.floor(r * variants),
+  authoredSize: 1,
+  detailAt: [1.1, 3.2],
+  detailCaps: [60, 500],
+  ...look,
+});
+
+// The four below have no flowers in the data on main yet: the wood their taxa
+// flower on is not settled in the library. They are drawn when it is, and in
+// the flowering preview.
+const roseFlower = held('rose-flower', ROSE_FLOWER_VARIANTS, ROSE_FLOWER_LODS, makeRoseFlowerGeometry, { centreDrop: -0.55, budTint: [0.95, 0.72, 0.74], swing: 0.25, translucency: 0.4, sheen: 0.08 });
+const woodbineCluster = held('woodbine-cluster', WOODBINE_CLUSTER_VARIANTS, HONEYSUCKLE_CLUSTER_LODS, makeWoodbineClusterGeometry, { centreDrop: -0.15, budTint: [0.95, 0.9, 0.7], swing: 0.3, translucency: 0.35, sheen: 0.03 });
+const henryiCluster = held('henryi-cluster', HENRYI_CLUSTER_VARIANTS, HONEYSUCKLE_CLUSTER_LODS, makeHenryiClusterGeometry, { centreDrop: -0.15, budTint: [0.9, 0.8, 0.6], swing: 0.3, translucency: 0.3, sheen: 0.03 });
+const jasmineCluster = held('jasmine-cluster', JASMINE_CLUSTER_VARIANTS, JASMINE_CLUSTER_LODS, makeJasmineClusterGeometry, { centreDrop: -0.4, budTint: [0.85, 0.9, 0.7], swing: 0.3, translucency: 0.4, sheen: 0.03 });
+
 const simple = (key: string, variants: number, lods: number, make: LeafAsset['make'], palette: LeafPalette, roughness: number, detailReach: number): LeafAsset => ({
   key,
   variants,
@@ -219,13 +252,14 @@ const BY_TAXON: Record<string, TaxonAssets> = {
   'wisteria-sinensis': wisteria,
   // the hand-made render test says in its data that it borrows the wisteria models
   'render-test': wisteria,
-  'lonicera-henryi': own(loniceraLeaf),
+  'lonicera-henryi': own(loniceraLeaf, henryiCluster),
   // soft, dull green, yellowing a little before it drops
   'lonicera-periclymenum-graham-thomas': own(
     simple('woodbine-leaf', WOODBINE_LEAF_VARIANTS, WOODBINE_LEAF_LODS, makeWoodbineLeafGeometry, { greenA: [0.1, 0.22, 0.07], greenB: [0.13, 0.27, 0.085], young: [0.2, 0.32, 0.1], autumnA: [0.45, 0.42, 0.1], autumnB: [0.3, 0.3, 0.08] }, 0.65, 0.6),
+    woodbineCluster,
   ),
   // small, dark and very glossy
-  'trachelospermum-jasminoides': own(simple('jasmine-leaf', JASMINE_LEAF_VARIANTS, JASMINE_LEAF_LODS, makeJasmineLeafGeometry, evergreen([0.045, 0.13, 0.04], [0.065, 0.17, 0.05], [0.16, 0.3, 0.07]), 0.28, 0.55)),
+  'trachelospermum-jasminoides': own(simple('jasmine-leaf', JASMINE_LEAF_VARIANTS, JASMINE_LEAF_LODS, makeJasmineLeafGeometry, evergreen([0.045, 0.13, 0.04], [0.065, 0.17, 0.05], [0.16, 0.3, 0.07]), 0.28, 0.55), jasmineCluster),
   'clematis-viticella-etoile-violette': own(
     clematisLeaf(5, false, { greenA: [0.12, 0.26, 0.06], greenB: [0.16, 0.32, 0.075], young: [0.26, 0.34, 0.1], autumnA: [0.62, 0.5, 0.1], autumnB: [0.42, 0.3, 0.08] }, 0.55),
     openFlower,
@@ -244,10 +278,13 @@ const BY_TAXON: Record<string, TaxonAssets> = {
   ),
   'hedera-helix': own(simple('ivy-leaf', IVY_LEAF_VARIANTS, IVY_LEAF_LODS, makeIvyLeafGeometry, evergreen([0.035, 0.11, 0.035], [0.055, 0.15, 0.045], [0.13, 0.26, 0.06]), 0.3, 0.6)),
   // new leaves reddish
-  'rosa-the-generous-gardener': own({
-    ...simple('rose-leaf', ROSE_LEAFLETS.length, ROSE_LEAF_LODS, makeRoseLeafGeometry, { greenA: [0.09, 0.2, 0.06], greenB: [0.12, 0.25, 0.07], young: [0.33, 0.2, 0.1], autumnA: [0.6, 0.5, 0.1], autumnB: [0.4, 0.3, 0.08] }, 0.45, 0.7),
-    pick: (_lengthM, r) => (r < 0.6 ? 0 : 1),
-  }),
+  'rosa-the-generous-gardener': own(
+    {
+      ...simple('rose-leaf', ROSE_LEAFLETS.length, ROSE_LEAF_LODS, makeRoseLeafGeometry, { greenA: [0.09, 0.2, 0.06], greenB: [0.12, 0.25, 0.07], young: [0.33, 0.2, 0.1], autumnA: [0.6, 0.5, 0.1], autumnB: [0.4, 0.3, 0.08] }, 0.45, 0.7),
+      pick: (_lengthM, r) => (r < 0.6 ? 0 : 1),
+    },
+    roseFlower,
+  ),
 };
 
 /** The stand-in for a taxon with no models: a plain leaf in a middling green, and no flowers. */

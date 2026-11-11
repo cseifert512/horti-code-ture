@@ -98,13 +98,25 @@ describe('organ models are per taxon', () => {
   });
 
   it('authors single flowers and flowerheads one unit across, which is what their lengthM means', () => {
-    for (const id of ['clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles', 'clematis-armandi', 'hydrangea-anomala-subsp-petiolaris']) {
+    for (const id of ['clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles', 'clematis-armandi', 'hydrangea-anomala-subsp-petiolaris', 'rosa-the-generous-gardener']) {
       const flower = assetsFor(id).flower!;
       expect(flower.authoredSize).toBe(1);
       for (let v = 0; v < flower.variants; v++) {
         const width = across(flower.make(v, 0));
         expect(width, flower.key).toBeGreaterThan(0.92);
         expect(width, flower.key).toBeLessThan(1.08);
+      }
+    }
+  });
+
+  it('authors flower clusters about one unit across', () => {
+    for (const id of ['lonicera-periclymenum-graham-thomas', 'lonicera-henryi', 'trachelospermum-jasminoides']) {
+      const flower = assetsFor(id).flower!;
+      expect(flower.authoredSize).toBe(1);
+      for (let v = 0; v < flower.variants; v++) {
+        const width = across(flower.make(v, 0));
+        expect(width, flower.key).toBeGreaterThan(0.8);
+        expect(width, flower.key).toBeLessThan(1.2);
       }
     }
   });
@@ -205,5 +217,30 @@ describe('the reference palette', () => {
     expect(report.winter!.views.map((v) => v.viewpointId)).toEqual(report.viewpoints.map((v) => v.id));
     // asked for twice, worked out once
     expect(run.report()).toBe(report);
+  });
+});
+
+// The wood five palette taxa flower on is not settled in the taxon library, so
+// on main they carry no flowers. The preview fills it in from research still to
+// be merged, and must say so wherever it is shown.
+describe('the flowering preview of the palette', () => {
+  const plain = growScenario('palette', 'hemisphere', 'trained', 6);
+  const preview = growScenario('palette-preview', 'hemisphere', 'trained', 6);
+  const waiting = ['rose', 'honeysuckle', 'evergreen-honeysuckle', 'star-jasmine'];
+
+  it('carries a note that it is a preview, and the plain run carries none', () => {
+    expect(plain.note).toBeNull();
+    expect(preview.note).toMatch(/^PREVIEW/);
+    expect(preview.note).toMatch(/provisional/);
+  });
+
+  it('gives flowers to plants that have none in the plain run, and the viewer has a model for each', () => {
+    const count = (run: typeof plain, id: string) => run.data.flowers.filter((f) => f.plantId === id).length;
+    for (const id of waiting) expect(count(plain, id), id).toBe(0);
+    expect(waiting.reduce((n, id) => n + count(preview, id), 0)).toBeGreaterThan(0);
+    const view = new PlantView(preview.data, materials());
+    expect(view.withoutFlowers).toEqual([]);
+    expect(view.provisionalLooks).toEqual([]);
+    view.dispose();
   });
 });
