@@ -23,6 +23,8 @@ export function toRenderData(sim: Simulation): RenderData {
     stems: [],
     leaves: [],
     flowers: [],
+    fruits: [],
+    appendages: [],
     seasons: [],
     events: sim.events.map((e) => ({ day: e.day, date: e.date, plantId: e.plantId, type: e.type, outcome: e.outcome })),
     thickening: { tipRadiusMm: 2, exponent: 1.35 },

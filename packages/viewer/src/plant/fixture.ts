@@ -83,6 +83,8 @@ export function makeTestPlant(bower: Bower): TestPlant {
     stems: [],
     leaves: [],
     flowers: [],
+    fruits: [],
+    appendages: [],
     seasons: [],
     events: [],
     thickening: { ...FIXTURE.thickening },

@@ -65,6 +65,17 @@ export const EVIDENCE_DOC_TERMS: Readonly<Record<string, readonly EvidenceStatus
 export const ATTACHMENT_MECHANISM = ['stem_twining', 'petiole_twining', 'tendril', 'aerial_root', 'scramble_and_tie', 'none'] as const;
 export type AttachmentMechanism = (typeof ATTACHMENT_MECHANISM)[number];
 
+/**
+ * Small parts a plant holds on or defends itself with, drawn by a viewer where
+ * the engine says they are. `tendril`: a coiling organ opposite a leaf (vine).
+ * `leaf_stalk_coil`: a leaf stalk wound round a support (clematis).
+ * `aerial_roots`: a patch of clinging rootlets on the side of a stem that
+ * touches a surface (ivy, climbing hydrangea, trumpet vine). `prickle`: a
+ * thorn of the bark that hooks a scrambler on to its neighbours (rose).
+ */
+export const APPENDAGE_KIND = ['tendril', 'leaf_stalk_coil', 'aerial_roots', 'prickle'] as const;
+export type AppendageKind = (typeof APPENDAGE_KIND)[number];
+
 export const ATTACHMENT_STATUS = ['searching', 'contacted', 'grasped', 'trained_by_human', 'stable', 'detached', 'failed', 'prohibited'] as const;
 export type AttachmentStatus = (typeof ATTACHMENT_STATUS)[number];
 
