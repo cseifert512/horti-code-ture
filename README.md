@@ -22,7 +22,7 @@ This is **not** a verified biological prediction model, a planting specification
 | `PROJECT_CONTEXT.md` and the other root `.md` files | The specification. Read these before making global decisions. |
 | `species/<id>/` | One folder per taxon. Folder names are ASCII ids; botanical names, accepted names and synonyms are recorded inside. |
 | `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the structure as timber and cables with its route graph, reference Bowers, attachment rules, the daily-step growth engine, and the render-data contract a viewer draws from. |
-| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Three so far: *Wisteria sinensis* (carried over from the prototype), and *Lonicera henryi* and *Clematis* 'Étoile Violette' (mostly copied from wisteria or placeholders, and marked as such). |
+| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Four so far: *Wisteria sinensis* (carried over from the prototype), and *Lonicera henryi*, *Clematis* 'Étoile Violette' and *Clematis cirrhosa* 'Freckles' (mostly copied from wisteria or placeholders, and marked as such). |
 | `Wisteria/` | The original three.js prototype of *W. sinensis* on a glulam vault. Self-contained (`npm install` inside it). |
 | `docs/ASSUMPTIONS_AUDIT.md` | What was tested on 11 November 2026, what held, what did not, and what was changed. |
 
@@ -47,7 +47,8 @@ npm install          # workspace tooling for packages/*
 npm run check        # type-check and run the core tests
 npm run simulate     # ten years of trained wisteria on the vault: yearly account, gardener's log, design report; files in out/
 npm run simulate -- untended 10   # the same plants with nobody gardening
-npm run simulate -- mixed trained 8   # wisteria, evergreen honeysuckle and summer clematis together
+npm run simulate -- mixed trained 8   # wisteria, evergreen honeysuckle, summer clematis and winter clematis together
+npm run simulate -- dome trained 12   # three wisterias on the 15 m hemisphere
 ```
 
 The prototype is separate:

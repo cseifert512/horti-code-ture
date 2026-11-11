@@ -91,7 +91,12 @@ export const GROWTH_PARAMS = {
   'flowering.spurFloralChance': 'number',
   /** Multiplier on flower-bud initiation in a year with no summer pruning. */
   'flowering.unprunedFactor': 'number',
-  /** For plants that flower on the year's own growth: flowers per metre of that growth, and the shortest shoot that flowers. */
+  /**
+   * For plants whose flowers form along the year's growth, whether they open
+   * that same season (current-season flowering) or after the wood has ripened
+   * (old-wood flowering without spurs): flowers per metre of that growth, and
+   * the shortest shoot that flowers.
+   */
   'flowering.currentSeasonFlowersPerM': 'number',
   'flowering.currentSeasonMinShootM': 'number',
   // ---- pruning
