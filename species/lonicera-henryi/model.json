@@ -69,6 +69,15 @@
       "status": "provisional_design_assumption",
       "basis": "Placed inside the RHS flowering envelope of June to August (1 to 31 August)."
     },
+    "phenology.flowerLastsDays": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
     "extension.leaderMPerSeason": {
       "value": 1.6,
       "unit": "m",

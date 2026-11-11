@@ -61,7 +61,7 @@ Represent the glulam and its sub-lattice (lighter timber, slender cables) as one
 
 **Exit check:** Each species can approach a support, attempt a biologically correct kind of contact, fail without support, and be rescued by an explicit gardener training event where legitimate.
 
-**Status (11 November 2026): rules done, one geometry done.** `attachment.ts` decides for each of the six classes whether a stretch of timber or cable can be held unaided, needs a tie, or cannot be shown either way because the grasp limit is unmeasured; the engine uses it for every route choice, and a shoot that stalls for want of a hold is led on when a gardener starts tying in (tested). Only stem twining has stem geometry so far (`sim/stem-path.ts`); leaf-stalk, tendril, clinging and tied canes still need theirs.
+**Status (11 November 2026): exit check met and tested** (`packages/core/test/trial.test.ts`). `attachment.ts` decides for each of the six classes whether a stretch of timber or cable can be held unaided, needs a tie, or cannot be shown either way because the grasp limit is unmeasured; the engine uses it for every route choice. Seven taxa grow, covering every class: wisteria and honeysuckle (twining stems), two clematis (leaf stalks), the vine (tendrils), ivy (aerial roots), the rose (tied only), with the shrub staying in its bed. In the trial on the 15 m hemisphere, untended, only the wisteria and the ivy leave the ground; each of the others stalls for its own stated reason and is led on when a gardener starts tying in. Twining has its own stem geometry (`sim/stem-path.ts`); the other climbers run along their support, which is right for stems held by leaf stalks, tendrils, rootlets or ties, though the holding organs themselves are not drawn.
 
 ## Stage 4 — implement coarse phenology and flowering-wood rules
 
@@ -115,7 +115,7 @@ Status on 11 November 2026 is marked on each line: done, part, or not yet.
 - [x] Separate manufactured and living graphs.
 - [x] Persistent plant history, with growth cohort and bud ancestry.
 - [x] Model's coordinate convention, handedness, time step and units written down.
-- [ ] Six attachment classes (including non-climber) with correct taxon mappings. *Part: all six have attachment rules; three are grown (twining stem, leaf stalk, and the shrub that stays put). Tendril, aerial root and tied cane are not grown yet.*
+- [x] Six attachment classes (including non-climber) with correct taxon mappings.
 - [ ] No attachment in a zone a project has declared off-limits; none is off-limits by default.
 - [ ] Visible steel is reported, and limited to slender cables.
 - [ ] Humans can train, attach, detach, prune, monitor and replant as explicit operations. *Part: train, prune (three kinds) and monitor act on the plant; detaching a tie and replanting are recorded but not yet acted on.*

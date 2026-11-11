@@ -130,3 +130,29 @@ export function wisteriaOnHemisphere(options: VaultScenarioOptions): Scenario {
   const events = care === 'trained' ? plantings.flatMap((p) => wisteriaRoutine(p.plantId, plantingYear, years)) : [];
   return { name: `Wisteria sinensis on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS };
 }
+
+/** The six climbers of the attachment trial, in station order, with the mechanism each holds on by. */
+export const ATTACHMENT_TRIAL = [
+  { plantId: 'wisteria', taxonId: 'wisteria-sinensis' },
+  { plantId: 'honeysuckle', taxonId: 'lonicera-henryi' },
+  { plantId: 'clematis', taxonId: 'clematis-viticella-etoile-violette' },
+  { plantId: 'vine', taxonId: 'vitis-coignetiae' },
+  { plantId: 'ivy', taxonId: 'hedera-helix' },
+  { plantId: 'rose', taxonId: 'rosa-the-generous-gardener' },
+] as const;
+
+/**
+ * One plant of each way of climbing, each at the foot of its own glulam rib
+ * on the 15 m hemisphere, with no pruning. It is a trial, not a planting
+ * scheme (KEY.md: do not plant every listed taxon in one Bower): it shows
+ * which plants can get off the ground on bare glulam, which need a gardener,
+ * and which need something finer than a rib to hold.
+ * DEVELOPMENT_GUIDE.md stage 3 exit check.
+ */
+export function attachmentTrial(options: VaultScenarioOptions): Scenario {
+  const { taxa, plantingYear = 2027, seed = 7, care = 'trained' } = options;
+  need(taxa, ...ATTACHMENT_TRIAL.map((p) => p.taxonId));
+  const bower = makeHemisphereBower({ diameterM: 15, stations: ATTACHMENT_TRIAL.length });
+  const plantings: Planting[] = ATTACHMENT_TRIAL.map((p, i) => ({ ...p, stationId: bower.rootStations[i]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
+  return { name: `Six ways of climbing on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events: [], viewpoints: HEMISPHERE_VIEWPOINTS };
+}

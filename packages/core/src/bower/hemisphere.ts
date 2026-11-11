@@ -148,6 +148,7 @@ export function makeHemisphereBower(options: HemisphereOptions = {}): Bower {
   const rootStations: RootStation[] = [];
   for (let s = 0; s < stations; s++) {
     const i = Math.round((s * meridians) / stations) % meridians;
+    if (rootStations.some((r) => r.entryNodeIds[0] === nodeId(i, 0))) throw new Error(`${stations} stations do not fit on ${meridians} meridians`);
     rootStations.push({
       id: `station.${s}`,
       position: at(R + 0.3, azimuth(i), 0),

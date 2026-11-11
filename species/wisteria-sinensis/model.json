@@ -69,6 +69,15 @@
       "status": "provisional_design_assumption",
       "basis": "Placed inside the RHS flowering envelope of May to June (26 May to 15 June). The prototype dropped petals from 19 May."
     },
+    "phenology.flowerLastsDays": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Not used: the racemes open and fall together, within the two windows above."
+    },
     "extension.leaderMPerSeason": {
       "value": 2.6,
       "unit": "m",

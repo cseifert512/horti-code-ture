@@ -54,11 +54,11 @@
     "phenology.flowerOpenDoy": {
       "value": [
         185,
-        215
+        232
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of July to August (4 July to 3 August)."
+      "basis": "Flowers open in succession across the RHS flowering envelope of July to August (4 July to 20 August)."
     },
     "phenology.petalFallDoy": {
       "value": [
@@ -68,6 +68,15 @@
       "unit": "day of year",
       "status": "provisional_design_assumption",
       "basis": "Placed at the end of the RHS flowering envelope of July to August (13 August to 7 September)."
+    },
+    "phenology.flowerLastsDays": {
+      "value": [
+        12,
+        22
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "How long one flower lasts. A placeholder."
     },
     "extension.leaderMPerSeason": {
       "value": 3,
@@ -356,7 +365,7 @@
       "basis": "Flowers per metre of the year’s growth. A placeholder."
     },
     "flowering.currentSeasonMinShootM": {
-      "value": 0.8,
+      "value": 0.25,
       "unit": "m",
       "status": "provisional_design_assumption",
       "basis": "A shoot shorter than this is taken not to flower. A placeholder."

@@ -209,7 +209,7 @@ describe('a gardener can make a route attainable', () => {
     expect(summary(sim, 'wisteria.0', 2030).highestM).toBeLessThan(0.3);
     const why = sim.decisions.filter((d) => d.kind === 'no_route' && d.plantId === 'wisteria.0');
     expect(why.length).toBeGreaterThan(0);
-    expect(why[0]!.text).toContain('too stout to grasp, and nobody ties it in');
+    expect(why[0]!.text).toContain('is too thick for a twining stem to grasp (limit 20 mm), and nobody ties it in');
   });
 
   it('climbs once a gardener ties it in, and the log shows who did it', () => {

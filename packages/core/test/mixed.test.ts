@@ -277,7 +277,8 @@ describe('three ways of holding the same structure', () => {
     for (const id of ['honeysuckle', 'clematis', 'winter-clematis']) {
       expect(summary(untended, id, 2034).frameworkM, id).toBeLessThan(0.1);
       const why = untended.decisions.find((d) => d.plantId === id && d.kind === 'no_route')!;
-      expect(why.text, id).toContain('too stout to grasp, and nobody ties it in');
+      expect(why.text, id).toContain('is too thick for');
+      expect(why.text, id).toContain('and nobody ties it in');
     }
     expect(summary(untended, 'wisteria.0', 2034).frameworkM).toBeGreaterThan(50);
   });
