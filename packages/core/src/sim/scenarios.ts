@@ -67,6 +67,13 @@ function groupThreeRoutine(plantId: string, plantingYear: number, years: number)
   return events;
 }
 
+/** An annual is set out again each year in late spring (RHS: once the risk of frost has passed). */
+function annualRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+  const events: GardenerEvent[] = [];
+  for (let y = 1; y < years; y++) events.push({ id: `replant-${plantingYear + y}-${plantId}`, date: `${plantingYear + y}-05-20`, type: 'annual_replant', plantId, author: 'gardener', reason: 'set out this year\'s plant once frost is past' });
+  return events;
+}
+
 /** Two Wisteria sinensis on the barrel-vault segment, one at each planted rib foot. */
 export function wisteriaOnVault(options: VaultScenarioOptions): Scenario {
   const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained', wisteria = 'wisteria-sinensis' } = options;
@@ -158,13 +165,17 @@ export function attachmentTrial(options: VaultScenarioOptions): Scenario {
 /**
  * Any list of plants, each at the foot of its own rib, evenly spaced round the
  * 15 m hemisphere, with no pruning: for trying a taxon, or a few side by side.
+ * An annual goes in on 20 May, and under `trained` care is set out again each
+ * year; untended, it is planted once and never again.
  */
 export function plantsOnHemisphere(options: VaultScenarioOptions, plants: readonly { plantId: string; taxonId: string }[], title: string): Scenario {
-  const { taxa, plantingYear = 2027, seed = 7, care = 'trained' } = options;
+  const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained' } = options;
   need(taxa, ...plants.map((p) => p.taxonId));
   const bower = makeHemisphereBower({ diameterM: 15, stations: plants.length });
-  const plantings: Planting[] = plants.map((p, i) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[i]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
-  return { name: `${title} on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events: [], viewpoints: HEMISPHERE_VIEWPOINTS };
+  const annual = (taxonId: string) => taxa.get(taxonId)!.profile.ukCultivation === 'annual_replant';
+  const plantings: Planting[] = plants.map((p, i) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[i]!.id, date: `${plantingYear}-${annual(p.taxonId) ? '05-20' : '03-12'}`, tieToTimber: care === 'trained' }));
+  const events = care === 'trained' ? plants.filter((p) => annual(p.taxonId)).flatMap((p) => annualRoutine(p.plantId, plantingYear, years)) : [];
+  return { name: `${title} on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS };
 }
 
 /**

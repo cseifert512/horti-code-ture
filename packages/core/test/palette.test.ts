@@ -21,12 +21,12 @@ const palette = designReport(paletteSim);
 const open = (r: DesignReport, plantId: string) => r.months.filter((m) => (m.flowers[plantId] ?? 0) > 0).map((m) => m.month);
 
 describe('growth models for the climbing palette', () => {
-  it('exist for every climber except the annual, and for no plant that does not climb', () => {
+  it('exist for every climber, and not for the shrub', () => {
     const all = loadTaxa(speciesDir);
     const without = [...all.keys()].filter((id) => !library.has(id)).sort();
-    expect(without).toEqual(['sarcococca-confusa', 'thunbergia-alata']);
+    expect(without).toEqual(['sarcococca-confusa']);
     expect(all.get('sarcococca-confusa')!.attachment.mechanism).toBe('none');
-    expect(all.get('thunbergia-alata')!.ukCultivation).toBe('annual_replant');
+    expect(library.size).toBe(16);
   });
 
   it('say of themselves that they are borrowed, all but the one carried over from the prototype', () => {
