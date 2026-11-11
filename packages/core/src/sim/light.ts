@@ -20,7 +20,7 @@
  * are not modelled; where a profile asks for them the report says so.
  */
 import type { CalendarDate } from '../calendar.ts';
-import { type Foliage, LightGeometry, type MonthlyLight, clumpLeaves } from '../light/exposure.ts';
+import { type Foliage, LightGeometry, type MonthlyLight, clumpLeaves, foliageOf } from '../light/exposure.ts';
 import { LIGHT_MODEL } from '../light/model.ts';
 import { DEFAULT_SITE, type Site } from '../light/site.ts';
 import { MID_MONTH_DOY } from '../light/sun.ts';
@@ -48,12 +48,15 @@ export interface PlantLight extends MonthlyLight {
   flowering: number;
 }
 
+/** The most places a plant's light is read at in one year. Light changes slowly along a route; this keeps a long run quick. */
+const READINGS_PER_PLANT = 8;
+
 const mean = (xs: readonly number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0);
 
 export class LightField {
   readonly site: Site;
   /** False where the scenario asks for light to be reported and not acted on. */
-  readonly responds: boolean;
+  readonly acts: boolean;
   /** Every reading taken during the run, in the order taken. */
   readonly history: PlantLight[] = [];
 
@@ -62,13 +65,13 @@ export class LightField {
   private readonly readings = new Map<string, LightReading>();
   private readonly cache = new Map<string, PlantLight>();
   private readonly plantNumber = new Map<string, number>();
-  private foliageYear = NaN;
-  private foliageNow: Foliage | undefined;
+  private canopyOf = NaN;
+  private canopyNow: Foliage | undefined;
 
   constructor(sim: Simulation) {
     this.sim = sim;
     this.site = sim.scenario.site ?? sim.scenario.bower.site ?? DEFAULT_SITE;
-    this.responds = sim.scenario.lightResponse !== false;
+    this.acts = sim.scenario.lightResponse !== false;
   }
 
   /** The reading of the structure and its site. Worked out when first needed. */
@@ -93,12 +96,12 @@ export class LightField {
     return n;
   }
 
-  /** The leaf that stood on the structure in the season before `year`, gathered into clumps. */
-  private foliage(year: number): Foliage | undefined {
-    if (this.foliageYear === year) return this.foliageNow;
-    this.foliageYear = year;
+  /** The leaf that stood on the structure in a season, gathered into clumps; undefined where there was none. */
+  canopy(season: number): Foliage | undefined {
+    if (this.canopyOf === season) return this.canopyNow;
+    this.canopyOf = season;
     const sim = this.sim;
-    const last = year - 1;
+    const last = season;
     const area = new Map<string, number>();
     const leaves: { x: number; y: number; z: number; areaM2: number; evergreen: boolean; plant: number }[] = [];
     for (const leaf of sim.leaves) {
@@ -107,7 +110,7 @@ export class LightField {
       leaves.push({ x: leaf.position.x, y: leaf.position.y, z: leaf.position.z, areaM2, evergreen: leaf.evergreen, plant: this.numberOf(leaf.plantId) });
       if (!leaf.evergreen) area.set(leaf.plantId, (area.get(leaf.plantId) ?? 0) + areaM2);
     }
-    if (!leaves.length) return (this.foliageNow = undefined);
+    if (!leaves.length) return (this.canopyNow = undefined);
     // how much of the deciduous leaf is out in the middle of each month, by each plant's own dates
     const out = new Array<number>(12).fill(0);
     let total = 0;
@@ -118,7 +121,7 @@ export class LightField {
       for (let m = 0; m < 12; m++) if (MID_MONTH_DOY[m]! >= flush && MID_MONTH_DOY[m]! <= fall) out[m]! += a;
       total += a;
     }
-    return (this.foliageNow = { clumps: clumpLeaves(leaves), deciduousOut: out.map((a) => (total > 0 ? a / total : 0)) });
+    return (this.canopyNow = foliageOf(clumpLeaves(leaves), out.map((a) => (total > 0 ? a / total : 0))));
   }
 
   /** The light of a plant in a year: read when first asked for, and kept. */
@@ -138,19 +141,34 @@ export class LightField {
       if (a.removedDay !== null) continue;
       for (const r of a.runs) if (r.status !== 'detached') held.add(r.edgeId);
     }
-    const points: number[] = [];
+    const all: number[] = [];
     let routeM = 0;
     for (const e of held) {
       for (const i of g.byEdge.get(e) ?? []) {
-        points.push(i);
+        all.push(i);
         routeM += g.points[i]!.routeM;
+      }
+    }
+    // a plant that holds a great deal of route is read at places spread evenly along it, not at every one
+    let points = all;
+    if (all.length > READINGS_PER_PLANT) {
+      points = [];
+      let k = 0;
+      let passed = 0;
+      for (const i of all) {
+        passed += g.points[i]!.routeM;
+        if (passed >= ((k + 0.5) / READINGS_PER_PLANT) * routeM) {
+          points.push(i);
+          k++;
+        }
       }
     }
     const station = g.byStation.get(plant.stationId);
     const over: PlantLight['over'] = points.length ? 'route' : 'station';
     if (!points.length && station !== undefined) points.push(station);
 
-    const light = g.lightOver(points, this.foliage(year), this.numberOf(plant.id));
+    // shade from other plants is last season's: this year's leaf is not out when the year's light is read
+    const light = g.lightOver(points, this.canopy(year - 1), this.numberOf(plant.id), points !== all);
     const needed = lightNeeded(reading)?.value ?? null;
     const growth = light.share.map((s) => lightFactor(s, needed));
     const burst = param(model, 'phenology.budburstDoy');
@@ -177,11 +195,11 @@ export class LightField {
 
   /** Multiplier on a plant's extension today. */
   growthFactor(plant: Plant, date: CalendarDate): number {
-    return this.responds ? this.of(plant, date.year).growth[date.month - 1]! : 1;
+    return this.acts ? this.of(plant, date.year).growth[date.month - 1]! : 1;
   }
 
   /** Multiplier on the chance that a flower bud forms on a plant this year. */
   floweringFactor(plant: Plant, date: CalendarDate): number {
-    return this.responds ? this.of(plant, date.year).flowering : 1;
+    return this.acts ? this.of(plant, date.year).flowering : 1;
   }
 }

@@ -33,13 +33,17 @@ import { MID_MONTH_DOY, sunPath } from './sun.ts';
 
 // ---- the sky, in equal patches ---------------------------------------------------
 /** Patches round the horizon and from the horizon to overhead. Equal in solid angle: even in bearing, and in the sine of height. */
-const SKY_AZ = 120;
-const SKY_EL = 40;
+const SKY_AZ = 72;
+const SKY_EL = 24;
 const CELLS = SKY_AZ * SKY_EL;
 const CELL_SR = (2 * Math.PI) / CELLS;
 /** About the width of a patch, radians: pieces of an occluder are made no longer than this as seen from the point. */
-const CELL_ANGLE = 0.03;
+const CELL_ANGLE = 0.05;
 const TWO_PI = 2 * Math.PI;
+/** Leaf is gathered on a half-metre grid: a clump is taken to be a ball of about that size. */
+const CLUMP_RADIUS_M = 0.3;
+/** A group of clumps is taken as one from beyond this many times its own radius: it is then a small part of the sky. */
+const GROUP_FAR = 2.5;
 
 function cellOf(dx: number, dy: number, dz: number): number {
   const a = Math.floor(((Math.atan2(dx, dy) + Math.PI) / TWO_PI) * SKY_AZ);
@@ -98,10 +102,54 @@ export interface LeafClump {
   plant: number;
 }
 
+/** Clumps that lie near one another, taken as one from far enough away. */
+export interface LeafGroup extends LeafClump {
+  /** How far its leaf reaches from its middle, m. */
+  radiusM: number;
+  members: readonly LeafClump[];
+}
+
 export interface Foliage {
   clumps: readonly LeafClump[];
+  /** The same leaf in larger gatherings, each used whole from far enough away. */
+  groups: readonly LeafGroup[];
   /** Share of the deciduous leaf that is out in each month, January first. */
   deciduousOut: readonly number[];
+}
+
+/** Clumps and the share of deciduous leaf out in each month, made into foliage the light model can use. */
+export function foliageOf(clumps: readonly LeafClump[], deciduousOut: readonly number[], groupM = 1.5): Foliage {
+  const map = new Map<string, LeafClump[]>();
+  for (const c of clumps) {
+    const key = `${c.plant}|${Math.floor(c.x / groupM)}|${Math.floor(c.y / groupM)}|${Math.floor(c.z / groupM)}`;
+    const list = map.get(key);
+    if (list) list.push(c);
+    else map.set(key, [c]);
+  }
+  const groups: LeafGroup[] = [];
+  for (const members of map.values()) {
+    let w = 0;
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    let e = 0;
+    let d = 0;
+    for (const c of members) {
+      const a = c.evergreenM2 + c.deciduousM2;
+      w += a;
+      x += c.x * a;
+      y += c.y * a;
+      z += c.z * a;
+      e += c.evergreenM2;
+      d += c.deciduousM2;
+    }
+    if (w <= 0) continue;
+    const g = { x: x / w, y: y / w, z: z / w, evergreenM2: e, deciduousM2: d, plant: members[0]!.plant };
+    let reach = 0;
+    for (const c of members) reach = Math.max(reach, Math.hypot(c.x - g.x, c.y - g.y, c.z - g.z));
+    groups.push({ ...g, radiusM: reach + CLUMP_RADIUS_M, members });
+  }
+  return { clumps, groups, deciduousOut };
 }
 
 /** Gather leaves into clumps on a half-metre grid, plant by plant. */
@@ -243,6 +291,9 @@ export class LightGeometry {
   /** Share of each patch hidden for good, 0 to 255, by point; and the share behind a deciduous tree's crown. */
   private readonly masks: (Uint8Array | undefined)[] = [];
   private readonly treeMasks: (Uint8Array | undefined)[] = [];
+  /** Sky open at each point, as a count of patches: clear of any deciduous crown, and behind one. */
+  private readonly openSky: number[] = [];
+  private readonly openBehindTree: number[] = [];
   /** The sun's path on the 15th of each month: the patch it is in, the length of the step and the strength of the beam. */
   private readonly sunCell: Int32Array[] = [];
   private readonly sunHours: Float32Array[] = [];
@@ -445,9 +496,63 @@ export class LightGeometry {
       }
       mask[c] = Math.round(255 * hidden);
     }
+    let clear = 0;
+    let behind = 0;
+    for (let c = 0; c < CELLS; c++) {
+      if (tree?.[c]) behind += 1 - mask[c]! / 255;
+      else clear += 1 - mask[c]! / 255;
+    }
     this.masks[i] = mask;
     this.treeMasks[i] = tree;
+    this.openSky[i] = clear;
+    this.openBehindTree[i] = behind;
     return mask;
+  }
+
+  /** Lay a ball of leaf on the scratch sky map of the point being read. */
+  private leaf(touched: number[], qx: number, qy: number, qz: number, evergreenM2: number, deciduousM2: number, radiusM: number): void {
+    if (qz < -radiusM) return;
+    const tauE = this.tauE;
+    const tauD = this.tauD;
+    const g = LIGHT_MODEL.leafProjection.value!;
+    const d = Math.hypot(qx, qy, qz);
+    // how wide the ball is as seen from here; one the point is inside covers the sky on its side
+    const rho = d > radiusM ? Math.asin(radiusM / d) : Math.PI / 2;
+    const dx = d > 1e-6 ? qx / d : 0;
+    const dy = d > 1e-6 ? qy / d : 0;
+    const dz = d > 1e-6 ? qz / d : 1;
+    if (rho < CELL_ANGLE) {
+      // smaller than a patch: its leaf is laid on the one patch it is in
+      if (dz <= 0) return;
+      const c = cellOf(dx, dy, dz);
+      if (tauE[c] === 0 && tauD[c] === 0) touched.push(c);
+      const k = g / (d * d) / CELL_SR;
+      tauE[c]! += k * evergreenM2;
+      tauD[c]! += k * deciduousM2;
+      return;
+    }
+    const el = Math.asin(Math.max(-1, Math.min(1, dz)));
+    if (el + rho <= 0) return;
+    // light passing through the ball meets this much leaf whatever the distance; what shrinks with distance is the sky it covers
+    const through = g / (Math.PI * radiusM * radiusM);
+    const cosRho = Math.cos(rho);
+    const e0 = Math.max(0, Math.floor(Math.sin(Math.max(0, el - rho)) * SKY_EL));
+    const e1 = Math.min(SKY_EL - 1, Math.floor(Math.sin(Math.min(Math.PI / 2, el + rho)) * SKY_EL));
+    // every bearing where the ball reaches overhead; otherwise the bearings either side of its own
+    const cosEl = Math.cos(el);
+    const whole = el + rho >= Math.PI / 2 - 1e-6 || cosEl < 1e-6 || Math.sin(rho) >= cosEl;
+    const a0 = Math.floor(((Math.atan2(dx, dy) + Math.PI) / TWO_PI) * SKY_AZ);
+    const span = whole ? SKY_AZ / 2 : Math.min(SKY_AZ / 2, Math.ceil((Math.asin(Math.sin(rho) / cosEl) / TWO_PI) * SKY_AZ) + 1);
+    const last = whole ? span - 1 : span;
+    for (let e = e0; e <= e1; e++) {
+      for (let k = -span; k <= last; k++) {
+        const c = e * SKY_AZ + ((((a0 + k) % SKY_AZ) + SKY_AZ) % SKY_AZ);
+        if (CELL_DIR[3 * c]! * dx + CELL_DIR[3 * c + 1]! * dy + CELL_DIR[3 * c + 2]! * dz < cosRho) continue;
+        if (tauE[c] === 0 && tauD[c] === 0) touched.push(c);
+        tauE[c]! += through * evergreenM2;
+        tauD[c]! += through * deciduousM2;
+      }
+    }
   }
 
   /**
@@ -462,28 +567,14 @@ export class LightGeometry {
     const tauE = this.tauE;
     const tauD = this.tauD;
     const touched: number[] = [];
-    if (foliage && foliage.clumps.length) {
-      const g = LIGHT_MODEL.leafProjection.value! / CELL_SR;
-      const add = (qx: number, qy: number, qz: number, e: number, d: number) => {
-        if (qz <= 0) return;
-        // a clump the point is inside thins the light as one a little way off would
-        const dist = Math.max(0.25, Math.hypot(qx, qy, qz));
-        const flat = Math.hypot(qx, qy, qz);
-        const c = cellOf(qx / flat, qy / flat, qz / flat);
-        if (tauE[c] === 0 && tauD[c] === 0) touched.push(c);
-        tauE[c]! += (g * e) / (dist * dist);
-        tauD[c]! += (g * d) / (dist * dist);
-      };
-      for (const cl of foliage.clumps) {
-        if (cl.plant === exclude) continue;
-        const qx = cl.x - p.x;
-        const qy = cl.y - p.y;
-        const qz = cl.z - p.z;
-        if (qx * qx + qy * qy + qz * qz > 4) add(qx, qy, qz, cl.evergreenM2, cl.deciduousM2);
-        else {
-          // near to, a clump is as wide as it is far: spread it over its own extent
-          for (let k = 0; k < 8; k++) add(qx + (k & 1 ? 0.125 : -0.125), qy + (k & 2 ? 0.125 : -0.125), qz + (k & 4 ? 0.125 : -0.125), cl.evergreenM2 / 8, cl.deciduousM2 / 8);
-        }
+    if (foliage) {
+      for (const group of foliage.groups) {
+        if (group.plant === exclude) continue;
+        const qx = group.x - p.x;
+        const qy = group.y - p.y;
+        const qz = group.z - p.z;
+        if (qx * qx + qy * qy + qz * qz > (GROUP_FAR * group.radiusM) ** 2) this.leaf(touched, qx, qy, qz, group.evergreenM2, group.deciduousM2, group.radiusM);
+        else for (const cl of group.members) this.leaf(touched, cl.x - p.x, cl.y - p.y, cl.z - p.z, cl.evergreenM2, cl.deciduousM2, CLUMP_RADIUS_M);
       }
     }
     const out = foliage?.deciduousOut;
@@ -494,15 +585,12 @@ export class LightGeometry {
 
     // light from the whole sky, with deciduous leaf out and with it down, and (where there is such a tree) with the tree in leaf and bare
     const sky = (treeT: number, leafOut: number): number => {
-      let open = 0;
-      if (tree) for (let c = 0; c < CELLS; c++) open += (1 - mask[c]! / 255) * (tree[c] ? treeT : 1);
-      else for (let c = 0; c < CELLS; c++) open += 1 - mask[c]! / 255;
+      let open = this.openSky[i]! + treeT * this.openBehindTree[i]!;
       for (const c of touched) open -= (1 - mask[c]! / 255) * (tree?.[c] ? treeT : 1) * (1 - Math.exp(-(tauE[c]! + leafOut * tauD[c]!)));
       return open / CELLS;
     };
-    const skyKey = (treeT: number, leafOut: number) => (treeT === tLeaf ? 2 : 0) + leafOut;
     const skies: (number | undefined)[] = [];
-    const skyAt = (treeT: number, leafOut: 0 | 1): number => (skies[skyKey(treeT, leafOut)] ??= sky(treeT, leafOut));
+    const skyAt = (treeT: number, leafOut: 0 | 1): number => (skies[(treeT === tLeaf ? 2 : 0) + leafOut] ??= sky(treeT, leafOut));
 
     const hours: number[] = [];
     const share: number[] = [];
@@ -528,7 +616,7 @@ export class LightGeometry {
         all += beam[k]!;
       }
       const direct = all > 0 ? lit / all : 0;
-      const fromSky = touched.length ? skyAt(treeT, 0) + leafOut * (skyAt(treeT, 1) - skyAt(treeT, 0)) : skyAt(treeT, 0);
+      const fromSky = touched.length && leafOut > 0 ? skyAt(treeT, 0) + leafOut * (skyAt(treeT, 1) - skyAt(treeT, 0)) : skyAt(treeT, 0);
       hours.push(h);
       share.push(all > 0 ? (1 - diffuse) * direct + diffuse * fromSky : fromSky);
     }
@@ -539,13 +627,13 @@ export class LightGeometry {
     return { hours, share };
   }
 
-  /** Light on a set of points taken together, each weighted by the route it stands for (a lone station counts whole). */
-  lightOver(indices: readonly number[], foliage?: Foliage, exclude = -1): MonthlyLight {
+  /** Light on a set of points taken together, each weighted by the route it stands for (a lone station counts whole), or all alike where they were chosen evenly along a route. */
+  lightOver(indices: readonly number[], foliage?: Foliage, exclude = -1, evenly = false): MonthlyLight {
     const hours = new Array<number>(12).fill(0);
     const share = new Array<number>(12).fill(0);
     let total = 0;
     for (const i of indices) {
-      const w = this.points[i]!.routeM || 1;
+      const w = evenly ? 1 : this.points[i]!.routeM || 1;
       const l = this.light(i, foliage, exclude);
       for (let m = 0; m < 12; m++) {
         hours[m]! += w * l.hours[m]!;
