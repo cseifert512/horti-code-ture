@@ -57,7 +57,7 @@
       ],
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "basis": "May is stated outright: Bean (Trees and Shrubs Online) says the racemes are \"produced in May\" and that it \"flowers towards the end of May\". June rests on RHS season wording: the record's genus note says wisterias flower \"in spring and early summer\" and its season grid shows flowers in spring and summer (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month). Bean adds \"frequently a second smaller crop in August\"; that is not in this envelope."
     },
     "display": "Fragrant lilac to mauve racemes to about 30 cm, opening before the leaves.",
     "scented": true
@@ -133,6 +133,10 @@
     {
       "label": "RHS wisteria FAQ (flower-bud timing)",
       "url": "https://www.rhs.org.uk/plants/wisteria/frequently-asked-questions"
+    },
+    {
+      "label": "Trees and Shrubs Online (Bean): Wisteria sinensis",
+      "url": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/"
     }
   ]
 }

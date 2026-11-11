@@ -11,7 +11,7 @@
 | Climbing or support mechanism | Stem twining, **right-handed** helix: anticlockwise seen from above. The RHS says anticlockwise without stating a viewpoint; Valder (1995), Darwin and Flora of China agree on the geometry. The prototype twines this way. |
 | RHS ultimate-height envelope | RHS: higher than 12 m; 10–20 years to RHS ultimate size category. This is not a calibrated extension rate. |
 | Hardiness | H6 (RHS). |
-| Flower / leaf / fruit season | Fragrant lilac/mauve flower racemes to ~30 cm; generally late spring, notably opening before foliage; yellowing leaves in autumn, bare woody framework in winter. |
+| Flower / leaf / fruit season | Fragrant lilac/mauve flower racemes to ~30 cm; generally late spring (Bean: towards the end of May, often with a second smaller crop in August), notably opening before foliage; yellowing leaves in autumn, bare woody framework in winter. |
 | Aspect and exposure | Full sun or partial shade, preferably south/west and sheltered; full sun is important for profuse flowers. |
 | Soil | Moist, well-drained; avoid prolonged waterlogging. |
 

@@ -34,8 +34,8 @@
     "handedness": {
       "value": "right_handed",
       "status": "published_plant_profile",
-      "source": "https://climbers.lsa.umich.edu/akebia-quinata/",
-      "basis": "Twines from left to right as it ascends (University of Michigan CLIMBERS); Darwin: \"moves against the sun\". A right-handed helix."
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin: Akebia quinata \"moves against the sun\", that is anticlockwise seen from above: a right-handed helix. The University of Michigan CLIMBERS page says it twines \"dextrally ... from left to right as it ascends\", but it uses the same words for Lonicera, which Darwin records as following the sun, so that wording cannot fix the geometry."
     },
     "maxGraspDiameterMm": {
       "value": null,
@@ -46,10 +46,11 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "previous_season",
+      "status": "provisional_design_assumption",
+      "basis": "Inferred from two sources that point the same way; neither says it outright. The RHS record says pruning group 11 \"after flowering\", and the RHS guide to that group gives that timing to climbers that flower on the previous year's growth. Flora of China describes the racemes as axillary on short branches, with scaly bracts, opening in April and May: they come from buds carried over winter on older stems."
     },
-    "rhsPruningGroup": null,
+    "rhsPruningGroup": "11",
     "monthsUK": {
       "value": [
         3
@@ -107,8 +108,8 @@
   "regional": [
     {
       "region": "Great Britain",
-      "status": "Not listed, but under consideration for the list of species of special concern (NNSS risk assessment: medium risk; no decision found as of November 2026). Listing would ban sale and planting. Do not specify for a Bower without checking the current status.",
-      "source": "https://www.nonnativespecies.org/assets/Uploads/Akebia-quinata-RA-final_topub-v2.pdf"
+      "status": "Not listed. It is one of five plants in the first cycle of species the GB Committee is considering for the list of species of special concern; no recommendation or ministerial decision has been published (NNSS page read 11 November 2026, which records decisions up to September 2026). NNSS risk assessment: medium risk. Listing would ban sale and planting. Do not specify for a Bower without checking the current status.",
+      "source": "https://www.nonnativespecies.org/legislation/species-of-special-concern"
     }
   ],
   "sources": [
@@ -119,6 +120,22 @@
     {
       "label": "GB NNSS risk assessment",
       "url": "https://www.nonnativespecies.org/assets/Uploads/Akebia-quinata-RA-final_topub-v2.pdf"
+    },
+    {
+      "label": "NNSS: species of special concern, and species being considered for listing",
+      "url": "https://www.nonnativespecies.org/legislation/species-of-special-concern"
+    },
+    {
+      "label": "RHS: pruning established climbers (pruning groups 11 to 13)",
+      "url": "https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide"
+    },
+    {
+      "label": "Darwin, The Movements and Habits of Climbing Plants",
+      "url": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm"
+    },
+    {
+      "label": "University of Michigan CLIMBERS",
+      "url": "https://climbers.lsa.umich.edu/akebia-quinata/"
     }
   ]
 }

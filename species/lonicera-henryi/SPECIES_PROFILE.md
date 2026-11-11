@@ -9,10 +9,10 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Evergreen woody twining climber (RHS); British field accounts call it winter-green or semi-deciduous (BSBI), so real winter leaf retention varies with exposure. |
-| Climbing or support mechanism | Stem twining. Handedness is not documented for this species; its congeners are left-handed (clockwise seen from above), which is taken as a provisional assumption until a specimen is checked. |
+| Climbing or support mechanism | Stem twining. No written source gives the handedness of this species. Two photographs of identified plants (Wikimedia Commons: Botanischer Garten Berlin-Dahlem, and a stem on a post) show a left-handed helix, clockwise seen from above, as in its congeners. Still a provisional assumption until a specimen is checked. |
 | RHS ultimate-height envelope | RHS: 4–8 m; ultimate size generally 2–5 years under suitable cultivation. |
 | Hardiness | H5 (RHS). |
-| Flower / leaf / fruit season | Dark green foliage through winter; small yellow-red tubular flowers in summer and later dark berries. |
+| Flower / leaf / fruit season | Dark green foliage through winter; small yellow-red tubular flowers in summer (RHS), in June according to Bean; later dark berries. |
 | Aspect and exposure | Full sun/partial shade; north/east/west possible; RHS accepts exposed or sheltered, though canopy persistence remains site-specific. |
 | Soil | Fertile, moist, well-drained, humus-rich. |
 
@@ -33,6 +33,8 @@ Lower/middle perimeter and shaded side canopy, not presumed to grow across a 12m
 ## Gardener intervention / pruning
 
 Control competitive overgrowth, thin to preserve other plants, inspect attachments and berries in visitor spaces.
+
+RHS pruning group 11 (vigorous climbers: no regular pruning, trimmed to fit the space); the RHS record gives no timing. Tidy in spring, removing congested or dead shoots and shortening long ones (Gardens Illustrated names this species; the RHS honeysuckle guide says the same of late-flowering types and warns that a hard prune reduces flowering). Mulch in spring. Flowering wood is provisionally the current season's growth: inferred from those two guides, not stated for this species by any source.
 
 ## Interactions with the broader palette
 
@@ -56,5 +58,9 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 - Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/10471/lonicera-henryi/details
+- RHS honeysuckle guide: https://www.rhs.org.uk/plants/honeysuckle/climbing/growing-guide
+- RHS pruning groups 11 to 13: https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide
+- Trees and Shrubs Online (Bean): https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/
+- Gardens Illustrated: https://www.gardensillustrated.com/plants/honeysuckle-lonicera-how-to-grow/
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

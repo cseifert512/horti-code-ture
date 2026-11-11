@@ -64,7 +64,7 @@
       ],
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "basis": "RHS record ('Kyushaku'): flowers \"produced in late spring\", which is May by the season rule (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month). June is not stated by any source read: it rests on Bean (Trees and Shrubs Online), who says W. floribunda flowers \"two or three weeks later\" than W. sinensis, which \"flowers towards the end of May\"."
     },
     "display": "Lilac-blue to violet pendulous racemes that can reach 1 m or more.",
     "scented": true
@@ -137,6 +137,10 @@
     {
       "label": "RHS wisteria growing guide (twining direction)",
       "url": "https://www.rhs.org.uk/plants/wisteria/growing-guide"
+    },
+    {
+      "label": "Trees and Shrubs Online (Bean): Wisteria floribunda",
+      "url": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/"
     }
   ]
 }

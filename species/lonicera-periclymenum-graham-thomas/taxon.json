@@ -47,19 +47,22 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "both",
+      "status": "provisional_design_assumption",
+      "basis": "A reconciliation of sources that disagree, not a published statement. For previous-season wood: Gardens Illustrated says L. periclymenum and its cultivars \"flower on stems that have grown the previous year\"; the RHS record says prune after flowering, and the RHS honeysuckle guide says types pruned after flowering bear flowers \"on short sideshoots on the previous season's growth\". For current-season wood: Bean's supplement (Trees and Shrubs Online) says 'Graham Thomas' \"if cut back in winter will flower from June to October\", and the RHS record notes a long flowering season. Taken together: a first flush from last year's stems, continued on new growth."
     },
     "rhsPruningGroup": "11",
     "monthsUK": {
       "value": [
         6,
         7,
-        8
+        8,
+        9,
+        10
       ],
       "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Bean's supplement (Trees and Shrubs Online), of this cultivar: \"if cut back in winter will flower from June to October\". Stated in months. The RHS record names no months: its season grid shows flowers in summer only and its text says \"long flowering season\"; the earlier value of June to August came from that."
     },
     "display": "Fragrant white flowers ageing to cream-yellow over a long period; red berries.",
     "scented": true
@@ -115,6 +118,22 @@
     {
       "label": "RHS plant profile",
       "url": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details"
+    },
+    {
+      "label": "RHS: how to grow climbing honeysuckle",
+      "url": "https://www.rhs.org.uk/plants/honeysuckle/climbing/growing-guide"
+    },
+    {
+      "label": "RHS: pruning established climbers (pruning groups 11 to 13)",
+      "url": "https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide"
+    },
+    {
+      "label": "Trees and Shrubs Online (Bean): Lonicera periclymenum",
+      "url": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/"
+    },
+    {
+      "label": "Gardens Illustrated: honeysuckle, how to grow and prune",
+      "url": "https://www.gardensillustrated.com/plants/honeysuckle-lonicera-how-to-grow/"
     }
   ]
 }

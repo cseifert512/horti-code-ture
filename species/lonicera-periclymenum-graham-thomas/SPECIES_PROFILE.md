@@ -11,7 +11,7 @@
 | Climbing or support mechanism | Stem twining, left-handed helix: clockwise seen from above (no peer-reviewed species-level source retrieved). |
 | RHS ultimate-height envelope | RHS: 4–8 m; 5–10 years to ultimate size category. |
 | Hardiness | H6 (RHS). |
-| Flower / leaf / fruit season | Fragrant white flowers ageing cream-yellow over a long summer flowering period; red ornamental berries. |
+| Flower / leaf / fruit season | Fragrant white flowers ageing cream-yellow over a long flowering period, June to October if cut back in winter (Bean); red ornamental berries. |
 | Aspect and exposure | Full sun/partial shade; aspect flexible, exposure tolerated; partial shade often favourable. |
 | Soil | Fertile, moist and well-drained. |
 
@@ -32,6 +32,8 @@ Perimeter/lower-to-middle lane with flowers close enough to visitors to smell, p
 ## Gardener intervention / pruning
 
 Prune/control after flowering as needed and maintain distinct lane from evergreen honeysuckle.
+
+RHS pruning group 11, after flowering: cut flowered shoots back by a third in late summer (RHS honeysuckle guide). Flowering wood is recorded as both, provisionally: the RHS and Gardens Illustrated say the flowers come on side shoots from the previous year's stems, while Bean says this cultivar flowers from June to October even when cut back in winter, which means later flowers on new growth.
 
 ## Interactions with the broader palette
 
@@ -55,5 +57,8 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 - Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details
+- RHS honeysuckle guide: https://www.rhs.org.uk/plants/honeysuckle/climbing/growing-guide
+- Trees and Shrubs Online (Bean): https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/
+- Gardens Illustrated: https://www.gardensillustrated.com/plants/honeysuckle-lonicera-how-to-grow/
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

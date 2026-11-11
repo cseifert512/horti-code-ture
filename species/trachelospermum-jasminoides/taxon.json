@@ -31,7 +31,8 @@
     "selfAttaching": true,
     "handedness": {
       "value": null,
-      "status": "unknown"
+      "status": "unknown",
+      "basis": "Searched again in November 2026 in English, German, Japanese, Chinese and Romance-language terms: no written source gives the direction for this species. The one photograph found that shows stems on canes (Wikimedia Commons, \"Trachelospermum jasminoides A.jpg\") shows crossings in both senses on a pot-grown, cane-trained plant and settles nothing. Darwin records two other twiners of the same family (Dipladenia) as moving against the sun, which would be right-handed: a family-level hint, not evidence for this species."
     },
     "maxGraspDiameterMm": {
       "value": null,
@@ -43,18 +44,19 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "current_season",
+      "status": "provisional_design_assumption",
+      "basis": "Inferred, with evidence on both sides. For: the RHS record says pruning group 11 \"in early spring\", and the RHS guide to that group gives spring pruning to climbers that flower on the current year's growth; it flowers in July and August \"usually on short lateral twigs\" (Bean, Trees and Shrubs Online). Against: NC State Extension says prune after flowering, the timing normally given for old-wood flowerers. No source states the flowering wood outright. The flowering side shoots arise from older stems, so a hard spring prune would still cost flowers."
     },
-    "rhsPruningGroup": null,
+    "rhsPruningGroup": "11",
     "monthsUK": {
       "value": [
         7,
         8
       ],
       "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "source": "https://www.treesandshrubsonline.org/articles/trachelospermum/trachelospermum-jasminoides/",
+      "basis": "Bean (Trees and Shrubs Online): flowers \"produced in July and August\". Stated in months. The RHS record says \"mid to late summer\", the same two months."
     },
     "display": "Very fragrant white flowers; glossy dark leaves often bronze-red in winter.",
     "scented": true
@@ -89,7 +91,27 @@
     "soil": "Fertile, well-drained; dislikes waterlogging and summer drought."
   },
   "management": {
-    "calendar": [],
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          3
+        ],
+        "note": "RHS record: pruning group 11 in early spring. RHS guide: maintenance pruning is rarely needed and is done in spring, thinning out congested, weak or damaged shoots."
+      },
+      {
+        "event": "feed_or_mulch",
+        "months": [
+          3,
+          4,
+          5,
+          9,
+          10,
+          11
+        ],
+        "note": "RHS guide: mulch once a year, in spring or in autumn, on damp soil, leaving 10 cm clear round the stem. Feeding is optional, in spring."
+      }
+    ],
     "notes": "Train and tie on to secondary wire, manage spread, inspect for leaf scorch and dieback after winter."
   },
   "hazards": [
@@ -104,6 +126,18 @@
     {
       "label": "RHS trachelospermum growing guide",
       "url": "https://www.rhs.org.uk/plants/trachelospermum/growing-guide"
+    },
+    {
+      "label": "RHS: pruning established climbers (pruning groups 11 to 13)",
+      "url": "https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide"
+    },
+    {
+      "label": "Trees and Shrubs Online (Bean): Trachelospermum jasminoides",
+      "url": "https://www.treesandshrubsonline.org/articles/trachelospermum/trachelospermum-jasminoides/"
+    },
+    {
+      "label": "NC State Extension plant profile",
+      "url": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/"
     }
   ]
 }

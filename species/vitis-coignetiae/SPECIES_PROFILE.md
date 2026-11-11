@@ -11,7 +11,7 @@
 | Climbing or support mechanism | Tendrils, not twining stems. |
 | RHS ultimate-height envelope | RHS: >12 m; described around 15 m; 10–20 years to size category. |
 | Hardiness | H5 (RHS). |
-| Flower / leaf / fruit season | Large green leaves through summer, scarlet/crimson autumn foliage; small unobtrusive flowers and occasionally dark berries. |
+| Flower / leaf / fruit season | Large green leaves through summer, scarlet/crimson autumn foliage; small unobtrusive greenish flowers in summer (RHS; no source read gives months) and occasionally dark berries. |
 | Aspect and exposure | Sun/partial shade, preferably south/west; sheltered, well-drained site. |
 | Soil | Humus-rich, well-drained, neutral to alkaline preferred. |
 
@@ -32,6 +32,8 @@ One limited visible sector; not mixed indiscriminately through a rose or small c
 ## Gardener intervention / pruning
 
 Winter and optional summer restriction pruning, tendril/route monitoring and thinning for light and structural inspection.
+
+RHS pruning group 11, in midwinter, and in midsummer if growth must be restricted. Flowering wood is provisionally the current season's growth, inferred from grapevines, whose flowering side shoots are new shoots from spurs on older wood (RHS); nothing was found for this species.
 
 ## Interactions with the broader palette
 
@@ -55,5 +57,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 - Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details
+- RHS pruning groups 11 to 13: https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide
+- RHS grapes, rod and spur pruning: https://www.rhs.org.uk/fruit/grapes/rod-and-spur-pruning-system
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.
