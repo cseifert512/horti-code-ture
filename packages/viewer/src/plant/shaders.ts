@@ -13,6 +13,16 @@
 // Also left out: the circumnutation of shoot tips. Its direction is a trait
 // of one twiner and must not be applied to every stem.
 //
+// How organs take light is here too, and is the same for every taxon:
+//   thin tissue   a leaf or a petal is lit on whichever face the sun is on, and
+//                 shows the sun's light through it on the other. Both are the
+//                 sun's light, so both are shadowed by what stands in its way
+//                 (timber, a stem, another leaf), and neither by the leaf itself
+//   gloss         from the roughness the taxon's look gives a surface
+//   wood          a stem is shaded where it lies against its support
+// How much light comes through is the look's `translucency`; nothing else
+// about a taxon is known here.
+//
 // The programs belong to no taxon. What differs between taxa reaches them as
 // uniforms, set per material from the taxon's look (look.ts): a leaf's
 // palette, the tint of a bud, the colours and ages of the wood, the colour a
@@ -26,12 +36,15 @@ export const shared = {
   uWind: { value: 0.6 },
   uWindDir: { value: new THREE.Vector2(0.92, 0.39) },
   uSunDirView: { value: new THREE.Vector3(0, 1, 0) },
+  /** Unit vector towards the sun in the world frame: thin organs lean their shadow look-up towards it. */
+  uSunDirWorld: { value: new THREE.Vector3(0, 1, 0) },
   uSunColor: { value: new THREE.Color(1, 1, 1) },
 };
 
 const COMMON = /* glsl */ `
 uniform float uTime, uWind;
 uniform vec2 uWindDir;
+uniform vec3 uSunDirWorld;
 ${CLOCK_GLSL}
 
 vec2 swayVec(float ph, vec2 xz) {
@@ -84,6 +97,7 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       uniform vec2 uFurrowDays, uSwayDays;  // the taxon's: ages over which furrows deepen and a stem stiffens
       uniform float uFurrow;                // the taxon's: how deep its furrows get
       varying float vAge;
+      varying float vContact;               // 1 on the side of the stem that lies against its support
     `,
     // position is where the stem TOUCHES its support. The centre stands one
     // radius out from there, so the stem thickens away from the structure,
@@ -97,12 +111,13 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       float skin = r * aSup.w * max( 0.1, 1.0 - aLife.w * uFurrow * smoothstep( uFurrowDays.x, uFurrowDays.y, age ) );
       vec3 transformed = centre + normal * ( skin * alive );
       vAge = age;
+      vContact = max( 0.0, -dot( normal, aSup.xyz ) );
     `,
     world: /* glsl */ `
       float flex = 1.0 - smoothstep( uSwayDays.x, uSwayDays.y, uDay - aLife.x );
       vec3 wOff = offSupport( hostOffset( position, aAnchor.xyz, aAnchor.w, flex ), aSup.xyz );
     `,
-    fragHead: /* glsl */ `varying float vAge; uniform vec2 uGreenDays, uBrownDays; uniform vec3 uWoodYoung, uWoodMature, uWoodOld;`,
+    fragHead: /* glsl */ `varying float vAge; varying float vContact; uniform vec2 uGreenDays, uBrownDays; uniform vec3 uWoodYoung, uWoodMature, uWoodOld;`,
     // young shoot -> smooth mature bark -> old bark, in the taxon's colours (WoodLook)
     fragColor: /* glsl */ `
       {
@@ -113,6 +128,8 @@ const PROGRAMS: Record<ProgramKind, Program> = {
         vec3 brown = uWoodMature * ( 0.5 + 1.1 * tex.g );
         vec3 grey = tex * uWoodOld;
         diffuseColor.rgb = mix( mix( grey, brown, mid ), green, yng );
+        // little light reaches the side of a stem that lies against timber or cable
+        diffuseColor.rgb *= 1.0 - 0.5 * vContact * vContact;
       }
     `,
   },
@@ -297,6 +314,17 @@ const DEFAULT_BUD_TINT: Triple = [0.62, 0.55, 0.86];
 /** Wood for a material that names none (a test's stand-in material): the ages and colours the prototype's one bark had. */
 const DEFAULT_WOOD: WoodLook = { young: [0.21, 0.3, 0.085], mature: [0.3, 0.2, 0.115], old: [0.8, 0.76, 0.71], woodyDays: [110, 440], oldDays: [550, 2000], furrowDays: [290, 1825], furrow: 1, stiffDays: [55, 585], relief: 3, roughness: 0.94 };
 
+/** The organs that are thin and seen from both sides. */
+const THIN: readonly ProgramKind[] = ['leaf', 'flower', 'appendage', 'litter'];
+/** The lines of three.js's own shaders that the light on thin tissue is hung on. If a release moves them, the old ways are used. */
+const SHADOW_VERTEX = THREE.ShaderChunk.shadowmap_vertex;
+const SHADOW_NORMAL = 'vec3 shadowWorldNormal = transformNormalByInverseViewMatrix( transformedNormal, viewMatrix );';
+const DIRECT_LIGHT = THREE.ShaderChunk.lights_physical_pars_fragment;
+const DIRECT_IRRADIANCE = 'vec3 irradiance = dotNL * directLight.color;';
+const inDirectLight = DIRECT_LIGHT.split(DIRECT_IRRADIANCE).length === 2 && DIRECT_LIGHT.includes('material.diffuseContribution');
+/** Whether this three.js lets the light through thin tissue take the sun's shadow, and thin tissue be shadowed from the sun's side. */
+export const THIN_TISSUE_LIGHT = { shadowed: inDirectLight, fromTheSunSide: SHADOW_VERTEX.includes(SHADOW_NORMAL) };
+
 /** How much litter lies on the ground, shared by every litter material. */
 export const litter = { uLitter: { value: new THREE.Vector2(0, 0) } };
 
@@ -344,28 +372,49 @@ export function patch<M extends THREE.Material>(
     });
     if (kind === 'litter') shader.uniforms['uLitter'] = litter.uLitter;
     Object.assign(shader.uniforms, own);
-    shader.vertexShader = shader.vertexShader
+    shader.uniforms['uSunDirWorld'] = shared.uSunDirWorld;
+    let vs = shader.vertexShader
       .replace('#include <common>', '#include <common>\n' + COMMON + prog.head)
       .replace('#include <begin_vertex>', prog.begin)
       .replace('#include <project_vertex>', PROJECT(prog.world))
       .replace('#include <worldpos_vertex>', WORLDPOS);
+    // A leaf or a petal is lit from either side. three.js looks its shadow up a little way off the surface along the
+    // normal, which for the face turned from the sun is a step into the leaf's own shadow: lean the step towards the sun.
+    if (THIN.includes(kind) && SHADOW_VERTEX.includes(SHADOW_NORMAL)) {
+      vs = vs.replace('#include <shadowmap_vertex>', SHADOW_VERTEX.replace(SHADOW_NORMAL, SHADOW_NORMAL + '\n\t\tshadowWorldNormal *= dot( shadowWorldNormal, uSunDirWorld ) < 0.0 ? -1.0 : 1.0;'));
+    }
+    shader.vertexShader = vs;
     if ((material as THREE.Material & { isMeshDepthMaterial?: boolean }).isMeshDepthMaterial) return;
     let fs = shader.fragmentShader;
     let head = prog.fragHead ?? '';
     if (prog.fragColor) fs = fs.replace('#include <color_fragment>', '#include <color_fragment>\n' + prog.fragColor);
-    if (translucency > 0 || sheen > 0) {
-      shader.uniforms['uSunDirView'] = shared.uSunDirView;
+    if (translucency > 0) {
+      // light through the tissue, warmed by it where it is a leaf: as strong as the old glow where nothing shades it
+      const tint = sheen > 0 ? [1, 1, 1] : [1.25, 1.2, 0.7];
+      shader.uniforms['uThrough'] = { value: new THREE.Vector3(...tint).multiplyScalar(translucency * 0.32 * Math.PI) };
+      head += '\nuniform vec3 uThrough;';
+      if (inDirectLight) {
+        // added where three.js adds each light's own diffuse light, so that it is the light's colour and takes its shadow
+        fs = fs.replace(
+          '#include <lights_physical_pars_fragment>',
+          DIRECT_LIGHT.replace(DIRECT_IRRADIANCE, DIRECT_IRRADIANCE + '\n\treflectedLight.directDiffuse += uThrough * saturate( dot( -geometryNormal, directLight.direction ) ) * directLight.color * BRDF_Lambert( material.diffuseContribution );'),
+        );
+      } else {
+        // a three.js whose lighting code is laid out otherwise: the glow as it was, unshadowed
+        shader.uniforms['uSunDirView'] = shared.uSunDirView;
+        shader.uniforms['uSunColor'] = shared.uSunColor;
+        head += '\nuniform vec3 uSunDirView;\nuniform vec3 uSunColor;';
+        fs = fs.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += diffuseColor.rgb * uThrough / 3.14159 * uSunColor / 0.32 * max( 0.0, dot( -normal, uSunDirView ) );');
+      }
+    }
+    if (sheen > 0) {
       shader.uniforms['uSunColor'] = shared.uSunColor;
-      head += '\nuniform vec3 uSunDirView;\nuniform vec3 uSunColor;';
+      if (!head.includes('uniform vec3 uSunColor;')) head += '\nuniform vec3 uSunColor;';
       fs = fs.replace(
         '#include <emissivemap_fragment>',
         /* glsl */ `#include <emissivemap_fragment>
         {
-          // light coming through from behind, warmed by the tissue
-          float back = max( 0.0, dot( -normal, uSunDirView ) );
-          vec3 through = diffuseColor.rgb * mix( vec3( 1.0 ), vec3( 1.25, 1.2, 0.7 ), ${sheen > 0 ? '0.0' : '1.0'} );
-          totalEmissiveRadiance += through * uSunColor * ${translucency.toFixed(3)} * back;
-          // grazing-angle sheen
+          // grazing-angle sheen: velvety petals
           float rim = pow( 1.0 - abs( dot( normal, normalize( vViewPosition ) ) ), 3.0 );
           totalEmissiveRadiance += diffuseColor.rgb * uSunColor * ${sheen.toFixed(3)} * rim;
         }`,
@@ -373,7 +422,7 @@ export function patch<M extends THREE.Material>(
     }
     shader.fragmentShader = fs.replace('#include <common>', '#include <common>\n' + head);
   };
-  material.customProgramCacheKey = () => `horti-${kind}-${translucency}-${sheen}`;
+  material.customProgramCacheKey = () => `horti-${kind}-${translucency > 0 ? 'through' : 'opaque'}-${sheen}`;
   return material;
 }
 

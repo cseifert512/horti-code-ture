@@ -326,6 +326,23 @@ export function makeEndGrainTextures(): TexturePair {
   return { map: tex(c), bump: tex(b, { srgb: false }) };
 }
 
+/** Random greys on a 64 by 64 lattice that repeats: read with smoothing, it is noise for a shader at the cost of one look-up. */
+export function makeNoiseTexture(): THREE.DataTexture {
+  const N = 64;
+  const rng = new RNG(97);
+  const data = new Uint8Array(N * N * 4);
+  for (let i = 0; i < N * N; i++) {
+    const v = Math.floor(rng.range(0, 256));
+    data[4 * i] = data[4 * i + 1] = data[4 * i + 2] = v;
+    data[4 * i + 3] = 255;
+  }
+  const t = new THREE.DataTexture(data, N, N, THREE.RGBAFormat);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.minFilter = t.magFilter = THREE.LinearFilter;
+  t.needsUpdate = true;
+  return t;
+}
+
 // A belt of trees seen from far off: only their outline against the sky and
 // the dark of their crowns. Tileable round the horizon.
 export function makeTreeBeltTexture(): THREE.CanvasTexture {

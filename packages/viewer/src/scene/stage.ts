@@ -165,6 +165,19 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
   let elevationNow = DEFAULT_SUN.elevation;
   let shadowsStale = true;
 
+  let envAt = 0;
+  /** When the sun last moved without the sky's light being worked out again; 0 if none is owed. */
+  let envOwed = 0;
+  function refreshSkyLight(): void {
+    envSun.copy(sunDir);
+    envAt = performance.now();
+    envOwed = 0;
+    envRT?.dispose();
+    envRT = pmrem.fromScene(envScene, 0.02);
+    scene.environment = envRT.texture;
+    scene.environmentIntensity = 0.9;
+  }
+
   function setSunDirection(direction: THREE.Vector3): void {
     sunDir.copy(direction).normalize();
     elevationNow = THREE.MathUtils.radToDeg(Math.asin(THREE.MathUtils.clamp(sunDir.y, -1, 1)));
@@ -183,14 +196,12 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
     // a low sun gives less light; the picture is opened up a little for it, as an eye or a camera would
     pipeline.settings.exposure = baseExposure * (1.3 - 0.3 * low) * (1 + 0.5 * (1 - dusk));
     renderer.toneMappingExposure = pipeline.settings.exposure;
-    // the sky's light on the scene follows the sun, but not every small step of it: that is dear
-    if (envSun.angleTo(sunDir) > THREE.MathUtils.degToRad(2.5) || !envRT) {
-      envSun.copy(sunDir);
-      envRT?.dispose();
-      envRT = pmrem.fromScene(envScene, 0.02);
-      scene.environment = envRT.texture;
-      scene.environmentIntensity = 0.9;
-    }
+    // The sky's light on the scene follows the sun, but working it out is dear: while the sun keeps moving (a
+    // timeline playing through the year) it is done at most twice a second, and once more when the sun comes to rest.
+    const turned = envSun.angleTo(sunDir);
+    const now = performance.now();
+    if (!envRT || turned > THREE.MathUtils.degToRad(12) || (turned > THREE.MathUtils.degToRad(2.5) && now - envAt > 500)) refreshSkyLight();
+    else if (turned > THREE.MathUtils.degToRad(0.4)) envOwed = now;
     shadowsStale = true;
   }
 
@@ -237,6 +248,8 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
   setSun(DEFAULT_SUN);
 
   const freshShadows = () => {
+    // the sun has stood still for a moment with the sky's light a little behind it: catch up
+    if (envOwed && performance.now() - envOwed > 350) refreshSkyLight();
     if (!shadowsStale) return;
     renderer.shadowMap.needsUpdate = true;
     shadowsStale = false;

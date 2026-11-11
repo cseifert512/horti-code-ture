@@ -4,7 +4,7 @@
 // WebSocket, talking to the browser over the DevTools protocol.
 //
 //   node packages/viewer/scripts/stills.mjs <out-dir> <tag> [--port 5196] [--measure] [--only vault|hemisphere]
-//       [--size 1600x900] [--hour 11] [--export 3840x2160]
+//       [--size 1600x900] [--hour 11] [--export 3840x2160] [--quality high|draft]
 //
 // The viewer must already be running (npm run viewer:dev, or a launch entry).
 // <tag> goes into every file name, so a set taken before a change can sit
@@ -33,6 +33,7 @@ const [width, height] = flag('size', '1600x900').split('x').map(Number);
 const only = flag('only', '');
 const hour = flag('hour', '');
 const exportSize = flag('export', '');
+const quality = flag('quality', '');
 const measure = has('measure');
 const [outArg, tag] = args;
 if (!outArg || !tag) {
@@ -139,7 +140,7 @@ try {
 
   for (const scene of SCENES) {
     console.log(`${scene.name} (${tag})`);
-    await send('Page.navigate', { url: `http://localhost:${port}/?${scene.query}` });
+    await send('Page.navigate', { url: `http://localhost:${port}/?${scene.query}${quality ? `&quality=${quality}` : ''}` });
     let ready = false;
     for (let i = 0; i < 240 && !ready; i++) {
       await sleep(250);
@@ -192,6 +193,7 @@ try {
       m.playing = await frames(6000);
       await js(`(() => { if (__bower.state.playing) document.getElementById('play').click(); })()`);
       m.triangles = await js(`__bower.stage.renderer.info.render.triangles`);
+      console.log(`  frame time: ${JSON.stringify(m)}`);
     }
   }
   writeFileSync(join(out, `stills-${tag}.json`), JSON.stringify(report, null, 2));

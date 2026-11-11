@@ -3,7 +3,7 @@
 // that the horizon is a place and not a line. Scene dressing only: nothing
 // here is structure, a plant of the scheme, or a claim about a site.
 import * as THREE from 'three';
-import { makeGroundTexture, makeTreeBeltTexture } from '../textures.ts';
+import { makeGroundTexture, makeNoiseTexture, makeTreeBeltTexture } from '../textures.ts';
 
 export interface Ground {
   group: THREE.Group;
@@ -20,7 +20,9 @@ function makeLawnMaterial(): THREE.MeshStandardMaterial {
   const map = makeGroundTexture();
   map.repeat.set(220, 220);
   const material = new THREE.MeshStandardMaterial({ map, roughness: 1 });
+  const noise = makeNoiseTexture();
   material.onBeforeCompile = (shader) => {
+    shader.uniforms['uGroundNoise'] = { value: noise };
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec2 vGround;')
       .replace('#include <project_vertex>', '#include <project_vertex>\nvGround = (modelMatrix * vec4(transformed, 1.0)).xz;');
@@ -29,16 +31,10 @@ function makeLawnMaterial(): THREE.MeshStandardMaterial {
         '#include <common>',
         /* glsl */ `#include <common>
         varying vec2 vGround;
-        float groundHash(vec2 p) {
-          p = fract(p * vec2(0.1031, 0.1030));
-          p += dot(p, p.yx + 33.33);
-          return fract((p.x + p.y) * p.x);
-        }
+        uniform sampler2D uGroundNoise;
+        // smooth noise, one lattice cell to the unit: a look-up in a small repeating texture of random greys
         float groundNoise(vec2 p) {
-          vec2 i = floor(p);
-          vec2 f = fract(p);
-          f = f * f * (3.0 - 2.0 * f);
-          return mix(mix(groundHash(i), groundHash(i + vec2(1.0, 0.0)), f.x), mix(groundHash(i + vec2(0.0, 1.0)), groundHash(i + vec2(1.0, 1.0)), f.x), f.y);
+          return texture2D(uGroundNoise, p / 64.0).r;
         }`,
       )
       .replace(
@@ -56,7 +52,7 @@ function makeLawnMaterial(): THREE.MeshStandardMaterial {
           // drier, yellower ground in places
           diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(1.22, 1.08, 0.72), smoothstep(0.55, 0.9, sweep * 0.6 + patchy * 0.4) * 0.5);
           // mowing stripes, seen only close by
-          float stripe = smoothstep(0.42, 0.58, abs(fract(vGround.x * 0.62 + 0.35 * groundNoise(vGround * 0.08)) - 0.5) * 2.0);
+          float stripe = smoothstep(0.42, 0.58, abs(fract(vGround.x * 0.62 + 0.5 * sweep) - 0.5) * 2.0);
           diffuseColor.rgb *= 1.0 + (stripe - 0.5) * 0.07 * (1.0 - smoothstep(20.0, 70.0, away));
         }`,
       );

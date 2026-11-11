@@ -720,7 +720,8 @@ function placeSun(): void {
     // core (x east, y north, z up) to three.js (x, z, -y)
     stage.setSunDirection(sunVector.set(s.direction.x, s.direction.z, -s.direction.y));
   }
-  showSunReadout();
+  // the words about the sun wait while the timeline plays: they are written when it stops
+  if (!state.playing) showSunReadout();
   if (state.light && (date.month !== monthShown || (plant && date.year !== lightFieldYear))) showLight(true);
   monthShown = date.month;
   invalidate();
@@ -1259,6 +1260,7 @@ stage.renderer.setAnimationLoop(() => {
     shared.uWind.value += (state.wind - shared.uWind.value) * Math.min(1, dt * 3);
     shared.uSunColor.value.copy(stage.sun.color).multiplyScalar(stage.sun.intensity * 0.32);
     shared.uSunDirView.value.copy(sunView.copy(stage.sunDir).transformDirection(stage.camera.matrixWorldInverse));
+    shared.uSunDirWorld.value.copy(stage.sunDir);
     if (state.playing) {
       const next = state.day + dt * DAYS_PER_SECOND;
       if (next >= plant.timeline.lastDay) state.playing = false;

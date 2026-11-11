@@ -98,3 +98,19 @@ describe('what a site declares, drawn', () => {
     built.dispose();
   });
 });
+
+// Shared plant shading hangs on two lines of three.js's own shaders. If a release moves them the old, unshadowed
+// glow is used instead: this says so before a picture does.
+describe('how thin tissue takes light', () => {
+  it('finds the lines of three.js it is hung on', async () => {
+    const { THIN_TISSUE_LIGHT, patch, shared } = await import('../src/plant/shaders.ts');
+    expect(THIN_TISSUE_LIGHT).toEqual({ shadowed: true, fromTheSunSide: true });
+    expect(shared.uSunDirWorld.value.length()).toBeCloseTo(1, 9);
+    // materials that differ only in how much light comes through share one compiled program
+    const a = patch(new THREE.MeshStandardMaterial(), 'leaf', { translucency: 0.2 });
+    const b = patch(new THREE.MeshStandardMaterial(), 'leaf', { translucency: 0.5 });
+    const c = patch(new THREE.MeshStandardMaterial(), 'leaf', { translucency: 0 });
+    expect(a.customProgramCacheKey()).toBe(b.customProgramCacheKey());
+    expect(a.customProgramCacheKey()).not.toBe(c.customProgramCacheKey());
+  });
+});

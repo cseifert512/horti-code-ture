@@ -48,9 +48,9 @@ function weathered<M extends THREE.MeshStandardMaterial>(material: M, amount = 1
           float drift = timberNoise(vTimberWorld * 1.3) * 0.6 + timberNoise(vTimberWorld * 5.1) * 0.4;
           // the sky-facing faces silver first
           float skyward = smoothstep(0.15, 0.9, normalize(vTimberNormal).y);
-          float grey = uWeather * (0.1 + 0.3 * skyward) * (0.55 + 0.9 * drift);
+          float grey = uWeather * (0.08 + 0.2 * skyward) * (0.55 + 0.9 * drift);
           float luma = dot(diffuseColor.rgb, vec3(0.3, 0.55, 0.15));
-          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(luma) * vec3(0.94, 0.95, 0.96), clamp(grey, 0.0, 0.6));
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(luma) * vec3(0.97, 0.96, 0.94), clamp(grey, 0.0, 0.4));
           // splash-back at the foot
           float splash = uWeather * (1.0 - smoothstep(0.02, 0.5, vTimberWorld.y)) * (0.5 + 0.5 * drift);
           diffuseColor.rgb *= 1.0 - 0.3 * splash;
@@ -67,9 +67,9 @@ export function makeStructureMaterials(): StructureMaterials {
   const end = makeEndGrainTextures();
   return {
     glulam: weathered(new THREE.MeshStandardMaterial({ map: gl.map, bumpMap: gl.bump, bumpScale: 0.9, roughness: 0.6 })),
-    larch: weathered(new THREE.MeshStandardMaterial({ map: gl.map, bumpMap: gl.bump, bumpScale: 0.9, roughness: 0.74, color: 0xe2d2bc }), 1.5),
+    larch: weathered(new THREE.MeshStandardMaterial({ map: gl.map, bumpMap: gl.bump, bumpScale: 0.9, roughness: 0.74, color: 0xe2d2bc }), 1.15),
     glulamEnd: weathered(new THREE.MeshStandardMaterial({ map: end.map, bumpMap: end.bump, bumpScale: 1.2, roughness: 0.8 })),
-    larchEnd: weathered(new THREE.MeshStandardMaterial({ map: end.map, bumpMap: end.bump, bumpScale: 1.2, roughness: 0.85, color: 0xe2d2bc }), 1.5),
+    larchEnd: weathered(new THREE.MeshStandardMaterial({ map: end.map, bumpMap: end.bump, bumpScale: 1.2, roughness: 0.85, color: 0xe2d2bc }), 1.15),
     steel: new THREE.MeshStandardMaterial({ color: 0xa4a9ae, roughness: 0.38, metalness: 1 }),
     stone: new THREE.MeshStandardMaterial({ color: 0xa9a294, roughness: 0.95 }),
   };
