@@ -61,7 +61,7 @@ export interface GardeningYear {
 }
 
 /** `caveat`: something the taxon's profile says about how it holds on that the attachment rule does not act on. */
-export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'joints_reached' | 'crown_not_reached' | 'not_modelled' | 'assumed' | 'caveat' | 'recorded_only';
+export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'joints_reached' | 'crown_not_reached' | 'not_modelled' | 'assumed' | 'caveat' | 'not_replanted' | 'recorded_only';
 
 /** Winter evergreen cover from each viewpoint, read against the design target. */
 export interface WinterCheck {
@@ -201,6 +201,9 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     if (stalled.length) alerts.push({ kind: 'no_hold', plantId: plant.id, count: stalled.length, text: `${stalled.length} shoot${stalled.length === 1 ? '' : 's'} stopped for want of a hold, and nobody tied the shoot in. First: ${stalled[0]!.text}` });
     if (acc.frameworkM > 0 && acc.highestM < crown * 0.97) alerts.push({ kind: 'crown_not_reached', plantId: plant.id, count: 1, text: `reached ${acc.highestM.toFixed(1)} m on a structure whose routes go to ${crown.toFixed(1)} m: route length, not height, is what ran out` });
     for (const d of sim.decisions) if (d.plantId === plant.id && (d.kind === 'not_modelled' || d.kind === 'assumed')) alerts.push({ kind: d.kind, plantId: plant.id, count: 1, text: d.text });
+    if (profile.ukCultivation === 'annual_replant' && !sim.events.some((e) => e.plantId === plant.id && (e.type === 'plant' || e.type === 'annual_replant') && e.modelled && cal.dateOf(e.day).year === year)) {
+      alerts.push({ kind: 'not_replanted', plantId: plant.id, count: 1, text: `an annual, and nobody planted it in ${year}: nothing grew at ${plant.stationId} that year` });
+    }
     if (profile.attachment.caveat) alerts.push({ kind: 'caveat', plantId: plant.id, count: 1, text: `the profile says of how it holds on, and the model does not act on it: ${profile.attachment.caveat}` });
   }
   const heldM = [...heldAll].reduce((s, e) => s + graph.edges.get(e)!.curve.length, 0);

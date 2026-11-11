@@ -126,6 +126,7 @@ export class Simulation {
       stationId: p.stationId,
       plantedDay: this.day,
       plantedYear: date.year,
+      firstPlantedYear: date.year,
       status: 'alive',
       rng: {
         arch: new Rng(this.scenario.seed * 7919 + this.plants.size * 104729 + 13),
@@ -140,6 +141,7 @@ export class Simulation {
       training: { tieToTimber: p.tieToTimber ?? false, by: p.tieToTimber ? 'planting' : null },
       summerPrunedYear: null,
       seasonStarted: null,
+      budding: null,
     };
     this.plants.set(plant.id, plant);
     this.yearStats.set(plant.id, { initiated: 0, opened: 0, lost: 0 });
@@ -212,8 +214,13 @@ export class Simulation {
   // One day in the life of a plant
   // =========================================================================
   private dayForPlant(plant: Plant, date: CalendarDate): void {
-    const { model } = this.taxon(plant);
+    const { profile, model } = this.taxon(plant);
     const doy = date.dayOfYear;
+    // an annual outdoors: the cold kills it, and nothing comes back from the root
+    if (profile.ukCultivation === 'annual_replant' && doy === param(model, 'phenology.leafFallDoy')[1]) {
+      this.die(plant, `cold:${date.year}`, 'was killed by the cold: outdoors in the UK it lives one summer, and nothing grows here until it is replanted');
+      return;
+    }
     const burst = param(model, 'phenology.budburstDoy');
     const end = param(model, 'phenology.growthEndDoy');
 
@@ -242,6 +249,52 @@ export class Simulation {
       const delta = axis.ratePerSeasonM * share * (axis.role === 'whip' ? 1 : est);
       this.advance(plant, axis, delta);
     }
+  }
+
+  /** The whole plant dies: every stem goes, with its leaves, buds, flowers and holds. */
+  private die(plant: Plant, causeId: string, why: string): void {
+    const fx: EventRecord['effects'] = { axesCut: 0, axesRemoved: 0, stemRemovedM: 0, floralBudsRemoved: 0, leafSitesRemoved: 0 };
+    const stats = this.yearStats.get(plant.id)!;
+    const lostToPruning = stats.lost;
+    for (const id of [...plant.axisIds]) {
+      const a = this.axes.get(id)!;
+      if (a.parent === null) this.removeAxis(a, causeId, fx);
+    }
+    // what dies with the plant was not pruned off
+    stats.lost = lostToPruning;
+    for (const b of this.buds) if (b.plantId === plant.id && b.endedBy === causeId) b.end = 'aborted';
+    plant.status = 'dead';
+    plant.budding = null;
+    plant.pendingLaterals = [];
+    plant.pendingWhips = [];
+    plant.pendingRegrowth = [];
+    this.note('died', plant, null, `${this.taxon(plant).profile.names.label} ${why}. ${fx.stemRemovedM.toFixed(1)} m of stem went with it; the dead growth is not drawn`);
+  }
+
+  /** A new plant of the same kind at the same station: this year's annual, or a replacement for one that died. */
+  private replant(plant: Plant, e: GardenerEvent, date: CalendarDate): void {
+    const { profile, model } = this.taxon(plant);
+    const annual = profile.ukCultivation === 'annual_replant';
+    if (plant.status === 'removed' || (e.type === 'annual_replant' && !annual)) {
+      this.events.push(this.record(e, date, `nothing done: ${profile.names.label} is not grown as an annual at ${plant.stationId}`, true));
+      return;
+    }
+    if (plant.status === 'alive') {
+      if (!annual) {
+        this.events.push(this.record(e, date, `nothing done: ${profile.names.label} is alive and needs no replacing`, true));
+        return;
+      }
+      this.die(plant, e.id, 'was pulled out to make way for this year\'s plant');
+    }
+    plant.status = 'alive';
+    plant.plantedYear = date.year;
+    plant.seasonStarted = null;
+    plant.summerPrunedYear = null;
+    plant.leafNodes = [];
+    const cane = this.newTrunkStem(plant, 0);
+    if (cane) this.advance(plant, cane, param(model, 'architecture.nurseryCaneM'));
+    this.events.push(this.record(e, date, `${annual ? 'this year\'s plant set out' : 'the dead plant replaced'}: ${profile.names.label} at ${plant.stationId}`, true));
+    this.note('replanted', plant, null, `a new ${profile.names.label} was planted at ${plant.stationId}`);
   }
 
   private liveBuds(plant: Plant): FloralBud[] {
@@ -346,6 +399,7 @@ export class Simulation {
     let side = cross(t, up);
     side = length(side) > 1e-6 ? scale(normalize(side), axis.leafSide) : v3(1, 0, 0);
     plant.leafNodes.push({ axisId: axis.id, pointIndex: i, year, side: axis.leafSide, taken: false });
+    this.lateBud(plant, axis, i);
     // a deciduous leaf lasts its one season; an evergreen one stays for as many as the model gives it
     const seasons = Math.max(1, Math.round(param(model, 'organs.leafLifespanYears')));
     this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1);
@@ -509,7 +563,8 @@ export class Simulation {
 
     // further trunk stems start in the seasons the model gives them
     const starts = param(model, 'architecture.trunkStemStartYears');
-    const leaders = plant.axisIds.filter((id) => this.axes.get(id)!.role === 'leader').length;
+    // stems of a plant that has since died and been replaced do not count
+    const leaders = plant.axisIds.filter((id) => this.axes.get(id)!.role === 'leader' && this.axes.get(id)!.bornYear >= plant.plantedYear).length;
     if (leaders > 0) {
       starts.forEach((s, i) => {
         if (i >= leaders && s === season) this.newTrunkStem(plant, i);
@@ -700,8 +755,46 @@ export class Simulation {
       made++;
     }
     this.yearStats.get(plant.id)!.initiated += made;
+    // growth made from now on forms buds as well
+    const sameYear = openYear === year;
+    const leadDays = sameYear ? Math.max(0, open0 - date.dayOfYear) : 0;
+    plant.budding = {
+      untilDay: sameYear ? this.calendar.dayOfYearDay(year, open1) - leadDays : this.calendar.dayOf(`${year}-12-31`),
+      jan1Day: jan1,
+      chance,
+      minShootM: minShoot,
+      openYear,
+      fallYear,
+      firstOpenDoy: split,
+      lastOpenDoy: open1,
+      leadDays,
+      sameYear,
+    };
     const where = firstFlush ? `${early} on last year's stems for the first flush and ${made - early} on this year's growth` : `on this year's growth`;
-    this.note('floral_initiated', plant, null, `${made} flower bud${made === 1 ? '' : 's'} formed ${where} (${[...grown.values()].filter((g) => g >= minShoot).length} shoots long enough to flower)${ripened ? `, to open from ${this.calendar.dateOf(this.calendar.dayOfYearDay(openYear, open0)).iso}: any cut before then takes them` : ''}`);
+    this.note('floral_initiated', plant, null, `${made} flower bud${made === 1 ? '' : 's'} formed ${where} (${[...grown.values()].filter((g) => g >= minShoot).length} shoots long enough to flower); growth made from now on will form more${ripened ? `, to open from ${this.calendar.dateOf(this.calendar.dayOfYearDay(openYear, open0)).iso}: any cut before then takes them` : ''}`);
+  }
+
+  /**
+   * A node made after the year's buds formed. It may carry a flower too, which
+   * opens no sooner after the node appears than the first flowers of the year
+   * opened after the first buds formed.
+   */
+  private lateBud(plant: Plant, axis: Axis, pointIndex: number): void {
+    const f = plant.budding;
+    if (!f || this.day > f.untilDay || axis.role === 'spur') return;
+    if (!plant.rng.flower.chance(f.chance)) return;
+    let first = axis.alive;
+    while (first > 0 && axis.bornDayAt[first - 1]! >= f.jan1Day) first--;
+    if (first >= axis.alive || axis.lengthAt[axis.alive - 1]! - axis.lengthAt[Math.max(0, first - 1)]! < f.minShootM) return;
+    const from = f.sameYear ? Math.max(f.firstOpenDoy, this.calendar.dateOf(this.day).dayOfYear + f.leadDays) : f.firstOpenDoy;
+    if (from > f.lastOpenDoy) return;
+    const { model } = this.taxon(plant);
+    const lasts = param(model, 'phenology.flowerLastsDays');
+    const [fall0, fall1] = param(model, 'phenology.petalFallDoy');
+    const opens = this.calendar.dayOfYearDay(f.openYear, plant.rng.flower.int(from, f.lastOpenDoy));
+    const drops = lasts[1] > 0 ? opens + plant.rng.flower.int(lasts[0], lasts[1]) : this.calendar.dayOfYearDay(f.fallYear, plant.rng.flower.int(fall0, fall1));
+    this.newBud(plant, axis, pointIndex, 'developing', f.openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops));
+    this.yearStats.get(plant.id)!.initiated++;
   }
 
   private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, developDay: number, openPlannedDay: number, spentPlannedDay: number): FloralBud {
@@ -800,6 +893,10 @@ export class Simulation {
 
   private applyEvent(e: GardenerEvent, date: CalendarDate): void {
     const plant = this.plants.get(e.plantId);
+    if (plant && (e.type === 'annual_replant' || e.type === 'replace_failed_perennial')) {
+      this.replant(plant, e, date);
+      return;
+    }
     if (!plant || plant.status !== 'alive') {
       this.events.push(this.record(e, date, `nothing done: there is no living plant "${e.plantId}" on this date`, true));
       return;
@@ -1066,8 +1163,9 @@ export class Simulation {
   // =========================================================================
   private closeYear(date: CalendarDate): void {
     for (const plant of this.plants.values()) {
-      if (plant.status !== 'alive') continue;
-      this.thicken(plant);
+      if (plant.status === 'removed') continue;
+      // a plant that died during the year still has that year to account for
+      if (plant.status === 'alive') this.thicken(plant);
       this.summaries.push(this.summarise(plant, date.year));
       this.yearStats.set(plant.id, { initiated: 0, opened: 0, lost: 0 });
     }

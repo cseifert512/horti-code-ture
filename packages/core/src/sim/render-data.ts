@@ -42,7 +42,7 @@ export function toRenderData(sim: Simulation): RenderData {
     data.thickening.tipRadiusMm = Math.sqrt(param(model, 'thickening.tipRadiusSquaredMm2'));
     data.plants.push({ id: plant.id, taxonId: plant.taxonId, label: profile.names.label, stationId: plant.stationId, plantedDay: plant.plantedDay, leafHabit: profile.leafHabit.value, flowerDisplay: profile.flowering.display });
 
-    for (let year = plant.plantedYear; year <= lastYear; year++) {
+    for (let year = plant.firstPlantedYear; year <= lastYear; year++) {
       const doy = (d: number) => cal.dayOfYearDay(year, d);
       const pair = (k: 'phenology.leafFlushDoy' | 'phenology.autumnColourDoy' | 'phenology.leafFallDoy'): [number, number] => {
         const [a, b] = param(model, k);
@@ -93,7 +93,8 @@ export function toRenderData(sim: Simulation): RenderData {
       year: bud.floweringYear,
       developDay: bud.developDay,
       openDay: bud.openDay,
-      spentDay: bud.spentDay ?? -1,
+      // a flower cut off, or killed with its plant, is gone from that day
+      spentDay: bud.spentDay ?? bud.endedDay ?? -1,
     });
   }
 

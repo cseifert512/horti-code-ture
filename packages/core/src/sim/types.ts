@@ -167,9 +167,13 @@ export interface Plant {
   id: string;
   taxonId: string;
   stationId: string;
+  /** The day the station was first planted. */
   plantedDay: number;
+  /** The year the plant now growing was set out: the same as `firstPlantedYear` unless it has been replanted. */
   plantedYear: number;
-  status: 'alive' | 'removed';
+  firstPlantedYear: number;
+  /** `dead`: killed, with nothing growing until someone replants it. */
+  status: 'alive' | 'dead' | 'removed';
   /**
    * Independent random streams, so that an intervention disturbs only what it
    * touches: stripping flower buds must not reroute the framework, or two
@@ -191,6 +195,13 @@ export interface Plant {
   summerPrunedYear: number | null;
   /** Last calendar year whose season start has been processed. */
   seasonStarted: number | null;
+  /**
+   * Set on the day the year's flower buds form along the shoots. Growth made
+   * after that day goes on forming buds until `untilDay`: for a plant that
+   * flowers the same year, as long as a bud could still open within its
+   * season; for one that flowers after the winter, to the end of the year.
+   */
+  budding: { untilDay: number; jan1Day: number; chance: number; minShootM: number; openYear: number; fallYear: number; firstOpenDoy: number; lastOpenDoy: number; leadDays: number; sameYear: boolean } | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -260,7 +271,7 @@ export interface EventRecord {
 }
 
 /** `assumed`: the model had to pick something a profile leaves unknown, in order to draw the plant at all. */
-export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'assumed';
+export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'assumed' | 'died' | 'replanted';
 
 /** Why the plant did what it did: the trace asked for by PROJECT_CONTEXT.md section 7.6. */
 export interface Decision {

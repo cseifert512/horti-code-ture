@@ -22,7 +22,7 @@ This is **not** a verified biological prediction model, a planting specification
 | `PROJECT_CONTEXT.md` and the other root `.md` files | The specification. Read these before making global decisions. |
 | `species/<id>/` | One folder per taxon. Folder names are ASCII ids; botanical names, accepted names and synonyms are recorded inside. |
 | `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the structure as timber and cables with its route graph, reference Bowers, attachment rules, the daily-step growth engine, and the render-data contract a viewer draws from. |
-| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Fifteen so far, which is every climber except the annual *Thunbergia*: *Wisteria sinensis* (carried over from the prototype) and fourteen derived from it or from one another, mostly copies and placeholders and marked as such. |
+| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Sixteen: every climber in the library. *Wisteria sinensis* is carried over from the prototype; the other fifteen are derived from it or from one another, mostly copies and placeholders and marked as such. The shrub has none, because it does not climb. |
 | `Wisteria/` | The original three.js prototype of *W. sinensis* on a glulam vault. Self-contained (`npm install` inside it). |
 | `docs/ASSUMPTIONS_AUDIT.md` | What was tested on 11 November 2026, what held, what did not, and what was changed. |
 
