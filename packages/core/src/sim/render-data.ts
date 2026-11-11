@@ -78,7 +78,7 @@ export function toRenderData(sim: Simulation): RenderData {
   }
 
   for (const leaf of sim.leaves) {
-    data.leaves.push({ plantId: leaf.plantId, stemId: leaf.axisId, position: triple(leaf.position), direction: triple(leaf.direction), lengthM: round(leaf.lengthM, 3), firstYear: leaf.firstYear, lastYear: leaf.lastYear, bornDay: leaf.bornDay, removedDay: leaf.removedDay ?? -1 });
+    data.leaves.push({ plantId: leaf.plantId, stemId: leaf.axisId, position: triple(leaf.position), direction: triple(leaf.direction), lengthM: round(leaf.lengthM, 3), firstYear: leaf.firstYear, lastYear: leaf.lastYear, evergreen: leaf.evergreen, bornDay: leaf.bornDay, removedDay: leaf.removedDay ?? -1 });
   }
 
   for (const bud of sim.buds) {

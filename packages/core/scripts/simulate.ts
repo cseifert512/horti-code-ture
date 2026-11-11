@@ -1,6 +1,6 @@
 // Run a reference scenario and write its render data.
-//   npm run simulate -- [trained|untended] [years] [seed]
-// Writes out/<care>-<years>y.json and prints the yearly account and the gardener's log.
+//   npm run simulate -- [wisteria|mixed] [trained|untended] [years] [seed]
+// Writes out/<scenario>-<care>-<years>y.json and prints the yearly account and the gardener's log.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { loadGrowable } from '../src/node/load-taxa.ts';
@@ -8,15 +8,17 @@ import { summariseProvenance } from '../src/provenance.ts';
 import { Simulation } from '../src/sim/engine.ts';
 import { modelProvenance } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
-import { wisteriaOnVault } from '../src/sim/scenarios.ts';
+import { mixedOnVault, wisteriaOnVault } from '../src/sim/scenarios.ts';
 
-const care = process.argv[2] === 'untended' ? 'untended' : 'trained';
-const years = Number(process.argv[3] ?? 10);
-const seed = Number(process.argv[4] ?? 7);
+const args = process.argv.slice(2);
+const which = args[0] === 'mixed' || args[0] === 'wisteria' ? args.shift()! : 'wisteria';
+const care = args[0] === 'untended' ? 'untended' : 'trained';
+const years = Number(args[1] ?? 10);
+const seed = Number(args[2] ?? 7);
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 
 const taxa = loadGrowable(`${root}species`);
-const scenario = wisteriaOnVault({ taxa, care, years, seed });
+const scenario = (which === 'mixed' ? mixedOnVault : wisteriaOnVault)({ taxa, care, years, seed });
 const t0 = performance.now();
 const sim = new Simulation(scenario).runUntil(`${2027 + years - 1}-12-31`);
 const ms = performance.now() - t0;
@@ -34,11 +36,21 @@ const acted = sim.events.filter((e) => e.type !== 'monitor');
 console.log(`\ngardener's log: ${sim.events.length} entries${acted.length > 12 ? ', the last 12 actions shown' : ''}`);
 for (const e of acted.slice(-12)) console.log(`  ${e.date}  ${e.plantId}  ${e.type}: ${e.outcome}`);
 
-const counts = summariseProvenance(modelProvenance(taxa.get('wisteria-sinensis')!.model));
-console.log(`\nassumptions behind this run: ${counts.provisional_design_assumption} provisional, ${counts.published_plant_profile} published, ${counts.measured} measured`);
-console.log(taxa.get('wisteria-sinensis')!.model.statement);
+const notes = sim.decisions.filter((d) => d.kind === 'not_modelled');
+if (notes.length) {
+  console.log('\nnot modelled in this run:');
+  for (const n of notes) console.log(`  ${n.plantId}: ${n.text}`);
+}
+
+console.log('\nassumptions behind this run:');
+for (const taxonId of new Set(scenario.plantings.map((p) => p.taxonId))) {
+  const { model } = taxa.get(taxonId)!;
+  const counts = summariseProvenance(modelProvenance(model));
+  console.log(`  ${taxonId}: ${counts.provisional_design_assumption} provisional, ${counts.published_plant_profile} published, ${counts.measured} measured`);
+}
+console.log('Every growth model here is a running model, not a calibrated one: compare scenarios with it, do not predict dates, sizes or loads.');
 
 mkdirSync(`${root}out`, { recursive: true });
-const file = `${root}out/${care}-${years}y.json`;
+const file = `${root}out/${which}-${care}-${years}y.json`;
 writeFileSync(file, JSON.stringify(toRenderData(sim)));
 console.log(`\nrender data written to ${file}`);

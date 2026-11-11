@@ -71,6 +71,11 @@ export interface RenderLeaf {
   /** First and last calendar years in leaf; `lastYear` null means every year until removed. */
   firstYear: number;
   lastYear: number | null;
+  /**
+   * False: in leaf only between that year's leaf flush and leaf fall (see `seasons`).
+   * True: kept through winter, from the flush of its first year to the end of its last.
+   */
+  evergreen: boolean;
   bornDay: number;
   /** -1 if never removed. */
   removedDay: number;

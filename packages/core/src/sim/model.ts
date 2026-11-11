@@ -77,6 +77,8 @@ export const GROWTH_PARAMS = {
   'organs.whipShareOfNodes': 'number',
   'organs.whipsPerYearMax': 'number',
   'organs.whipLengthM': 'range',
+  /** Growing seasons a leaf stays on the stem: 1 for a deciduous plant. */
+  'organs.leafLifespanYears': 'number',
   /** Height below which the stem is kept clean: no spurs, whips or flowers. */
   'organs.clearStemHeightM': 'number',
   // ---- flowering
@@ -87,9 +89,15 @@ export const GROWTH_PARAMS = {
   'flowering.spurFloralChance': 'number',
   /** Multiplier on flower-bud initiation in a year with no summer pruning. */
   'flowering.unprunedFactor': 'number',
+  /** For plants that flower on the year's own growth: flowers per metre of that growth, and the shortest shoot that flowers. */
+  'flowering.currentSeasonFlowersPerM': 'number',
+  'flowering.currentSeasonMinShootM': 'number',
   // ---- pruning
   'pruning.summerLeavesKept': 'range',
   'pruning.winterBudsKept': 'range',
+  // ---- regrowth
+  /** New shoots from the stub a hard prune leaves. */
+  'regrowth.shootsPerCut': 'range',
   // ---- thickening: radius squared, in mm2, grows with the stem length a point carries
   'thickening.tipRadiusSquaredMm2': 'number',
   'thickening.radiusSquaredPerMetreMm2': 'number',
