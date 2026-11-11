@@ -70,7 +70,7 @@ try {
 const structureMaterials = makeStructureMaterials();
 const siteMaterials = makeSiteMaterials();
 const overlay = new ReachOverlay(el('labels'));
-stage.scene.add(overlay.group);
+stage.overlayScene.add(overlay.group);
 
 const state = {
   bowerKey: (url.get('bower') === 'hemisphere' ? 'hemisphere' : 'vault') as BowerKey,
