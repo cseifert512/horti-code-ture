@@ -42,7 +42,8 @@ export interface Stage {
   frame(bounds: THREE.Box3, view?: ViewPreset): void;
   /** Mark the shadow map stale (the subject or the sun changed). */
   invalidateShadows(): void;
-  render(): void;
+  /** Draw a frame. `moving`: the picture is changing (playing, scrubbing, turning), so it is drawn the quicker way. */
+  render(moving?: boolean): void;
   /** Draw the present view into a target of any size, for a still. The camera's aspect is the caller's to set. */
   renderTo(target: THREE.WebGLRenderTarget, width: number, height: number): void;
   /**
@@ -246,10 +247,16 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
     invalidateShadows() {
       shadowsStale = true;
     },
-    render() {
+    render(moving = false) {
       freshShadows();
       const buffer = renderer.getDrawingBufferSize(new THREE.Vector2());
-      pipeline.render(scene, overlayScene.children.some((c) => c.visible) ? overlayScene : null, camera, buffer.x, buffer.y, null);
+      const atRest = pipeline.settings.samples;
+      if (moving) pipeline.settings.samples = pipeline.settings.samplesMoving;
+      try {
+        pipeline.render(scene, overlayScene.children.some((c) => c.visible) ? overlayScene : null, camera, buffer.x, buffer.y, null);
+      } finally {
+        pipeline.settings.samples = atRest;
+      }
     },
     renderTo(target, width, height) {
       freshShadows();

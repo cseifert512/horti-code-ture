@@ -20,6 +20,7 @@ export * from './light/sun.ts';
 export * from './light/model.ts';
 export * from './light/tolerance.ts';
 export * from './light/exposure.ts';
+export * from './light/canopy.ts';
 export * from './sim/light.ts';
 export * from './sim/light-report.ts';
 export * from './render/contract.ts';

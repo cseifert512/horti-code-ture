@@ -3,9 +3,10 @@
 // a hand-made plant. The viewer holds no growth logic: it reads core data and
 // calls core functions.
 import * as THREE from 'three';
-import { type Bower, type RenderData, type SupportEdge, type Viewpoint, makeHemisphereBower, makeVaultBower } from '@horti/core';
+import { type Bower, Calendar, DEFAULT_SITE, type DesignReport, type ExposureField, type RenderData, type Site, type SupportEdge, type Viewpoint, compassWords, exposureField, foliageFromRenderData, makeHemisphereBower, makeVaultBower, sunAt } from '@horti/core';
 import { ARBOUR_EXAMPLE, DesignDesk, type DesignFile } from './design/open.ts';
 import { type ReachView, type StationField, materials, reachView, routeInfo, stationField } from './overlay/model.ts';
+import { ExposureOverlay, type LightMeasure, type LightMonth, type LightScale } from './overlay/exposure.ts';
 import { ReachOverlay } from './overlay/view.ts';
 import type { FruitSite } from './plant/adapter.ts';
 import { makeTestPlant } from './plant/fixture.ts';
@@ -16,6 +17,7 @@ import { renderReport } from './report/panel.ts';
 import { makeSiteMaterials, makeStructureMaterials } from './scene/materials.ts';
 import { type BuiltSite, buildSite } from './scene/site.ts';
 import { DEFAULT_SUN, type ViewPreset, createStage } from './scene/stage.ts';
+import { renderStill, saveBlob } from './scene/still.ts';
 import { type BuiltStructure, buildStructure } from './structure/build.ts';
 import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
@@ -59,7 +61,9 @@ const canvas = el<HTMLCanvasElement>('scene');
 
 let stage: ReturnType<typeof createStage>;
 try {
-  stage = createStage(canvas);
+  // ?quality=draft leaves out the multisampling and the shading of corners, for a slow machine;
+  // ?quality=full keeps the multisampling on even while the picture moves
+  stage = createStage(canvas, url.get('quality') === 'draft' ? { samples: 0, samplesMoving: 0, ambientOcclusion: 0 } : url.get('quality') === 'full' ? { samplesMoving: 4 } : {});
 } catch (e) {
   const box = el('error');
   box.style.display = 'flex';
@@ -71,6 +75,8 @@ const structureMaterials = makeStructureMaterials();
 const siteMaterials = makeSiteMaterials();
 const overlay = new ReachOverlay(el('labels'));
 stage.overlayScene.add(overlay.group);
+const lightOverlay = new ExposureOverlay();
+stage.overlayScene.add(lightOverlay.group);
 
 const state = {
   bowerKey: (url.get('bower') === 'hemisphere' ? 'hemisphere' : 'vault') as BowerKey,
@@ -80,6 +86,17 @@ const state = {
   stationId: url.get('station') ?? '',
   budgetM: url.has('budget') ? Number(url.get('budget')) : NaN,
   sun: { ...DEFAULT_SUN },
+  /** 'real': the sun is where the site, the date and the hour put it. 'hand': the two sliders. */
+  sunMode: (url.get('sun') === 'hand' ? 'hand' : 'real') as 'real' | 'hand',
+  /** Hour of the day shown, UTC (Greenwich Mean Time). */
+  hour: url.has('hour') ? Number(url.get('hour')) : 15,
+  /** The date the sun is placed for while no plants are shown; with plants it is the timeline's. */
+  sunDate: url.get('date') ?? '2027-06-21',
+  /** The light overlay: on or off, what it shows, and for when. */
+  light: url.get('light') === '1',
+  lightMeasure: (url.get('measure') === 'share' ? 'share' : 'hours') as LightMeasure,
+  lightMonth: 'date' as 'date' | LightMonth,
+  lightStretch: url.get('stretch') === '1',
   orbit: false,
   selected: null as string | null,
   hovered: null as string | null,
@@ -146,7 +163,8 @@ function showStructure(next: Bower, view: ViewPreset | 'default' | 'keep', keepB
   }
   bower = next;
   structure = buildStructure(bower, structureMaterials);
-  site = buildSite(bower, structure.feet, siteMaterials);
+  site = buildSite(bower, structure.feet, siteMaterials, siteNow());
+  lightField = null;
   stage.scene.add(structure.group, site.group);
   stage.frame(structure.bounds, view === 'keep' ? undefined : view === 'default' ? defaultView(state.bowerKey, structure.bounds) : view);
 
@@ -174,6 +192,7 @@ function showStructure(next: Bower, view: ViewPreset | 'default' | 'keep', keepB
   showMaterials();
   const wanted = bower.rootStations.find((s) => s.id === state.stationId) ?? bower.rootStations[0];
   if (wanted) showStation(wanted.id, !keepBudget);
+  if (state.light) showLight(true);
   invalidate();
 }
 
@@ -427,6 +446,9 @@ function showPlants(source: PlantSource, keepDay = false): void {
   }
   state.plants = source;
   state.playing = false;
+  lightField = null;
+  lastReport = null;
+  el<HTMLButtonElement>('save-viewpoints').disabled = true;
   el<HTMLSelectElement>('plants').value = source;
   document.body.classList.toggle('plants', source !== 'none');
   el('plant-bar').hidden = source === 'none';
@@ -447,7 +469,10 @@ function showPlants(source: PlantSource, keepDay = false): void {
       : growScenario(scenario.planting, state.bowerKey, scenario.care);
   const on = run?.bower ?? bowerOf(state.bowerKey);
   if (signature(on) !== signature(bower)) showStructure(on, 'keep', true);
-  if (source === 'none') return;
+  if (source === 'none') {
+    placeSun();
+    return;
+  }
 
   let data: RenderData;
   let fruit: FruitSite[] = [];
@@ -484,7 +509,10 @@ function showPlants(source: PlantSource, keepDay = false): void {
     setTimeout(() => {
       if (asked !== reportAsked || !plant) return;
       const timeline = plant.timeline;
-      renderReport(box, run.report(), {
+      lastReport = run.report();
+      el<HTMLButtonElement>('save-viewpoints').disabled = lastReport.viewpoints.length === 0;
+      if (state.light) showLightPanel();
+      renderReport(box, lastReport, {
         goTo: (iso) => {
           state.playing = false;
           showDay(timeline.calendar.dayOf(iso));
@@ -564,6 +592,7 @@ let lastPlantUpdate = 0;
 function showDay(day: number): void {
   if (!plant) return;
   const t = plant.timeline;
+  if (Math.abs(day - state.day) > 0.01) lastMoved = performance.now();
   state.day = Math.min(t.lastDay, Math.max(t.firstDay, day));
   plant.update(stage.camera, state.day, PLANT_DETAIL);
   lastPlantUpdate = performance.now();
@@ -576,6 +605,7 @@ function showDay(day: number): void {
     `${stats.buds ? ` · ${stats.buds.toLocaleString()} in bud` : ''}${stats.fruit ? ` · ${stats.fruit} fruit` : ''}`;
   markLog();
   el('play').innerHTML = state.playing ? '&#10073;&#10073;' : '&#9654;';
+  placeSun();
   stage.invalidateShadows();
   invalidate();
 }
@@ -602,6 +632,225 @@ el('play').addEventListener('click', () => {
   });
 }
 
+// ---- the sun, from the site, the date and the hour ------------------------------------
+/** The place the Bower on show stands: the one its description declares, or the assumed baseline. */
+function siteNow(): Site {
+  return bower.site ?? DEFAULT_SITE;
+}
+
+/** The date the picture shows: the timeline's day where there are plants, else the date set in the scene controls. */
+function dateNow() {
+  if (plant) return plant.timeline.calendar.dateOf(Math.round(state.day));
+  try {
+    return new Calendar(state.sunDate).dateOf(0);
+  } catch {
+    return new Calendar('2027-06-21').dateOf(0);
+  }
+}
+
+/** Where the core says the sun is, for the site, the date shown and the hour. */
+function sunNow() {
+  const date = dateNow();
+  const s = sunAt(siteNow(), Math.min(365, date.dayOfYear), state.hour);
+  return { date: date.iso, hour: state.hour, elevationDeg: s.elevationDeg, azimuthDeg: s.azimuthDeg, direction: s.direction };
+}
+
+const sunVector = new THREE.Vector3();
+let monthShown = 0;
+/** Put the sun, and anything else that follows the date, where the date and hour shown say. */
+function placeSun(): void {
+  const date = dateNow();
+  if (site?.setMonth(date.month)) stage.invalidateShadows();
+  if (state.sunMode === 'real') {
+    const s = sunNow();
+    // core (x east, y north, z up) to three.js (x, z, -y)
+    stage.setSunDirection(sunVector.set(s.direction.x, s.direction.z, -s.direction.y));
+  }
+  showSunReadout();
+  if (state.light && (date.month !== monthShown || (plant && date.year !== lightFieldYear))) showLight(true);
+  monthShown = date.month;
+  invalidate();
+}
+
+function showSunReadout(): void {
+  const date = dateNow();
+  const input = el<HTMLInputElement>('sun-date');
+  if (document.activeElement !== input) input.value = date.iso;
+  const h = Math.floor(state.hour);
+  const m = Math.round((state.hour - h) * 60);
+  el('sun-hour-out').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} GMT`;
+  const s = sunNow();
+  const site = siteNow();
+  const where = `${site.name}, ${Math.abs(site.latitudeDeg).toFixed(1)}° ${site.latitudeDeg >= 0 ? 'N' : 'S'}`;
+  el('sun-readout').textContent =
+    state.sunMode === 'hand'
+      ? 'The sun is set by hand: it is not where this date and hour would put it.'
+      : s.elevationDeg > 0
+        ? `Sun ${s.elevationDeg.toFixed(0)}° above the horizon, in the ${compassWords(s.azimuthDeg)} (bearing ${s.azimuthDeg.toFixed(0)}°). ${where}.`
+        : `The sun is ${(-s.elevationDeg).toFixed(0)}° below the horizon. ${where}.`;
+}
+
+function setHour(hour: number): void {
+  state.hour = Math.min(24, Math.max(0, hour));
+  el<HTMLInputElement>('sun-hour').value = String(state.hour);
+  placeSun();
+}
+
+// ---- light on the structure -------------------------------------------------------------
+let lightField: ExposureField | null = null;
+let lightFieldYear = NaN;
+let lightScale: LightScale | null = null;
+let lastReport: DesignReport | null = null;
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** Show or hide the light overlay. The light itself is the core's: `exposureField`, with the leaf of the year shown. */
+function showLight(on: boolean): void {
+  state.light = on;
+  el<HTMLInputElement>('light-toggle').checked = on;
+  el('light-panel').hidden = !on;
+  lightOverlay.setVisible(on);
+  if (on) {
+    const date = dateNow();
+    if (!lightField || (plant && date.year !== lightFieldYear)) {
+      lightFieldYear = plant ? date.year : NaN;
+      lightField = exposureField(bower, siteNow(), plant ? foliageFromRenderData(plant.timeline.data, date.year) : undefined);
+      lightOverlay.setField(bower, lightField);
+    }
+    lightScale = lightOverlay.show(state.lightMeasure, lightMonthNow(), state.lightStretch);
+    showLightPanel();
+  }
+  invalidate();
+}
+
+const lightMonthNow = (): LightMonth => (state.lightMonth === 'date' ? dateNow().month - 1 : state.lightMonth);
+
+function showLightPanel(): void {
+  const field = lightField;
+  if (!field) return;
+  const site = field.site;
+  const month = lightMonthNow();
+  const when = month === 'year' ? 'the year round' : `in ${MONTHS[month]}`;
+  const hours = state.lightMeasure === 'hours';
+  const fmt = (x: number) => (hours ? `${x.toFixed(1)} h` : `${Math.round(100 * x)}%`);
+  el('light-site').textContent = `${site.name}, ${Math.abs(site.latitudeDeg).toFixed(1)}° ${site.latitudeDeg >= 0 ? 'N' : 'S'}${site.obstructions.length ? `, with ${site.obstructions.length} thing${site.obstructions.length === 1 ? '' : 's'} declared that cast${site.obstructions.length === 1 ? 's' : ''} shade` : ', an open site'}${site.assumed ? '. No site was given: this one is assumed.' : '.'} ${plant ? `With the leaf of ${lightFieldYear} on the structure.` : 'The bare structure.'}`;
+  if (lightScale) {
+    el('light-low').textContent = fmt(lightScale.low);
+    el('light-high').textContent = fmt(lightScale.high);
+    el('light-range').textContent = `On this structure ${when}: ${fmt(lightScale.least)} to ${fmt(lightScale.most)}${hours ? ', counting a half-shaded minute as half' : ''}.`;
+  }
+  // side by side, as the report's light section gives it
+  const sides = new Map<string, { m: number; v: number }>();
+  for (const p of field.points) {
+    if (p.kind !== 'route') continue;
+    const list = hours ? p.hours : p.share;
+    const v = month === 'year' ? list.reduce((a, x) => a + x, 0) / 12 : list[month]!;
+    const s = sides.get(p.facing) ?? { m: 0, v: 0 };
+    s.m += p.routeM;
+    s.v += p.routeM * v;
+    sides.set(p.facing, s);
+  }
+  const table = el<HTMLTableElement>('light-sides');
+  table.replaceChildren();
+  for (const facing of ['north', 'east', 'south', 'west', 'up']) {
+    const s = sides.get(facing);
+    if (!s) continue;
+    const tr = table.insertRow();
+    tr.append(Object.assign(document.createElement('th'), { textContent: facing === 'up' ? 'The top' : `Facing ${facing}` }));
+    tr.insertCell().textContent = `${s.m.toFixed(0)} m of route`;
+    tr.insertCell().textContent = fmt(s.v / s.m);
+  }
+  // each plant against its profile, from the run's own report
+  const box = el('light-plants');
+  box.replaceChildren();
+  const light = lastReport?.light;
+  if (light && plant) {
+    const t = document.createElement('table');
+    t.createCaption().textContent = `Each plant in ${lastReport!.year}, against what its profile accepts${light.acts ? '' : ' (light was told not to act in this run)'}`;
+    const head = t.insertRow();
+    for (const h of ['Plant', 'Side', 'Midsummer sun', 'Light', 'Growth']) head.append(Object.assign(document.createElement('th'), { textContent: h }));
+    for (const p of light.plants) {
+      const tr = t.insertRow();
+      tr.insertCell().textContent = p.plantId;
+      tr.insertCell().textContent = p.side;
+      tr.insertCell().textContent = `${p.midsummerHours.toFixed(1)} h`;
+      tr.insertCell().textContent = `${Math.round(100 * p.seasonShare)}%`;
+      tr.insertCell().textContent = `${Math.round(100 * p.growthFactor)}%${p.reading.floweringNeedsSun ? `, flowers ${Math.round(100 * p.floweringFactor)}%` : ''}`;
+      const flags = [p.light === 'more_sun' ? 'more sun than its profile asks for' : p.light === 'less_sun' ? 'less sun than its profile asks for' : '', p.aspect === 'not_as_asked' ? `its profile names ${p.reading.aspects.join(' or ')}` : ''].filter(Boolean);
+      if (flags.length) {
+        const flag = t.insertRow().insertCell();
+        flag.colSpan = 5;
+        flag.className = 'flag';
+        flag.textContent = `↳ ${flags.join('; ')}: "${p.reading.words}"`;
+      }
+    }
+    box.append(t);
+  }
+  el('light-notes').textContent = light ? light.notes.join(' ') : 'Hours are direct sun on a clear day, as the geometry allows: not sunshine records. Warmth, shelter and wind are not light and are not modelled.';
+}
+
+// ---- stills ----------------------------------------------------------------------------------
+/** True while a still is being drawn: the ordinary frames stand aside. */
+let exporting = false;
+async function exportStill(options: { width: number; height: number; supersample?: number }): Promise<Blob> {
+  exporting = true;
+  try {
+    if (plant) plant.update(stage.camera, state.day, 1);
+    stage.camera.clearViewOffset();
+    return await renderStill(stage, options);
+  } finally {
+    exporting = false;
+    invalidate();
+  }
+}
+
+function stillSize(): { width: number; height: number } {
+  const value = el<HTMLSelectElement>('still-size').value;
+  if (value === 'window') {
+    const b = stage.renderer.getDrawingBufferSize(new THREE.Vector2());
+    return { width: b.x, height: b.y };
+  }
+  const [width, height] = value.split('x').map(Number);
+  return { width: width!, height: height! };
+}
+const stillName = (view: string) => `${bower.id}-${view}-${dateNow().iso}${state.overlay || state.light ? '-overlay' : ''}.png`;
+
+async function saveStills(viewpoints: readonly Viewpoint[] | null): Promise<void> {
+  const note = el('still-note');
+  const buttons = [el<HTMLButtonElement>('save-image'), el<HTMLButtonElement>('save-viewpoints')];
+  const disabled = buttons.map((b) => b.disabled);
+  for (const b of buttons) b.disabled = true;
+  note.hidden = false;
+  const was = { position: stage.camera.position.clone(), target: stage.controls.target.clone(), fov: stage.camera.fov, polar: stage.controls.maxPolarAngle, near: stage.controls.minDistance };
+  const size = stillSize();
+  try {
+    if (!viewpoints) {
+      note.textContent = `Drawing ${size.width} x ${size.height}...`;
+      await new Promise((r) => setTimeout(r, 30));
+      saveBlob(await exportStill(size), stillName('view'));
+    } else {
+      for (const [i, vp] of viewpoints.entries()) {
+        note.textContent = `Drawing ${i + 1} of ${viewpoints.length}: ${vp.label}...`;
+        standAt(vp);
+        await new Promise((r) => setTimeout(r, 30));
+        saveBlob(await exportStill(size), stillName(vp.id));
+      }
+      stage.controls.maxPolarAngle = was.polar;
+      stage.controls.minDistance = was.near;
+      stage.camera.fov = was.fov;
+      stage.camera.updateProjectionMatrix();
+      stage.camera.position.copy(was.position);
+      stage.controls.target.copy(was.target);
+      stage.controls.update();
+    }
+    note.textContent = `Saved ${viewpoints ? `${viewpoints.length} stills` : 'a still'} of ${size.width} x ${size.height} for ${dateNow().iso}.`;
+  } catch (e) {
+    note.textContent = `The still could not be drawn: ${e instanceof Error ? e.message : String(e)}`;
+  } finally {
+    buttons.forEach((b, i) => (b.disabled = disabled[i]!));
+    invalidate();
+  }
+}
+
 // ---- controls ------------------------------------------------------------------
 for (const b of document.querySelectorAll<HTMLButtonElement>('[data-bower]')) {
   b.addEventListener('click', () => {
@@ -622,6 +871,9 @@ el('chip-route').addEventListener('click', () => {
 });
 
 function bindSun(): void {
+  const mode = el<HTMLSelectElement>('sun-mode');
+  const hour = el<HTMLInputElement>('sun-hour');
+  const date = el<HTMLInputElement>('sun-date');
   const elevation = el<HTMLInputElement>('sun-elevation');
   const azimuth = el<HTMLInputElement>('sun-azimuth');
   const show = () => {
@@ -630,17 +882,47 @@ function bindSun(): void {
   };
   elevation.value = String(state.sun.elevation);
   azimuth.value = String(state.sun.azimuth);
+  hour.value = String(state.hour);
+  mode.value = state.sunMode;
   show();
-  const apply = () => {
+  /** Show the controls that go with the way the sun is being placed, and place it. */
+  const sync = () => {
+    const real = state.sunMode === 'real';
+    for (const input of [elevation, azimuth]) input.closest('label')!.hidden = real;
+    for (const input of [hour, date]) input.closest('label')!.hidden = !real;
+    if (!real) stage.setSun(state.sun);
+    placeSun();
+  };
+  mode.addEventListener('change', () => {
+    state.sunMode = mode.value === 'hand' ? 'hand' : 'real';
+    sync();
+  });
+  hour.addEventListener('input', () => setHour(Number(hour.value)));
+  date.addEventListener('change', () => {
+    if (!date.value) return;
+    if (plant) {
+      // with plants on show the date is the timeline's: go there
+      state.playing = false;
+      try {
+        showDay(plant.timeline.calendar.dayOf(date.value));
+      } catch {
+        showSunReadout();
+      }
+    } else {
+      state.sunDate = date.value;
+      placeSun();
+    }
+  });
+  const byHand = () => {
     state.sun = { elevation: Number(elevation.value), azimuth: Number(azimuth.value) };
     stage.setSun(state.sun);
     show();
     invalidate();
   };
-  elevation.addEventListener('input', apply);
-  azimuth.addEventListener('input', apply);
+  elevation.addEventListener('input', byHand);
+  azimuth.addEventListener('input', byHand);
+  sync();
 }
-bindSun();
 el<HTMLInputElement>('orbit').addEventListener('change', (e) => {
   state.orbit = (e.target as HTMLInputElement).checked;
   stage.controls.autoRotate = state.orbit;
@@ -653,16 +935,23 @@ el('reset-view').addEventListener('click', () => {
   if (structure) stage.frame(structure.bounds, defaultView(state.bowerKey, structure.bounds));
   invalidate();
 });
-el('save-image').addEventListener('click', () => {
-  render();
-  canvas.toBlob((blob) => {
-    if (!blob) return;
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${bower.id}${state.overlay ? '-overlay' : ''}.png`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  }, 'image/png');
+el('save-image').addEventListener('click', () => void saveStills(null));
+el('save-viewpoints').addEventListener('click', () => void saveStills(lastReport?.viewpoints ?? []));
+el<HTMLInputElement>('light-toggle').addEventListener('change', (e) => showLight((e.target as HTMLInputElement).checked));
+el<HTMLSelectElement>('light-measure').value = state.lightMeasure;
+el<HTMLInputElement>('light-stretch').checked = state.lightStretch;
+el<HTMLSelectElement>('light-measure').addEventListener('change', (e) => {
+  state.lightMeasure = (e.target as HTMLSelectElement).value === 'share' ? 'share' : 'hours';
+  showLight(state.light);
+});
+el<HTMLSelectElement>('light-month').addEventListener('change', (e) => {
+  const v = (e.target as HTMLSelectElement).value;
+  state.lightMonth = v === 'date' || v === 'year' ? v : Number(v);
+  showLight(state.light);
+});
+el<HTMLInputElement>('light-stretch').addEventListener('change', (e) => {
+  state.lightStretch = (e.target as HTMLInputElement).checked;
+  showLight(state.light);
 });
 
 /** Whether the keyboard is being used to write something: only then are the letter keys left alone. */
@@ -686,6 +975,9 @@ window.addEventListener('keydown', (e) => {
   } else if (e.code === 'KeyO') {
     e.preventDefault();
     showOverlay(!state.overlay);
+  } else if (e.code === 'KeyL') {
+    e.preventDefault();
+    showLight(!state.light);
   } else if (e.code === 'Space' && plant && !(e.target instanceof HTMLButtonElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLInputElement)) {
     // the space bar keeps its own meaning on a button, a list or a slider
     e.preventDefault();
@@ -743,24 +1035,31 @@ canvas.addEventListener('pointerup', (e) => {
 });
 
 // ---- loop ------------------------------------------------------------------------
-stage.controls.addEventListener('change', invalidate);
+stage.controls.addEventListener('change', () => {
+  lastMoved = performance.now();
+  invalidate();
+});
 
 /** Shift the picture so the subject sits in the part of the window the overlay panel leaves free. */
 function applyViewOffset(): void {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const right = el('right');
-  const shown = state.overlay || !el('report').hidden;
+  const shown = state.overlay || state.light || !el('report').hidden;
   const covered = shown && !document.body.classList.contains('bare') && w > 760 ? right.offsetWidth + 20 : 0;
   if (covered > 0) stage.camera.setViewOffset(w, h, covered / 2, 0, w, h);
   else stage.camera.clearViewOffset();
 }
 
 let lastRender = 0;
+/** When the picture last changed by someone's hand: the timeline, the camera. A moving picture is drawn the quicker way. */
+let lastMoved = 0;
+let drawnMoving = false;
 function render(): void {
   applyViewOffset();
   overlay.update(stage.camera, window.innerWidth, window.innerHeight, stage.renderer.getPixelRatio());
-  stage.render();
+  drawnMoving = state.playing || performance.now() - lastMoved < 280;
+  stage.render(drawnMoving);
   lastRender = performance.now();
 }
 
@@ -771,12 +1070,16 @@ if (url.get('bower') === 'arbour' && desk.open(ARBOUR_EXAMPLE)) {
 }
 showBower(state.bowerKey, viewFromUrl(), Number.isFinite(state.budgetM), true);
 showOverlay(state.overlay);
+bindSun();
+showLight(state.light);
 if (url.get('ui') === '0') document.body.classList.add('bare');
 
 const timer = new THREE.Timer();
 const sunView = new THREE.Vector3();
 let frameNo = 0;
 stage.renderer.setAnimationLoop(() => {
+  // a still is being drawn, tile by tile: leave the camera and the targets to it
+  if (exporting) return;
   timer.update();
   const dt = Math.min(timer.getDelta(), 0.1);
   frameNo++;
@@ -807,6 +1110,7 @@ stage.renderer.setAnimationLoop(() => {
 
   // nothing moves in a bare structure, so it is drawn on demand, with a slow
   // heartbeat so that screen capture always finds a fresh frame
+  if (drawnMoving && !state.playing && performance.now() - lastMoved >= 280) dirty = true;
   if (!dirty && performance.now() - lastRender < 500) return;
   dirty = false;
   render();
@@ -825,6 +1129,10 @@ Object.assign(window, {
     showOverlay,
     showPlants,
     showDay,
+    showLight,
+    setHour,
+    sunNow,
+    exportStill,
     openFiles,
     desk,
     invalidate,

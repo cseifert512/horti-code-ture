@@ -185,6 +185,8 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
 export interface PipelineSettings {
   /** Samples per pixel when the scene is drawn. 4 smooths cables and leaf edges; 0 turns it off. */
   samples: number;
+  /** The same while the picture is moving, when an edge is not looked at for long enough to see its steps. */
+  samplesMoving: number;
   /** Shading of corners and crevices, 0 (off) to 1. */
   ambientOcclusion: number;
   /** Reach of that shading, metres. */
@@ -192,17 +194,18 @@ export interface PipelineSettings {
   exposure: number;
 }
 
-export const DEFAULT_PIPELINE: PipelineSettings = { samples: 4, ambientOcclusion: 0.9, occlusionRadiusM: 0.4, exposure: 0.62 };
+export const DEFAULT_PIPELINE: PipelineSettings = { samples: 4, samplesMoving: 0, ambientOcclusion: 0.9, occlusionRadiusM: 0.4, exposure: 0.62 };
 
 export class Pipeline {
   readonly settings: PipelineSettings;
   private readonly renderer: THREE.WebGLRenderer;
   private scene: THREE.WebGLRenderTarget | null = null;
+  /** The scene's target at each sample count used so far: the count changes between a moving picture and one at rest. */
+  private readonly scenes = new Map<number, THREE.WebGLRenderTarget>();
   private ao: THREE.WebGLRenderTarget | null = null;
   private aoBlur: THREE.WebGLRenderTarget | null = null;
   private width = 0;
   private height = 0;
-  private samples = -1;
   private readonly quad: THREE.Mesh;
   private readonly quadCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   private readonly aoMaterial: THREE.ShaderMaterial;
@@ -233,23 +236,28 @@ export class Pipeline {
     this.quad.frustumCulled = false;
   }
 
-  /** Make the targets fit a picture of this many pixels. */
+  /** Make the targets fit a picture of this many pixels, at the sample count now asked for. */
   private fit(width: number, height: number): void {
-    const samples = Math.min(this.settings.samples, this.renderer.capabilities.maxSamples);
-    if (this.scene && width === this.width && height === this.height && samples === this.samples) return;
-    this.release();
-    this.width = width;
-    this.height = height;
-    this.samples = samples;
-    const depthTexture = new THREE.DepthTexture(width, height);
-    depthTexture.type = THREE.UnsignedIntType;
-    depthTexture.minFilter = depthTexture.magFilter = THREE.NearestFilter;
-    this.scene = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, samples, depthTexture, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
-    const half = { type: THREE.UnsignedByteType, depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter } as const;
-    const w2 = Math.max(1, Math.ceil(width / 2));
-    const h2 = Math.max(1, Math.ceil(height / 2));
-    this.ao = new THREE.WebGLRenderTarget(w2, h2, half);
-    this.aoBlur = new THREE.WebGLRenderTarget(w2, h2, half);
+    if (width !== this.width || height !== this.height) {
+      this.release();
+      this.width = width;
+      this.height = height;
+      const half = { type: THREE.UnsignedByteType, depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter } as const;
+      const w2 = Math.max(1, Math.ceil(width / 2));
+      const h2 = Math.max(1, Math.ceil(height / 2));
+      this.ao = new THREE.WebGLRenderTarget(w2, h2, half);
+      this.aoBlur = new THREE.WebGLRenderTarget(w2, h2, half);
+    }
+    const samples = Math.max(0, Math.min(this.settings.samples, this.renderer.capabilities.maxSamples));
+    let target = this.scenes.get(samples);
+    if (!target) {
+      const depthTexture = new THREE.DepthTexture(width, height);
+      depthTexture.type = THREE.UnsignedIntType;
+      depthTexture.minFilter = depthTexture.magFilter = THREE.NearestFilter;
+      target = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, samples, depthTexture, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+      this.scenes.set(samples, target);
+    }
+    this.scene = target;
   }
 
   private draw(material: THREE.ShaderMaterial, target: THREE.WebGLRenderTarget | null): void {
@@ -311,8 +319,11 @@ export class Pipeline {
   }
 
   private release(): void {
-    this.scene?.depthTexture?.dispose();
-    this.scene?.dispose();
+    for (const target of this.scenes.values()) {
+      target.depthTexture?.dispose();
+      target.dispose();
+    }
+    this.scenes.clear();
     this.ao?.dispose();
     this.aoBlur?.dispose();
     this.scene = this.ao = this.aoBlur = null;
