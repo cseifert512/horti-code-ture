@@ -1,5 +1,5 @@
 // Run a reference scenario and write its render data.
-//   npm run simulate -- [wisteria|mixed] [trained|untended] [years] [seed]
+//   npm run simulate -- [wisteria|mixed|dome] [trained|untended] [years] [seed]
 // Writes out/<scenario>-<care>-<years>y.json and prints the yearly account and the gardener's log.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -9,17 +9,17 @@ import { Simulation } from '../src/sim/engine.ts';
 import { modelProvenance } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
 import { designReport, formatDesignReport } from '../src/sim/report.ts';
-import { mixedOnVault, wisteriaOnVault } from '../src/sim/scenarios.ts';
+import { mixedOnVault, wisteriaOnHemisphere, wisteriaOnVault } from '../src/sim/scenarios.ts';
 
 const args = process.argv.slice(2);
-const which = args[0] === 'mixed' || args[0] === 'wisteria' ? args.shift()! : 'wisteria';
+const which = args[0] === 'mixed' || args[0] === 'wisteria' || args[0] === 'dome' ? args.shift()! : 'wisteria';
 const care = args[0] === 'untended' ? 'untended' : 'trained';
 const years = Number(args[1] ?? 10);
 const seed = Number(args[2] ?? 7);
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 
 const taxa = loadGrowable(`${root}species`);
-const scenario = (which === 'mixed' ? mixedOnVault : wisteriaOnVault)({ taxa, care, years, seed });
+const scenario = (which === 'mixed' ? mixedOnVault : which === 'dome' ? wisteriaOnHemisphere : wisteriaOnVault)({ taxa, care, years, seed });
 const t0 = performance.now();
 const sim = new Simulation(scenario).runUntil(`${2027 + years - 1}-12-31`);
 const ms = performance.now() - t0;

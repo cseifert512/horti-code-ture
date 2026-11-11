@@ -157,6 +157,18 @@ export function listAt(model: GrowthModel, key: GrowthParamKey, i: number): numb
   return v[Math.min(Math.max(0, i), v.length - 1)]!;
 }
 
+/**
+ * A copy of a model with one parameter changed, for asking "what if". The
+ * change is itself an assumption and is labelled as one: `why` says what
+ * question the variation is exploring.
+ */
+export function withParam<K extends GrowthParamKey>(model: GrowthModel, key: K, value: Shape<K>, why: string): GrowthModel {
+  const was = model.params[key];
+  const varied: Sourced<Shape<K>> = { value, status: 'provisional_design_assumption', basis: `Varied for this scenario (was ${JSON.stringify(was.value)}): ${why}` };
+  if (was.unit !== undefined) varied.unit = was.unit;
+  return { ...model, params: { ...model.params, [key]: varied } };
+}
+
 /** Every parameter with its status: the model's part of a run's assumptions report. */
 export function modelProvenance(model: GrowthModel): ProvenanceEntry[] {
   return (Object.keys(GROWTH_PARAMS) as GrowthParamKey[]).map((k) => {

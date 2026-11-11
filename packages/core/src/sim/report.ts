@@ -73,6 +73,10 @@ export interface DesignReport {
   year: number;
   structure: MaterialSummary & { routeM: number; crownHeightM: number };
   plants: PlantAccount[];
+  /** How each plant stood at the end of its 1st, 3rd, 5th, 10th and 20th years, as far as the run goes, and at its end. */
+  milestones: { plantId: string; yearsAfterPlanting: number; year: number; frameworkM: number; routeShare: number; highestM: number; flowersOpened: number }[];
+  /** Parameters this scenario varied from the taxon's growth model, each with its stated reason. */
+  variations: { taxonId: string; parameter: string; value: unknown; basis: string }[];
   /** Route held by any plant, and route nothing has reached. */
   routes: { heldM: number; freeM: number; heldShare: number };
   viewpoints: Viewpoint[];
@@ -213,11 +217,24 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
   for (const a of sim.axes.values()) for (const r of a.runs) if (r.by !== 'plant') gy(cal.dateOf(r.day).year).tieIns++;
   if (recordedOnly) alerts.push({ kind: 'recorded_only', plantId: null, count: recordedOnly, text: `${recordedOnly} gardener action${recordedOnly === 1 ? ' was' : 's were'} recorded but had no effect, because the model does not act on that kind yet` });
 
+  // ---- over the years -------------------------------------------------------------
+  const milestones: DesignReport['milestones'] = [];
+  for (const plant of sim.plants.values()) {
+    const mine = sim.summaries.filter((s) => s.plantId === plant.id);
+    const lastYear = mine[mine.length - 1]?.year;
+    for (const s of mine) {
+      const n = s.year - plant.plantedYear + 1;
+      if ([1, 3, 5, 10, 20].includes(n) || s.year === lastYear) milestones.push({ plantId: plant.id, yearsAfterPlanting: n, year: s.year, frameworkM: s.frameworkM, routeShare: s.routeShare, highestM: s.highestM, flowersOpened: s.flowersOpened });
+    }
+  }
+
   // ---- what it all rests on -------------------------------------------------------
   const assumptions: Record<string, Record<EvidenceStatus, number>> = {};
+  const variations: DesignReport['variations'] = [];
   for (const taxonId of new Set([...sim.plants.values()].map((p) => p.taxonId))) {
     const entries: ProvenanceEntry[] = modelProvenance(sim.scenario.taxa.get(taxonId)!.model);
     assumptions[taxonId] = summariseProvenance(entries);
+    for (const e of entries) if (e.basis?.startsWith('Varied for this scenario')) variations.push({ taxonId, parameter: e.path, value: e.value, basis: e.basis });
   }
 
   return {
@@ -225,6 +242,8 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     year,
     structure: { ...materialSummary(bower), routeM, crownHeightM: crown },
     plants,
+    milestones,
+    variations,
     // summed in a different order from the total, so guard the last decimal place
     routes: { heldM: Math.min(heldM, routeM), freeM: Math.max(0, routeM - heldM), heldShare: routeM ? Math.min(1, heldM / routeM) : 0 },
     viewpoints,
@@ -260,6 +279,14 @@ export function formatDesignReport(r: DesignReport): string {
   }
   line(`  route held by any plant ${pct(r.routes.heldShare)}; ${r.routes.freeM.toFixed(0)} m carries nothing`);
   line();
+  if (r.milestones.length) {
+    line('OVER THE YEARS (at the end of each plant’s 1st, 3rd, 5th and 10th years, and of the run)');
+    line(`  ${'plant'.padEnd(12)}${'year'.padStart(5)}${'framework'.padStart(11)}${'route held'.padStart(12)}${'highest'.padStart(9)}${'flowers'.padStart(9)}`);
+    for (const m of r.milestones) {
+      line(`  ${m.plantId.padEnd(12)}${String(m.yearsAfterPlanting).padStart(5)}${`${m.frameworkM.toFixed(1)} m`.padStart(11)}${pct(m.routeShare).padStart(12)}${`${m.highestM.toFixed(1)} m`.padStart(9)}${String(m.flowersOpened).padStart(9)}`);
+    }
+    line();
+  }
   if (r.months.length) {
     line(`THROUGH ${r.year}, on the 15th of each month`);
     const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -298,6 +325,7 @@ export function formatDesignReport(r: DesignReport): string {
   line();
   line('WHAT THIS RESTS ON');
   for (const [taxonId, c] of Object.entries(r.assumptions)) line(`  ${taxonId}: ${c.provisional_design_assumption} provisional assumptions, ${c.published_plant_profile} published values, ${c.measured + c.calibrated} measured`);
+  for (const v of r.variations) line(`  varied: ${v.taxonId} ${v.parameter} = ${JSON.stringify(v.value)}. ${v.basis}`);
   line(`  ${r.proxyNote}`);
   return out.join('\n');
 }
