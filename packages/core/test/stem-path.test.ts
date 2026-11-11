@@ -12,7 +12,7 @@ const get = (id: string): SupportEdge => {
   if (!e) throw new Error(`no edge ${id}`);
   return e;
 };
-const leg = get('L.0.leg');
+const leg = get('L.1w.leg');
 const cable = get('C.8.2-8.4');
 const diagonal = get('T.6.2-7.3');
 const twine = { minPitchM: 0.3, pitchPerCircumference: 1.46 };
@@ -80,7 +80,7 @@ describe('twining', () => {
 });
 
 describe('stems sharing a support', () => {
-  const head = get('L.0.head'); // 0.39 m of 100 x 180 mm rib: a stout member and a short run
+  const head = get('R.1.4-5'); // 0.39 m of 100 x 180 mm rib: a stout member and a short run
   const walk = (path: ReturnType<typeof twinePath>, every = 0.01) => {
     const out = [];
     for (let d = 0; d <= pathLength(path); d += every) out.push(pathAt(path, d).p);

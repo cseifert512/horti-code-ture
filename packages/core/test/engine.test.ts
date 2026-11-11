@@ -263,7 +263,7 @@ describe('how the plant holds the structure', () => {
     for (const sim of [trained, untended]) {
       for (const a of sim.axes.values()) {
         if (a.role !== 'leader') continue;
-        expect(a.runs[0]!.edgeId).toMatch(/^L\.\d\.leg$/);
+        expect(a.runs[0]!.edgeId).toMatch(/^L\.\d[we]\.leg$/);
         expect(a.runs[0]!.mode).toBe('twine');
         expect(a.runs[0]!.by).toBe('plant');
       }
@@ -273,9 +273,11 @@ describe('how the plant holds the structure', () => {
   it('twines right-handed, as Wisteria sinensis does', () => {
     let checked = 0;
     for (const a of untended.axes.values()) {
-      for (const r of a.runs) {
+      for (const [i, r] of a.runs.entries()) {
         if (r.mode !== 'twine' || r.status === 'detached' || r.lastPoint - r.firstPoint < 12) continue;
-        expect(turnsOf(pathOf(a, r.firstPoint, r.lastPoint)), `${a.id} on ${r.edgeId}`).toBeGreaterThan(0.5);
+        // A run the shoot has finished is a whole turn or more. The one it is still on has only to turn the
+        // right way: round a rib a coil is most of a metre long, and the shoot may be part of the way round.
+        expect(turnsOf(pathOf(a, r.firstPoint, r.lastPoint)), `${a.id} on ${r.edgeId}`).toBeGreaterThan(i < a.runs.length - 1 ? 0.5 : 0);
         checked++;
       }
     }
@@ -352,13 +354,14 @@ describe('how the plant holds the structure', () => {
     for (const sim of [trained, untended]) {
       const count = new Map<string, number>();
       for (const a of sim.axes.values()) for (const r of a.runs) if (r.status !== 'detached') count.set(r.edgeId, (count.get(r.edgeId) ?? 0) + 1);
-      for (const [edgeId, n] of count) expect(n, edgeId).toBeLessThanOrEqual(edgeId.startsWith('L.') ? 3 : 2);
+      // three on a glulam rib, leg or run; two on the lattice or a cable
+      for (const [edgeId, n] of count) expect(n, edgeId).toBeLessThanOrEqual(/^[LR]\./.test(edgeId) ? 3 : 2);
     }
   });
 
   it('explains each choice of route', () => {
     const first = trained.decisions.find((d) => d.kind === 'route_chosen')!;
-    expect(first.text).toContain('L.0.leg');
+    expect(first.text).toContain('L.1w.leg');
     expect(first.text).toContain('glulam');
     expect(trained.decisions.filter((d) => d.kind === 'no_route').every((d) => d.text.includes('no way on'))).toBe(true);
   });

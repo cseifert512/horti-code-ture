@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { analyseReach, shortestRoute } from '../src/bower/reach.ts';
 import { materialSummary, zoneContains } from '../src/bower/types.ts';
-import { makeVaultBower, vaultSurface } from '../src/bower/vault.ts';
-import { v3 } from '../src/math/vec3.ts';
+import { makeVaultBower, vaultFootId, vaultSurface } from '../src/bower/vault.ts';
+import { distance, v3 } from '../src/math/vec3.ts';
 
 describe('barrel-vault segment from the prototype', () => {
   const vault = makeVaultBower();
@@ -12,9 +12,29 @@ describe('barrel-vault segment from the prototype', () => {
   it('keeps the prototype lattice: 144 diagonals, 60 cable spans, 12 eave spans', () => {
     expect(byPrefix('T.').length).toBe(144);
     expect(byPrefix('C.').length).toBe(60);
-    // two planted ribs meet the eaves between lattice nodes and split one span each
-    expect(byPrefix('E.').length).toBe(14);
-    expect(byPrefix('L.').length).toBe(4);
+    // ribs 1 and 3 meet each eave between two lattice nodes and split one span each
+    expect(byPrefix('E.').length).toBe(16);
+  });
+
+  // KEY.md section 5: the timber is the growing surface, and the ribs are the stoutest timber there is.
+  it('makes every rib a route from one foot to the other', () => {
+    expect(byPrefix('L.').length).toBe(10); // a leg at each end of five ribs
+    expect(byPrefix('R.').length).toBe(32); // three ribs meet the lattice at seven nodes, two at eight
+    for (let r = 0; r < 5; r++) {
+      const along = edges.filter((e) => e.host.id === `rib.${r}`);
+      const routeM = along.reduce((s, e) => s + e.axis.length, 0);
+      const rib = vault.members.find((m) => m.id === `rib.${r}`)!;
+      // the whole rib, less the few millimetres each foot stands in the ground
+      expect(routeM / rib.curve.length, rib.id).toBeGreaterThan(0.97);
+      expect(routeM / rib.curve.length, rib.id).toBeLessThan(1.01);
+      expect(shortestRoute(vault, 'station.0', vaultFootId(r, 1)), rib.id).not.toBeNull();
+    }
+    // a stem on a rib lifts over the lattice where it crosses, and lies on the rib's face between
+    const run = vault.graph.edges.get('R.2.8-10')!;
+    const clear = (f: number) => distance(run.curve.pointAt(f * run.curve.length), run.axis.pointAt(f * run.axis.length));
+    expect(clear(0)).toBeCloseTo(0.16, 2); // 90 mm to the rib's face and 70 mm of diagonal on it
+    expect(clear(0.5)).toBeCloseTo(0.09, 2);
+    expect(clear(1)).toBeCloseTo(0.16, 2);
   });
 
   it('reproduces the prototype dimensions', () => {
@@ -92,8 +112,9 @@ describe('the vault is the growing surface', () => {
     // 60 spans of about 0.8 m of actual cable
     expect(mat.steelCableM).toBeGreaterThan(40);
     expect(mat.steelCableM).toBeLessThan(55);
-    expect(mat.steelShareOfRoute).toBeGreaterThan(0.25);
-    expect(mat.steelShareOfRoute).toBeLessThan(0.45);
+    // a little over a quarter of the route, now that the ribs are counted as the route they are
+    expect(mat.steelShareOfRoute).toBeGreaterThan(0.22);
+    expect(mat.steelShareOfRoute).toBeLessThan(0.33);
   });
 
   it('contains no steel but slender cables: no rods, rails or frames', () => {

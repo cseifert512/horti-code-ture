@@ -174,8 +174,9 @@ describe('the reference shells, written out and read back', () => {
     expect(warnings).toEqual([]);
     expect(bower.members).toHaveLength(vault.members.length);
     expect(new Set([...bower.graph.edges.values()].filter((e) => e.kind === 'timber').map((e) => e.host.id)).size).toBe(vault.members.length);
-    // the hand-built graph leaves the ribs above the eaves out, so the read one has more route
-    expect(bower.graph.totalLength).toBeGreaterThan(vault.graph.totalLength);
+    // and the routes read from what is built come to the same length as the ones written by hand, within 3%
+    expect(bower.graph.totalLength / vault.graph.totalLength).toBeGreaterThan(0.97);
+    expect(bower.graph.totalLength / vault.graph.totalLength).toBeLessThan(1.03);
     expect(bower.facts.routeOutOfReachM).toBe(0);
   });
 });

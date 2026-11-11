@@ -10,7 +10,11 @@
  *
  * The structure is the growing surface, exactly as the prototype had it:
  *   RIBS     five glulam arches, the primary structure. Below the eave the
- *            legs stand free and trunk stems twine them.
+ *            legs stand free and trunk stems twine them. Above it a rib
+ *            runs on under the lattice to the crown and down the far side,
+ *            and is a route like any other member: a plant that can hold
+ *            178 mm of timber may follow it from one lattice node on its
+ *            line to the next.
  *   LATTICE  a diagrid of lighter timber and two eave beams riding on the
  *            ribs: the timber sub-lattice. Framework arms lie along the top
  *            of these members, tied in by the gardener.
@@ -84,6 +88,10 @@ export function vaultPoint(u: number, v: number, h: number): Vec3 {
 export const vaultNodeUV = (k: number, m: number): [number, number] => [k / (2 * VAULT.NA), m / (2 * VAULT.NB)];
 export const isVaultNode = (k: number, m: number): boolean => k >= VAULT.K0 && k <= VAULT.K1 && m >= 0 && m <= VAULT.MM && ((k + m) & 1) === 0;
 const nid = (k: number, m: number) => `n${k}.${m}`;
+/** The lattice column a rib stands on: ribs 0 to 4 are at m = 0, 3, 6, 9 and 12. */
+export const vaultRibM = (rib: number): number => Math.round((rib / (VAULT.ribs - 1)) * VAULT.MM);
+/** The foot of a rib: `foot.1w` is the west foot of rib 1. */
+export const vaultFootId = (rib: number, side: 0 | 1): string => `foot.${rib}${side === 0 ? 'w' : 'e'}`;
 type UV = [number, number];
 
 export function makeVaultBower(options: VaultOptions = {}): Bower {
@@ -154,12 +162,11 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
   }
 
   // ---- level runs: eave beams (timber) and, inside the canopy, steel cables ----
-  const stationRibM = (s: VaultStation) => Math.round((s.rib / (VAULT.ribs - 1)) * MM);
+  const ribIndices = ribs.map((_, r) => r);
   for (let k = K0; k <= K1; k++) {
     const u = k / (2 * NA);
-    const side = k === K0 ? 0 : 1;
-    // a planted rib that meets the eave between two lattice nodes adds a junction there
-    const junctions = isEave(k) ? stations.filter((s) => s.side === side && !isVaultNode(k, stationRibM(s))).map(stationRibM) : [];
+    // a rib that meets the eave between two lattice nodes makes a junction there
+    const junctions = isEave(k) ? ribIndices.map(vaultRibM).filter((m) => !isVaultNode(k, m)) : [];
     for (const mj of junctions) graph.addNode({ id: nid(k, mj), position: vaultPoint(u, mj / (2 * NB), top(k)) });
     for (let m = 0; m + 2 <= MM; m++) {
       if (!isVaultNode(k, m)) continue;
@@ -213,32 +220,44 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
     }
   }
 
+  // ---- the ribs as routes: a leg from each foot, then on under the lattice ------
+  const ribCentre = level(-VAULT.rib.depthMm / 2000);
+  ribs.forEach((rib, r) => {
+    const m = vaultRibM(r);
+    const v = m / (2 * NB);
+    // up the outer face of each free-standing leg, rolling over the eave beam at the top
+    for (const side of [0, 1] as const) {
+      const K = side === 0 ? K0 : K1;
+      const uFoot = side === 0 ? 0.004 : 0.996;
+      const uEave = K / (2 * NA);
+      const footId = vaultFootId(r, side);
+      graph.addNode({ id: footId, position: vaultPoint(uFoot, v, 0) });
+      timberRoute(`L.${r}${side === 0 ? 'w' : 'e'}.leg`, footId, nid(K, m), onSurface([uFoot, v], [uEave, v], (t) => top(K) * smoothstep(0.88, 1, t), 3 * segmentsPerEdge), onSurface([uFoot, v], [uEave, v], ribCentre, 3 * segmentsPerEdge), rib);
+    }
+    // Between the eaves the rib meets the lattice wherever a node stands on its line. A stem on the rib
+    // lies on its outer face and lifts over the diagonals that cross it at each node.
+    const stops: number[] = [K0];
+    for (let k = K0 + 1; k < K1; k++) if (isVaultNode(k, m)) stops.push(k);
+    stops.push(K1);
+    for (let i = 0; i + 1 < stops.length; i++) {
+      const k0 = stops[i]!;
+      const k1 = stops[i + 1]!;
+      const a: UV = [k0 / (2 * NA), v];
+      const b: UV = [k1 / (2 * NA), v];
+      const over = (t: number) => top(k0) * (1 - smoothstep(0, 0.2, t)) + top(k1) * smoothstep(0.8, 1, t);
+      timberRoute(`R.${r}.${k0}-${k1}`, nid(k0, m), nid(k1, m), onSurface(a, b, over, (k1 - k0) * segmentsPerEdge), onSurface(a, b, ribCentre, (k1 - k0) * segmentsPerEdge), rib);
+    }
+  });
+
   // ---- root stations: each at the foot of a rib leg, which is the way up -------
   const rootStations: RootStation[] = [];
   stations.forEach((s, index) => {
-    const m = stationRibM(s);
-    const v = m / (2 * NB);
-    const K = s.side === 0 ? K0 : K1;
-    const step = s.side === 0 ? 1 : -1;
-    const uFoot = s.side === 0 ? 0.004 : 0.996;
-    const uEave = K / (2 * NA);
-    const rib = ribs[s.rib];
-    if (!rib) throw new Error(`station ${index}: there is no rib ${s.rib}`);
-    const footId = `foot.${index}`;
-    graph.addNode({ id: footId, position: vaultPoint(uFoot, v, 0) });
-    // up the outer face of the free-standing leg, rolling over the eave beam at the top
-    const ribCentre = level(-VAULT.rib.depthMm / 2000);
-    timberRoute(`L.${index}.leg`, footId, nid(K, m), onSurface([uFoot, v], [uEave, v], (t) => top(K) * smoothstep(0.88, 1, t), 3 * segmentsPerEdge), onSurface([uFoot, v], [uEave, v], ribCentre, 3 * segmentsPerEdge), rib);
-    // and on up the rib to the first lattice node on its line, where there is one
-    if (isVaultNode(K + step, m)) {
-      const uHead = (K + step) / (2 * NA);
-      timberRoute(`L.${index}.head`, nid(K, m), nid(K + step, m), onSurface([uEave, v], [uHead, v], blend(top(K), top(K + step))), onSurface([uEave, v], [uHead, v], ribCentre), rib);
-    }
-    const foot = graph.nodes.get(footId)!.position;
+    if (!ribs[s.rib]) throw new Error(`station ${index}: there is no rib ${s.rib}`);
+    const foot = graph.nodes.get(vaultFootId(s.rib, s.side))!.position;
     rootStations.push({
       id: `station.${index}`,
       position: v3(foot.x + (s.side === 0 ? -0.25 : 0.25), foot.y, 0),
-      entryNodeIds: [footId],
+      entryNodeIds: [vaultFootId(s.rib, s.side)],
       soilVolumeM3: unknown('m3'),
       irrigated: unknown(),
       note: `${s.side === 0 ? 'west' : 'east'} foot of rib ${s.rib}`,
