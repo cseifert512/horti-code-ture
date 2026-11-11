@@ -38,10 +38,11 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "current_season",
+      "status": "provisional_design_assumption",
+      "basis": "Inferred; no source puts it in pruning terms. The flowers are carried in a terminal cluster of umbels on the bushy adult shoots and never on the climbing shoots (Bean, Trees and Shrubs Online), from September to November (RHS), so they end that year's adult growth. What governs flowering is the growth phase, not the age of the wood: adult growth appears after about ten years, and regular pruning keeps ivy juvenile and non-flowering (RHS ivy guide)."
     },
-    "rhsPruningGroup": null,
+    "rhsPruningGroup": "11",
     "monthsUK": {
       "value": [
         9,
@@ -49,8 +50,8 @@
         11
       ],
       "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/43091/hedera-helix/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "source": "https://www.rhs.org.uk/prevention-protection/ivy-on-buildings",
+      "basis": "RHS (ivy on buildings and fences): the mature stage \"bears clusters of yellow-green flowers in rounded heads from September to November\". Stated in months. Bean (Trees and Shrubs Online) says October; the RHS record says autumn and the RHS ivy guide late autumn."
     },
     "display": "Nectar-rich greenish flowers on adult shoots, then black berries in winter.",
     "scented": false
@@ -85,7 +86,15 @@
     "soil": "Broadly tolerant; fertile and well-drained preferred."
   },
   "management": {
-    "calendar": [],
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          4
+        ],
+        "note": "RHS ivy guide: trim back excess growth in mid-spring; an overgrown plant can be hard pruned in early spring. RHS record: pruning group 11, at any time. Check for nesting birds first: the nesting season generally runs from March to August (RHS)."
+      }
+    ],
     "notes": "Hold it to explicit boundaries; cut back and remove encroachment periodically; keep every timber junction exposed for inspection."
   },
   "hazards": [
@@ -102,6 +111,18 @@
     {
       "label": "RHS: ivy on buildings and fences",
       "url": "https://www.rhs.org.uk/prevention-protection/ivy-on-buildings"
+    },
+    {
+      "label": "RHS: how to grow ivy",
+      "url": "https://www.rhs.org.uk/plants/ivy/growing-guide"
+    },
+    {
+      "label": "RHS: pruning established climbers (pruning groups 11 to 13)",
+      "url": "https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide"
+    },
+    {
+      "label": "Trees and Shrubs Online (Bean): Hedera helix",
+      "url": "https://www.treesandshrubsonline.org/articles/hedera/hedera-helix/"
     }
   ]
 }

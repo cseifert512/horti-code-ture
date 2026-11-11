@@ -34,6 +34,8 @@ Strong and reachable tie points, training directions that can encourage lateral 
 
 Explicit gardener tie-in, pruning, renewal of old canes and possible deadheading; inspect thorn/public interface.
 
+RHS pruning group 17 (climbing roses). Prune between December and February: remove dead or diseased wood, tie in the new shoots needed, cut flowered side shoots back by two thirds, and take out an old cane at the base where congested. In autumn tie in or shorten long whippy shoots before winter winds. Deadhead through the flowering season. Feed in March or April and again in midsummer. Climbing roses flower on the current year's growth (BBC Gardeners' World Magazine, of climbing roses as a class), on side shoots from the tied-in framework.
+
 ## Interactions with the broader palette
 
 Adds summer pink/pale bloom complementing purple wisteria/clematis; give independent maintenance route.
@@ -56,5 +58,8 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 - Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details
+- RHS pruning climbing roses: https://www.rhs.org.uk/plants/roses/climbing/pruning-guide
+- RHS rose guide: https://www.rhs.org.uk/plants/roses/growing-guide
+- BBC Gardeners' World Magazine: https://www.gardenersworld.com/plants/the-difference-between-climbing-and-rambling-roses/
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

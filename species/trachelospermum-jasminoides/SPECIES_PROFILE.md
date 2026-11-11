@@ -8,10 +8,10 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Evergreen woody twiner. |
-| Climbing or support mechanism | Stem twining (RHS: needs supporting wires or trellis); handedness is not documented. Aerial rootlets on damp rough surfaces are reported without citation and cannot be ruled out; if real, it could cling to timber as well as twine. |
+| Climbing or support mechanism | Stem twining (RHS: needs supporting wires or trellis); handedness is still not documented after a second search in November 2026, and the one photograph found of stems on canes is ambiguous. Aerial rootlets on damp rough surfaces are reported without citation and cannot be ruled out; if real, it could cling to timber as well as twine. |
 | RHS ultimate-height envelope | RHS: 8–12 m; 5–10 years to ultimate size category. |
 | Hardiness | H4 (RHS). |
-| Flower / leaf / fruit season | Glossy dark leaves, often bronze/red in winter; exceptionally fragrant white flowers mid to late summer. |
+| Flower / leaf / fruit season | Glossy dark leaves, often bronze/red in winter; exceptionally fragrant white flowers mid to late summer (RHS), in July and August (Bean). |
 | Aspect and exposure | Warm full sun/partial shade, ideally south/west, **sheltered from cold winds**. |
 | Soil | Fertile, well-drained; dislikes soggy conditions and summer drought. |
 
@@ -32,6 +32,8 @@ Sheltered sunny edge/entrance, courtyard or lower microclimate. Avoid asserting 
 ## Gardener intervention / pruning
 
 Train/tie onto secondary wire, manage spread, inspect post-winter leaf scorch and potential dieback; replace only where unsuited.
+
+RHS pruning group 11, in early spring: maintenance pruning is rarely needed and consists of thinning congested, weak or damaged shoots. Mulch once a year, in spring or autumn. Flowering wood is provisionally the current season's growth, on short side shoots from older stems: inferred from the RHS spring timing and Bean's description, with NC State Extension's advice to prune after flowering pointing the other way.
 
 ## Interactions with the broader palette
 
@@ -56,5 +58,8 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 - Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details
 - Additional source: https://www.rhs.org.uk/plants/trachelospermum
+- RHS growing guide: https://www.rhs.org.uk/plants/trachelospermum/growing-guide
+- RHS pruning groups 11 to 13: https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide
+- Trees and Shrubs Online (Bean): https://www.treesandshrubsonline.org/articles/trachelospermum/trachelospermum-jasminoides/
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

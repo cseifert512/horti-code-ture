@@ -35,7 +35,7 @@
     "handedness": {
       "value": "left_handed",
       "status": "provisional_design_assumption",
-      "basis": "Inferred from congeners (L. periclymenum, L. japonica), which twine clockwise seen from above. No species-level source found. Check a specimen before relying on it."
+      "basis": "No written source gives the direction for this species (searched in English, German, Japanese and Chinese, November 2026). Read by this project from two photographs of identified plants on Wikimedia Commons: in both, the near side of each coil round the support runs from upper left to lower right, a left-handed helix (clockwise seen from above). They are \"Lonicera acuminata kz03.jpg\" (Botanischer Garten Berlin-Dahlem, 2017) and \"Korina 2017-08-01 Lonicera henryi 2.jpg\" (a stem on a metal post). That agrees with the genus: Darwin records L. brachypoda (L. japonica) as following the sun, and L. periclymenum twines clockwise seen from above. Photographs and congeners, not a published statement: check a specimen before relying on it."
     },
     "maxGraspDiameterMm": {
       "value": null,
@@ -46,10 +46,11 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "current_season",
+      "status": "provisional_design_assumption",
+      "basis": "Inferred, not stated anywhere for this species. Gardens Illustrated names L. henryi among the later-flowering honeysuckles that are tidied in spring, as against L. periclymenum, which it says flowers on the previous year's stems; the RHS honeysuckle guide says late-flowering types \"flower on the current season's growth\". Bean (Trees and Shrubs Online): the flowers come \"at the end of the shoot\". The RHS record gives pruning group 11 with no timing, which would have settled it."
     },
-    "rhsPruningGroup": null,
+    "rhsPruningGroup": "11",
     "monthsUK": {
       "value": [
         6,
@@ -58,7 +59,7 @@
       ],
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "basis": "RHS record: flowers \"in summer\", which is June to August by the season rule (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month). Only June is stated outright: Bean (Trees and Shrubs Online) says the flowers are \"produced during June\". July and August rest on the RHS season word alone."
     },
     "display": "Small yellow and red tubular flowers, then black berries.",
     "scented": false
@@ -93,7 +94,26 @@
     "soil": "Fertile, moist but well-drained, humus-rich."
   },
   "management": {
-    "calendar": [],
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          3,
+          4,
+          5
+        ],
+        "note": "Spring: remove congested or dead shoots and shorten long shoots that leave their space (Gardens Illustrated, naming L. henryi; RHS honeysuckle guide for late-flowering types, which warns that a hard prune reduces flowering). RHS record: pruning group 11, no timing given. Check for nesting birds first."
+      },
+      {
+        "event": "feed_or_mulch",
+        "months": [
+          3,
+          4,
+          5
+        ],
+        "note": "RHS honeysuckle guide: mulch in spring to reduce water stress and the risk of powdery mildew; feed once in spring if wanted."
+      }
+    ],
     "notes": "Control competitive overgrowth, thin to preserve neighbours, inspect attachments, and watch berries in visitor spaces. Contain it: it spreads by bird-sown seed."
   },
   "hazards": [
@@ -123,6 +143,26 @@
     {
       "label": "Trees and Shrubs Online",
       "url": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/"
+    },
+    {
+      "label": "RHS: how to grow climbing honeysuckle",
+      "url": "https://www.rhs.org.uk/plants/honeysuckle/climbing/growing-guide"
+    },
+    {
+      "label": "RHS: pruning established climbers (pruning groups 11 to 13)",
+      "url": "https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide"
+    },
+    {
+      "label": "Gardens Illustrated: honeysuckle, how to grow and prune",
+      "url": "https://www.gardensillustrated.com/plants/honeysuckle-lonicera-how-to-grow/"
+    },
+    {
+      "label": "Photograph: stems in the Botanischer Garten Berlin-Dahlem (Wikimedia Commons)",
+      "url": "https://commons.wikimedia.org/wiki/File:Lonicera_acuminata_kz03.jpg"
+    },
+    {
+      "label": "Photograph: stem twining a post (Wikimedia Commons)",
+      "url": "https://commons.wikimedia.org/wiki/File:Korina_2017-08-01_Lonicera_henryi_2.jpg"
     }
   ]
 }

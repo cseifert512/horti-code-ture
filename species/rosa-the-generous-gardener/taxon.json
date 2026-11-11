@@ -42,8 +42,10 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "current_season",
+      "status": "published_plant_profile",
+      "source": "https://www.gardenersworld.com/plants/the-difference-between-climbing-and-rambling-roses/",
+      "basis": "BBC Gardeners' World Magazine: \"Climbing roses flower on growth produced in the current year\", unlike ramblers, which flower on the previous year's growth. A statement about climbing roses as a class (RHS pruning group 17), not about this cultivar. The flowering shoots are side shoots from the tied-in framework of older canes, which is why the RHS shortens flowered side shoots in winter and keeps the framework."
     },
     "rhsPruningGroup": "17",
     "monthsUK": {
@@ -91,7 +93,49 @@
     "soil": "Moist but well-drained, fertile."
   },
   "management": {
-    "calendar": [],
+    "calendar": [
+      {
+        "event": "spur_prune",
+        "months": [
+          12,
+          1,
+          2
+        ],
+        "note": "RHS pruning group 17: routine pruning between December and February, after the flowers have faded. Remove dead, diseased or dying wood, then cut flowered side shoots back by two thirds; where congested, cut out an old cane at the base."
+      },
+      {
+        "event": "tie_in",
+        "months": [
+          9,
+          10,
+          11,
+          12,
+          1,
+          2
+        ],
+        "note": "RHS: in autumn tie in or shorten long whippy shoots before winter winds; at the winter prune tie in the new shoots needed to fill the support."
+      },
+      {
+        "event": "deadhead_or_select_flowers",
+        "months": [
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "note": "RHS: deadhead during the flowering season to encourage repeat flowering. Months are the flowering envelope above."
+      },
+      {
+        "event": "feed_or_mulch",
+        "months": [
+          3,
+          4,
+          7
+        ],
+        "note": "RHS rose guide: feed in March or April before flowering and again in midsummer after the first flush, then mulch."
+      }
+    ],
     "notes": "Every attachment is a gardener tie. Tie in new canes, prune, renew old canes, deadhead where wanted; inspect where thorns meet the public. The RHS describes it as growing up to 4.5 m although its size band is 4-8 m."
   },
   "hazards": [
@@ -103,6 +147,18 @@
     {
       "label": "RHS plant profile",
       "url": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details"
+    },
+    {
+      "label": "RHS: pruning climbing roses (pruning group 17)",
+      "url": "https://www.rhs.org.uk/plants/roses/climbing/pruning-guide"
+    },
+    {
+      "label": "RHS: how to grow roses",
+      "url": "https://www.rhs.org.uk/plants/roses/growing-guide"
+    },
+    {
+      "label": "BBC Gardeners' World Magazine: climbing and rambling roses",
+      "url": "https://www.gardenersworld.com/plants/the-difference-between-climbing-and-rambling-roses/"
     }
   ]
 }

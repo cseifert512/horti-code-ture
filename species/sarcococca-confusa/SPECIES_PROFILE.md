@@ -11,7 +11,7 @@
 | Climbing or support mechanism | None; bushy shoot development only. |
 | RHS ultimate-height envelope | RHS: 1–1.5 m size category (its description says to 2 m); 5–10 years to ultimate size category. |
 | Hardiness | H5 (RHS). |
-| Flower / leaf / fruit season | Small cream-white highly scented winter flowers, dark glossy leaves year round, occasional dark berries. |
+| Flower / leaf / fruit season | Small cream-white highly scented flowers from late December to February (Bean), dark glossy leaves year round, occasional dark berries. |
 | Aspect and exposure | Partial to full shade, sheltered; useful at shaded entrances. |
 | Soil | Humus-rich moist but well-drained; some tolerance of dry shade once established. |
 
@@ -32,6 +32,8 @@ Adjacent shaded path, winter doorway or indoor-outdoor scent threshold; does not
 ## Gardener intervention / pruning
 
 Maintain access and form, mulch/irrigate on establishment; no vine training.
+
+RHS pruning group 8: generally no pruning; if it outgrows its space, prune in spring straight after flowering. The flowers are carried on the previous season's shoots (provisional: inferred from winter flowering, not stated by a source).
 
 ## Interactions with the broader palette
 
@@ -55,5 +57,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 - Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details
+- RHS sarcococca guide: https://www.rhs.org.uk/plants/sarcococca/growing-guide
+- Trees and Shrubs Online (Bean): https://www.treesandshrubsonline.org/articles/sarcococca/sarcococca-confusa/
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.
