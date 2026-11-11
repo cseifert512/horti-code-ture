@@ -321,7 +321,9 @@ function showPlants(source: PlantSource, keepDay = false): void {
   slider.min = String(plant.timeline.firstDay);
   slider.max = String(plant.timeline.lastDay);
   const labels = data.plants.map((p) => p.label).filter((l, i, all) => all.indexOf(l) === i);
-  el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}`;
+  const missing = plant.withoutOrgans.filter((l, i, all) => all.indexOf(l) === i);
+  const stemsOnly = missing.length ? ` Shown as stems only, for want of leaf and flower models: ${missing.join(', ')}.` : '';
+  el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}${stemsOnly}`;
   showDay(keepDay && Number.isFinite(state.day) ? state.day : openingDay(data));
 }
 

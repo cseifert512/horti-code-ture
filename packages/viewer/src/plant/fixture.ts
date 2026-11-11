@@ -148,6 +148,7 @@ export function makeTestPlant(bower: Bower): TestPlant {
           lengthM: mix(FIXTURE.leafLengthM[0], FIXTURE.leafLengthM[1], hash2(serial, 2)),
           firstYear: cal.dateOf(born).year,
           lastYear: null,
+          evergreen: false,
           bornDay: born + 2,
           removedDay: -1,
         });

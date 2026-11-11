@@ -257,6 +257,11 @@
       "status": "provisional_design_assumption",
       "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured."
     },
+    "organs.leavesPerNode": {
+      "value": 1,
+      "status": "provisional_design_assumption",
+      "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured. One compound leaf to a node, as the prototype draws them."
+    },
     "organs.spurChance": {
       "value": 0.62,
       "status": "provisional_design_assumption",
@@ -307,6 +312,12 @@
       "status": "provisional_design_assumption",
       "basis": "Carried over from the Wisteria prototype (docs/ASSUMPTIONS_AUDIT.md section 2.4). Not measured."
     },
+    "organs.leafLifespanYears": {
+      "value": 1,
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Deciduous: a leaf lasts the season it grew in."
+    },
     "organs.clearStemHeightM": {
       "value": 2,
       "unit": "m",
@@ -340,6 +351,18 @@
       "status": "provisional_design_assumption",
       "basis": "RHS: summer pruning encourages flower buds over leafy growth. The size of the effect is not given anywhere; one half is a placeholder chosen so that the difference shows."
     },
+    "flowering.currentSeasonFlowersPerM": {
+      "value": 0,
+      "unit": "per m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria flowers from buds formed the previous year, not on the year’s own growth."
+    },
+    "flowering.currentSeasonMinShootM": {
+      "value": 0,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see flowering.currentSeasonFlowersPerM."
+    },
     "pruning.summerLeavesKept": {
       "value": [
         5,
@@ -359,6 +382,15 @@
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/wisteria/pruning-guide",
       "basis": "RHS: in January or February cut the same growths back to two or three buds."
+    },
+    "regrowth.shootsPerCut": {
+      "value": [
+        1,
+        2
+      ],
+      "unit": "shoots",
+      "status": "provisional_design_assumption",
+      "basis": "A stem cut hard is taken to break from one or two buds below the cut. No count has been made on real plants."
     },
     "thickening.tipRadiusSquaredMm2": {
       "value": 4,

@@ -4,11 +4,13 @@
 // difference is where time comes from. Here every "is it there, and in what
 // state" is answered by the adapter (adapter.ts) from the engine's days.
 //
-// The organ geometry and colours are Wisteria sinensis's (organs.ts). Until
-// other taxa have organ modules of their own, every plant is drawn with them,
-// and the caption says which taxon the data is for.
+// The organ geometry and colours are Wisteria sinensis's (organs.ts), and
+// mechanism traits do not transfer: a honeysuckle must not be shown with
+// racemes and pinnate leaves. So organs are drawn only for the taxa the assets
+// belong to. Any other plant gets its stems, and `withoutOrgans` names it so
+// the caption can say what is missing.
 import * as THREE from 'three';
-import type { RenderData, RenderFlower, RenderLeaf } from '@horti/core';
+import type { RenderData, RenderFlower, RenderLeaf, RenderStem } from '@horti/core';
 import type { TexturePair } from '../textures.ts';
 import { clamp, hash2, lerp, smoothstep } from '../util.ts';
 import { type FruitSite, RenderTimeline } from './adapter.ts';
@@ -21,6 +23,9 @@ const V3 = THREE.Vector3;
 const UP = new V3(0, 1, 0);
 /** makePodGeometry draws its pods this long; an instance is scaled to the length in the data. */
 const POD_AUTHORED_LENGTH_M = 0.125;
+
+/** Taxa the organ assets in organs.ts may be used for: the plant they were modelled on, and the render test. */
+const HAS_WISTERIA_ORGANS: ReadonlySet<string> = new Set(['wisteria-sinensis', 'render-test']);
 
 const three = (t: readonly [number, number, number], out = new V3()): THREE.Vector3 => out.set(t[0], t[2], -t[1]);
 
@@ -60,10 +65,9 @@ function geometries(): OrganGeometry {
 
 interface LeafRecord extends LodRecord {
   leaf: RenderLeaf;
-  jitter: number;
-  /** Day the stem point under the leaf was laid down, and its radius at the end of the run. */
-  stemBorn: number;
-  stemFinalMm: number;
+  /** The stem the leaf stands on and the point of it nearest the leaf; null if the data names no such stem. */
+  stem: RenderStem | null;
+  pointIndex: number;
   /** away from the support + the leaf's own direction: the way out from the contact line to the stem's surface */
   outX: number;
   outY: number;
@@ -94,12 +98,16 @@ export class PlantView {
   /** Day the base of each stem was laid down and day it was removed (-1: never). */
   private readonly stemSpans: [number, number][];
   private day = 0;
+  /** Labels of plants drawn as stems only, because there are no organ assets for their taxon yet. */
+  readonly withoutOrgans: string[];
 
   constructor(data: RenderData, mats: PlantMaterials, extras: { fruit?: readonly FruitSite[] } = {}) {
     this.timeline = new RenderTimeline(data);
     this.group.name = `plants:${data.scenario}`;
     const geo = geometries();
     this.stemSpans = data.stems.filter((s) => s.bornDay.length >= 2).map((s) => [s.bornDay[0]!, s.removedDay[0]!]);
+    const drawable = new Set(data.plants.filter((p) => HAS_WISTERIA_ORGANS.has(p.taxonId)).map((p) => p.id));
+    this.withoutOrgans = data.plants.filter((p) => !drawable.has(p.id)).map((p) => p.label);
 
     // ---- wood ------------------------------------------------------------------
     this.woodGeometry = buildWoodGeometry(data.stems).geometry;
@@ -124,7 +132,9 @@ export class PlantView {
     // each leaf stands on a point of its stem: find it, to seat the leaf on the
     // stem's surface as the stem thickens and to sway it with that stem
     const stems = new Map(data.stems.map((s, index) => [s.id, { s, index }]));
-    const leafRecords: LeafRecord[] = data.leaves.map((leaf, n) => {
+    const leafRecords: LeafRecord[] = [];
+    data.leaves.forEach((leaf, n) => {
+      if (!drawable.has(leaf.plantId)) return;
       const r1 = hash2(n, 3);
       three(leaf.direction, Z).normalize();
       X.crossVectors(UP, Z);
@@ -139,8 +149,8 @@ export class PlantView {
       const tone = 0.88 + 0.24 * r1;
 
       const a = new Float32Array(16);
-      let stemBorn = leaf.bornDay;
-      let stemFinalMm = 0;
+      let stem: RenderStem | null = null;
+      let pointIndex = 0;
       let outX = 0;
       let outY = 0;
       let outZ = 0;
@@ -156,8 +166,8 @@ export class PlantView {
             best = i;
           }
         }
-        stemBorn = s.bornDay[best]!;
-        stemFinalMm = s.radiusMm[best]!;
+        stem = s;
+        pointIndex = best;
         const away = three([s.away[3 * best]!, s.away[3 * best + 1]!, s.away[3 * best + 2]!]);
         outX = away.x + Z.x;
         outY = away.y + Z.y;
@@ -169,7 +179,7 @@ export class PlantView {
       } else {
         a.set([p.x, p.y, p.z, r1], 4);
       }
-      return {
+      leafRecords.push({
         m: new Float32Array(m4.elements),
         c: [tone, tone, tone],
         a,
@@ -179,13 +189,12 @@ export class PlantView {
         variant: leaf.lengthM < 0.1 || r1 < 0.2 ? 0 : r1 < 0.8 ? 1 : 2,
         rank: hash2(n, 5),
         leaf,
-        jitter: hash2(n, 11),
-        stemBorn,
-        stemFinalMm,
+        stem,
+        pointIndex,
         outX,
         outY,
         outZ,
-      };
+      });
     });
     this.leaves = new LodPool({
       geometries: geo.leaf,
@@ -203,7 +212,9 @@ export class PlantView {
     this.group.add(this.leaves.group);
 
     // ---- inflorescences ----------------------------------------------------------
-    const flowerRecords: FlowerRecord[] = data.flowers.map((flower, n) => {
+    const flowerRecords: FlowerRecord[] = [];
+    data.flowers.forEach((flower, n) => {
+      if (!drawable.has(flower.plantId)) return;
       const r1 = hash2(n, 23);
       const scale = flower.lengthM / RACEME_LEN;
       three(flower.position, p);
@@ -213,7 +224,7 @@ export class PlantView {
       const a = new Float32Array(8);
       // swing room is not in the data: allow a moderate swing everywhere
       a.set([0.6, r1, 0, 0], 4);
-      return { m: new Float32Array(m4.elements), c: [tone * (1 + warm), tone, tone * (1 - warm)], a, x: p.x, y: p.y - flower.lengthM / 2, z: p.z, variant: Math.floor(hash2(n, 31) * RACEME_VARIANTS), rank: hash2(n, 37), flower };
+      flowerRecords.push({ m: new Float32Array(m4.elements), c: [tone * (1 + warm), tone, tone * (1 - warm)], a, x: p.x, y: p.y - flower.lengthM / 2, z: p.z, variant: Math.floor(hash2(n, 31) * RACEME_VARIANTS), rank: hash2(n, 37), flower });
     });
     this.flowers = new LodPool({
       geometries: geo.raceme,
@@ -259,15 +270,15 @@ export class PlantView {
 
     this.leaves.update(camera, {
       alive: (r) => {
-        const s = t.leafState(r.leaf, day, r.jitter);
+        const s = t.leafDraw(r.leaf, day);
         if (!s.visible) return false;
         const a = r.a;
         a[0] = s.expansion;
         a[1] = s.colour;
-        a[2] = s.fall;
+        if (!r.stem) return true;
         // young wood sways and carries its leaves with it
-        a[11] = 1 - smoothstep(sway0, sway1, day - r.stemBorn);
-        const radius = t.stemRadiusM(day, r.stemBorn, r.stemFinalMm);
+        a[11] = 1 - smoothstep(sway0, sway1, day - r.stem.bornDay[r.pointIndex]!);
+        const radius = t.stemRadiusM(r.stem, r.pointIndex, day);
         a[12] = r.outX * radius;
         a[13] = r.outY * radius;
         a[14] = r.outZ * radius;
@@ -280,13 +291,13 @@ export class PlantView {
 
     this.flowers.update(camera, {
       alive: (r) => {
-        const s = t.flowerState(r.flower, day);
+        const s = t.flowerDraw(r.flower, day);
         if (!s.visible) return false;
         const a = r.a;
         a[0] = s.elongation;
         a[1] = s.bloom;
         a[2] = s.shed;
-        a[3] = s.stalk;
+        a[3] = 1;
         return true;
       },
       density,
@@ -296,7 +307,7 @@ export class PlantView {
 
     this.fruit.update(camera, {
       alive: (r) => {
-        const s = t.fruitState(r.fruit, day);
+        const s = t.fruitDraw(r.fruit, day);
         if (!s.visible) return false;
         r.a[0] = s.size;
         r.a[1] = s.ripeness;

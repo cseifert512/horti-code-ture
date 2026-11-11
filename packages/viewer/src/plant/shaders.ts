@@ -133,7 +133,7 @@ const PROGRAMS: Record<ProgramKind, Program> = {
   leaf: {
     head: /* glsl */ `
       attribute vec4 aPart;
-      attribute vec4 aState;  // expansion, autumn colour, fall, -
+      attribute vec4 aState;  // expansion, autumn colour, fall (unused: the data gives a leaf's last day, not its falling), -
       attribute vec4 aHost;   // base of the bearing stem, stem phase
       attribute vec4 aSup;    // the stem's direction away from its support, how freely it sways
       attribute vec4 aSeat;   // from the stem's contact line out to its surface, where the leaf stands
@@ -179,7 +179,7 @@ const PROGRAMS: Record<ProgramKind, Program> = {
   raceme: {
     head: /* glsl */ `
       attribute vec4 aPart;   // flower base, t along the raceme (<0: rachis)
-      attribute vec4 aState;  // elongation, share opened, share shed, stalk
+      attribute vec4 aState;  // elongation, share opened, share shed, stalk present
       attribute vec4 aInst;   // swing room (0..1), random, -, -
       varying float vOpen;
     `,

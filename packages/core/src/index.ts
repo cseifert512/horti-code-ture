@@ -20,4 +20,7 @@ export * from './sim/stem-path.ts';
 export { Simulation } from './sim/engine.ts';
 export { toRenderData } from './sim/render-data.ts';
 export * from './sim/scenarios.ts';
+export * from './sim/view.ts';
+export * from './sim/report.ts';
+export * from './render/presence.ts';
 export { Rng } from './sim/rng.ts';

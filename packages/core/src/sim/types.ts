@@ -13,6 +13,7 @@ import type { AttachmentStatus, BudEnd, BudStage, GardenerEventType } from '../v
 import type { GrowthModel } from './model.ts';
 import type { Rng } from './rng.ts';
 import type { StemPath } from './stem-path.ts';
+import type { Viewpoint } from './view.ts';
 
 export type AxisRole = 'leader' | 'lateral' | 'whip' | 'spur';
 /** How a stretch of stem sits: wound round its support, running along it, or unsupported. Who holds it is the run's `by`. */
@@ -108,6 +109,8 @@ export interface LeafSite {
   firstYear: number;
   /** Last calendar year in leaf; null for a leaf position renewed every year (a spur). */
   lastYear: number | null;
+  /** True where the leaf is kept through winter. */
+  evergreen: boolean;
   bornDay: number;
   removedDay: number | null;
 }
@@ -115,8 +118,10 @@ export interface LeafSite {
 export interface FloralBud {
   id: string;
   plantId: string;
-  /** The spur or pruned stub that bears it: the plant's own wood. */
+  /** The wood that bears it: a spur or pruned stub, or a shoot of the current year. Always the plant's own wood. */
   axisId: string;
+  /** The point of that wood it stands on; null for the tip of a spur, wherever pruning has left that tip. */
+  pointIndex: number | null;
   fate: 'floral';
   stage: BudStage;
   end: BudEnd | null;
@@ -173,6 +178,8 @@ export interface Plant {
   leafNodes: LeafNode[];
   pendingLaterals: PendingLateral[];
   pendingWhips: PendingWhip[];
+  /** Stubs left by a hard prune, which will shoot again at the next bud break. */
+  pendingRegrowth: string[];
   /** Standing instruction from the gardener: tie framework growth along the timber sub-lattice. */
   training: { tieToTimber: boolean; by: string | null };
   /** Last calendar year in which the plant was summer-pruned. */
@@ -197,7 +204,7 @@ export interface Planting {
 export type GardenerAction =
   | { type: 'train_leader'; plantId: string; tieToTimber: boolean }
   | { type: 'spur_prune'; plantId: string; season: 'summer' | 'winter' }
-  | { type: 'hard_prune'; plantId: string; target: { axisId: string } | { leader: number } | { allSpursOn: { leader: number } }; keepM: number }
+  | { type: 'hard_prune'; plantId: string; target: { axisId: string } | { leader: number } | { allSpursOn: { leader: number } } | { allStems: true }; keepM: number }
   | { type: 'monitor'; plantId: string }
   | { type: Exclude<GardenerEventType, 'train_leader' | 'spur_prune' | 'hard_prune' | 'monitor' | 'plant'>; plantId: string; note?: string };
 
@@ -219,6 +226,8 @@ export interface Scenario {
   taxa: ReadonlyMap<string, { profile: TaxonProfile; model: GrowthModel }>;
   plantings: readonly Planting[];
   events: readonly GardenerEvent[];
+  /** Where people stand and look: the design report measures coverage from each. */
+  viewpoints?: readonly Viewpoint[];
 }
 
 // ---------------------------------------------------------------------------
@@ -245,7 +254,7 @@ export interface EventRecord {
   modelled: boolean;
 }
 
-export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost';
+export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled';
 
 /** Why the plant did what it did: the trace asked for by PROJECT_CONTEXT.md section 7.6. */
 export interface Decision {

@@ -22,13 +22,14 @@ URL parameters: `bower=vault|hemisphere`, `overlay=1`, `station=<id>`, `budget=<
 | `src/scene/` | Stage (renderer, sky, sun, shadows, lawn), materials, ground dressing derived from the Bower. |
 | `src/structure/` | `frames.ts` works out which way each timber section is turned; `sweep.ts` and `build.ts` make the meshes. |
 | `src/overlay/` | `model.ts` asks the core (`analyseReach`, `shortestRoute`, `materialSummary`); `view.ts` draws the answer. |
-| `src/plant/adapter.ts` | **The only place time enters the plant renderer.** Turns the contract's days into stem presence and thickness (GLSL) and explicit organ states (0 to 1). If the contract changes, this file changes. |
+| `src/plant/adapter.ts` | **The only place time enters the plant renderer.** Asks the core's `render/presence.ts` what is on the plant on the day shown, and turns the answer into stem presence and thickness (GLSL) and explicit organ states (0 to 1). If the contract changes, this file changes. |
 | `src/plant/` | `wood.ts` (stem tubes), `organs.ts` (raceme, compound leaf, pod), `lod.ts` (instanced level of detail), `shaders.ts` (material patches), `view.ts` (puts them together), `scenario.ts` (runs the engine), `fixture.ts` (the hand-made test plant). |
 | `test/` | Section orientation, the overlay's numbers, organ states against the contract. |
 
 ## Things to know
 
 - **Section orientation is inferred.** The core gives a member's centre line and section size but not which way the section is turned. `frames.ts` takes the outer face to be where the member's plant routes lie, borrows from the lattice where a rib carries no route, and falls back to the plane of the arch. Each member reports how it was oriented.
-- **The organ assets are *Wisteria sinensis*'s.** Raceme, pinnate leaf, pod, bark colours and the ages over which bark turns from green to grey come from the prototype. Every plant is drawn with them until other taxa have organ modules; the caption names the taxon the data is for.
-- **Three things are interpolated, not simulated,** and the rules are written in `adapter.ts`: leaves of a plant are staggered across each seasonal window; opening and petal fall run up an inflorescence between its `openDay` and `spentDay`; a new stem point is eased in over its first day.
+- **The organ assets are *Wisteria sinensis*'s.** Raceme, pinnate leaf, pod, bark colours and the ages over which bark turns from green to grey come from the prototype. Mechanism traits do not transfer, so leaves and flowers are drawn only for wisteria (and the render test). A plant of any other taxon is drawn as stems only and named in the caption as lacking leaf and flower models.
+- **The mixed planting is not offered yet.** The core can now grow wisteria, honeysuckle and clematis together (`mixedOnVault`). Showing it needs organ modules for the other two taxa, and the viewer drawing the scenario's own Bower, which has four root stations.
+- **Two things are added for the picture,** and both are written in `adapter.ts`: within the time the core says an inflorescence is open, opening and then petal fall run up it from the base; and a new stem point is eased in over its first day so stems lengthen smoothly between whole days.
 - **Not in the contract, so not drawn from engine data:** fruit (the test plant carries a few through a stand-in type), ground litter (the shader program is ported and unused), flower colour per taxon, and how much room an inflorescence has to swing.

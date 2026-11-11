@@ -69,6 +69,8 @@ Represent the glulam and its sub-lattice (lighter timber, slender cables) as one
 
 **Exit check:** Wisteria flower outcome responds to past-season bud survival; Group 1 *C. cirrhosa* and Group 3 *C. viticella* have materially different responses to severe pruning; *Lonicera henryi* persists in winter unless exposed conditions cause damage.
 
+**Status (11 November 2026): two of three done and tested** (`packages/core/test/mixed.test.ts`). The engine now has a rule per flowering class. *Old wood on spurs* (wisteria): cutting every stem to the ground in February removes the flower buds and the plant does not flower that year, nor much the next. *Current season* (Group 3 clematis 'Étoile Violette'): the same cut every February costs no flowers, because they form on shoots that regrow from the stubs; a cut in early summer, after the buds have formed, does take them. Evergreen *Lonicera henryi* keeps its leaves through winter for as many seasons as its model gives a leaf. Still to do: *C. cirrhosa* (old wood without spurs, flowering in winter), exposure damage to evergreens, and any response to weather; all dates are fixed provisional days of the year.
+
 ## Stage 5 — add site-aware placement and multi-species scenes
 
 **Tasks:** Input Bower shell, cardinal orientation, light/shade map, root stations, climber paths, visitor clearances and service envelopes. Add qualitative light/space/root competition. Implement `KEY.md` reference palette as **a scenario**, not a universal planting mandate.
@@ -108,18 +110,20 @@ Only after basic geometry/season/maintenance works: plant carbon allocation, emp
 
 ## Model acceptance checklist
 
-- [ ] Separate manufactured and living graphs.
-- [ ] Persistent plant history, with growth cohort and bud ancestry.
-- [ ] Model's coordinate convention, handedness, time step and units written down.
-- [ ] Six attachment classes (including non-climber) with correct taxon mappings.
+Status on 11 November 2026 is marked on each line: done, part, or not yet.
+
+- [x] Separate manufactured and living graphs.
+- [x] Persistent plant history, with growth cohort and bud ancestry.
+- [x] Model's coordinate convention, handedness, time step and units written down.
+- [ ] Six attachment classes (including non-climber) with correct taxon mappings. *Part: all six have attachment rules; three are grown (twining stem, leaf stalk, and the shrub that stays put). Tendril, aerial root and tied cane are not grown yet.*
 - [ ] No attachment in a zone a project has declared off-limits; none is off-limits by default.
 - [ ] Visible steel is reported, and limited to slender cables.
-- [ ] Humans can train, attach, detach, prune, monitor and replant as explicit operations.
-- [ ] Old-wood and current-season flowering react differently to pruning.
-- [ ] Winter foliage and year-round flowering are not guaranteed merely by species label.
-- [ ] Curved shell uses support-path length, not vertical height alone.
-- [ ] Multi-species paths can be separate, overlapping or conflicting by explicit rules.
-- [ ] Each numeric parameter is sourced, measured or visibly provisional.
+- [ ] Humans can train, attach, detach, prune, monitor and replant as explicit operations. *Part: train, prune (three kinds) and monitor act on the plant; detaching a tie and replanting are recorded but not yet acted on.*
+- [x] Old-wood and current-season flowering react differently to pruning.
+- [ ] Winter foliage and year-round flowering are not guaranteed merely by species label. *Part: flowers need surviving buds; evergreen leaves persist by a labelled assumption, with no exposure damage yet.*
+- [x] Curved shell uses support-path length, not vertical height alone.
+- [ ] Multi-species paths can be separate, overlapping or conflicting by explicit rules. *Part: plants compete for members through a stated capacity per member; no light or root competition.*
+- [x] Each numeric parameter is sourced, measured or visibly provisional.
 - [ ] Outputs are interpretable by an architect, gardener and structural engineer **without claiming false physical precision**.
 
 ## Smallest valuable first deliverable

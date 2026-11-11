@@ -2,22 +2,22 @@
 //
 // The prototype drove everything from a clock in "growing seasons", with the
 // dates of leaf flush, flowering and leaf fall written into its shaders. Here
-// the dates are the engine's: the render-data contract
+// the dates are the engine's. The render-data contract
 // (packages/core/src/render/contract.ts) gives every element the day it
-// appeared and the day it went, each plant's seasonal dates year by year, and
-// each inflorescence its own days. This module turns "the day being shown"
-// into what the shaders and instance pools consume:
+// appeared and the day it went, and the core's presence module
+// (packages/core/src/render/presence.ts) answers "what is on the plant on
+// this day" for every consumer, so that a picture and a number computed from
+// the same run agree. This module asks it, and turns the answers into what the
+// shaders and instance pools consume:
 //
-//   stems    two uniforms and a few lines of GLSL: is this point there yet,
-//            and how thick is it (the contract's interpolation rule)
+//   stems    a few uniforms and lines of GLSL: is this point there yet, and
+//            how thick is it (the contract's interpolation rule)
 //   organs   explicit states between 0 and 1 (how far a leaf has unfolded,
 //            how far a raceme has opened), computed here on the CPU
 //
 // Nothing else in the viewer knows what a day is. If the contract changes,
-// this is the file that changes with it. It adds no dates of its own; where
-// the contract gives two dates and the picture needs something in between,
-// the in-between is interpolated and the rule is written beside it.
-import { Calendar, type RenderData, type RenderFlower, type RenderLeaf, type RenderSeason } from '@horti/core';
+// this is the file that changes with it. It adds no dates of its own.
+import { Calendar, type RenderData, type RenderFlower, type RenderLeaf, type RenderSeason, type RenderStem, flowerState, leafState, seasonsOf, stemPointAlive, stemRadiusM } from '@horti/core';
 
 /** Stands in for "never removed" in vertex attributes, where the contract uses -1. */
 export const NEVER = 1e9;
@@ -28,8 +28,6 @@ const smooth = (x: number): number => {
   const t = clamp01(x);
   return t * t * (3 - 2 * t);
 };
-/** Progress of `day` through the window [a, b], smoothed. */
-const through = (day: number, a: number, b: number): number => smooth((day - a) / Math.max(1e-6, b - a));
 
 // ---------------------------------------------------------------------------
 // Stems: evaluated on the GPU so the day can be scrubbed without rebuilding.
@@ -50,10 +48,12 @@ export const clock = {
  * Per stem point the shader has: the day it was born, the day it was removed
  * (NEVER if still there), and its radius at the end of the run in metres.
  *
- * Thickness between birth and the end of the run follows the contract:
+ * stemPresent and stemRadius are the GPU twins of stemPointAlive and
+ * stemRadiusM in the core's presence module, which follow the contract:
  *   radius(t) = tip + (final - tip) * ((t - born) / (lastDay - born)) ^ exponent
- * The first day of a point's life is eased in, so that a stem lengthens
- * smoothly between whole days instead of jumping a ring at a time.
+ * One thing is added for the picture: the first day of a point's life is
+ * eased in, so that a stem lengthens smoothly between whole days instead of
+ * jumping a ring at a time.
  */
 export const CLOCK_GLSL = /* glsl */ `
 uniform float uDay;
@@ -66,28 +66,25 @@ float stemPresent( float born, float removed ) {
 }
 
 float stemRadius( float born, float finalRadius ) {
-  float age = uDay - born;
-  float span = max( uLastDay - born, 1.0 );
-  float r = uTipRadius + ( finalRadius - uTipRadius ) * pow( clamp( age / span, 0.0, 1.0 ), uThickenExponent );
-  return r * clamp( age, 0.0, 1.0 );
+  float age = clamp( ( uDay - born ) / max( uLastDay - born, 1.0 ), 0.0, 1.0 );
+  float r = uTipRadius + max( finalRadius - uTipRadius, 0.0 ) * pow( age, uThickenExponent );
+  return r * clamp( uDay - born, 0.0, 1.0 );
 }
 `;
 
 // ---------------------------------------------------------------------------
-// Organs: explicit states.
+// Organs: explicit states for the shaders.
 // ---------------------------------------------------------------------------
 
-export interface LeafState {
+export interface LeafDraw {
   visible: boolean;
   /** 0 folded in the bud, 1 fully expanded. */
   expansion: number;
   /** 0 summer green, 1 full autumn colour. */
   colour: number;
-  /** 0 on the plant, 1 fallen. */
-  fall: number;
 }
 
-export interface FlowerState {
+export interface FlowerDraw {
   visible: boolean;
   /** 0 a bud that has just begun to lengthen, 1 full length. */
   elongation: number;
@@ -95,8 +92,6 @@ export interface FlowerState {
   bloom: number;
   /** Share of the flowers whose petals have dropped, counted from the base. */
   shed: number;
-  /** 1 while the bare stalk still hangs, falling to 0 as it is shed. */
-  stalk: number;
 }
 
 /**
@@ -116,7 +111,7 @@ export interface FruitSite {
   removedDay: number;
 }
 
-export interface FruitState {
+export interface FruitDraw {
   visible: boolean;
   /** 0 just set, 1 full size. */
   size: number;
@@ -124,26 +119,18 @@ export interface FruitState {
   ripeness: number;
 }
 
-const HIDDEN_LEAF: LeafState = { visible: false, expansion: 0, colour: 0, fall: 1 };
-const HIDDEN_FLOWER: FlowerState = { visible: false, elongation: 0, bloom: 0, shed: 0, stalk: 0 };
+const HIDDEN_LEAF: LeafDraw = { visible: false, expansion: 0, colour: 0 };
+const HIDDEN_FLOWER: FlowerDraw = { visible: false, elongation: 0, bloom: 0, shed: 0 };
 
 /**
- * How the viewer fills the gaps between the dates it is given. These are
- * rules of interpolation, chosen for a smooth picture; they are not claims
- * about plants and change no date the engine supplied.
+ * The core says an inflorescence is open and how far through its time in
+ * flower it is. Drawing one needs a little more: which of its sixty flowers
+ * are open. That is filled in here, as a picture of the core's progress
+ * figure and nothing more: opening runs up the raceme during the first share
+ * of its time in flower, and petal fall runs up it from the second share on,
+ * ending on the day the core calls it spent.
  */
-const INTERPOLATION = {
-  /** Leaves of one plant do not all move on the same day: each is offset by up to this share of a window. */
-  leafStagger: 0.3,
-  /** A single leaf takes this share of the leaf-fall window to drop. */
-  leafDrop: 0.2,
-  /** Opening runs up an inflorescence during this first share of its time in flower... */
-  bloomWave: 0.35,
-  /** ...and petal fall runs up it from this share on, ending on the day it is spent. */
-  shedFrom: 0.55,
-  /** The bare stalk goes within this share of the flowering time after the petals. */
-  stalkLinger: 0.4,
-} as const;
+const WITHIN_FLOWERING = { bloomBy: 0.35, shedFrom: 0.55 } as const;
 
 /** Reads a RenderData through time. */
 export class RenderTimeline {
@@ -152,8 +139,7 @@ export class RenderTimeline {
   /** The first day on which there is anything to see. */
   readonly firstDay: number;
   readonly lastDay: number;
-  private readonly seasons = new Map<string, RenderSeason>();
-  private readonly deciduous = new Map<string, boolean>();
+  private readonly seasonsByYear = new Map<number, Map<string, RenderSeason>>();
   private yearCache: { day: number; year: number } | null = null;
 
   constructor(data: RenderData) {
@@ -161,9 +147,6 @@ export class RenderTimeline {
     this.calendar = new Calendar(data.start);
     this.lastDay = data.lastDay;
     this.firstDay = data.plants.reduce((d, p) => Math.min(d, p.plantedDay), data.lastDay);
-    for (const s of data.seasons) this.seasons.set(`${s.plantId}|${s.year}`, s);
-    // only a deciduous plant is known to shed all its leaves each year
-    for (const p of data.plants) this.deciduous.set(p.id, p.leafHabit === 'deciduous');
   }
 
   /** Point the shared clock at a day of this run. */
@@ -187,71 +170,40 @@ export class RenderTimeline {
     return `${d.dayOfMonth} ${month} ${d.year}`;
   }
 
-  season(plantId: string, year: number): RenderSeason | undefined {
-    return this.seasons.get(`${plantId}|${year}`);
-  }
-
-  /** The stem radius rule of the contract, in metres: the CPU twin of stemRadius() in CLOCK_GLSL. */
-  stemRadiusM(day: number, bornDay: number, finalRadiusMm: number): number {
-    const age = day - bornDay;
-    if (age <= 0) return 0;
-    const { tipRadiusMm, exponent } = this.data.thickening;
-    const span = Math.max(this.lastDay - bornDay, 1);
-    return ((tipRadiusMm + (finalRadiusMm - tipRadiusMm) * Math.pow(clamp01(age / span), exponent)) * clamp01(age)) / 1000;
-  }
-
-  /**
-   * `jitter` is a fixed number in [0, 1) for this leaf, so that the leaves of
-   * a plant flush, colour and drop over each window rather than all at once.
-   */
-  leafState(leaf: RenderLeaf, day: number, jitter: number): LeafState {
-    if (day < leaf.bornDay || (leaf.removedDay >= 0 && day >= leaf.removedDay)) return HIDDEN_LEAF;
+  /** The dates a plant keeps in the calendar year `day` falls in. */
+  season(plantId: string, day: number): RenderSeason | undefined {
     const year = this.yearOf(day);
-    if (year < leaf.firstYear || (leaf.lastYear !== null && year > leaf.lastYear)) return HIDDEN_LEAF;
-    const season = this.season(leaf.plantId, year);
-    if (!season) return HIDDEN_LEAF;
-    const stagger = INTERPOLATION.leafStagger;
-
-    // unfolding: with the plant's flush, and never faster than the leaf's own age allows
-    const [f0, f1] = season.leafFlush;
-    const flush = Math.max(1, f1 - f0);
-    const seasonal = through(day, f0 + jitter * stagger * flush, f0 + (jitter * stagger + 1 - stagger) * flush);
-    const own = year === leaf.firstYear ? smooth((day - leaf.bornDay) / flush) : 1;
-    const expansion = Math.min(seasonal, own);
-    if (expansion <= 0) return HIDDEN_LEAF;
-    if (!this.deciduous.get(leaf.plantId)) return { visible: true, expansion, colour: 0, fall: 0 };
-
-    const [c0, c1] = season.autumnColour;
-    const turn = Math.max(1, c1 - c0);
-    const colour = through(day, c0 + jitter * stagger * turn, c0 + (jitter * stagger + 1 - stagger) * turn);
-    // each leaf drops at its own moment within the window; none remains after it
-    const [l0, l1] = season.leafFall;
-    const window = Math.max(1, l1 - l0);
-    const drop = INTERPOLATION.leafDrop;
-    const start = l0 + jitter * (1 - drop) * window;
-    const fall = clamp01((day - start) / (drop * window));
-    if (fall >= 1) return HIDDEN_LEAF;
-    return { visible: true, expansion, colour, fall };
+    let seasons = this.seasonsByYear.get(year);
+    if (!seasons) this.seasonsByYear.set(year, (seasons = seasonsOf(this.data, year)));
+    return seasons.get(plantId);
   }
 
-  flowerState(flower: RenderFlower, day: number): FlowerState {
-    if (day < flower.developDay) return HIDDEN_FLOWER;
-    const elongation = through(day, flower.developDay, flower.openDay);
-    if (day < flower.openDay) return { visible: true, elongation, bloom: 0, shed: 0, stalk: 1 };
-    // still in flower at the end of the run: judge its pace by the time it took to develop
-    const inFlower = flower.spentDay >= 0 ? Math.max(1, flower.spentDay - flower.openDay) : Math.max(1, flower.openDay - flower.developDay);
-    const t = (day - flower.openDay) / inFlower;
-    const bloom = clamp01(t / INTERPOLATION.bloomWave);
-    if (flower.spentDay < 0) return { visible: true, elongation: 1, bloom, shed: 0, stalk: 1 };
-    const shed = clamp01((t - INTERPOLATION.shedFrom) / (1 - INTERPOLATION.shedFrom));
-    const stalk = 1 - smooth((t - 1) / INTERPOLATION.stalkLinger);
-    if (stalk <= 0) return HIDDEN_FLOWER;
-    return { visible: true, elongation: 1, bloom, shed, stalk };
+  /** Radius of point `i` of a stem on `day`, in metres; nothing before the point exists. */
+  stemRadiusM(stem: RenderStem, i: number, day: number): number {
+    return stemPointAlive(stem, i, day) ? stemRadiusM(this.data, stem, i, day) : 0;
   }
 
-  fruitState(fruit: FruitSite, day: number): FruitState {
+  leafDraw(leaf: RenderLeaf, day: number): LeafDraw {
+    const s = leafState(leaf, this.season(leaf.plantId, day), day);
+    return s.present ? { visible: true, expansion: s.expansion, colour: s.autumn } : HIDDEN_LEAF;
+  }
+
+  flowerDraw(flower: RenderFlower, day: number): FlowerDraw {
+    const s = flowerState(flower, day);
+    if (s.phase === 'absent') return HIDDEN_FLOWER;
+    if (s.phase === 'in_bud') return { visible: true, elongation: smooth(s.progress), bloom: 0, shed: 0 };
+    // open. A flower the run ended on has no spent day, so the core gives no progress:
+    // pace its opening by the time it took to develop instead, and shed nothing.
+    const progress = flower.spentDay >= 0 ? s.progress : (day - flower.openDay) / Math.max(1, flower.openDay - flower.developDay);
+    const bloom = clamp01(progress / WITHIN_FLOWERING.bloomBy);
+    const shed = flower.spentDay >= 0 ? clamp01((progress - WITHIN_FLOWERING.shedFrom) / (1 - WITHIN_FLOWERING.shedFrom)) : 0;
+    return { visible: true, elongation: 1, bloom, shed };
+  }
+
+  fruitDraw(fruit: FruitSite, day: number): FruitDraw {
     if (day < fruit.swell[0] || (fruit.removedDay >= 0 && day >= fruit.removedDay)) return { visible: false, size: 0, ripeness: 0 };
-    return { visible: true, size: through(day, fruit.swell[0], fruit.swell[1]), ripeness: through(day, fruit.ripen[0], fruit.ripen[1]) };
+    const through = (a: number, b: number) => smooth((day - a) / Math.max(1e-6, b - a));
+    return { visible: true, size: through(fruit.swell[0], fruit.swell[1]), ripeness: through(fruit.ripen[0], fruit.ripen[1]) };
   }
 
   /** The gardener's most recent entry on or before `day`, if it is no older than `withinDays`. */

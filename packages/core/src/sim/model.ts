@@ -69,6 +69,8 @@ export const GROWTH_PARAMS = {
   // ---- organs
   'organs.leafSpacingM': 'range',
   'organs.leafLengthM': 'range',
+  /** 1 where leaves stand singly at a node, 2 where they stand in opposite pairs. */
+  'organs.leavesPerNode': 'number',
   /** Chance that a leaf node on last year's wood forms a spur. */
   'organs.spurChance': 'number',
   'organs.spurLengthM': 'range',
@@ -77,6 +79,8 @@ export const GROWTH_PARAMS = {
   'organs.whipShareOfNodes': 'number',
   'organs.whipsPerYearMax': 'number',
   'organs.whipLengthM': 'range',
+  /** Growing seasons a leaf stays on the stem: 1 for a deciduous plant. */
+  'organs.leafLifespanYears': 'number',
   /** Height below which the stem is kept clean: no spurs, whips or flowers. */
   'organs.clearStemHeightM': 'number',
   // ---- flowering
@@ -87,9 +91,15 @@ export const GROWTH_PARAMS = {
   'flowering.spurFloralChance': 'number',
   /** Multiplier on flower-bud initiation in a year with no summer pruning. */
   'flowering.unprunedFactor': 'number',
+  /** For plants that flower on the year's own growth: flowers per metre of that growth, and the shortest shoot that flowers. */
+  'flowering.currentSeasonFlowersPerM': 'number',
+  'flowering.currentSeasonMinShootM': 'number',
   // ---- pruning
   'pruning.summerLeavesKept': 'range',
   'pruning.winterBudsKept': 'range',
+  // ---- regrowth
+  /** New shoots from the stub a hard prune leaves. */
+  'regrowth.shootsPerCut': 'range',
   // ---- thickening: radius squared, in mm2, grows with the stem length a point carries
   'thickening.tipRadiusSquaredMm2': 'number',
   'thickening.radiusSquaredPerMetreMm2': 'number',
@@ -145,6 +155,18 @@ export function param<K extends GrowthParamKey>(model: GrowthModel, key: K): Sha
 export function listAt(model: GrowthModel, key: GrowthParamKey, i: number): number {
   const v = model.params[key].value as number[];
   return v[Math.min(Math.max(0, i), v.length - 1)]!;
+}
+
+/**
+ * A copy of a model with one parameter changed, for asking "what if". The
+ * change is itself an assumption and is labelled as one: `why` says what
+ * question the variation is exploring.
+ */
+export function withParam<K extends GrowthParamKey>(model: GrowthModel, key: K, value: Shape<K>, why: string): GrowthModel {
+  const was = model.params[key];
+  const varied: Sourced<Shape<K>> = { value, status: 'provisional_design_assumption', basis: `Varied for this scenario (was ${JSON.stringify(was.value)}): ${why}` };
+  if (was.unit !== undefined) varied.unit = was.unit;
+  return { ...model, params: { ...model.params, [key]: varied } };
 }
 
 /** Every parameter with its status: the model's part of a run's assumptions report. */
