@@ -1,6 +1,7 @@
 # Wisteria floribunda 'Macrobotrys'
 
-**Common name:** Long-racemed Japanese wisteria (RHS also lists Kyushaku/related synonyms)  
+**Common name:** Long-racemed Japanese wisteria  
+**Accepted name:** RHS: *Wisteria floribunda* f. *multijuga* 'Kyushaku' (record 372711). 'Macrobotrys' and 'Multijuga' are RHS synonyms of it; the working label is kept because it is the name the plant is sold under.  
 **Place in palette:** PRIMARY — alternate architectural wisteria species/cultivar
 
 ## Observational / horticultural baseline
@@ -8,7 +9,7 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Deciduous, woody, twining climber |
-| Climbing or support mechanism | Stem twining; RHS describes Japanese wisteria as clockwise (viewpoint convention required). |
+| Climbing or support mechanism | Stem twining, **left-handed** helix: clockwise seen from above. The RHS says clockwise without stating a viewpoint; Valder (1995) and Japanese tree guides supply it. The opposite of *W. sinensis*. |
 | RHS ultimate-height envelope | RHS: 8–12 m; 10–20 years to ultimate size class. |
 | Hardiness | H6 (RHS). |
 | Flower / leaf / fruit season | Strong late-spring/early-summer lilac-blue/violet flowers; pendulous racemes can reach 1 m or more; autumn yellow leaves. |
@@ -39,7 +40,7 @@ Pair with evergreen side zones and lower summer flowers, but avoid shading racem
 
 ## Risks, exclusions and scientific caveats
 
-Long racemes need clear height; harmful if eaten; mature woody mass and wind response not validated. RHS lists synonym/status variants—preserve taxonomic aliases in final data.
+Long racemes need clear height; harmful if eaten; mature woody mass and wind response not validated. The accepted name and its aliases are recorded in `taxon.json`.
 
 ## Parameters to obtain or calibrate
 
@@ -53,7 +54,9 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
-- RHS taxon profile: https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
+- RHS taxon profile (synonym record, where the traits above were read): https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details
+- RHS accepted record: https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details
 - Additional source: https://www.rhs.org.uk/plants/wisteria/growing-guide
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

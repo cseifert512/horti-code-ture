@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "id": "thunbergia-alata",
+  "names": {
+    "label": "Thunbergia alata",
+    "rhs": {
+      "name": "Thunbergia alata",
+      "plantId": 66108,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details"
+    },
+    "kew": "Thunbergia alata Bojer ex Sims",
+    "synonyms": [],
+    "common": [
+      "Black-eyed Susan vine"
+    ]
+  },
+  "palette": {
+    "standing": "annual",
+    "role": "Replaceable warm-season colour in low pockets while the permanent planting establishes."
+  },
+  "lifeForm": "herbaceous_climber",
+  "ukCultivation": "annual_replant",
+  "leafHabit": {
+    "value": "evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details",
+    "basis": "RHS: evergreen perennial often grown as an annual. Outdoors in the UK it does not survive winter, so the habit never shows."
+  },
+  "attachment": {
+    "mechanism": "stem_twining",
+    "selfAttaching": true,
+    "handedness": {
+      "value": "right_handed",
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin: \"moves against the sun\", i.e. anticlockwise seen from above. One zoo page says \"clockwise\" with no viewpoint."
+    },
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Light low-level trellis with access for replanting every year."
+  },
+  "flowering": {
+    "wood": {
+      "value": "current_season",
+      "status": "provisional_design_assumption",
+      "basis": "Replanted every year in the UK, so everything that flowers is growth of the current season."
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Orange, yellow or cream flowers with dark centres.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        1.5,
+        2.5
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        1,
+        2
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H2",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details"
+  },
+  "site": {
+    "aspect": "Sunny, warm, sheltered.",
+    "soil": "Free-draining with reliable moisture."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "annual_replant",
+        "months": [
+          5
+        ],
+        "note": "Replant in late spring once the risk of frost has passed; remove the old vines when they decline."
+      }
+    ],
+    "notes": "Replant each late spring, train the shoots, water, and clear the dead vines. It offers nothing in winter."
+  },
+  "hazards": [],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details"
+    }
+  ]
+}

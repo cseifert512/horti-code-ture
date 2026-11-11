@@ -1,6 +1,7 @@
 # Clematis viticella 'Étoile Violette'
 
 **Common name:** Purple summer clematis 'Étoile Violette'  
+**Accepted name:** RHS: *Clematis* 'Étoile Violette' (Vt) (record 92936); *Clematis viticella* 'Étoile Violette' is an RHS synonym.  
 **Place in palette:** CORE — summer floral module
 
 ## Observational / horticultural baseline
@@ -10,7 +11,7 @@
 | Growth habit | Deciduous clematis; Group 3 pruning. |
 | Climbing or support mechanism | Twining leaf petioles. |
 | RHS ultimate-height envelope | RHS: 2.5–4 m; generally 2–5 years to ultimate size class. |
-| Hardiness | Use site-verified RHS rating in parameter store; do not invent a numeric cold threshold here. |
+| Hardiness | H6 (RHS). |
 | Flower / leaf / fruit season | Velvety deep-purple flowers, typically mid to late summer; winter stems leafless. |
 | Aspect and exposure | Full sun/partial shade; adaptable aspects and exposed/sheltered locations per RHS. |
 | Soil | Moist but well-drained; neutral/alkaline preferred. |
@@ -39,7 +40,7 @@ Complements wisteria after its spring display, provided adequate summer light re
 
 ## Risks, exclusions and scientific caveats
 
-Do not assign wisteria twining/flower-spur rules; root competition and shading may strongly reduce flowers.
+Do not assign wisteria twining/flower-spur rules; root competition and shading may strongly reduce flowers. Skin irritant; harmful to pets (rabbits) if eaten (RHS).
 
 ## Parameters to obtain or calibrate
 
@@ -53,7 +54,9 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
-- RHS taxon profile: https://www.rhs.org.uk/plants/131849/clematis-viticella-%C3%A9toile-violette/details
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
+- RHS accepted record: https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details
+- RHS taxon profile (synonym record, where the traits above were read): https://www.rhs.org.uk/plants/131849/clematis-viticella-%C3%A9toile-violette/details
 - Additional source: https://www.rhs.org.uk/plants/clematis/group-three-pruning-guide
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

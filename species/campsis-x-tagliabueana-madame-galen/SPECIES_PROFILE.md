@@ -8,7 +8,7 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Large vigorous deciduous woody climber. |
-| Climbing or support mechanism | Aerial/adventitious roots; needs suitable contact surface and may need support training. |
+| Climbing or support mechanism | Aerial roots, but a weak self-clinger: the RHS advises tying in, and Bean says this hybrid cannot be left to look after itself. Plan for ties as well as a clingable surface. |
 | RHS ultimate-height envelope | RHS: 8–12 m; 5–10 years to ultimate class. |
 | Hardiness | H4 (RHS). |
 | Flower / leaf / fruit season | Large vivid reddish-orange tubular flowers in late summer to autumn; winter leafless. |
@@ -19,7 +19,7 @@
 
 ## Species-specific biological logic
 
-Builds long-lived woody framework with seasonal flowering laterals; do not automatically use old-wood wisteria bud-induction rules.
+Builds long-lived woody framework with seasonal flowering laterals; do not automatically use old-wood wisteria bud-induction rules. It flowers on the current season's growth (RHS pruning group 12: spur-prune side shoots to two or three buds in late winter).
 
 ## What Bower must provide: local supports
 
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details
 - Additional source: https://www.rhs.org.uk/plants/campsis/growing-guide
 

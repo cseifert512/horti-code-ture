@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "id": "sarcococca-confusa",
+  "names": {
+    "label": "Sarcococca confusa",
+    "rhs": {
+      "name": "Sarcococca confusa",
+      "plantId": 16452,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details"
+    },
+    "kew": "Sarcococca confusa Sealy",
+    "synonyms": [],
+    "common": [
+      "Sweet box"
+    ]
+  },
+  "palette": {
+    "standing": "ground_companion",
+    "role": "Ground-level evergreen and winter fragrance beside shaded approaches. Not a climber."
+  },
+  "lifeForm": "shrub",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details"
+  },
+  "attachment": {
+    "mechanism": "none",
+    "selfAttaching": false,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "A shaded soil bed near a path. No climbing surface."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        12,
+        1,
+        2
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Small cream-white, highly scented flowers; black berries.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        1,
+        1.5
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        5,
+        10
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H5",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details"
+  },
+  "site": {
+    "aspect": "Partial to full shade, sheltered.",
+    "soil": "Humus-rich, moist but well-drained; tolerates dry shade once established."
+  },
+  "management": {
+    "calendar": [],
+    "notes": "Maintain access and form; mulch and water while establishing. The RHS height field says 1-1.5 m while its description says to 2 m."
+  },
+  "hazards": [
+    "Potentially harmful; fruit is ornamental and not to be eaten (RHS)."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details"
+    }
+  ]
+}

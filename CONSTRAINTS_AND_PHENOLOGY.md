@@ -24,6 +24,25 @@ Do not use published RHS mature height, hardiness ratings or flower seasons as m
 
 **Twining orientation matters.** RHS describes *W. sinensis* as anticlockwise and *W. floribunda* as clockwise, but a program must define an unambiguous direction convention **viewed from the plant base toward the tip** (or vice versa) before implementing a handedness sign. Verify against the existing *W. sinensis* model and observed specimens.
 
+**Convention adopted (11 November 2026).** The RHS states no viewpoint, and other writers describing the same plant use opposite words depending on where they stand (Darwin's "with the sun", the plant's-eye view, and older against newer usage of *dextrorse* and *sinistrorse* all flip). The project therefore records handedness as the **chirality of the helix**, which no viewpoint can change:
+
+- `right_handed` — like an ordinary screw thread. Climbing a vertical support, the stem turns **anticlockwise seen from above**, looking down on the tip.
+- `left_handed` — the mirror image: **clockwise seen from above**.
+
+Do not use *dextrorse* or *sinistrorse* in data or code.
+
+| Taxon | Helix | Seen from above | Confidence and basis |
+|---|---|---|---|
+| *Wisteria sinensis* | right-handed | anticlockwise | High: RHS, Valder 1995, Darwin, Flora of China. The prototype twines this way on every run. |
+| *Wisteria floribunda* | left-handed | clockwise | High: RHS, Valder 1995, Japanese tree guides. |
+| *Lonicera periclymenum* | left-handed | clockwise | High for the geometry; no peer-reviewed species-level source retrieved. |
+| *Lonicera henryi* | left-handed (inferred) | clockwise (inferred) | Low to medium: from congeners only. Check a specimen. |
+| *Akebia quinata* | right-handed | anticlockwise | High: Darwin, University of Michigan CLIMBERS. |
+| *Thunbergia alata* | right-handed | anticlockwise | Medium to high: Darwin. |
+| *Trachelospermum jasminoides* | unknown | unknown | No source found. Must be observed. |
+
+Two published accounts were found to contradict the table for the wisterias (one swaps the species; one contradicts itself between sections), which is why field verification stays on the validation list in section 8.
+
 ### Local-support variables to track
 
 - 3-D support curve; local tangent and gravity vector; orientation/slope; curvature and twisting of the route.
@@ -90,7 +109,7 @@ Separate the life cycle into **initiation/induction**, **dormancy acquisition**,
 Represent leaf flush, expansion, senescence and abscission on organ/branch cohorts. An evergreen species still sheds old leaves and may suffer cold-wind desiccation, leaf scorch or site-specific dieback. An RHS H4/H5/H6 hardiness rating is an **approximate survival range** under UK conditions, not a guaranteed leaf-retention or winter-flowering score.
 
 - Deciduous: *Wisteria*, *Vitis*, *Lonicera periclymenum*, Group 3 *Clematis*, *Hydrangea*, *Campsis*, climbing rose (often largely deciduous in the UK).
-- Evergreen: *Lonicera henryi*, *Trachelospermum*, *Clematis cirrhosa*, *Clematis armandi*, *Hedera helix*, *Sarcococca*.
+- Evergreen: *Lonicera henryi*, *Trachelospermum*, *Clematis cirrhosa*, *Clematis armandi*, *Hedera helix*, *Sarcococca*. (*L. henryi* is evergreen per the RHS but "winter-green or semi-deciduous" in British field accounts and semi-evergreen in Flora of China: do not count on full winter cover from it in exposed sectors.)
 - Semi-evergreen: *Akebia quinata* — leaf retention is climate-dependent.
 - *Thunbergia alata* is botanically perennial in warm conditions but treated as a **tender annual outdoors in the UK**.
 

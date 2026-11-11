@@ -8,8 +8,8 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Tender evergreen perennial in frost-free climates, **grown as an annual outdoors in UK**. |
-| Climbing or support mechanism | Herbaceous stem twining. |
-| RHS ultimate-height envelope | RHS: 1.5–2.5 m; seasonal performance depends on stock and warmth. |
+| Climbing or support mechanism | Herbaceous stem twining, right-handed helix: anticlockwise seen from above (Darwin). |
+| RHS ultimate-height envelope | RHS: 1.5–2.5 m; 1–2 years to ultimate size category; seasonal performance depends on stock and warmth. |
 | Hardiness | H2 (RHS), not winter-hardy outdoors in the UK. |
 | Flower / leaf / fruit season | Bright orange/yellow/cream (cultivar-dependent) with dark centres; summer to early autumn. |
 | Aspect and exposure | Sunny, warm, sheltered. |
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/66108/thunbergia-alata/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

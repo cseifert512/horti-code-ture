@@ -17,9 +17,9 @@ A Bower should be a **managed multi-species plant community** supported by an ar
 
 | Taxon | Function | Attachment mechanism | What Bower must provide | Default standing |
 |---|---|---|---|---|
-| *Wisteria sinensis* | Early-spring bloom, permanent woody scaffold | Woody stem twining; can be trained onto ties | Strong, continuous leader routes; strain-aware anchors; removable/adjustable ties and future access | Primary prototype; canopy alternative |
+| *Wisteria sinensis* | Late-spring bloom, permanent woody scaffold | Woody stem twining; can be trained onto ties | Strong, continuous leader routes; strain-aware anchors; removable/adjustable ties and future access | Primary prototype; canopy alternative |
 | *Wisteria floribunda* 'Macrobotrys' | Spectacular long pendant racemes | Woody stem twining | Support routes plus **free vertical hanging clearance** for racemes | Canopy alternative |
-| *Lonicera henryi* | Winter-green foliage, summer flowers | Stem twining | Reachable narrow supports/cables, partial shade, trimming | Core evergreen candidate |
+| *Lonicera henryi* | Winter-green foliage, summer flowers | Stem twining | Reachable narrow supports/cables, partial shade, trimming | Core evergreen candidate; **keep contained** (naturalised and spreading in Britain, EPPO Alert List) |
 | *Trachelospermum jasminoides* | Evergreen foliage, scent in summer | Stem twining | Warm sheltered microclimate, fine-to-moderate climbing supports | Conditional evergreen |
 | *Clematis cirrhosa* 'Freckles' | Late autumn–early spring flowers | Twining leaf petioles | Fine petiole-graspable support, sheltered sunny lower zone | Winter-flower module |
 | *Clematis viticella* 'Étoile Violette' | Mid/late-summer flower | Twining leaf petioles | Fine support, annual hard-pruning access | Summer module |
@@ -28,10 +28,10 @@ A Bower should be a **managed multi-species plant community** supported by an ar
 | *Lonicera periclymenum* 'Graham Thomas' | Summer scent, pollinator interest, berries | Stem twining | Guided support, sunlight to upper shoots / cooler root zone | Biodiversity/scent module |
 | *Vitis coignetiae* | Dramatic red autumn foliage | Tendrils | Graspable lattice/wires, large spatial lane, thinning | Conditional autumn accent |
 | *Hedera helix* | Evergreen coverage, autumn nectar, winter berries | Adventitious aerial-root attachment | Replaceable/inspectable textured support **not permitted to invade timber gaps** | Controlled option, often excluded |
-| *Campsis × tagliabueana* 'Madame Galen' | Strong warm-site late-summer orange-red display | Aerial roots; supplemental training may be needed | Sunny sheltered, suitable textured/engineered surface and strong framework | Optional warm-site accent |
+| *Campsis × tagliabueana* 'Madame Galen' | Strong warm-site late-summer orange-red display | Aerial roots, weakly self-clinging; tying in is needed | Sunny sheltered, suitable textured/engineered surface and strong framework | Optional warm-site accent |
 | *Clematis armandi* | Early-spring scent, evergreen leaves | Twining leaf petioles | Sunny sheltered site, petiole-sized trellis | Optional mild-site evergreen |
 | *Hydrangea anomala* subsp. *petiolaris* | Shade-tolerant climbing, early-summer white flowers | Adventitious aerial-root attachment | Suitable dedicated contact surface, moisture and patience | Optional cool/shade zone |
-| *Akebia quinata* | Semi-evergreen spring-flowering texture | Stem twining | Strong free-running route, restrained growth | Optional, site/invasiveness screening |
+| *Akebia quinata* | Semi-evergreen spring-flowering texture | Stem twining | Strong free-running route, restrained growth | Optional; **check GB status first** (under consideration for a ban on sale and planting) |
 | *Thunbergia alata* | Annual bright summer colour | Herbaceous stem twining | Light low-level trellis and annual replant access | Replaceable annual |
 | *Sarcococca confusa* | Ground-level evergreen and winter fragrance | **None — shrub** | Shaded soil bed near a path; no climbing surface | Ground companion |
 
@@ -106,8 +106,8 @@ Never replace actual support-diameter studies with a global constant. Placeholde
 - **Dec–Feb:** evergreens and exposed woody lattice; *C. cirrhosa* and winter-scented *Sarcococca* at accessible edges.
 - **Mar–Apr:** winter clematis tails off; optional *C. armandi* in mild sunny sectors; young leaves emerge.
 - **May–Jun:** the major wisteria flowering peak, subject to plant maturity, spring frosts, bud survival and local conditions.
-- **Jun–Aug:** roses, honeysuckle, summer clematis, star jasmine and optional warm-site *Campsis*.
-- **Sep–Nov:** residual flowers; *Vitis* and deciduous wisteria autumn leaves; ivy flowers then berries; winter clematis begins where established.
+- **Jun–Aug:** roses, honeysuckle, summer clematis and star jasmine; optional warm-site *Campsis* starts in August.
+- **Sep–Nov:** residual flowers, with *Campsis* continuing to the first frosts; *Vitis* and deciduous wisteria autumn leaves; ivy flowers then berries; winter clematis begins where established.
 
 **Design target, not biological fact:** test 25–40% of selected visually prominent areas with retained winter evergreen coverage, with exposed timber intentionally visible elsewhere. There is **no assurance** of continuous profuse winter flowers above 3–4 m; plan winter as foliage + scent + architectural skeleton + selected lower flowers.
 

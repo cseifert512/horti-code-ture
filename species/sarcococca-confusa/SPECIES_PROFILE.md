@@ -9,7 +9,7 @@
 |---|---|
 | Growth habit | Evergreen low shrub; **not a climbing plant**. |
 | Climbing or support mechanism | None; bushy shoot development only. |
-| RHS ultimate-height envelope | RHS: ~1–1.5 m size category. |
+| RHS ultimate-height envelope | RHS: 1–1.5 m size category (its description says to 2 m); 5–10 years to ultimate size category. |
 | Hardiness | H5 (RHS). |
 | Flower / leaf / fruit season | Small cream-white highly scented winter flowers, dark glossy leaves year round, occasional dark berries. |
 | Aspect and exposure | Partial to full shade, sheltered; useful at shaded entrances. |
@@ -39,7 +39,7 @@ Winter human experience without competition for overhead support; limited root/s
 
 ## Risks, exclusions and scientific caveats
 
-Aesthetic effect is scent and glossy green rather than large winter flowers visible from across the site.
+Aesthetic effect is scent and glossy green rather than large winter flowers visible from across the site. Potentially harmful; fruit ornamental, not to be eaten (RHS).
 
 ## Parameters to obtain or calibrate
 
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

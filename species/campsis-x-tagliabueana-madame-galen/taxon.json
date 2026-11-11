@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "id": "campsis-x-tagliabueana-madame-galen",
+  "names": {
+    "label": "Campsis × tagliabueana 'Madame Galen'",
+    "rhs": {
+      "name": "Campsis × tagliabueana 'Madame Galen'",
+      "plantId": 97959,
+      "status": "accepted",
+      "url": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details"
+    },
+    "kew": "Campsis × tagliabueana (Vis.) C.Massal.",
+    "synonyms": [],
+    "common": [
+      "Trumpet creeper 'Madame Galen'"
+    ]
+  },
+  "palette": {
+    "standing": "optional",
+    "role": "Late-summer orange-red display on a warm, sheltered site."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details"
+  },
+  "attachment": {
+    "mechanism": "aerial_root",
+    "selfAttaching": true,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Sunny, sheltered, with a textured or engineered contact surface, a strong framework and tie points.",
+    "caveat": "A weak self-clinger. The RHS calls campsis self-clinging by aerial roots but advises tying in; Bean says of this hybrid that it cannot be left to look after itself. Plan for ties as well as a clingable surface."
+  },
+  "flowering": {
+    "wood": {
+      "value": "current_season",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/campsis-x-tagliabueana/",
+      "basis": "Flowers on new growth (NC State Extension); the RHS spur-prunes it in late winter."
+    },
+    "rhsPruningGroup": "12",
+    "monthsUK": {
+      "value": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/campsis/growing-guide",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Large reddish-orange trumpet flowers until the first frosts.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        8,
+        12
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        5,
+        10
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H4",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details"
+  },
+  "site": {
+    "aspect": "Full sun, south or west facing, warm and sheltered; summer heat strongly affects flowering.",
+    "soil": "Moist but well-drained, fertile."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "spur_prune",
+        "months": [
+          2
+        ],
+        "note": "RHS pruning group 12: spur-prune side shoots to two or three buds in late winter."
+      }
+    ],
+    "notes": "Prune in late winter to keep size and the flowering framework; tie in growth; monitor vigorous shoots and the state of contact."
+  },
+  "hazards": [
+    "Sap may irritate skin (reported for the parent C. radicans)."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details"
+    },
+    {
+      "label": "RHS campsis growing guide",
+      "url": "https://www.rhs.org.uk/plants/campsis/growing-guide"
+    },
+    {
+      "label": "NC State Extension plant profile",
+      "url": "https://plants.ces.ncsu.edu/plants/campsis-x-tagliabueana/"
+    },
+    {
+      "label": "Trees and Shrubs Online",
+      "url": "https://www.treesandshrubsonline.org/articles/campsis/campsis-x-tagliabueana/"
+    }
+  ]
+}

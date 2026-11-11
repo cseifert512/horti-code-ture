@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "id": "clematis-armandi",
+  "names": {
+    "label": "Clematis armandi",
+    "rhs": {
+      "name": "Clematis armandi",
+      "plantId": 3923,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details"
+    },
+    "kew": "Clematis armandi Franch.",
+    "synonyms": [
+      "Clematis armandii (a widespread misspelling)"
+    ],
+    "common": [
+      "Armand clematis"
+    ]
+  },
+  "palette": {
+    "standing": "optional",
+    "role": "Evergreen foliage and early-spring scent in mild, sheltered sites."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details"
+  },
+  "attachment": {
+    "mechanism": "petiole_twining",
+    "selfAttaching": true,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Sunny sheltered site with a robust trellis or cable network fine enough for leaf stalks to clasp."
+  },
+  "flowering": {
+    "wood": {
+      "value": "previous_season",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide",
+      "basis": "RHS pruning group 1: flowers on shoots produced in the previous summer."
+    },
+    "rhsPruningGroup": "Clematis group 1",
+    "monthsUK": {
+      "value": [
+        3,
+        4
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Fragrant cream-white flowers; glossy three-part leaves.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        4,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        5,
+        10
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H4",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details"
+  },
+  "site": {
+    "aspect": "Full sun, south or west facing, sheltered from cold winds.",
+    "soil": "Moist but well-drained; neutral to alkaline commonly preferred."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          4,
+          5
+        ],
+        "note": "Group 1: prune immediately after flowering, and only as necessary."
+      }
+    ],
+    "notes": "Train into a bounded lane; prune after flowering as necessary; watch for cold damage. The RHS notes it does not usually respond well to renovation."
+  },
+  "hazards": [
+    "Skin irritant; harmful to pets (rabbits) if eaten (RHS)."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details"
+    },
+    {
+      "label": "IPNI name record",
+      "url": "https://www.ipni.org/n/709497-1"
+    },
+    {
+      "label": "RHS clematis pruning group 1",
+      "url": "https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide"
+    }
+  ]
+}

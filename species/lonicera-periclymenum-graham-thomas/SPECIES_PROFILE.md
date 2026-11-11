@@ -8,7 +8,7 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Deciduous twining woody climber. |
-| Climbing or support mechanism | Stem twining. |
+| Climbing or support mechanism | Stem twining, left-handed helix: clockwise seen from above (no peer-reviewed species-level source retrieved). |
 | RHS ultimate-height envelope | RHS: 4–8 m; 5–10 years to ultimate size category. |
 | Hardiness | H6 (RHS). |
 | Flower / leaf / fruit season | Fragrant white flowers ageing cream-yellow over a long summer flowering period; red ornamental berries. |
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

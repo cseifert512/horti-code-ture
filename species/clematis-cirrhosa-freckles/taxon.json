@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "id": "clematis-cirrhosa-freckles",
+  "names": {
+    "label": "Clematis cirrhosa 'Freckles'",
+    "rhs": {
+      "name": "Clematis cirrhosa var. purpurascens 'Freckles' (C)",
+      "plantId": 89092,
+      "status": "accepted",
+      "url": "https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details",
+      "note": "The record that the RHS synonym page for C. cirrhosa 'Freckles' (223017) points to; its own name-status field was not read."
+    },
+    "kew": "Clematis cirrhosa L.",
+    "synonyms": [
+      "Clematis cirrhosa 'Freckles'"
+    ],
+    "common": [
+      "Winter-flowering clematis 'Freckles'"
+    ]
+  },
+  "palette": {
+    "standing": "conditional",
+    "role": "Winter and early-spring flowers on a sheltered, sunny, accessible lower support."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details"
+  },
+  "attachment": {
+    "mechanism": "petiole_twining",
+    "selfAttaching": true,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Fine support that a leaf stalk can clasp, in a sheltered sunny lower zone."
+  },
+  "flowering": {
+    "wood": {
+      "value": "previous_season",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide",
+      "basis": "RHS pruning group 1: flowers on shoots produced in the previous summer."
+    },
+    "rhsPruningGroup": "Clematis group 1",
+    "monthsUK": {
+      "value": [
+        11,
+        12,
+        1,
+        2,
+        3
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Cream bell-shaped flowers heavily spotted red; silky seedheads later.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        2.5,
+        4
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        2,
+        5
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H4",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details"
+  },
+  "site": {
+    "aspect": "Sunny, warm, sheltered south or west exposure; a cooler shaded base helps.",
+    "soil": "Fertile, well-drained, neutral to alkaline."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          4,
+          5
+        ],
+        "note": "Group 1: light pruning immediately after flowering, and only if needed."
+      }
+    ],
+    "notes": "Light pruning only, after bloom. Hard pruning while the previous-year shoots carry buds or flowers loses the display."
+  },
+  "hazards": [
+    "Skin irritant; harmful to pets (rabbits) if eaten (RHS)."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details"
+    },
+    {
+      "label": "RHS record for the synonym C. cirrhosa 'Freckles'",
+      "url": "https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details"
+    },
+    {
+      "label": "RHS clematis pruning group 1",
+      "url": "https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide"
+    }
+  ]
+}

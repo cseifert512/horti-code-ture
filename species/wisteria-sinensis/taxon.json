@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "id": "wisteria-sinensis",
+  "names": {
+    "label": "Wisteria sinensis",
+    "rhs": {
+      "name": "Wisteria sinensis",
+      "plantId": 19126,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details"
+    },
+    "kew": "Wisteria sinensis (Sims) DC.",
+    "synonyms": [],
+    "common": [
+      "Chinese wisteria"
+    ]
+  },
+  "palette": {
+    "standing": "primary",
+    "role": "Permanent woody canopy with the main late-spring flowering display. The reference case for the growth model."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details"
+  },
+  "attachment": {
+    "mechanism": "stem_twining",
+    "selfAttaching": true,
+    "handedness": {
+      "value": "right_handed",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "RHS: \"anticlockwise\", no viewpoint stated. Viewed from above per Valder (1995); Darwin: \"moves against the sun\"; Flora of China: \"stems twined leftward\". All describe a right-handed helix."
+    },
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Strong, continuous leader routes on secondary supports; strain-aware anchors; removable and adjustable ties; access for twice-yearly pruning; clearance for stems that thicken for decades."
+  },
+  "flowering": {
+    "wood": {
+      "value": "previous_season",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/frequently-asked-questions",
+      "basis": "RHS: flower buds start to develop in late summer of the previous year. Flora of China: racemes from branchlets of the previous year."
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        5,
+        6
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Fragrant lilac to mauve racemes to about 30 cm, opening before the leaves.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        12,
+        null
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        10,
+        20
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H6",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details"
+  },
+  "site": {
+    "aspect": "Full sun or partial shade, preferably south or west facing and sheltered; full sun matters for profuse flowering.",
+    "soil": "Moist but well-drained; avoid prolonged waterlogging."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "spur_prune",
+        "months": [
+          7,
+          8
+        ],
+        "note": "Summer: cut the whippy green shoots of the current year back to five or six leaves."
+      },
+      {
+        "event": "spur_prune",
+        "months": [
+          1,
+          2
+        ],
+        "note": "Winter: cut the same shoots back to two or three buds."
+      }
+    ],
+    "notes": "Train and tie in leaders during establishment; once the framework is made, keep to the two-stage spur pruning, trim unruly shoots and inspect ties."
+  },
+  "hazards": [
+    "Harmful if eaten (RHS).",
+    "Mature wood becomes large and heavy; published height says nothing about load."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details"
+    },
+    {
+      "label": "RHS wisteria growing guide (twining direction)",
+      "url": "https://www.rhs.org.uk/plants/wisteria/growing-guide"
+    },
+    {
+      "label": "RHS wisteria pruning guide",
+      "url": "https://www.rhs.org.uk/plants/wisteria/pruning-guide"
+    },
+    {
+      "label": "RHS wisteria FAQ (flower-bud timing)",
+      "url": "https://www.rhs.org.uk/plants/wisteria/frequently-asked-questions"
+    }
+  ]
+}

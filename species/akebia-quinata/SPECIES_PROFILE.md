@@ -8,7 +8,7 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Vigorous semi-evergreen climbing shrub with five-part leaves. |
-| Climbing or support mechanism | Stem twining. |
+| Climbing or support mechanism | Stem twining, right-handed helix: anticlockwise seen from above. |
 | RHS ultimate-height envelope | RHS: 8–12 m; 5–10 years to ultimate size class. |
 | Hardiness | H6 (RHS); this does not guarantee leaves persist every winter. |
 | Flower / leaf / fruit season | Reddish-purple fragrant flowers early spring; five-leafed foliage may persist in milder winters; occasional purple fruits in favourable conditions. |
@@ -39,7 +39,7 @@ Offers spring flowering and foliage; can overshadow smaller seasonal plants; rev
 
 ## Risks, exclusions and scientific caveats
 
-Invasive risk in some global regions; a UK-appropriate planting option is not a globally appropriate species. Semi-evergreen is not permanent green cover in every winter.
+**GB status: check before specifying.** Not listed, but the GB Non-Native Species Secretariat rates it medium risk and it is under consideration for the list of species of special concern, which would ban its sale and planting (no decision found as of November 2026). Invasive in some other regions; a UK-appropriate planting option is not a globally appropriate species. Semi-evergreen is not permanent green cover in every winter.
 
 ## Parameters to obtain or calibrate
 
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/747/akebia-quinata/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

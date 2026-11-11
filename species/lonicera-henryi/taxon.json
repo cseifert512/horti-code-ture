@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "id": "lonicera-henryi",
+  "names": {
+    "label": "Lonicera henryi",
+    "rhs": {
+      "name": "Lonicera henryi",
+      "plantId": 10471,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details"
+    },
+    "kew": "Lonicera acuminata Wall.",
+    "synonyms": [
+      "Lonicera henryi Hemsl."
+    ],
+    "common": [
+      "Henry's honeysuckle"
+    ]
+  },
+  "palette": {
+    "standing": "core",
+    "role": "Evergreen continuity in side zones through winter."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details",
+    "basis": "RHS: evergreen. BSBI calls it winter-green or semi-deciduous and Flora of China semi-evergreen: expect leaf loss in exposed or cold sites."
+  },
+  "attachment": {
+    "mechanism": "stem_twining",
+    "selfAttaching": true,
+    "handedness": {
+      "value": "left_handed",
+      "status": "provisional_design_assumption",
+      "basis": "Inferred from congeners (L. periclymenum, L. japonica), which twine clockwise seen from above. No species-level source found. Check a specimen before relying on it."
+    },
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Reachable narrow supports or cables in partial shade, with access for trimming."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        6,
+        7,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Small yellow and red tubular flowers, then black berries.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        4,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        2,
+        5
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H5",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details"
+  },
+  "site": {
+    "aspect": "Full sun or partial shade; north, east or west facing; exposed or sheltered, though leaf persistence is site-specific.",
+    "soil": "Fertile, moist but well-drained, humus-rich."
+  },
+  "management": {
+    "calendar": [],
+    "notes": "Control competitive overgrowth, thin to preserve neighbours, inspect attachments, and watch berries in visitor spaces. Contain it: it spreads by bird-sown seed."
+  },
+  "hazards": [
+    "Fruit is ornamental and not to be eaten (RHS)."
+  ],
+  "regional": [
+    {
+      "region": "Great Britain",
+      "status": "Not legally listed. A naturalised neophyte, bird-sown and extending its range in woodland margins, hedgerows and rough grassland (BSBI).",
+      "source": "https://bsbi.org/taxa/2cd4p9h.amg/lonicera-henryi"
+    },
+    {
+      "region": "Europe",
+      "status": "EPPO Alert List since 2019 (as Lonicera acuminata); invasive in Swiss forests.",
+      "source": "https://gd.eppo.int/reporting/article-6673"
+    }
+  ],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/10471/lonicera-henryi/details"
+    },
+    {
+      "label": "BSBI species account",
+      "url": "https://bsbi.org/taxa/2cd4p9h.amg/lonicera-henryi"
+    },
+    {
+      "label": "Trees and Shrubs Online",
+      "url": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/"
+    }
+  ]
+}

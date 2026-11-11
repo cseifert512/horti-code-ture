@@ -1,6 +1,7 @@
 # Hydrangea anomala subsp. petiolaris
 
 **Common name:** Climbing hydrangea  
+**Accepted name:** *Hydrangea petiolaris* Siebold & Zucc. at both the RHS (record 8948) and Kew; *H. anomala* subsp. *petiolaris* is a synonym at both.  
 **Place in palette:** OPTION — cool/part-shade sector with compatible attachment substrate
 
 ## Observational / horticultural baseline
@@ -39,7 +40,7 @@ Offers white flowers and shade coverage; takes significant time and space, compe
 
 ## Risks, exclusions and scientific caveats
 
-Self-clinging behaviour is substrate-specific and may obstruct inspection; initial growth may be slow.
+Self-clinging behaviour is substrate-specific and may obstruct inspection; initial growth may be slow. Skin allergen; harmful to dogs and cats if eaten (RHS).
 
 ## Parameters to obtain or calibrate
 
@@ -53,7 +54,9 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
-- RHS taxon profile: https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
+- RHS accepted record: https://www.rhs.org.uk/plants/8948/climbing-hydrangea/details
+- RHS taxon profile (synonym record, where the traits above were read): https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details
 - Additional source: https://www.rhs.org.uk/plants/hydrangea/climbing
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

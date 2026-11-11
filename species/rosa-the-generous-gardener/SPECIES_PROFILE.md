@@ -1,6 +1,7 @@
 # Rosa 'The Generous Gardener'
 
 **Common name:** Climbing rose (Ausdrawn)  
+**Accepted name:** RHS: *Rosa* The Generous Gardener ('Ausdrawn') (Cl). 'The Generous Gardener' is a trade designation; the cultivar epithet is 'Ausdrawn'.  
 **Place in palette:** CORE OPTION — low/middle fragrance and pink repeated bloom
 
 ## Observational / horticultural baseline
@@ -9,8 +10,8 @@
 |---|---|
 | Growth habit | Woody climbing rose with arching, thorny canes; commonly loses most leaves over UK winter. |
 | Climbing or support mechanism | Scrambling canes; requires human tie-in/training — not a botanical twiner. |
-| RHS ultimate-height envelope | RHS descriptive height up to ~4.5 m (size category lists 4–8 m). |
-| Hardiness | Confirm local RHS rating; cold survival is not the dominant geometric issue. |
+| RHS ultimate-height envelope | RHS descriptive height up to ~4.5 m (size category lists 4–8 m); 5–10 years to ultimate size category. |
+| Hardiness | H6 (RHS). |
 | Flower / leaf / fruit season | Strongly scented semi-double pale-pink flowers, repeat-flowering from midsummer to autumn. |
 | Aspect and exposure | Full sun/partial shade; flower best where sufficient light reaches the cane framework. |
 | Soil | Moist but well-drained fertile soil. |
@@ -53,6 +54,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "id": "hydrangea-anomala-subsp-petiolaris",
+  "names": {
+    "label": "Hydrangea anomala subsp. petiolaris",
+    "rhs": {
+      "name": "Hydrangea petiolaris",
+      "plantId": 8948,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/8948/climbing-hydrangea/details"
+    },
+    "kew": "Hydrangea petiolaris Siebold & Zucc.",
+    "synonyms": [
+      "Hydrangea anomala subsp. petiolaris"
+    ],
+    "common": [
+      "Climbing hydrangea"
+    ]
+  },
+  "palette": {
+    "standing": "optional",
+    "role": "Shade-tolerant climber with white early-summer flowers for a cool sector."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details"
+  },
+  "attachment": {
+    "mechanism": "aerial_root",
+    "selfAttaching": true,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "A dedicated contact surface it can cling to, moisture, and patience: it is slow to establish."
+  },
+  "flowering": {
+    "wood": {
+      "value": "previous_season",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/hydrangea/climbing",
+      "basis": "RHS: climbing hydrangeas flower on last year's shoots."
+    },
+    "rhsPruningGroup": "11",
+    "monthsUK": {
+      "value": [
+        6
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "White lacecap flowerheads to about 20 cm; yellow autumn leaves.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        12,
+        null
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        10,
+        20
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H5",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details"
+  },
+  "site": {
+    "aspect": "Partial shade, including cool east or north sectors; full sun only where the soil stays moist.",
+    "soil": "Moist but well-drained, humus-rich; acid to neutral favoured."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          7,
+          8
+        ],
+        "note": "RHS pruning group 11: prune after flowering, only where needed."
+      }
+    ],
+    "notes": "Prune after flowering only where needed; secure it while it establishes; water in dry periods; inspect the substrate it has contacted."
+  },
+  "hazards": [
+    "Skin allergen; harmful to dogs and cats if eaten (RHS)."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile (accepted name)",
+      "url": "https://www.rhs.org.uk/plants/8948/climbing-hydrangea/details"
+    },
+    {
+      "label": "RHS climbing hydrangeas guide",
+      "url": "https://www.rhs.org.uk/plants/hydrangea/climbing"
+    }
+  ]
+}

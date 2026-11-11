@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "id": "akebia-quinata",
+  "names": {
+    "label": "Akebia quinata",
+    "rhs": {
+      "name": "Akebia quinata",
+      "plantId": 747,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/747/akebia-quinata/details"
+    },
+    "kew": "Akebia quinata (Thunb. ex Houtt.) Decne.",
+    "synonyms": [],
+    "common": [
+      "Chocolate vine",
+      "Five-leaf akebia"
+    ]
+  },
+  "palette": {
+    "standing": "optional",
+    "role": "Fast semi-evergreen spring texture, subject to invasiveness screening."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "semi_evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details",
+    "basis": "RHS: semi-evergreen. Flora of China calls it deciduous: expect it mostly leafless in cold winters."
+  },
+  "attachment": {
+    "mechanism": "stem_twining",
+    "selfAttaching": true,
+    "handedness": {
+      "value": "right_handed",
+      "status": "published_plant_profile",
+      "source": "https://climbers.lsa.umich.edu/akebia-quinata/",
+      "basis": "Twines from left to right as it ascends (University of Michigan CLIMBERS); Darwin: \"moves against the sun\". A right-handed helix."
+    },
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Strong free-running route with room to restrain its growth."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        3
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Fragrant reddish-purple flowers; occasional purple fruit only where cross-pollinated.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        8,
+        12
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        5,
+        10
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H6",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details"
+  },
+  "site": {
+    "aspect": "Full sun or partial shade; several aspects possible.",
+    "soil": "Moist but well-drained."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          5,
+          6
+        ],
+        "note": "Prune after flowering to limit vigour."
+      }
+    ],
+    "notes": "Prune after flowering to limit vigour; inspect its spread; decide whether fruit should be allowed to develop."
+  },
+  "hazards": [],
+  "regional": [
+    {
+      "region": "Great Britain",
+      "status": "Not listed, but under consideration for the list of species of special concern (NNSS risk assessment: medium risk; no decision found as of November 2026). Listing would ban sale and planting. Do not specify for a Bower without checking the current status.",
+      "source": "https://www.nonnativespecies.org/assets/Uploads/Akebia-quinata-RA-final_topub-v2.pdf"
+    }
+  ],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/747/akebia-quinata/details"
+    },
+    {
+      "label": "GB NNSS risk assessment",
+      "url": "https://www.nonnativespecies.org/assets/Uploads/Akebia-quinata-RA-final_topub-v2.pdf"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "id": "wisteria-floribunda-macrobotrys",
+  "names": {
+    "label": "Wisteria floribunda 'Macrobotrys'",
+    "rhs": {
+      "name": "Wisteria floribunda f. multijuga 'Kyushaku'",
+      "plantId": 372711,
+      "status": "accepted",
+      "url": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details"
+    },
+    "kew": "Wisteria floribunda (Willd.) DC.",
+    "synonyms": [
+      "Wisteria floribunda 'Macrobotrys'",
+      "Wisteria floribunda 'Multijuga'",
+      "Wisteria floribunda 'Longissima'",
+      "Wisteria floribunda 'Naga-noda'",
+      "Wisteria longissima"
+    ],
+    "common": [
+      "Japanese wisteria",
+      "Long-racemed Japanese wisteria"
+    ]
+  },
+  "palette": {
+    "standing": "primary",
+    "role": "Alternative permanent canopy where very long hanging racemes are the design goal."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details"
+  },
+  "attachment": {
+    "mechanism": "stem_twining",
+    "selfAttaching": true,
+    "handedness": {
+      "value": "left_handed",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "RHS: \"twine clockwise\", no viewpoint stated. Clockwise viewed from above per Valder (1995) and three Japanese tree guides: a left-handed helix, the opposite of W. sinensis."
+    },
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Long woody routes on robust secondary supports, plus free vertical hanging clearance beneath for racemes of a metre or more, clear of cross-members, lighting and visitors."
+  },
+  "flowering": {
+    "wood": {
+      "value": "previous_season",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/frequently-asked-questions",
+      "basis": "RHS: wisteria flower buds start to develop in late summer of the previous year."
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        5,
+        6
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Lilac-blue to violet pendulous racemes that can reach 1 m or more.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        8,
+        12
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        10,
+        20
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H6",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details"
+  },
+  "site": {
+    "aspect": "Full sun or partial shade; south or west facing, sheltered; generous overhead clearance.",
+    "soil": "Moist but well-drained."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "spur_prune",
+        "months": [
+          7,
+          8
+        ],
+        "note": "Summer: cut the whippy green shoots of the current year back to five or six leaves."
+      },
+      {
+        "event": "spur_prune",
+        "months": [
+          1,
+          2
+        ],
+        "note": "Winter: cut the same shoots back to two or three buds."
+      }
+    ],
+    "notes": "Train and selectively thin; two-stage wisteria pruning while protecting productive laterals; inspect for attachment constriction."
+  },
+  "hazards": [
+    "Harmful if eaten (RHS).",
+    "Long racemes need clear height above circulation.",
+    "Mature woody mass and wind response are not validated."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile (accepted name)",
+      "url": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details"
+    },
+    {
+      "label": "RHS record for the synonym 'Macrobotrys'",
+      "url": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details"
+    },
+    {
+      "label": "RHS wisteria growing guide (twining direction)",
+      "url": "https://www.rhs.org.uk/plants/wisteria/growing-guide"
+    }
+  ]
+}

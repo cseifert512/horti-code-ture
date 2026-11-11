@@ -1,6 +1,7 @@
 # Clematis 'Princess Diana'
 
 **Common name:** Pink texensis-type clematis 'Princess Diana'  
+**Accepted name:** RHS: *Clematis* 'Princess Diana' (T), Texensis Group (record 118677).  
 **Place in palette:** OPTION — vivid pink summer accent
 
 ## Observational / horticultural baseline
@@ -10,7 +11,7 @@
 | Growth habit | Deciduous climber of herbaceous habit; Group 3 pruning. |
 | Climbing or support mechanism | Twining leaf petioles. |
 | RHS ultimate-height envelope | RHS: 2.5–4 m; 2–5 years to ultimate height class. |
-| Hardiness | Confirm rating in plant profile before site-specific use. |
+| Hardiness | H5 (RHS). |
 | Flower / leaf / fruit season | Bright reddish-pink tulip-shaped blooms from midsummer into early autumn. |
 | Aspect and exposure | Full sun/partial shade; broadly adaptable aspects. |
 | Soil | Moist but well-drained. |
@@ -39,7 +40,7 @@ Affects summer colour rather than structural woody architecture; competition wit
 
 ## Risks, exclusions and scientific caveats
 
-Do not model as a self-twining wisteria.
+Do not model as a self-twining wisteria. Skin irritant; harmful to pets (rabbits) if eaten (RHS).
 
 ## Parameters to obtain or calibrate
 
@@ -53,6 +54,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details
 - Additional source: https://www.rhs.org.uk/plants/clematis/group-three-pruning-guide
 

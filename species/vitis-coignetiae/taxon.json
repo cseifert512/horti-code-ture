@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "id": "vitis-coignetiae",
+  "names": {
+    "label": "Vitis coignetiae",
+    "rhs": {
+      "name": "Vitis coignetiae",
+      "plantId": 19030,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details"
+    },
+    "kew": "Vitis coignetiae Pulliat ex Planch.",
+    "synonyms": [],
+    "common": [
+      "Crimson glory vine"
+    ]
+  },
+  "palette": {
+    "standing": "conditional",
+    "role": "Red autumn foliage in one bounded upper sector."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details"
+  },
+  "attachment": {
+    "mechanism": "tendril",
+    "selfAttaching": true,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Graspable lattice or wires within reach of developing tendrils; a large lane of its own; access for thinning."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": null,
+      "status": "unknown"
+    },
+    "display": "Grown for very large leaves turning scarlet and crimson in autumn; flowers are small and unobtrusive.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        12,
+        null
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        10,
+        20
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H5",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details"
+  },
+  "site": {
+    "aspect": "Sun or partial shade, preferably south or west facing; sheltered.",
+    "soil": "Humus-rich, well-drained, neutral to alkaline."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          1
+        ],
+        "note": "Midwinter restriction pruning (RHS)."
+      },
+      {
+        "event": "thin_canopy",
+        "months": [
+          7
+        ],
+        "note": "Midsummer thinning for light and for inspection of the structure (RHS)."
+      }
+    ],
+    "notes": "Winter and optional summer restriction pruning; monitor tendrils and routes; thin for light and structural inspection."
+  },
+  "hazards": [
+    "Harmful to dogs if eaten (RHS).",
+    "Heavy shade from large leaves."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details"
+    }
+  ]
+}

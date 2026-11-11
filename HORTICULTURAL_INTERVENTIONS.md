@@ -31,9 +31,11 @@ Pruning should remove descendants in the plant graph and any associated organ/at
 
 **Winter (December–February):** wisteria maintenance and spur pruning (January–February); late-winter Group 3 clematis pruning; structural/tie inspections, easiest from December once deciduous stems are bare; manage evergreen competition. Wisteria is typically pruned a second time in summer.
 
-**Spring (March–May):** inspect winter survival; position and tie spring extension; replant *Thunbergia alata* after frost risk in late spring; monitor wisteria flower performance; manage roots and irrigation.
+Also in late winter: *Campsis* is spur-pruned to two or three buds (RHS pruning group 12).
 
-**Summer (June–August):** continuously observe and guide new leaders; summer wisteria pruning generally July–August; train rose canes, manage honeysuckle/clematis and control *Vitis*; maintain visibility and circulation.
+**Spring (March–May):** inspect winter survival; position and tie spring extension; prune Group 1 clematis (*C. cirrhosa*, *C. armandi*) immediately after flowering in mid to late spring, and only if needed, because they flower on the previous summer's shoots; replant *Thunbergia alata* after frost risk in late spring; monitor wisteria flower performance; manage roots and irrigation.
+
+**Summer (June–August):** continuously observe and guide new leaders; summer wisteria pruning generally July–August; train rose canes, manage honeysuckle/clematis and control *Vitis*; prune climbing hydrangea and *Lonicera periclymenum* after flowering where needed (RHS pruning group 11); maintain visibility and circulation.
 
 **Autumn (September–November):** inspect lignification, developing flower buds and autumn colour; remove unwanted invasive/seeded spread; assess support clearance and winter exposure; stage next year's pruning/replacement plan.
 

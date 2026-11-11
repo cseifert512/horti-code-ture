@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "id": "trachelospermum-jasminoides",
+  "names": {
+    "label": "Trachelospermum jasminoides",
+    "rhs": {
+      "name": "Trachelospermum jasminoides",
+      "plantId": 18287,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details"
+    },
+    "kew": "Trachelospermum jasminoides (Lindl.) Lem.",
+    "synonyms": [],
+    "common": [
+      "Star jasmine"
+    ]
+  },
+  "palette": {
+    "standing": "conditional",
+    "role": "Evergreen foliage and summer scent in warm, sheltered sectors only."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details"
+  },
+  "attachment": {
+    "mechanism": "stem_twining",
+    "selfAttaching": true,
+    "handedness": {
+      "value": null,
+      "status": "unknown"
+    },
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Warm sheltered microclimate; fine to moderate climbing wires or trellis.",
+    "caveat": "Twining is the primary mechanism (RHS: needs supporting wires or trellis). Aerial rootlets on damp rough surfaces are reported without citation and cannot be ruled out, which matters where timber contact is prohibited."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        7,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Very fragrant white flowers; glossy dark leaves often bronze-red in winter.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        8,
+        12
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        5,
+        10
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H4",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details"
+  },
+  "site": {
+    "aspect": "Warm full sun or partial shade, ideally south or west facing, sheltered from cold winds.",
+    "soil": "Fertile, well-drained; dislikes waterlogging and summer drought."
+  },
+  "management": {
+    "calendar": [],
+    "notes": "Train and tie on to secondary wire, manage spread, inspect for leaf scorch and dieback after winter."
+  },
+  "hazards": [
+    "The whole plant is poisonous (Flora of China); white latex when cut."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details"
+    },
+    {
+      "label": "RHS trachelospermum growing guide",
+      "url": "https://www.rhs.org.uk/plants/trachelospermum/growing-guide"
+    }
+  ]
+}

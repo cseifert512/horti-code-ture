@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "id": "lonicera-periclymenum-graham-thomas",
+  "names": {
+    "label": "Lonicera periclymenum 'Graham Thomas'",
+    "rhs": {
+      "name": "Lonicera periclymenum 'Graham Thomas'",
+      "plantId": 74793,
+      "status": "accepted",
+      "url": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details"
+    },
+    "kew": "Lonicera periclymenum L.",
+    "synonyms": [
+      "Lonicera 'Graham Thomas'"
+    ],
+    "common": [
+      "Honeysuckle",
+      "Woodbine"
+    ]
+  },
+  "palette": {
+    "standing": "core",
+    "role": "Summer scent, pollinator interest and berries at human scale."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details"
+  },
+  "attachment": {
+    "mechanism": "stem_twining",
+    "selfAttaching": true,
+    "handedness": {
+      "value": "left_handed",
+      "status": "published_plant_profile",
+      "source": "https://www.wildlifetrusts.org/wildlife-explorer/wildflowers/honeysuckle",
+      "basis": "Climbs clockwise seen from above (Wildlife Trusts; grouped with hop against bindweed in older texts): a left-handed helix. No peer-reviewed species-level source was retrieved."
+    },
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Guided support with sun on the upper shoots and a cooler root zone; a lane distinct from the evergreen honeysuckle."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": "11",
+    "monthsUK": {
+      "value": [
+        6,
+        7,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Fragrant white flowers ageing to cream-yellow over a long period; red berries.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        4,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        5,
+        10
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H6",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details"
+  },
+  "site": {
+    "aspect": "Full sun or partial shade; aspect flexible; partial shade often favourable.",
+    "soil": "Fertile, moist but well-drained."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "thin_canopy",
+        "months": [
+          8,
+          9
+        ],
+        "note": "RHS pruning group 11: prune after flowering, as needed."
+      }
+    ],
+    "notes": "Prune and control after flowering as needed; keep a lane separate from the evergreen honeysuckle."
+  },
+  "hazards": [
+    "Berries are ornamental, not food.",
+    "Can entangle neighbouring climbers."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details"
+    }
+  ]
+}

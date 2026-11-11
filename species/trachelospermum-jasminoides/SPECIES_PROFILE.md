@@ -8,7 +8,7 @@
 | Trait | Currently supported description |
 |---|---|
 | Growth habit | Evergreen woody twiner. |
-| Climbing or support mechanism | Stem twining; does not independently adhere to a bare vertical wall. |
+| Climbing or support mechanism | Stem twining (RHS: needs supporting wires or trellis); handedness is not documented. Aerial rootlets on damp rough surfaces are reported without citation and cannot be ruled out, which matters where timber contact is prohibited. |
 | RHS ultimate-height envelope | RHS: 8–12 m; 5–10 years to ultimate size category. |
 | Hardiness | H4 (RHS). |
 | Flower / leaf / fruit season | Glossy dark leaves, often bronze/red in winter; exceptionally fragrant white flowers mid to late summer. |
@@ -39,7 +39,7 @@ Useful summer-scent counterpoint to spring wisteria; possible overlap with everg
 
 ## Risks, exclusions and scientific caveats
 
-H4 hardiness describes cold survival, not exposed-wind tolerance. Exposed sites may turn sparse or suffer damage.
+H4 hardiness describes cold survival, not exposed-wind tolerance. Exposed sites may turn sparse or suffer damage. The whole plant is poisonous (Flora of China); white latex when cut.
 
 ## Parameters to obtain or calibrate
 
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details
 - Additional source: https://www.rhs.org.uk/plants/trachelospermum
 

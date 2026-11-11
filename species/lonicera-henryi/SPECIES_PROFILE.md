@@ -1,14 +1,15 @@
 # Lonicera henryi
 
 **Common name:** Henry's honeysuckle  
+**Accepted name:** RHS: *Lonicera henryi*. Kew's World Checklist treats it as a synonym of *Lonicera acuminata* Wall.; search invasive-species databases under both names.  
 **Place in palette:** CORE — evergreen side canopy
 
 ## Observational / horticultural baseline
 
 | Trait | Currently supported description |
 |---|---|
-| Growth habit | Evergreen woody twining climber; real winter leaf retention still varies with exposure. |
-| Climbing or support mechanism | Stem twining. |
+| Growth habit | Evergreen woody twining climber (RHS); British field accounts call it winter-green or semi-deciduous (BSBI), so real winter leaf retention varies with exposure. |
+| Climbing or support mechanism | Stem twining. Handedness is not documented for this species; its congeners are left-handed (clockwise seen from above), which is taken as a provisional assumption until a specimen is checked. |
 | RHS ultimate-height envelope | RHS: 4–8 m; ultimate size generally 2–5 years under suitable cultivation. |
 | Hardiness | H5 (RHS). |
 | Flower / leaf / fruit season | Dark green foliage through winter; small yellow-red tubular flowers in summer and later dark berries. |
@@ -39,7 +40,7 @@ Good winter complement to deciduous wisteria; retain separate lanes from *Clemat
 
 ## Risks, exclusions and scientific caveats
 
-Evergreen ≠ guaranteed lush coverage under all winter exposures; fruit ornamental, not for eating.
+**Spreads.** In Britain it is a naturalised, bird-sown neophyte extending its range in woodland margins and hedgerows (BSBI), and it is on the EPPO Alert List as *L. acuminata*. It is not legally listed in Great Britain, but it must be kept contained and away from semi-natural habitat. Evergreen ≠ guaranteed lush coverage under all winter exposures; fruit ornamental, not for eating.
 
 ## Parameters to obtain or calibrate
 
@@ -53,6 +54,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/10471/lonicera-henryi/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

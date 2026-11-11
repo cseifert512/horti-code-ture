@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

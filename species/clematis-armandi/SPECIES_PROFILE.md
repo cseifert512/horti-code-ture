@@ -39,7 +39,7 @@ Provides early spring evergreen + flowers where *Lonicera henryi* may offer foli
 
 ## Risks, exclusions and scientific caveats
 
-For taxon naming, **Kew accepts Clematis armandi**; earlier spelling armandii is widespread but not used as folder ID. H4 winter performance depends on exposure.
+For taxon naming, **Kew accepts Clematis armandi**; earlier spelling armandii is widespread but not used as folder ID (confirmed 11 November 2026: IPNI record 709497-1, Kew's World Checklist and the RHS all use one final i). H4 winter performance depends on exposure. The RHS notes it does not usually respond well to renovation. Skin irritant; harmful to pets (rabbits) if eaten (RHS).
 
 ## Parameters to obtain or calibrate
 
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/3923/clematis-armandi/details
 - Additional source: https://powo.science.kew.org/taxon/urn%3Alsid%3Aipni.org%3Anames%3A709497-1
 

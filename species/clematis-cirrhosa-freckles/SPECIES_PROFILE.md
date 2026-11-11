@@ -1,6 +1,7 @@
 # Clematis cirrhosa 'Freckles'
 
 **Common name:** Winter-flowering evergreen clematis 'Freckles'  
+**Accepted name:** RHS: *Clematis cirrhosa* var. *purpurascens* 'Freckles' (C) (record 89092); *C. cirrhosa* 'Freckles' is an RHS synonym.  
 **Place in palette:** CORE CONDITIONAL — lower winter floral module
 
 ## Observational / horticultural baseline
@@ -39,7 +40,7 @@ Can augment *Lonicera henryi* winter foliage in adjacent lanes; avoid strong sum
 
 ## Risks, exclusions and scientific caveats
 
-Winter flower quantity is weather-dependent; H4 requires site matching; may be less evergreen during adverse winters.
+Winter flower quantity is weather-dependent; H4 requires site matching; may be less evergreen during adverse winters. Skin irritant; harmful to pets (rabbits) if eaten (RHS).
 
 ## Parameters to obtain or calibrate
 
@@ -53,6 +54,8 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
-- RHS taxon profile: https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
+- RHS main record: https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details
+- RHS taxon profile (synonym record, where the traits above were read): https://www.rhs.org.uk/plants/223017/clematis-cirrhosa-freckles/details
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.

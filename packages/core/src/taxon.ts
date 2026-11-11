@@ -44,9 +44,14 @@ export const taxonSchema = z
         plantId: z.number().int().positive(),
         status: z.enum(RHS_NAME_STATUS),
         url,
+        note: z.string().min(1).optional(),
       }),
-      /** Accepted species-level name in Kew's World Checklist of Vascular Plants (the checklist behind POWO). */
-      kew: z.string().min(1),
+      /**
+       * Accepted species-level name in Kew's World Checklist of Vascular Plants
+       * (the checklist behind POWO). Null for cultivars of hybrid garden origin,
+       * which have no species-level name.
+       */
+      kew: z.string().min(1).nullable(),
       /** Every other name the plant is sold or cited under. */
       synonyms: z.array(z.string().min(1)),
       common: z.array(z.string().min(1)),

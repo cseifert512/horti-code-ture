@@ -9,8 +9,8 @@
 |---|---|
 | Growth habit | Evergreen climbing shrub, including later adult reproductive phase. |
 | Climbing or support mechanism | Self-clinging via adventitious aerial roots; does not have grape tendrils. |
-| RHS ultimate-height envelope | RHS: 8–12 m height category; long-lived plant. |
-| Hardiness | Verify site-specific survival/foliage expectations; hardy in UK, but winter cover still varies. |
+| RHS ultimate-height envelope | RHS: 8–12 m; 10–20 years to ultimate size category. |
+| Hardiness | H5 (RHS); winter cover still varies with site. |
 | Flower / leaf / fruit season | Year-round foliage; nectar-rich autumn flowers on adult shoots, dark winter berries and wildlife shelter. |
 | Aspect and exposure | Shade to sun; tolerates exposed/sheltered settings but contact/substrate matter. |
 | Soil | Broad tolerance, fertile well-drained preferred. |
@@ -53,6 +53,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 ## Source / provenance
 
+- Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/43091/hedera-helix/details
 - Additional source: https://www.rhs.org.uk/prevention-protection/ivy-on-buildings
 

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "hedera-helix",
+  "names": {
+    "label": "Hedera helix",
+    "rhs": {
+      "name": "Hedera helix",
+      "plantId": 43091,
+      "status": "correct",
+      "url": "https://www.rhs.org.uk/plants/43091/hedera-helix/details"
+    },
+    "kew": "Hedera helix L.",
+    "synonyms": [],
+    "common": [
+      "Common ivy"
+    ]
+  },
+  "palette": {
+    "standing": "optional",
+    "role": "Evergreen cover, autumn nectar and winter berries, only where attachment, inspection and spread can be controlled."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "evergreen",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/43091/hedera-helix/details"
+  },
+  "attachment": {
+    "mechanism": "aerial_root",
+    "selfAttaching": true,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "A replaceable, inspectable textured substrate of its own. It must not be allowed to enter gaps in timber."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": null,
+    "monthsUK": {
+      "value": [
+        9,
+        10,
+        11
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/43091/hedera-helix/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Nectar-rich greenish flowers on adult shoots, then black berries in winter.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        8,
+        12
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/43091/hedera-helix/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        10,
+        20
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/43091/hedera-helix/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H5",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/43091/hedera-helix/details"
+  },
+  "site": {
+    "aspect": "Shade to sun; exposed or sheltered.",
+    "soil": "Broadly tolerant; fertile and well-drained preferred."
+  },
+  "management": {
+    "calendar": [],
+    "notes": "Hold it to explicit boundaries; cut back and remove encroachment periodically; keep every timber junction exposed for inspection."
+  },
+  "hazards": [
+    "Harmful if eaten; skin irritant (RHS).",
+    "Stems can enter gaps in wooden structures, thicken and push sections apart (RHS, ivy on buildings).",
+    "Mature growth adds considerable weight (RHS)."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/43091/hedera-helix/details"
+    },
+    {
+      "label": "RHS: ivy on buildings and fences",
+      "url": "https://www.rhs.org.uk/prevention-protection/ivy-on-buildings"
+    }
+  ]
+}

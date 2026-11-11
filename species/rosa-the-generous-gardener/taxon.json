@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "id": "rosa-the-generous-gardener",
+  "names": {
+    "label": "Rosa 'The Generous Gardener'",
+    "rhs": {
+      "name": "Rosa The Generous Gardener ('Ausdrawn') (Cl)",
+      "plantId": 196207,
+      "status": "trade",
+      "url": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "note": "'The Generous Gardener' is a trade designation; the cultivar epithet is 'Ausdrawn'."
+    },
+    "kew": null,
+    "synonyms": [
+      "Rosa 'Ausdrawn'",
+      "Rosa 'The Generous Gardener'"
+    ],
+    "common": [
+      "Climbing rose The Generous Gardener"
+    ]
+  },
+  "palette": {
+    "standing": "core",
+    "role": "Repeat pink flowers and scent at low to middle height."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details"
+  },
+  "attachment": {
+    "mechanism": "scramble_and_tie",
+    "selfAttaching": false,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Open frame with strong, discreet tie points and access for cutting; thorn-safe clearance from visitors."
+  },
+  "flowering": {
+    "wood": {
+      "value": null,
+      "status": "unknown"
+    },
+    "rhsPruningGroup": "17",
+    "monthsUK": {
+      "value": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Strongly scented semi-double pale-pink flowers, repeat-flowering.",
+    "scented": true
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        4,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        5,
+        10
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H6",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details"
+  },
+  "site": {
+    "aspect": "Full sun or partial shade; flowers best where light reaches the cane framework.",
+    "soil": "Moist but well-drained, fertile."
+  },
+  "management": {
+    "calendar": [],
+    "notes": "Every attachment is a gardener tie. Tie in new canes, prune, renew old canes, deadhead where wanted; inspect where thorns meet the public. The RHS describes it as growing up to 4.5 m although its size band is 4-8 m."
+  },
+  "hazards": [
+    "Thorns near public circulation.",
+    "Falling flowers."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details"
+    }
+  ]
+}

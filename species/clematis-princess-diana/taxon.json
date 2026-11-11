@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "id": "clematis-princess-diana",
+  "names": {
+    "label": "Clematis 'Princess Diana'",
+    "rhs": {
+      "name": "Clematis 'Princess Diana' (T)",
+      "plantId": 118677,
+      "status": "accepted",
+      "url": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details"
+    },
+    "kew": null,
+    "synonyms": [
+      "Clematis texensis 'Princess Diana'"
+    ],
+    "common": [
+      "Clematis 'Princess Diana'"
+    ]
+  },
+  "palette": {
+    "standing": "optional",
+    "role": "Vivid pink summer accent; an alternative to the purple summer clematis."
+  },
+  "lifeForm": "woody_climber",
+  "ukCultivation": "perennial",
+  "leafHabit": {
+    "value": "deciduous",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details"
+  },
+  "attachment": {
+    "mechanism": "petiole_twining",
+    "selfAttaching": true,
+    "maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "supportNeeds": "Fine support that a leaf stalk can clasp, with access for hard pruning every year."
+  },
+  "flowering": {
+    "wood": {
+      "value": "current_season",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/clematis/group-three-pruning-guide",
+      "basis": "RHS pruning group 3: flowers on growth made in that season."
+    },
+    "rhsPruningGroup": "Clematis group 3",
+    "monthsUK": {
+      "value": [
+        7,
+        8,
+        9
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+    },
+    "display": "Bright reddish-pink tulip-shaped flowers.",
+    "scented": false
+  },
+  "size": {
+    "rhsUltimateHeightM": {
+      "value": [
+        2.5,
+        4
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "unit": "m"
+    },
+    "rhsYearsToUltimate": {
+      "value": [
+        2,
+        5
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "unit": "years"
+    }
+  },
+  "hardiness": {
+    "value": "H5",
+    "status": "published_plant_profile",
+    "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details"
+  },
+  "site": {
+    "aspect": "Full sun or partial shade; broadly adaptable.",
+    "soil": "Moist but well-drained."
+  },
+  "management": {
+    "calendar": [
+      {
+        "event": "hard_prune",
+        "months": [
+          2,
+          3
+        ],
+        "note": "Group 3: cut all stems back to 15-30 cm above the ground."
+      }
+    ],
+    "notes": "Hard prune in late winter or early spring, then direct the new growth. Of herbaceous habit: it regrows from low down each year."
+  },
+  "hazards": [
+    "Skin irritant; harmful to pets (rabbits) if eaten (RHS)."
+  ],
+  "regional": [],
+  "sources": [
+    {
+      "label": "RHS plant profile",
+      "url": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details"
+    },
+    {
+      "label": "RHS clematis pruning group 3",
+      "url": "https://www.rhs.org.uk/plants/clematis/group-three-pruning-guide"
+    }
+  ]
+}
