@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "specimen-frame",
+  "name": "the specimen frame",
+  "frame": "x east, y north, z up, metres",
+  "members": [
+    { "id": "post", "tier": "primary", "role": "post", "section": { "shape": "rect", "widthMm": 150, "depthMm": 150 }, "material": "glulam", "points": [[0, 0, 0], [0, 0, 3]] },
+    { "id": "arm", "tier": "sub_lattice", "role": "arm", "section": { "shape": "rect", "widthMm": 60, "depthMm": 60 }, "material": "softwood", "points": [[0, 0, 2.9], [-0.95, 0, 2.9]] },
+    { "id": "upright.1", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.4, 0, 0.02], [0.4, 0, 2.62]] },
+    { "id": "upright.2", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.8, 0, 0.02], [0.8, 0, 2.62]] },
+    { "id": "upright.3", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[1.2, 0, 0.02], [1.2, 0, 2.62]] },
+    { "id": "upright.4", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[1.6, 0, 0.02], [1.6, 0, 2.62]] },
+    { "id": "upright.5", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[2, 0, 0.02], [2, 0, 2.62]] },
+    { "id": "upright.6", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[2.4, 0, 0.02], [2.4, 0, 2.9]] },
+    { "id": "rail.0", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.075, -0.04, 0.2], [2.42, -0.04, 0.2]] },
+    { "id": "rail.1", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.075, -0.04, 0.6], [2.42, -0.04, 0.6]] },
+    { "id": "rail.2", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.075, -0.04, 1], [2.42, -0.04, 1]] },
+    { "id": "rail.3", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.075, -0.04, 1.4], [2.42, -0.04, 1.4]] },
+    { "id": "rail.4", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.075, -0.04, 1.8], [2.42, -0.04, 1.8]] },
+    { "id": "rail.5", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.075, -0.04, 2.2], [2.42, -0.04, 2.2]] },
+    { "id": "rail.6", "tier": "sub_lattice", "role": "lath", "section": { "shape": "rect", "widthMm": 40, "depthMm": 40 }, "material": "softwood", "points": [[0.075, -0.04, 2.6], [2.42, -0.04, 2.6]] }
+  ],
+  "cables": [
+    { "id": "stay", "diameterMm": 5, "points": [[-0.075, 0, 0.08], [-0.9, 0, 2.9]] },
+    { "id": "drop", "diameterMm": 5, "points": [[-0.9, 0, 2.9], [-0.9, 0, 0.05]] },
+    { "id": "top", "diameterMm": 5, "points": [[0.075, 0, 2.85], [2.4, 0, 2.85]] }
+  ],
+  "stations": [
+    { "id": "foot", "position": [0.05, -0.3, 0], "note": "at the foot of the post, where post, lath and cable meet" }
+  ],
+  "viewpoints": [
+    { "id": "front", "label": "From the south, square on", "eye": [0.75, -6.2, 1.6], "target": [0.75, 0, 1.5], "fovDeg": 40 },
+    { "id": "near", "label": "From the south-west, close to the post", "eye": [-1.9, -2.6, 1.7], "target": [0.3, 0, 1.4], "fovDeg": 50 }
+  ]
+}

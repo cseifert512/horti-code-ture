@@ -10,7 +10,7 @@
 import { type MaterialSummary, materialSummary, zoneContains } from '../bower/types.ts';
 import { v3 } from '../math/vec3.ts';
 import { type ProvenanceEntry, type Sourced, summariseProvenance } from '../provenance.ts';
-import { flowerState, leafState, seasonsOf } from '../render/presence.ts';
+import { flowerState, fruitState, leafState, seasonsOf } from '../render/presence.ts';
 import { WINTER_EVERGREEN_COVER, WINTER_MONTH } from '../targets.ts';
 import type { EvidenceStatus, GardenerEventType } from '../vocab.ts';
 import type { Simulation } from './engine.ts';
@@ -26,6 +26,8 @@ export interface PlantAccount {
   frameworkM: number;
   annualShootsM: number;
   spurs: number;
+  /** Flowering side shoots: short free-standing shoots thrown by established stems. */
+  sideShoots: number;
   /** Highest point of the permanent stems; shoots of the year standing above them are not counted. */
   highestM: number;
   /** Length of route this plant holds, and its share of all route in the Bower. */
@@ -46,6 +48,8 @@ export interface MonthAccount {
   /** Leaves out, and flowers open, by plant. */
   leaves: Record<string, number>;
   flowers: Record<string, number>;
+  /** Fruit on the plant, at any stage from just set to ripe, by plant. */
+  fruits: Record<string, number>;
 }
 
 export const HEIGHT_ZONES = ['within reach, under 2 m', '2 to 3 m', 'above 3 m'] as const;
@@ -60,8 +64,13 @@ export interface GardeningYear {
   floralBudsRemoved: number;
 }
 
-/** `caveat`: something the taxon's profile says about how it holds on that the attachment rule does not act on. */
-export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'joints_reached' | 'crown_not_reached' | 'not_modelled' | 'assumed' | 'caveat' | 'not_replanted' | 'recorded_only';
+/**
+ * `caveat`: something the taxon's profile says about how it holds on that the attachment rule does not act on.
+ * `not_modelled`: the plant has no flowers in the run, because which of its wood flowers is not known.
+ * `part_not_modelled`: some other part of it (fruit, tendrils, coiled leaf stalks, clinging rootlets, prickles)
+ * is left out, because its growth model leaves the numbers unknown.
+ */
+export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'joints_reached' | 'crown_not_reached' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'caveat' | 'not_replanted' | 'recorded_only';
 
 /**
  * Winter evergreen cover, read against the design target.
@@ -175,7 +184,7 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
   const plants: PlantAccount[] = [];
   for (const plant of sim.plants.values()) {
     const { profile } = sim.scenario.taxa.get(plant.taxonId)!;
-    const acc: PlantAccount = { plantId: plant.id, label: profile.names.label, taxonId: plant.taxonId, frameworkM: 0, annualShootsM: 0, spurs: 0, highestM: 0, routeHeldM: 0, routeShare: 0, heldUnaided: 0, tiedIn: 0, stemVolumeM3: 0 };
+    const acc: PlantAccount = { plantId: plant.id, label: profile.names.label, taxonId: plant.taxonId, frameworkM: 0, annualShootsM: 0, spurs: 0, sideShoots: 0, highestM: 0, routeHeldM: 0, routeShare: 0, heldUnaided: 0, tiedIn: 0, stemVolumeM3: 0 };
     const held = new Set<string>();
     const clung = new Set<string>();
     let watch = 0;
@@ -186,6 +195,7 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
       const len = a.lengthAt[a.alive - 1]!;
       if (a.role === 'leader' || a.role === 'lateral') acc.frameworkM += len;
       else if (a.role === 'whip') acc.annualShootsM += len;
+      else if (a.role === 'side_shoot') acc.sideShoots++;
       else acc.spurs++;
       const permanent = a.role === 'leader' || a.role === 'lateral';
       for (let i = 0; i < a.alive; i++) {
@@ -228,7 +238,7 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     const stalled = sim.decisions.filter((d) => d.plantId === plant.id && d.kind === 'no_route' && d.text.includes('nobody ties it in'));
     if (stalled.length) alerts.push({ kind: 'no_hold', plantId: plant.id, count: stalled.length, text: `${stalled.length} shoot${stalled.length === 1 ? '' : 's'} stopped for want of a hold, and nobody tied the shoot in. First: ${stalled[0]!.text}` });
     if (acc.frameworkM > 0 && acc.highestM < crown * 0.97) alerts.push({ kind: 'crown_not_reached', plantId: plant.id, count: 1, text: `reached ${acc.highestM.toFixed(1)} m on a structure whose routes go to ${crown.toFixed(1)} m: route length, not height, is what ran out` });
-    for (const d of sim.decisions) if (d.plantId === plant.id && (d.kind === 'not_modelled' || d.kind === 'assumed')) alerts.push({ kind: d.kind, plantId: plant.id, count: 1, text: d.text });
+    for (const d of sim.decisions) if (d.plantId === plant.id && (d.kind === 'not_modelled' || d.kind === 'part_not_modelled' || d.kind === 'assumed')) alerts.push({ kind: d.kind, plantId: plant.id, count: 1, text: d.text });
     if (profile.ukCultivation === 'annual_replant' && !sim.events.some((e) => e.plantId === plant.id && (e.type === 'plant' || e.type === 'annual_replant') && e.modelled && cal.dateOf(e.day).year === year)) {
       alerts.push({ kind: 'not_replanted', plantId: plant.id, count: 1, text: `an annual, and nobody planted it in ${year}: nothing grew at ${plant.stationId} that year` });
     }
@@ -246,8 +256,10 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     const flowers: Record<string, number> = {};
     for (const lf of data.leaves) if (leafState(lf, seasons.get(lf.plantId), day).present) leaves[lf.plantId] = (leaves[lf.plantId] ?? 0) + 1;
     for (const fl of data.flowers) if (flowerState(fl, day).phase === 'open') flowers[fl.plantId] = (flowers[fl.plantId] ?? 0) + 1;
+    const fruits: Record<string, number> = {};
+    for (const fr of data.fruits) if (fruitState(fr, day).phase !== 'absent') fruits[fr.plantId] = (fruits[fr.plantId] ?? 0) + 1;
     const date = cal.dateOf(day);
-    return { month: date.month, date: date.iso, views: views.map((v) => v[k]!), leaves, flowers };
+    return { month: date.month, date: date.iso, views: views.map((v) => v[k]!), leaves, flowers, fruits };
   });
   const flowerlessMonths = months.filter((m) => !Object.values(m.flowers).some((n) => n > 0)).map((m) => m.month);
   const [lo, hi] = WINTER_EVERGREEN_COVER.value!;
@@ -285,10 +297,23 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     if (fl.year !== year) continue;
     const key = `${fl.plantId}|${zoneOf(fl.position[2])}`;
     byHeight.set(key, (byHeight.get(key) ?? 0) + 1);
-    const tipZ = fl.lengthM > 0.15 ? fl.position[2] - fl.lengthM : fl.position[2];
-    if (headroom.some((z) => zoneContains(z, v3(fl.position[0], fl.position[1], tipZ)))) low.set(fl.plantId, (low.get(fl.plantId) ?? 0) + 1);
+    // a long inflorescence reaches its own length from where it is attached: straight down where it hangs, along its direction where it is held
+    const reach = fl.lengthM > 0.15 ? fl.lengthM : 0;
+    const [dx, dy, dz] = fl.direction ?? [0, 0, -1];
+    const tip = v3(fl.position[0] + dx * reach, fl.position[1] + dy * reach, fl.position[2] + dz * reach);
+    if (headroom.some((z) => zoneContains(z, tip))) low.set(fl.plantId, (low.get(fl.plantId) ?? 0) + 1);
   }
   for (const [plantId, n] of low) alerts.push({ kind: 'headroom', plantId, count: n, text: `${n} flower${n === 1 ? '' : 's'} in ${year} hung into a headroom zone` });
+  // flowering side shoots stand clear of the structure, so they are checked as stems: any that reaches into headroom
+  for (const plant of sim.plants.values()) {
+    let standing = 0;
+    for (const id of plant.axisIds) {
+      const a = sim.axes.get(id)!;
+      if (a.role !== 'side_shoot' || a.removedDay !== null) continue;
+      if (a.contact.slice(1, a.alive).some((p) => headroom.some((z) => zoneContains(z, p)))) standing++;
+    }
+    if (standing) alerts.push({ kind: 'headroom', plantId: plant.id, count: standing, text: `${standing} flowering side shoot${standing === 1 ? ' stands' : 's stand'} out into a headroom zone at the end of the run` });
+  }
   const flowersByHeight = [...byHeight].map(([key, count]) => {
     const [plantId, zone] = key.split('|') as [string, HeightZone];
     return { plantId, zone, count };
@@ -375,7 +400,7 @@ export function formatDesignReport(r: DesignReport): string {
   line('PLANTS at the end of the run');
   for (const p of r.plants) {
     line(`  ${p.plantId} (${p.label})`);
-    line(`    framework ${p.frameworkM.toFixed(1)} m, shoots of the year ${p.annualShootsM.toFixed(1)} m, ${p.spurs} spurs, framework reaches ${p.highestM.toFixed(2)} m`);
+    line(`    framework ${p.frameworkM.toFixed(1)} m, shoots of the year ${p.annualShootsM.toFixed(1)} m, ${p.spurs} spurs, ${p.sideShoots ? `${p.sideShoots} flowering side shoots, ` : ''}framework reaches ${p.highestM.toFixed(2)} m`);
     line(`    holds ${p.routeHeldM.toFixed(0)} m of route (${pct(p.routeShare)}): ${p.heldUnaided} stretches by itself, ${p.tiedIn} tied in by the gardener`);
   }
   line(`  route held by any plant ${pct(r.routes.heldShare)}; ${r.routes.freeM.toFixed(0)} m carries nothing`);
@@ -406,6 +431,14 @@ export function formatDesignReport(r: DesignReport): string {
       if (r.months.some((m) => m.flowers[p.plantId])) line(`    ${p.plantId.padEnd(idW)}${row}`);
     }
     line(r.flowerlessMonths.length ? `  nothing in flower in mid ${r.flowerlessMonths.map((m) => names[m - 1]).join(', ')}` : '  something in flower in the middle of every month');
+    if (r.months.some((m) => Object.values(m.fruits).some((n) => n > 0))) {
+      line('  fruit on the plant, from just set to ripe, by plant');
+      line(`    ${''.padEnd(idW)}${r.months.map((m) => names[m.month - 1]!.padStart(5)).join('')}`);
+      for (const p of r.plants) {
+        const row = r.months.map((m) => String(m.fruits[p.plantId] || '.').padStart(5)).join('');
+        if (r.months.some((m) => m.fruits[p.plantId])) line(`    ${p.plantId.padEnd(idW)}${row}`);
+      }
+    }
     line();
   }
   if (r.winter) {
@@ -443,7 +476,7 @@ export function formatDesignReport(r: DesignReport): string {
   for (const a of r.alerts) line(`  ${a.plantId ?? 'all plants'}: ${a.text}`);
   line();
   line('WHAT THIS RESTS ON');
-  for (const [taxonId, c] of Object.entries(r.assumptions)) line(`  ${taxonId}: ${c.provisional_design_assumption} provisional assumptions, ${c.published_plant_profile} published values, ${c.measured + c.calibrated} measured`);
+  for (const [taxonId, c] of Object.entries(r.assumptions)) line(`  ${taxonId}: ${c.provisional_design_assumption} provisional assumptions, ${c.published_plant_profile} published values, ${c.measured + c.calibrated} measured${c.unknown ? `, ${c.unknown} left unknown (the parts they describe are not in the run)` : ''}`);
   for (const v of r.variations) line(`  varied: ${v.taxonId} ${v.parameter} = ${JSON.stringify(v.value)}. ${v.basis}`);
   line(`  ${r.proxyNote}`);
   return out.join('\n');

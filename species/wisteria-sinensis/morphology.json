@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "wisteria-sinensis",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous woody climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: \"a large deciduous climber with twining stems\". Bean: \"A strong-growing, deciduous climber\"."
+    },
+    "stem.twiningHandedness": {
+      "value": "right_handed",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "As in taxon.json. RHS: \"anticlockwise\", no viewpoint stated; viewed from above per Valder (1995); Darwin: \"moves against the sun\"; Flora of China: \"stems twined leftward\". All describe a right-handed helix (vocab.ts HANDEDNESS)."
+    },
+    "leaf.division": {
+      "value": "pinnate",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: \"dark green, pinnate leaves\". Bean: \"Leaves pinnate\"."
+    },
+    "leaf.colour": {
+      "value": "dark green",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: \"dark green, pinnate leaves\". Bean: \"deep rich green and glabrous above, somewhat hairy beneath\"."
+    },
+    "leaf.autumnColour": {
+      "value": "yellow",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "The species profile records yellowing leaves in autumn, from the season grid of the RHS record. The grid was not read again for this file."
+    },
+    "leaf.lengthM": {
+      "value": [0.254, 0.305],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean (Trees and Shrubs Online): \"Leaves pinnate, 10 to 12 in. long\". The whole compound leaf, in metres."
+    },
+    "leaf.leafletCount": {
+      "value": 11,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: \"consisting usually of eleven leaflets\". The usual number, not a range: Bean gives none."
+    },
+    "leaf.leafletShape": {
+      "value": ["elliptical", "ovate"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: leaflets \"elliptical or ovate\"."
+    },
+    "leaf.leafletLengthM": {
+      "value": [0.038, 0.102],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: leaflets \"1 1/2 to 4 in. long\", in metres."
+    },
+    "leaf.leafletWidthM": {
+      "value": [0.013, 0.038],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: leaflets \"1/2 to 1 1/2 in. wide\", in metres."
+    },
+    "inflorescence.type": {
+      "value": "raceme",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: \"drooping racemes to 30cm in length\"."
+    },
+    "inflorescence.held": {
+      "value": "drooping",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: \"drooping racemes\"; of the genus, \"long pendulous racemes\". The growth model's names section records the same thing as flowerHeld: hanging."
+    },
+    "inflorescence.lengthM": {
+      "value": [0.203, 0.305],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: \"Racemes 8 to 12 in. long\", in metres. The RHS record agrees on the upper end: \"racemes to 30cm in length\"."
+    },
+    "flower.colour": {
+      "value": ["mauve", "lilac"],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: \"fragrant, mauve or lilac-coloured flowers\". Bean: \"Flowers mauve or lilac-coloured\"."
+    },
+    "flower.shape": {
+      "value": "pea-flower shaped",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: \"each flower about 1 in. long, pea-flower shaped\"."
+    },
+    "flower.lengthM": {
+      "value": 0.025,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: \"each flower about 1 in. long\", in metres."
+    },
+    "flower.stalkLengthM": {
+      "value": [0.013, 0.019],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: flowers \"borne singly on stalks 1/2 to 3/4 in. long\", in metres."
+    },
+    "flower.scent": {
+      "value": "fragrant",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: \"fragrant, mauve or lilac-coloured flowers\"."
+    },
+    "flower.opensRelativeToLeaves": {
+      "value": "before the leaves",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19126/wisteria-sinensis/details",
+      "basis": "RHS plant record: flowers \"opening before the leaves\"."
+    },
+    "fruit.type": {
+      "value": "pod",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: \"Pod rather like that of a kidney bean\"."
+    },
+    "fruit.lengthM": {
+      "value": [0.127, 0.152],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: pod \"5 or 6 in. long\", in metres. The growth model's fruit.lengthM is the same figure."
+    },
+    "fruit.widthM": {
+      "value": 0.019,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: pod \"3/4 in. wide towards the end\", in metres. The widest part: the pod narrows towards its stalk."
+    },
+    "fruit.shape": {
+      "value": "club-shaped",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: pod \"club-shaped, 3/4 in. wide towards the end\"."
+    },
+    "fruit.surface": {
+      "value": "velvety",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: pod \"covered with a velvety pile\"."
+    },
+    "fruit.seedCount": {
+      "value": [2, 3],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Bean: pod \"containing two or three seeds\"."
+    },
+    "fruit.colourRipe": {
+      "value": null,
+      "status": "unknown"
+    }
+  }
+}

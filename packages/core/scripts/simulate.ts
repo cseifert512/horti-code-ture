@@ -42,10 +42,10 @@ const ms = performance.now() - t0;
 console.log(`${scenario.name}`);
 console.log(`${sim.day + 1} days simulated in ${ms.toFixed(0)} ms\n`);
 const idW = Math.max(11, ...scenario.plantings.map((p) => p.plantId.length));
-console.log(`year   ${'plant'.padEnd(idW)}  framework  long shoots  spurs  buds formed  flowers  held by plant / tied  route held  highest`);
+console.log(`year   ${'plant'.padEnd(idW)}  framework  long shoots  spurs  buds formed  flowers  fruit set  held by plant / tied  route held  highest`);
 for (const s of sim.summaries) {
   console.log(
-    `${s.year}   ${s.plantId.padEnd(idW)}  ${s.frameworkM.toFixed(1).padStart(7)} m  ${s.whipM.toFixed(1).padStart(9)} m  ${String(s.spurs).padStart(5)}  ${String(s.floralBudsInitiated).padStart(11)}  ${String(s.flowersOpened).padStart(7)}  ${`${s.runsSelf} / ${s.runsTied}`.padStart(20)}  ${`${(100 * s.routeShare).toFixed(0)}%`.padStart(10)}  ${s.highestM.toFixed(2)} m`,
+    `${s.year}   ${s.plantId.padEnd(idW)}  ${s.frameworkM.toFixed(1).padStart(7)} m  ${s.whipM.toFixed(1).padStart(9)} m  ${String(s.spurs).padStart(5)}  ${String(s.floralBudsInitiated).padStart(11)}  ${String(s.flowersOpened).padStart(7)}  ${String(s.fruitsSet).padStart(9)}  ${`${s.runsSelf} / ${s.runsTied}`.padStart(20)}  ${`${(100 * s.routeShare).toFixed(0)}%`.padStart(10)}  ${s.highestM.toFixed(2)} m`,
   );
 }
 
@@ -53,7 +53,7 @@ const acted = sim.events.filter((e) => e.type !== 'monitor');
 console.log(`\ngardener's log: ${sim.events.length} entries${acted.length > 12 ? ', the last 12 actions shown' : ''}`);
 for (const e of acted.slice(-12)) console.log(`  ${e.date}  ${e.plantId}  ${e.type}: ${e.outcome}`);
 
-const notes = sim.decisions.filter((d) => d.kind === 'not_modelled' || d.kind === 'assumed');
+const notes = sim.decisions.filter((d) => d.kind === 'not_modelled' || d.kind === 'part_not_modelled' || d.kind === 'assumed');
 if (notes.length) {
   console.log('\nnot modelled, or assumed, in this run:');
   for (const n of notes) console.log(`  ${n.plantId}: ${n.text}`);
@@ -63,7 +63,7 @@ console.log('\nassumptions behind this run:');
 for (const taxonId of new Set(scenario.plantings.map((p) => p.taxonId))) {
   const { model } = taxa.get(taxonId)!;
   const counts = summariseProvenance(modelProvenance(model));
-  console.log(`  ${taxonId}: ${counts.provisional_design_assumption} provisional, ${counts.published_plant_profile} published, ${counts.measured} measured`);
+  console.log(`  ${taxonId}: ${counts.provisional_design_assumption} provisional, ${counts.published_plant_profile} published, ${counts.measured} measured${counts.unknown ? `, ${counts.unknown} unknown (parts left out of the run)` : ''}`);
 }
 console.log('Every growth model here is a running model, not a calibrated one: compare scenarios with it, do not predict dates, sizes or loads.');
 

@@ -3,6 +3,7 @@
 export * from './vocab.ts';
 export * from './provenance.ts';
 export * from './taxon.ts';
+export * from './morphology.ts';
 export * from './calendar.ts';
 export * from './attachment.ts';
 export * as vec from './math/vec3.ts';
@@ -27,4 +28,4 @@ export * from './sim/view.ts';
 export * from './sim/report.ts';
 export * from './sim/sensitivity.ts';
 export * from './render/presence.ts';
-export { Rng } from './sim/rng.ts';
+export { Rng, placeRng } from './sim/rng.ts';

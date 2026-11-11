@@ -7,7 +7,7 @@
  * one place so that a picture and a number computed from the same run agree.
  * Nothing here knows any dates of its own: they all come from the data.
  */
-import type { RenderData, RenderFlower, RenderLeaf, RenderSeason, RenderStem } from './contract.ts';
+import type { RenderAppendage, RenderData, RenderFlower, RenderFruit, RenderLeaf, RenderSeason, RenderStem } from './contract.ts';
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 
@@ -64,6 +64,34 @@ export function flowerState(flower: RenderFlower, day: number): FlowerState {
   if (day < flower.developDay || (flower.spentDay >= 0 && day >= flower.spentDay)) return { phase: 'absent', progress: 0 };
   if (day < flower.openDay) return { phase: 'in_bud', progress: clamp01((day - flower.developDay) / Math.max(1, flower.openDay - flower.developDay)) };
   return { phase: 'open', progress: flower.spentDay >= 0 ? clamp01((day - flower.openDay) / Math.max(1, flower.spentDay - flower.openDay)) : 0 };
+}
+
+export interface FruitState {
+  /**
+   * swelling: growing to its full size. full: full grown and still unripe.
+   * ripening: colouring or drying. ripe: ripe, and still on the plant.
+   * absent: not yet set, or fallen, eaten or cut away.
+   */
+  phase: 'absent' | 'swelling' | 'full' | 'ripening' | 'ripe';
+  /** Size as a share of full grown, 0 to 1. */
+  size: number;
+  /** 0 unripe, 1 fully ripe. */
+  ripeness: number;
+}
+
+/** A fruit's days are its own: nothing here looks at the calendar. */
+export function fruitState(fruit: RenderFruit, day: number): FruitState {
+  if (day < fruit.swell[0] || (fruit.removedDay >= 0 && day >= fruit.removedDay)) return { phase: 'absent', size: 0, ripeness: 0 };
+  const size = clamp01((day - fruit.swell[0]) / Math.max(1, fruit.swell[1] - fruit.swell[0]));
+  const ripeness = clamp01((day - fruit.ripen[0]) / Math.max(1, fruit.ripen[1] - fruit.ripen[0]));
+  // the days come in order, but a reader must not depend on it: ripeness outranks size
+  const phase = ripeness >= 1 ? 'ripe' : day >= fruit.ripen[0] ? 'ripening' : size >= 1 ? 'full' : 'swelling';
+  return { phase, size, ripeness };
+}
+
+/** Whether a tendril, coiled leaf stalk, patch of rootlets or prickle is on the plant on `day`. */
+export function appendagePresent(appendage: RenderAppendage, day: number): boolean {
+  return appendage.bornDay <= day && (appendage.removedDay < 0 || day < appendage.removedDay);
 }
 
 /** Whether point `i` of a stem is on the plant on `day`. */

@@ -40,7 +40,7 @@
       body.bare #title,
       body.bare .card:not(#plant-bar),
       body.bare #hint,
-      body.bare #plant-bar > :not(#plant-statement) {
+      body.bare #plant-bar > :not(#plant-statement):not(#specimen-caption) {
         display: none;
       }
       /* the statement travels with any picture of plants, even a bare one */
@@ -789,6 +789,51 @@
         grid-column: 1 / -1;
         margin-top: 2px;
       }
+      /* a specimen says what it is and what is in the picture, with or without the interface */
+      #specimen-caption {
+        grid-column: 1 / -1;
+        font-weight: 600;
+      }
+      /* where a view has nothing to show, the reason is said over the picture */
+      #specimen-note {
+        position: fixed;
+        left: 50%;
+        top: 18px;
+        transform: translateX(-50%);
+        max-width: min(760px, calc(100vw - 32px));
+        padding: 10px 16px;
+        border-radius: 12px;
+        border-left: 4px solid #e8c15a;
+        background: rgba(20, 16, 32, 0.9);
+        font-size: 15px;
+        line-height: 1.4;
+        z-index: 6;
+      }
+      /* a specimen is grown before its first frame: until that frame is final nothing else is shown, so that a
+         screenshot taken too soon cannot be mistaken for the picture. Its colour is one a script can test for. */
+      #curtain {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: #10151a;
+        color: #dfe7ee;
+        font-size: 15px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        z-index: 20;
+      }
+      #curtain.refused {
+        align-items: flex-start;
+        justify-content: flex-start;
+        font-size: 14px;
+      }
+      html.curtained #curtain {
+        display: flex;
+      }
       body.plants #hint {
         display: none;
       }
@@ -991,13 +1036,35 @@
       <button type="button" id="play" aria-label="Play or pause the time-lapse">&#9654;</button>
       <div id="when"><b id="plant-date"></b><span id="plant-caption"></span></div>
       <input type="range" id="plant-day" min="0" max="100" step="1" aria-label="Day shown" />
+      <p id="specimen-caption" hidden></p>
       <p class="note" id="plant-statement"></p>
     </div>
+
+    <div id="specimen-note" role="status" hidden></div>
+    <div id="curtain">Growing the specimen...</div>
 
     <div id="drop" hidden>Drop a .bower.json and its .planting.json to open the design</div>
     <div id="tip" hidden></div>
     <div id="hint">Drag to orbit &middot; scroll to zoom &middot; <b>H</b> hides the interface</div>
     <div id="error"></div>
+    <script>
+      // a specimen is grown before anything is drawn: draw the curtain first
+      if (new URLSearchParams(location.search).has('specimen')) {
+        document.documentElement.classList.add('curtained');
+        // The development server lays its own panel over the page when a module does not compile. A specimen is
+        // looked at through screenshots, and a script tells a failed one by its curtain: so what the server says
+        // is written on the curtain, and its panel taken away.
+        new MutationObserver(() => {
+          for (const panel of document.querySelectorAll('vite-error-overlay')) {
+            const said = ['.message', '.file', '.frame'].map((part) => panel.shadowRoot?.querySelector(part)?.textContent ?? '').filter(Boolean).join('\n');
+            const curtain = document.getElementById('curtain');
+            if (said && !curtain.textContent.includes(said)) curtain.textContent += `\n\nThe development server says:\n${said}`;
+            curtain.classList.add('refused');
+            panel.remove();
+          }
+        }).observe(document.documentElement, { childList: true, subtree: true });
+      }
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

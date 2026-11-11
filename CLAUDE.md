@@ -6,10 +6,10 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 
 - Root `*.md` — the specification. `README.md` gives the reading order.
 - `docs/ASSUMPTIONS_AUDIT.md` — tested state of the spec and prototype, with the prototype model map.
-- `species/<id>/` — `SPECIES_PROFILE.md` (prose) and `taxon.json` (validated data) per taxon.
+- `species/<id>/` — per taxon: `SPECIES_PROFILE.md` (prose), `taxon.json` (validated data), `model.json` (the numbers its growth assumes) and `morphology.json` (the shape numbers its drawing uses, each with its evidence).
 - `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/sim/report.ts` turns a run into the design report; `src/render/contract.ts` is what a viewer draws from and `src/render/presence.ts` says what is on the plant on a given day (use it; do not re-derive seasons); `src/targets.ts` holds the design targets a run is read against; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
 - `examples/` — Bower descriptions and planting plans. `src/bower/description.ts` reads a designed structure from centre lines and works out its routes; `src/sim/planting.ts` turns it and a planting plan into a scenario.
-- `packages/viewer/` — `@horti/viewer`, the three.js viewer. It draws what the core gives it and holds no growth logic; `src/plant/adapter.ts` is the only file where days become what is drawn, and it asks `presence.ts`.
+- `packages/viewer/` — `@horti/viewer`, the three.js viewer. It draws what the core gives it and holds no growth logic; `src/plant/adapter.ts` is the only file where days become what is drawn, and it asks `presence.ts`. What a taxon looks like is one module, `src/plant/taxa/<id>.ts`, which imports no other taxon's; `TAXON_LOOKS.md` says how one is made.
 - `Wisteria/` — the original three.js prototype. Reference only; it has its own `node_modules`.
 
 ## Commands
@@ -22,11 +22,12 @@ npm run simulate -- design examples/arbour.bower.json examples/arbour.planting.j
 npm run sensitivity -- palette  # how far the readings move when unmeasured leaf and shoot densities are multiplied
 npm run viewer:dev              # viewer on http://localhost:5193
 npm run viewer:build            # static build of the viewer
+npm run portrait -- <taxon-id>  # stills of one plant of a taxon on the specimen frame, and a contact sheet, in out/portraits/
 npm run prototype:audit         # prototype interference audit
 npm run prototype:assumptions   # prototype behaviour baseline
 ```
 
-The prototype's dev server is pinned to port 5173, which another session may hold. `.claude/launch.json` starts it on 5183 instead, and the viewer (`bower-viewer`) on 5193.
+The prototype's dev server is pinned to port 5173, which another session may hold. `.claude/launch.json` starts it on 5183 instead, and the viewer (`bower-viewer`) on 5193. `npm run portrait` starts a viewer of its own on 5197 (`bower-viewer-portraits`) and leaves it running.
 
 ## Rules that are easy to break
 
@@ -48,7 +49,7 @@ The prototype's dev server is pinned to port 5173, which another session may hol
 - Units: length m, diameter mm, area m2, mass kg, force N, temperature degC.
 - TypeScript: erasable syntax only (no enums, no parameter properties), relative imports end in `.ts`, zod `strictObject` for anything read from disk.
 - Tests name the specification clause they enforce.
-- Each plant has three random streams (`arch`, `organ`, `flower`). Draw from the one that matches what you are deciding, so that an intervention changes only what it touches and scenarios stay comparable.
+- Each plant has three random streams (`arch`, `organ`, `flower`). Draw from the one that matches what you are deciding, so that an intervention changes only what it touches and scenarios stay comparable. Fruit, appendages and flowering side shoots draw from none of them: each is decided from the place it stands (`placeRng` in `sim/rng.ts`), so switching one on moves nothing else.
 - Shell: put anything with quotes or non-ASCII text (patch scripts, commit messages) in a file and run that; long inline heredocs have failed to parse here.
 
 ## Git

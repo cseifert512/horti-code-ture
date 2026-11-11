@@ -1,127 +1,18 @@
-import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { REFERENCE_PALETTE, leafState, makeHemisphereBower, makeVaultBower, seasonsOf } from '@horti/core';
-import { MODELLED_TAXA, assetsFor } from '../src/plant/assets.ts';
+import { loadLooks, lookFor } from '../src/plant/registry.ts';
 import { canGrow, growScenario, growable } from '../src/plant/scenario.ts';
-import { type PlantMaterials, PlantView } from '../src/plant/view.ts';
+import { PlantView } from '../src/plant/view.ts';
+import { camera as makeCamera, materials } from './helpers.ts';
 
-/** Stand-ins for the real materials, which need a canvas for their textures. */
-const materials = (): PlantMaterials => {
-  const leaf = [new THREE.MeshBasicMaterial(), new THREE.MeshBasicMaterial(), new THREE.MeshBasicMaterial()];
-  const flower = new THREE.MeshBasicMaterial();
-  return { wood: new THREE.MeshBasicMaterial(), pod: new THREE.MeshBasicMaterial(), leaf: () => leaf, flower: () => flower };
-};
-const camera = new THREE.PerspectiveCamera();
-camera.position.set(6, 2, 8);
+await loadLooks();
+const camera = makeCamera();
 
-/** The widest the flower-tagged parts of a model reach, tip to opposite tip. */
-function across(g: THREE.BufferGeometry): number {
-  const pos = g.getAttribute('position');
-  const part = g.getAttribute('aPart');
-  const points: THREE.Vector3[] = [];
-  for (let i = 0; i < pos.count; i++) if (part.getW(i) >= 0) points.push(new THREE.Vector3().fromBufferAttribute(pos, i));
-  let widest = 0;
-  for (let i = 0; i < points.length; i += 3) for (let j = i + 1; j < points.length; j += 3) widest = Math.max(widest, points[i]!.distanceTo(points[j]!));
-  return widest;
-}
-
-// CLAUDE.md: "Mechanism traits do not transfer. Spurs, handedness and old-wood
-// flowering are wisteria's; each mechanism and flowering class is implemented
-// separately." The same goes for what a plant looks like.
-describe('organ models are per taxon', () => {
-  it('has models for taxa that can be grown, and for nothing that cannot', () => {
-    const can = growable();
-    for (const id of MODELLED_TAXA) expect(can.has(id), id).toBe(true);
-  });
-
-  it('gives each modelled taxon a leaf of its own', () => {
-    const leaves = MODELLED_TAXA.map((id) => assetsFor(id).leaf.key);
-    expect(new Set(leaves).size).toBe(MODELLED_TAXA.length);
-    for (const id of MODELLED_TAXA) expect(assetsFor(id).provisional).toBe(false);
-  });
-
-  it('gives no two taxa the same flower model', () => {
-    const flowers = MODELLED_TAXA.map((id) => assetsFor(id).flower?.key).filter((k) => k !== undefined);
-    expect(flowers.length).toBeGreaterThanOrEqual(5);
-    expect(new Set(flowers).size).toBe(flowers.length);
-  });
-
-  it('gives a taxon it does not know a plain stand-in leaf and no flowers, marked provisional, rather than the organs of another plant', () => {
-    const unknown = assetsFor('thunbergia-alata');
-    expect(unknown.provisional).toBe(true);
-    expect(unknown.flower).toBeNull();
-    expect(MODELLED_TAXA.map((id) => assetsFor(id).leaf.key)).not.toContain(unknown.leaf.key);
-  });
-
-  it('builds every model at every level of detail, finite and tagged for the organ programs', () => {
-    for (const id of [...MODELLED_TAXA, 'thunbergia-alata']) {
-      const { leaf, flower } = assetsFor(id);
-      for (const asset of flower ? [leaf, flower] : [leaf]) {
-        let finest = Infinity;
-        for (let lod = 0; lod < asset.lods; lod++) {
-          for (let v = 0; v < asset.variants; v++) {
-            const g = asset.make(v, lod);
-            const pos = g.getAttribute('position');
-            expect(pos.count).toBeGreaterThan(3);
-            // one assertion for the whole array: an assertion for each number took this test to its time limit
-            let notFinite = -1;
-            for (let i = 0; i < pos.array.length && notFinite < 0; i++) if (!Number.isFinite(pos.array[i])) notFinite = i;
-            expect(notFinite, `${asset.key} ${v}/${lod}: position ${notFinite} is not a finite number`).toBe(-1);
-            expect(g.getAttribute('aPart').count).toBe(pos.count);
-            expect(g.getAttribute('normal').count).toBe(pos.count);
-            if (v === 0) {
-              // each coarser level is no heavier than the one before
-              expect(g.index!.count, asset.key).toBeLessThanOrEqual(finest);
-              finest = g.index!.count;
-            }
-          }
-        }
-      }
-    }
-  });
-
-  it('authors each leaf one unit long, so that the length in the data is the length drawn', () => {
-    for (const id of [...MODELLED_TAXA, 'thunbergia-alata']) {
-      if (id === 'wisteria-sinensis') continue;
-      const { leaf } = assetsFor(id);
-      for (let v = 0; v < leaf.variants; v++) {
-        const g = leaf.make(v, 0);
-        g.computeBoundingBox();
-        expect(g.boundingBox!.max.z, leaf.key).toBeGreaterThan(0.9);
-        expect(g.boundingBox!.max.z, leaf.key).toBeLessThan(1.12);
-      }
-    }
-  });
-
-  it('keeps the convention of the prototype for the wisteria leaf: one unit is its axis, and the end leaflet reaches past it', () => {
-    const g = assetsFor('wisteria-sinensis').leaf.make(0, 0);
-    g.computeBoundingBox();
-    expect(g.boundingBox!.max.z).toBeGreaterThan(1.1);
-    expect(g.boundingBox!.max.z).toBeLessThan(1.35);
-  });
-
-  it('authors single flowers and flowerheads one unit across, which is what their lengthM means', () => {
-    for (const id of ['clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles', 'clematis-armandi', 'hydrangea-anomala-subsp-petiolaris', 'rosa-the-generous-gardener']) {
-      const flower = assetsFor(id).flower!;
-      expect(flower.authoredSize).toBe(1);
-      for (let v = 0; v < flower.variants; v++) {
-        const width = across(flower.make(v, 0));
-        expect(width, flower.key).toBeGreaterThan(0.92);
-        expect(width, flower.key).toBeLessThan(1.08);
-      }
-    }
-  });
-
-  it('authors flower clusters about one unit across', () => {
-    for (const id of ['lonicera-periclymenum-graham-thomas', 'lonicera-henryi', 'trachelospermum-jasminoides']) {
-      const flower = assetsFor(id).flower!;
-      expect(flower.authoredSize).toBe(1);
-      for (let v = 0; v < flower.variants; v++) {
-        const width = across(flower.make(v, 0));
-        expect(width, flower.key).toBeGreaterThan(0.8);
-        expect(width, flower.key).toBeLessThan(1.2);
-      }
-    }
+// What each organ model must be is tested in looks.test.ts. Here: the engine's
+// scenarios, drawn with the looks of the taxa that are in them.
+describe('the taxa the engine grows', () => {
+  it('has a growth model that the core accepts for every taxon with one', () => {
+    expect(growable().size).toBeGreaterThanOrEqual(16);
   });
 });
 
@@ -148,6 +39,23 @@ describe('the mixed planting', () => {
     view.dispose();
   });
 
+  // TAXON_LOOKS.md, "Wood": the stems of each taxon are a mesh of their own, in that taxon's bark.
+  it('draws the stems of each taxon in its own wood', () => {
+    const mats = materials();
+    const view = new PlantView(run.data, mats);
+    const taxa = [...new Set(run.data.plants.map((p) => p.taxonId))];
+    expect(taxa.length).toBeGreaterThan(2);
+    expect([...mats.woods].sort()).toEqual([...taxa].sort());
+    const drawn = new Set<unknown>();
+    for (const taxonId of taxa) {
+      const mesh = view.group.getObjectByName(`stems:${taxonId}`) as { material?: unknown } | undefined;
+      expect(mesh, taxonId).toBeDefined();
+      drawn.add(mesh!.material);
+    }
+    expect(drawn.size).toBe(taxa.length);
+    view.dispose();
+  });
+
   // KEY.md: the evergreen share is what holds the picture in winter.
   it('shows only evergreen leaves in January, and exactly the leaves the core says are out', () => {
     const view = new PlantView(run.data, materials());
@@ -168,7 +76,7 @@ describe('the mixed planting', () => {
 
   it('still draws a plant of an unknown taxon in leaf, and says its look is provisional', () => {
     const data = structuredClone(run.data);
-    data.plants[0]!.taxonId = 'thunbergia-alata';
+    data.plants[0]!.taxonId = 'no-such-taxon';
     const view = new PlantView(data, materials());
     expect(view.provisionalLooks).toEqual([data.plants[0]!.label]);
     // it has flowers in the data and no flower model: said too
@@ -200,8 +108,8 @@ describe('the reference palette', () => {
   });
 
   it('has organ models of its own for every plant of the palette, with ivy or without', () => {
-    for (const p of REFERENCE_PALETTE) expect(assetsFor(p.taxonId).provisional, p.taxonId).toBe(false);
-    expect(assetsFor('hedera-helix').provisional).toBe(false);
+    for (const p of REFERENCE_PALETTE) expect(lookFor(p.taxonId).provisional, p.taxonId).toBe(false);
+    expect(lookFor('hedera-helix').provisional).toBe(false);
     const view = new PlantView(run.data, materials());
     expect(view.provisionalLooks).toEqual([]);
     expect(view.withoutFlowers).toEqual([]);
@@ -262,7 +170,7 @@ describe('the palette in flower', () => {
     expect(view.provisionalLooks).toEqual([]);
     // each flowering plant's taxon has its own model, and no two taxa share one
     const flowering = [...new Set(run.data.flowers.map((f) => f.plantId))].map((id) => run.data.plants.find((p) => p.id === id)!.taxonId);
-    const models = new Map(flowering.map((taxonId) => [taxonId, assetsFor(taxonId).flower!.key]));
+    const models = new Map(flowering.map((taxonId) => [taxonId, lookFor(taxonId).flowers!.default.key]));
     expect(new Set(models.values()).size).toBe(models.size);
     view.dispose();
   });

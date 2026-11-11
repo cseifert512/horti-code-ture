@@ -9,13 +9,19 @@
 import type { Bower } from '../bower/types.ts';
 import type { Vec3 } from '../math/vec3.ts';
 import type { TaxonProfile } from '../taxon.ts';
-import type { AttachmentStatus, BudEnd, BudStage, GardenerEventType } from '../vocab.ts';
+import type { AppendageKind, AttachmentStatus, BudEnd, BudStage, GardenerEventType } from '../vocab.ts';
 import type { GrowthModel } from './model.ts';
 import type { Rng } from './rng.ts';
 import type { StemPath } from './stem-path.ts';
 import type { Viewpoint } from './view.ts';
 
-export type AxisRole = 'leader' | 'lateral' | 'whip' | 'spur';
+/**
+ * `side_shoot`: a short free-standing shoot thrown by an established stem,
+ * leafy and ending in the inflorescence. It is not a spur: a spur is
+ * wisteria's short flowering wood and has its own rules. The render contract
+ * has no word for it yet and shows it as `spur`, short flowering wood.
+ */
+export type AxisRole = 'leader' | 'lateral' | 'whip' | 'spur' | 'side_shoot';
 /** How a stretch of stem sits: wound round its support, running along it, or unsupported. Who holds it is the run's `by`. */
 export type HoldMode = 'twine' | 'along' | 'free';
 /** What a shoot is trying to do at the next node. */
@@ -86,6 +92,27 @@ export interface Axis {
   leafSide: 1 | -1;
   /** Year in which this shoot was cut back in summer, if it was. */
   summerPrunedYear: number | null;
+
+  // ---- appendage bookkeeping ----
+  /** Leaf nodes laid down on this axis so far: the place in a repeating pattern such as a vine's tendrils. */
+  leafNodeCount: number;
+  /** Where the axis has got to between one prickle and the next, and between one patch of clinging rootlets and the next. */
+  prickles: Spacing;
+  rootlets: Spacing;
+  /** For a flowering side shoot, the last calendar year it lives: it is shed before growth starts in the year after. */
+  lastYear: number | null;
+  /** Growth a side shoot has made but not yet laid down as stem: it lengthens by millimetres a day and is stored a step at a time. */
+  owedM: number;
+}
+
+/** Progress along a stem towards the next of something set at intervals. */
+export interface Spacing {
+  /** Stem length since the last one. */
+  sinceM: number;
+  /** Stem length from the last one to the next; null until it has been drawn. */
+  nextM: number | null;
+  /** How many have been placed. */
+  count: number;
 }
 
 /** A place on a stem that bore a leaf in its first season and may carry a spur afterwards. */
@@ -96,6 +123,8 @@ export interface LeafNode {
   side: 1 | -1;
   /** True once a spur or whip has grown from it. */
   taken: boolean;
+  /** The flowering side shoot growing from it, while there is one. */
+  sideShootId: string | null;
 }
 
 export interface LeafSite {
@@ -111,6 +140,53 @@ export interface LeafSite {
   lastYear: number | null;
   /** True where the leaf is kept through winter. */
   evergreen: boolean;
+  bornDay: number;
+  removedDay: number | null;
+  /** Which of the taxon's leaf forms it is, where its growth model names one. */
+  form?: string;
+}
+
+/**
+ * One fruit, or one cluster of them, where a flower set. It has a place on
+ * the plant's own wood and goes with that wood when it is cut.
+ */
+export interface FruitSite {
+  id: string;
+  plantId: string;
+  axisId: string;
+  pointIndex: number;
+  position: Vec3;
+  /** Unit direction it is held in; null where it hangs. */
+  direction: Vec3 | null;
+  /** Length when full grown. */
+  lengthM: number;
+  /** Calendar year in which it set. */
+  year: number;
+  /** It swells from the first day to the second, and ripens from the third to the fourth. */
+  swell: [number, number];
+  ripen: [number, number];
+  /** The day it will fall if nothing removes it first. */
+  fallPlannedDay: number;
+  removedDay: number | null;
+  /** `fell`, or the event or cause that took its stem. */
+  removedBy: string | null;
+  form?: string;
+}
+
+/** A tendril, a coiled leaf stalk, a patch of clinging rootlets or a prickle, at its place on a stem. */
+export interface AppendageSite {
+  plantId: string;
+  axisId: string;
+  /** The stem point it goes with when the stem is cut. */
+  pointIndex: number;
+  kind: AppendageKind;
+  position: Vec3;
+  direction: Vec3;
+  lengthM: number;
+  /** True where it has hold of the structure. */
+  holding: boolean;
+  /** Thickness of the member or cable it has hold of, in millimetres; null where it holds nothing. */
+  heldDiameterMm: number | null;
   bornDay: number;
   removedDay: number | null;
 }
@@ -135,6 +211,10 @@ export interface FloralBud {
   endedBy: string | null;
   /** Set when it opens. */
   position: Vec3 | null;
+  /** Unit direction the inflorescence is held in, set when it opens; null where it hangs. */
+  direction: Vec3 | null;
+  /** Which of the taxon's flower forms it is, where its growth model names one. */
+  form?: string;
   lengthM: number;
   /**
    * Days on which it will begin to swell, open and drop, fixed when its
@@ -183,6 +263,12 @@ export interface Plant {
    *   flower  flower buds, their dates, and how hard each shoot is cut
    */
   rng: { arch: Rng; organ: Rng; flower: Rng };
+  /**
+   * Tells this plant's places apart from another's when a decision is seeded
+   * from where it is made (`placeRng`): fruit set, appendages and flowering
+   * side shoots are decided that way, and draw nothing from the three streams.
+   */
+  placeSeed: number;
   axisIds: string[];
   leafNodes: LeafNode[];
   pendingLaterals: PendingLateral[];
@@ -270,8 +356,15 @@ export interface EventRecord {
   modelled: boolean;
 }
 
-/** `assumed`: the model had to pick something a profile leaves unknown, in order to draw the plant at all. */
-export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'assumed' | 'died' | 'replanted';
+/**
+ * `assumed`: the model had to pick something a profile leaves unknown, in order to draw the plant at all.
+ * `not_modelled`: the plant's flowers are left out, because which of its wood flowers is not known.
+ * `part_not_modelled`: some other part (fruit, tendrils, coiled leaf stalks, clinging rootlets, prickles) is left
+ * out, because the growth model leaves its numbers unknown. Kept apart from `not_modelled` because readers of
+ * that kind take it to mean that the plant has no flowers in the run.
+ * `side_shoots_broke`, `shed`: flowering side shoots started from established stems, or had lived out their time.
+ */
+export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'side_shoots_broke' | 'shed' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'died' | 'replanted';
 
 /** Why the plant did what it did: the trace asked for by PROJECT_CONTEXT.md section 7.6. */
 export interface Decision {
@@ -289,10 +382,14 @@ export interface YearSummary {
   frameworkM: number;
   whipM: number;
   spurs: number;
+  /** Flowering side shoots alive at the year's end. */
+  sideShoots: number;
   /** Flower buds initiated this year (to open next year). */
   floralBudsInitiated: number;
   /** Flowers that opened this year. */
   flowersOpened: number;
+  /** Fruits, or clusters of them, that set this year. */
+  fruitsSet: number;
   floralBudsLostToPruning: number;
   /** Stretches of route this plant holds by itself, and those a gardener tied. */
   runsSelf: number;

@@ -53,8 +53,12 @@ export interface RenderStem {
   id: string;
   plantId: string;
   parentId: string | null;
-  /** leader and lateral are permanent framework; whip is a long shoot of the year; spur is short flowering wood. */
-  role: 'leader' | 'lateral' | 'whip' | 'spur';
+  /**
+   * leader and lateral are permanent framework; whip is a long shoot of the
+   * year; spur is short flowering wood; side_shoot is a short free-standing
+   * shoot thrown by an established stem, in leaf and often ending in a flower.
+   */
+  role: 'leader' | 'lateral' | 'whip' | 'spur' | 'side_shoot';
   order: number;
   contact: number[];
   away: number[];
@@ -91,6 +95,8 @@ export interface RenderLeaf {
    * Absent: its ordinary leaf.
    */
   form?: string;
+  /** Index of the point of its stem (`stemId`) that it stands on, so that it can be seated on the stem's surface as the stem thickens. */
+  stemPoint?: number;
 }
 
 /** One inflorescence that actually opened: a flower bud that formed, survived and developed. */
@@ -106,13 +112,22 @@ export interface RenderFlower {
   openDay: number;
   spentDay: number;
   /**
-   * Unit direction the inflorescence is held in from its attachment. Absent:
-   * it hangs, as a wisteria raceme does. A flower that faces out from its
-   * node or stands above its shoot says so here.
+   * Unit direction of its axis from the attachment: the way its stalk runs,
+   * which for a single flower is the way it faces. Absent: it hangs plumb, as
+   * a wisteria raceme does. A flower that faces out from its node or stands
+   * above its shoot says so here. A viewer turns the model's axis on to this
+   * and its upper side as far towards the sky as that allows.
+   *
+   * `lengthM` is the taxon's own measure of its inflorescence, the one its
+   * growth model gives as `organs.racemeLengthM`: the length of a raceme, the
+   * width of a single flower or of a flat head. Each taxon's look must author
+   * its model to that measure.
    */
   direction?: Triple;
   /** Which of the taxon's flower forms this is, where it has more than one. Absent: its ordinary one. */
   form?: string;
+  /** Index of the point of its stem that it stands on; absent for one at the tip of a spur. */
+  stemPoint?: number;
 }
 
 /**
@@ -133,10 +148,12 @@ export interface RenderFruit {
   ripen: [number, number];
   /** Day it fell, was eaten or was cut away with its stem; -1 if still on the plant at the end of the run. */
   removedDay: number;
-  /** Unit direction it is held in from its attachment. Absent: it hangs. */
+  /** Unit direction of its axis from the attachment, as for a flower. Absent: it hangs plumb. */
   direction?: Triple;
   /** Which of the taxon's fruit forms this is, where it has more than one. Absent: its ordinary one. */
   form?: string;
+  /** Index of the point of its stem that it stands on. */
+  stemPoint?: number;
 }
 
 /**
@@ -151,11 +168,21 @@ export interface RenderAppendage {
   kind: AppendageKind;
   /** Where it leaves the stem. */
   position: Triple;
-  /** Unit direction it reaches in: towards what it holds, or outwards for a prickle. */
+  /**
+   * Unit direction it reaches in: towards what it holds, or outwards for a
+   * prickle. For `aerial_roots` this points from the stem into the surface
+   * it clings to: the patch lies on that surface, spreading to either side of
+   * the stem, and a viewer draws it there and not along this direction.
+   */
   direction: Triple;
+  /** Length of one tendril, leaf stalk, rootlet or prickle. */
   lengthM: number;
   /** True where it has hold of the structure; false where it found nothing, or holds nothing by nature. */
   holding: boolean;
+  /** Where it has hold: the thickness of the member or cable it holds, in millimetres, so that a coil can be drawn to fit. */
+  heldDiameterMm?: number;
+  /** Index of the point of its stem that it stands on. */
+  stemPoint?: number;
   bornDay: number;
   /** Day it went with its stem, or withered; -1 if never. */
   removedDay: number;

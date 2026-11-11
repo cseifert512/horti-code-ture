@@ -1,6 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { EVIDENCE_STATUS, RENDER_CONTRACT, type RenderData, type RenderFlower, type RenderLeaf, type RenderStem, flowerState, leafState, makeHemisphereBower, makeVaultBower, seasonsOf, stemRadiusM } from '@horti/core';
-import { NEVER, RenderTimeline } from '../src/plant/adapter.ts';
+import {
+  APPENDAGE_KIND,
+  EVIDENCE_STATUS,
+  RENDER_CONTRACT,
+  type RenderAppendage,
+  type RenderData,
+  type RenderFlower,
+  type RenderFruit,
+  type RenderLeaf,
+  type RenderStem,
+  appendagePresent,
+  flowerState,
+  fruitState,
+  leafState,
+  makeHemisphereBower,
+  makeVaultBower,
+  seasonsOf,
+  stemRadiusM,
+} from '@horti/core';
+import { NEVER, RenderTimeline, agedShare } from '../src/plant/adapter.ts';
+import { loadLooks, lookFor } from '../src/plant/registry.ts';
 import { makeTestPlant } from '../src/plant/fixture.ts';
 import { growScenario } from '../src/plant/scenario.ts';
 import { buildWoodGeometry } from '../src/plant/wood.ts';
@@ -31,6 +50,8 @@ function bare(): RenderData {
 }
 const leaf = (over: Partial<RenderLeaf> = {}): RenderLeaf => ({ plantId: 'p', stemId: 'x', position: [0, 0, 1], direction: [1, 0, 0], lengthM: 0.2, firstYear: 2030, lastYear: null, evergreen: false, bornDay: 20, removedDay: -1, ...over });
 const flower = (over: Partial<RenderFlower> = {}): RenderFlower => ({ plantId: 'p', stemId: 'x', position: [0, 0, 2], lengthM: 0.25, year: 2031, developDay: 455, openDay: 480, spentDay: 505, ...over });
+const fruit = (over: Partial<RenderFruit> = {}): RenderFruit => ({ plantId: 'p', stemId: 'x', position: [0, 0, 2], lengthM: 0.12, year: 2031, swell: [510, 560], ripen: [600, 640], removedDay: 700, ...over });
+const hold = (over: Partial<RenderAppendage> = {}): RenderAppendage => ({ plantId: 'p', stemId: 'x', kind: 'tendril', position: [0, 0, 1], direction: [1, 0, 0], lengthM: 0.08, holding: true, bornDay: 120, removedDay: 400, ...over });
 
 // CLAUDE.md: `src/render/presence.ts` says what is on the plant on a given day
 // (use it; do not re-derive seasons). render/contract.ts: "A viewer must not add
@@ -59,6 +80,48 @@ describe('what is drawn agrees with the core, day for day', () => {
     const flowers = [flower(), flower({ spentDay: -1 }), flower({ developDay: 100, openDay: 120, spentDay: 150, year: 2030 })];
     for (let day = 0; day <= data.lastDay; day++) {
       for (const f of flowers) expect(t.flowerDraw(f, day).visible).toBe(flowerState(f, day).phase !== 'absent');
+    }
+  });
+
+  it('shows a fruit exactly when the core says it is on the plant, as large and as ripe', () => {
+    const fruits = [fruit(), fruit({ removedDay: -1 }), fruit({ swell: [100, 130], ripen: [200, 230], removedDay: 260, year: 2030 })];
+    for (let day = 0; day <= data.lastDay; day++) {
+      for (const f of fruits) {
+        const core = fruitState(f, day);
+        const drawn = t.fruitDraw(f, day);
+        expect(drawn.visible).toBe(core.phase !== 'absent');
+        if (drawn.visible) {
+          expect(drawn.size).toBe(core.size);
+          expect(drawn.ripeness).toBe(core.ripeness);
+        }
+      }
+    }
+  });
+
+  // render/contract.ts, RenderAppendage: "a viewer draws them and adds none of its own".
+  it('shows a tendril or a prickle exactly from the day it formed to the day it went, and knows its age', () => {
+    const holds = [hold(), hold({ removedDay: -1 }), hold({ kind: 'prickle', holding: false, bornDay: 0 })];
+    for (let day = 0; day <= data.lastDay; day++) {
+      for (const a of holds) {
+        const drawn = t.appendageDraw(a, day);
+        expect(drawn.visible).toBe(appendagePresent(a, day));
+        if (drawn.visible) expect(drawn.ageDays).toBe(day - a.bornDay);
+      }
+    }
+    expect(t.appendageDraw(hold(), 119).visible).toBe(false);
+    expect(t.appendageDraw(hold(), 400).visible).toBe(false);
+  });
+
+  it('turns an age into how far through a look\'s range of ages it is, never backwards', () => {
+    expect(agedShare(0, [110, 440])).toBe(0);
+    expect(agedShare(110, [110, 440])).toBe(0);
+    expect(agedShare(275, [110, 440])).toBeCloseTo(0.5, 9);
+    expect(agedShare(440, [110, 440])).toBe(1);
+    expect(agedShare(9000, [110, 440])).toBe(1);
+    let last = 0;
+    for (let age = 0; age < 600; age++) {
+      expect(agedShare(age, [110, 440])).toBeGreaterThanOrEqual(last);
+      last = agedShare(age, [110, 440]);
     }
   });
 
@@ -156,13 +219,17 @@ describe('render test plant', () => {
     ['hemisphere', makeHemisphereBower()],
   ] as const) {
     it(`${name}: is well-formed render data that says it is not a simulation`, () => {
-      const { data, fruit } = makeTestPlant(bower);
+      const { data } = makeTestPlant(bower);
       expect(data.contract).toBe(RENDER_CONTRACT);
       expect(data.statement).toMatch(/not a simulation/);
       expect(data.stems.length).toBeGreaterThan(0);
       expect(data.leaves.length).toBeGreaterThan(20);
       expect(data.flowers.length).toBeGreaterThan(3);
-      expect(fruit.length).toBeGreaterThan(0);
+      expect(data.fruits.length).toBeGreaterThan(0);
+      for (const f of data.fruits) {
+        expect(f.swell[0]).toBeLessThan(f.swell[1]);
+        expect(f.ripen[0]).toBeLessThan(f.ripen[1]);
+      }
       const ids = new Set(data.stems.map((s) => s.id));
       for (const s of data.stems) {
         const n = s.bornDay.length;
@@ -195,11 +262,36 @@ describe('render test plant', () => {
       const t = new RenderTimeline(data);
       const on = (iso: string) => {
         const day = t.calendar.dayOf(iso);
-        return { leaves: data.leaves.filter((l) => t.leafDraw(l, day).visible).length, flowers: data.flowers.filter((f) => t.flowerDraw(f, day).visible).length };
+        // the hanging inflorescences of the first plant: the other plants' flowers are held, and open as their stems grow
+        const hanging = data.flowers.filter((f) => f.plantId === 'test.0');
+        return { leaves: data.leaves.filter((l) => t.leafDraw(l, day).visible).length, flowers: hanging.filter((f) => t.flowerDraw(f, day).visible).length, all: hanging.length };
       };
-      expect(on('2031-07-15')).toEqual({ leaves: data.leaves.length, flowers: 0 });
-      expect(on('2031-05-08').flowers).toBe(data.flowers.length);
-      expect(on('2031-01-15')).toEqual({ leaves: 0, flowers: 0 });
+      expect(on('2031-07-15')).toMatchObject({ leaves: data.leaves.length, flowers: 0 });
+      expect(on('2031-05-08').flowers).toBe(on('2031-05-08').all);
+      expect(on('2031-01-15')).toMatchObject({ leaves: 0, flowers: 0 });
+    });
+
+    // render/contract.ts, contract 2: appendages of four kinds, and a direction on a flower that does not hang.
+    it(`${name}: carries every kind of hold on a plant that borrows a taxon with a model of it, and flowers held in a direction`, async () => {
+      await loadLooks();
+      const { data } = makeTestPlant(bower);
+      for (const kind of APPENDAGE_KIND) {
+        const of = data.appendages.filter((a) => a.kind === kind);
+        expect(of.length, kind).toBeGreaterThan(2);
+        expect(of.some((a) => a.holding) || kind === 'prickle', kind).toBe(true);
+        const plant = data.plants.find((p) => p.id === of[0]!.plantId)!;
+        expect(plant.taxonId.startsWith('render-test:')).toBe(true);
+        expect(lookFor(plant.taxonId).appendages[kind], `${plant.taxonId} has a model of a ${kind}`).toBeDefined();
+        for (const a of of) expect(Math.hypot(...a.direction)).toBeCloseTo(1, 6);
+      }
+      const held = data.flowers.filter((f) => f.direction);
+      expect(held.length).toBeGreaterThan(1);
+      for (const f of held) {
+        expect(Math.hypot(...f.direction!)).toBeCloseTo(1, 6);
+        expect(lookFor(data.plants.find((p) => p.id === f.plantId)!.taxonId).flowers?.default.poise).toBe('held');
+      }
+      // every plant has its seasons, or its leaves could not be drawn
+      for (const p of data.plants) expect(data.seasons.filter((s) => s.plantId === p.id)).toHaveLength(2);
     });
   }
 });

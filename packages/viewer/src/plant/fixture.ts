@@ -1,15 +1,18 @@
 // The render test plant: hand-made render data that exercises every part of
 // the plant renderer (stems that lengthen and thicken, leaves through a year,
-// inflorescences from bud to petal fall, fruit) on any Bower.
+// inflorescences from bud to petal fall, fruit) on any Bower. Beside it stand
+// four more hand-made plants, one for each kind of hold the contract has
+// (tendril, coiled leaf stalk, clinging rootlets, prickle), each drawn with
+// the models of a taxon that has that kind, and two of them with flowers that
+// are held in a direction the data gives.
 //
 // IT IS NOT A SIMULATION. Every size and date below was typed in to give the
 // renderer something to draw. None of it describes how any plant grows, and
 // none of it may be read as a growth rate, a flowering date or a dimension of
 // a taxon. The geometry it lies on is real: the stems follow the Bower's own
 // plant routes, placed with the core's liePath.
-import { type Bower, Calendar, EVIDENCE_STATUS, type EvidenceStatus, RENDER_CONTRACT, type RenderData, type RenderStem, type SupportEdge, type Vec3, liePath, shortestRoute, vec } from '@horti/core';
+import { type AppendageKind, type Bower, Calendar, EVIDENCE_STATUS, type EvidenceStatus, RENDER_CONTRACT, type RenderData, type RenderStem, type SupportEdge, type Vec3, liePath, shortestRoute, vec } from '@horti/core';
 import { hash2 } from '../util.ts';
-import type { FruitSite } from './adapter.ts';
 
 /** Arbitrary values for the test picture. */
 const FIXTURE = {
@@ -30,6 +33,17 @@ const FIXTURE = {
   /** Day of year. */
   season: { budburst: 91, growthEnd: 273, leafFlush: [95, 135] as const, autumnColour: [285, 315] as const, leafFall: [315, 345] as const },
   thickening: { tipRadiusMm: 2, exponent: 1 },
+  /**
+   * One more plant for each kind of hold: whose models it is drawn with (registry.ts reads the name after
+   * "render-test:"), how far apart the holds are along the stem and how long, and how wide its held flowers are
+   * (0: none).
+   */
+  holds: [
+    { kind: 'tendril', borrows: 'vitis-coignetiae', everyM: 0.2, lengthM: 0.09, flowerM: 0 },
+    { kind: 'leaf_stalk_coil', borrows: 'clematis-viticella-etoile-violette', everyM: 0.13, lengthM: 0.035, flowerM: 0.08 },
+    { kind: 'aerial_roots', borrows: 'hedera-helix', everyM: 0.05, lengthM: 0.006, flowerM: 0 },
+    { kind: 'prickle', borrows: 'rosa-the-generous-gardener', everyM: 0.035, lengthM: 0.008, flowerM: 0.09 },
+  ] as readonly { kind: AppendageKind; borrows: string; everyM: number; lengthM: number; flowerM: number }[],
 } as const;
 
 interface PathPoint {
@@ -65,7 +79,6 @@ const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
 export interface TestPlant {
   data: RenderData;
-  fruit: FruitSite[];
 }
 
 export function makeTestPlant(bower: Bower): TestPlant {
@@ -91,8 +104,7 @@ export function makeTestPlant(bower: Bower): TestPlant {
     statement: 'A render test, not a simulation: hand-made data that exercises the plant renderer. It says nothing about how any plant grows.',
     assumptions: Object.fromEntries(EVIDENCE_STATUS.map((s) => [s, 0])) as Record<EvidenceStatus, number>,
   };
-  const fruit: FruitSite[] = [];
-  if (!station) return { data, fruit };
+  if (!station) return { data };
 
   // the leader follows the shortest route from the first station to the highest node
   let top = '';
@@ -104,7 +116,7 @@ export function makeTestPlant(bower: Bower): TestPlant {
     }
   }
   const route = shortestRoute(bower, station.id, top);
-  if (!route || route.edges.length === 0) return { data, fruit };
+  if (!route || route.edges.length === 0) return { data };
 
   const leaderDays = [cal.dayOf(FIXTURE.leaderGrows[0]), cal.dayOf(FIXTURE.leaderGrows[1])] as const;
   const sideDays = [cal.dayOf(FIXTURE.sideGrows[0]), cal.dayOf(FIXTURE.sideGrows[1])] as const;
@@ -116,12 +128,16 @@ export function makeTestPlant(bower: Bower): TestPlant {
   }
 
   let serial = 0;
-  const addStem = (id: string, role: RenderStem['role'], order: number, parentId: string | null, path: PathPoint[], days: readonly [number, number], radiusMm: readonly [number, number], flowering: boolean) => {
+  /** `flowering`: inflorescences that hang, with fruit after some. `hold`: this stem is another plant's, with its kind of hold along it. */
+  const addStem = (id: string, role: RenderStem['role'], order: number, parentId: string | null, path: PathPoint[], days: readonly [number, number], radiusMm: readonly [number, number], flowering: boolean, hold?: { plantId: string; kind: AppendageKind; everyM: number; lengthM: number; flowerM: number }) => {
     const length = path[path.length - 1]?.s ?? 0;
     if (path.length < 2 || length <= 0) return;
+    const plantId = hold?.plantId ?? 'test.0';
     const stem: RenderStem = { id, plantId, parentId, role, order, contact: [], away: [], bornDay: [], removedDay: [], radiusMm: [] };
     let nextLeaf = 0.05;
     let nextFlower = 0.2;
+    let nextHold = 0.04;
+    let holds = 0;
     let side = 1;
     path.forEach((pt, i) => {
       const t = pt.s / length;
@@ -176,16 +192,50 @@ export function makeTestPlant(bower: Bower): TestPlant {
           spentDay: cal.dayOf(FIXTURE.flower.spent) + shift,
         });
         if (data.flowers.length % 4 === 0) {
-          fruit.push({
+          data.fruits.push({
             plantId,
+            stemId: id,
             position: [hang.x, hang.y, hang.z],
             lengthM: FIXTURE.fruitLengthM,
+            year: FIXTURE.years[1],
             swell: [cal.dayOf(FIXTURE.fruit.swell[0]), cal.dayOf(FIXTURE.fruit.swell[1])],
             ripen: [cal.dayOf(FIXTURE.fruit.ripen[0]), cal.dayOf(FIXTURE.fruit.ripen[1])],
             removedDay: -1,
           });
         }
         serial++;
+      }
+
+      if (hold && pt.s >= nextHold && i < path.length - 1) {
+        nextHold = pt.s + hold.everyM;
+        const turn = holds % 2 === 0 ? 1 : -1;
+        // rootlets spread on what the stem lies on, to either side of it; a prickle stands out from it; a tendril or a coiling stalk reaches sideways
+        const direction =
+          hold.kind === 'aerial_roots'
+            ? vec.normalize(vec.add(vec.scale(across, turn), vec.scale(pt.away, -0.25)))
+            : hold.kind === 'prickle'
+              ? vec.normalize(vec.add(pt.away, vec.scale(across, 0.9 * turn)))
+              : vec.normalize(vec.add(vec.scale(across, turn), vec.scale(pt.away, 0.35)));
+        data.appendages.push({ plantId, stemId: id, kind: hold.kind, position: [pt.contact.x, pt.contact.y, pt.contact.z], direction: [direction.x, direction.y, direction.z], lengthM: hold.lengthM, holding: holds % 3 !== 2, bornDay: born + 4, removedDay: -1 });
+        holds++;
+      }
+
+      // flowers held out from the stem, in a direction the data gives
+      if (hold && hold.flowerM > 0 && pt.s >= nextFlower && i < path.length - 2) {
+        nextFlower = pt.s + FIXTURE.flowerEveryM;
+        const out = vec.normalize(vec.add(vec.scale(pt.away, 0.8), vec.scale(across, 0.6 * (data.flowers.length % 2 === 0 ? 1 : -1))));
+        data.flowers.push({
+          plantId,
+          stemId: id,
+          position: [pt.contact.x, pt.contact.y, pt.contact.z],
+          lengthM: hold.flowerM,
+          year: FIXTURE.years[1],
+          // the side stems are still lengthening when the hanging flowers are over: these open once their stem is there
+          developDay: born + 20,
+          openDay: born + 40,
+          spentDay: born + 75,
+          direction: [out.x, out.y, out.z],
+        });
       }
     });
     data.stems.push(stem);
@@ -211,5 +261,26 @@ export function makeTestPlant(bower: Bower): TestPlant {
     }
     addStem(`${plantId}/side${data.stems.length}`, 'lateral', 1, `${plantId}/leader`, layAlong(bower, chain, nodeId), sideDays, FIXTURE.sideRadiusMm, true);
   }
-  return { data, fruit };
+
+  // one more plant for each kind of hold, on a timber route nothing above has taken
+  const season = data.seasons.filter((s) => s.plantId === plantId);
+  FIXTURE.holds.forEach((hold, n) => {
+    // from the node of the leader nearest its place along it that still has a timber route free
+    const wanted = (0.3 + 0.2 * n) * (route.nodes.length - 1);
+    const free = (nodeId: string) => bower.graph.edgesAt(nodeId).find((e) => !used.has(e.id) && e.kind === 'timber');
+    const nodeId = route.nodes
+      .slice(1)
+      .map((id, i) => ({ id, off: Math.abs(i + 1 - wanted) }))
+      .sort((a, b) => a.off - b.off)
+      .find((node) => free(node.id))?.id;
+    const first = nodeId ? free(nodeId) : undefined;
+    if (!nodeId || !first) return;
+    used.add(first.id);
+    const id = `test.${n + 1}`;
+    const words = hold.kind.replaceAll('_', ' ');
+    data.plants.push({ id, taxonId: `render-test:${hold.borrows}`, label: `Render test: ${words} (the models of ${hold.borrows})`, stationId: station.id, plantedDay: sideDays[0], leafHabit: 'deciduous', flowerDisplay: `the models of ${hold.borrows}` });
+    for (const s of season) data.seasons.push({ ...s, plantId: id });
+    addStem(`${id}/stem`, 'lateral', 0, null, layAlong(bower, [first.id], nodeId), sideDays, FIXTURE.sideRadiusMm, false, { plantId: id, ...hold });
+  });
+  return { data };
 }
