@@ -437,7 +437,9 @@ export class Simulation {
             handedness: profile.attachment.handedness?.value ?? 'right_handed',
             minPitchM: param(model, 'attachment.minPitchM'),
             pitchPerCircumference: param(model, 'attachment.pitchPerCircumference'),
-            phaseOffset: (lane * 2 * Math.PI) / 3,
+            // stems rising together from the ground start at different places round the leg;
+            // one joining a support that is already coiled runs ahead of the first in mid-span
+            ...(came === null && axis.parent === null ? { startAdvance: (lane * 2 * Math.PI) / 3 } : { bulge: lane * 0.9 }),
           })
         : liePath(edge, { reverse, sideOffsetM: lane === 0 ? 0 : lane % 2 ? LANE_M * Math.ceil(lane / 2) : -LANE_M * Math.ceil(lane / 2) });
     const toNode = graph.otherEnd(edge, nodeId);

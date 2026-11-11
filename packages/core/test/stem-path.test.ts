@@ -79,6 +79,65 @@ describe('twining', () => {
   });
 });
 
+describe('stems sharing a support', () => {
+  const head = get('L.0.head'); // 0.39 m of 100 x 180 mm rib: a stout member and a short run
+  const walk = (path: ReturnType<typeof twinePath>, every = 0.01) => {
+    const out = [];
+    for (let d = 0; d <= pathLength(path); d += every) out.push(pathAt(path, d).p);
+    return out;
+  };
+
+  it('never cuts through the timber to reach its place beside the first', () => {
+    for (const edge of [head, leg, diagonal]) {
+      const halfWidth = edge.section.shape === 'rect' ? Math.min(edge.section.widthMm, edge.section.depthMm) / 2000 : 0;
+      for (const reverse of [false, true]) {
+        for (const bulge of [0.9, 1.8]) {
+          const second = twinePath(edge, { ...twine, handedness: 'right_handed', reverse, bulge });
+          for (const p of walk(second)) expect(clearOfAxis(edge, p), `${edge.id} bulge ${bulge}`).toBeGreaterThan(halfWidth - 0.001);
+        }
+      }
+    }
+  });
+
+  it('runs ahead of the first stem in mid-span and meets it again at each end', () => {
+    const first = twinePath(cable, { ...twine, handedness: 'right_handed' });
+    const second = twinePath(cable, { ...twine, handedness: 'right_handed', bulge: 0.9 });
+    const n = first.points.length;
+    expect(distance(first.points[1]!, second.points[1]!)).toBeLessThan(1e-9);
+    expect(distance(first.points[n - 2]!, second.points[n - 2]!)).toBeLessThan(1e-6);
+    expect(distance(first.points[n >> 1]!, second.points[n >> 1]!)).toBeGreaterThan(0.001);
+    // and it still turns the one way throughout
+    expect(Math.round(turnsOf(second))).toBe(Math.round(turnsOf(first)));
+  });
+
+  it('starts stems that rise together at different places round the leg, and brings each on to the route line at the top', () => {
+    const a = twinePath(leg, { ...twine, handedness: 'right_handed' });
+    const b = twinePath(leg, { ...twine, handedness: 'right_handed', startAdvance: (2 * Math.PI) / 3 });
+    const c = twinePath(leg, { ...twine, handedness: 'right_handed', startAdvance: (4 * Math.PI) / 3 });
+    expect(distance(a.points[0]!, b.points[0]!)).toBeGreaterThan(0.05);
+    expect(distance(b.points[0]!, c.points[0]!)).toBeGreaterThan(0.05);
+    const end = (p: typeof a) => p.points[p.points.length - 1]!;
+    expect(distance(end(a), end(b))).toBeLessThan(1e-6);
+    expect(distance(end(a), end(c))).toBeLessThan(1e-6);
+    // Each winds about a third of a turn less than the one before, never backwards. (The measure follows
+    // the surface normal, which swings fast round a corner of the section and slowly along a flat, so a
+    // third of the way round is not exactly a third of a turn of the normal.)
+    for (const d of [turnsOf(a) - turnsOf(b), turnsOf(b) - turnsOf(c)]) {
+      expect(d).toBeGreaterThan(0.15);
+      expect(d).toBeLessThan(0.5);
+    }
+    expect(turnsOf(a) - turnsOf(c)).toBeGreaterThan(0.5);
+    expect(turnsOf(a) - turnsOf(c)).toBeLessThan(0.9);
+    expect(turnsOf(c)).toBeGreaterThan(1);
+    for (const path of [a, b, c]) for (const p of walk(path)) expect(clearOfAxis(leg, p)).toBeGreaterThan(0.049);
+  });
+
+  it('keeps left-handed stems left-handed when they share', () => {
+    expect(turnsOf(twinePath(leg, { ...twine, handedness: 'left_handed', startAdvance: 2 }))).toBeLessThan(-1);
+    expect(turnsOf(twinePath(cable, { ...twine, handedness: 'left_handed', bulge: 1.2 }))).toBeLessThan(-1.9);
+  });
+});
+
 describe('lying along a member', () => {
   it('rests on the route line with the support beneath', () => {
     const path = liePath(diagonal);

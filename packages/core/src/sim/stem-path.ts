@@ -160,13 +160,24 @@ export interface TwineOptions {
   minPitchM: number;
   /** Pitch as a multiple of the support's circumference, on stout ones. */
   pitchPerCircumference: number;
-  /** Rotates the coil for a second stem sharing the support. */
-  phaseOffset?: number;
+  /**
+   * For a stem rising from the ground beside others: how far round the
+   * support it starts, in radians in its winding direction. It still finishes
+   * on the route line, by winding that much less.
+   */
+  startAdvance?: number;
+  /**
+   * For a second stem arriving over a node on to a support already coiled:
+   * how far its coil runs ahead of the first in mid-span, in radians. Both
+   * start and finish on the route line, so neither cuts through the support
+   * to reach its place.
+   */
+  bulge?: number;
 }
 
 /** A stem twining round the support. */
 export function twinePath(edge: SupportEdge, options: TwineOptions): StemPath {
-  const { reverse = false, handedness, minPitchM, pitchPerCircumference, phaseOffset = 0 } = options;
+  const { reverse = false, handedness, minPitchM, pitchPerCircumference, startAdvance = 0, bulge = 0 } = options;
   const axisLength = edge.axis.length;
   const pitch = Math.max(minPitchM, pitchPerCircumference * Math.PI * (edge.gripDiameterMm / 1000));
   const turns = Math.max(1, Math.round(axisLength / pitch));
@@ -178,21 +189,28 @@ export function twinePath(edge: SupportEdge, options: TwineOptions): StemPath {
   const points: Vec3[] = [];
   const away: Vec3[] = [];
 
+  // The coil always turns the one way. It starts `advance` round from the
+  // route line and ends on it; a bulge runs it ahead in mid-span without ever
+  // reversing it (its slope is kept below the coil's own).
+  const sweep = 2 * Math.PI * turns;
+  const advance = Math.min(Math.max(0, startAdvance), sweep - Math.PI);
+  const ahead = Math.min(Math.max(0, bulge), 1.5 * turns);
+  const angle = (t: number) => Math.PI / 2 + sign * (advance + (sweep - advance) * t + ahead * Math.sin(Math.PI * t) ** 2);
+
   // where the route reaches the support over the top of a node, step down on to it first
   const curve = reverse ? edge.curve.reversed() : edge.curve;
-  const ramped = distance(curve.start, fr[0]!.c) > o.d + 0.01;
-  if (ramped) {
+  if (distance(curve.start, fr[0]!.c) > o.d + 0.01) {
     points.push(curve.start);
     away.push(fr[0]!.d);
   }
   for (let i = 0; i <= n; i++) {
     const f = fr[i]!;
-    const phi = Math.PI / 2 + sign * (2 * Math.PI * turns * (i / n)) + phaseOffset;
+    const phi = angle(i / n);
     const q = onOutline(o, phi);
     points.push(add(f.c, add(scale(f.w, q.x), scale(f.d, q.y))));
     away.push(normalize(add(scale(f.w, q.nx), scale(f.d, q.ny))));
   }
-  if (ramped) {
+  if (distance(curve.end, fr[n]!.c) > o.d + 0.01) {
     points.push(curve.end);
     away.push(fr[n]!.d);
   }

@@ -303,6 +303,47 @@ describe('how the plant holds the structure', () => {
     expect(cables).toBeGreaterThan(30);
   });
 
+  it('keeps every supported point on the surface of the member or cable that carries it', () => {
+    const { graph } = trained.scenario.bower;
+    let checked = 0;
+    for (const sim of [trained, untended]) {
+      for (const a of sim.axes.values()) {
+        for (const r of a.runs) {
+          const edge = graph.edges.get(r.edgeId)!;
+          const sec = edge.section;
+          const half = sec.shape === 'round' ? [sec.diameterMm / 2000, sec.diameterMm / 2000] : [Math.min(sec.widthMm, sec.depthMm) / 2000, Math.hypot(sec.widthMm, sec.depthMm) / 2000];
+          const samples: { x: number; y: number; z: number }[] = [];
+          const n = Math.ceil(edge.axis.length / 0.004);
+          for (let i = 0; i <= n; i++) samples.push(edge.axis.pointAt((i / n) * edge.axis.length));
+          // the first and last few points of a run cross over the lattice node at each end
+          for (let i = r.firstPoint + 3; i <= r.lastPoint - 3; i++) {
+            const p = a.contact[i]!;
+            let d = Infinity;
+            for (const q of samples) d = Math.min(d, Math.hypot(p.x - q.x, p.y - q.y, p.z - q.z));
+            // never inside the section, never floating off it (allowing for the lane a second stem takes)
+            expect(d, `${a.id} on ${edge.id}`).toBeGreaterThan(half[0]! - 0.002);
+            expect(d, `${a.id} on ${edge.id}`).toBeLessThan(half[1]! * 1.16 + 0.05);
+            checked++;
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(5000);
+  });
+
+  it('stays within the structure: nothing wanders off into space', () => {
+    for (const sim of [trained, untended]) {
+      for (const a of sim.axes.values()) {
+        for (const p of a.contact) {
+          expect(Math.abs(p.x)).toBeLessThan(4.6);
+          expect(Math.abs(p.y)).toBeLessThan(5);
+          expect(p.z).toBeGreaterThan(-0.6);
+          expect(p.z).toBeLessThan(5.5);
+        }
+      }
+    }
+  });
+
   it('holds everything itself when nobody gardens', () => {
     for (const a of untended.axes.values()) for (const r of a.runs) expect(r.by).toBe('plant');
   });
