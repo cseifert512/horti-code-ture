@@ -58,6 +58,8 @@ const FLOWER = 6;
 
 /** Silhouette of a leaf as a disc: about a quarter of its length squared in area. */
 const LEAF_DISC = 0.28;
+/** The area a leaf of a given length stands for, in the coverage figures and in the light model alike. A stand-in, not a measured leaf. */
+export const leafSilhouetteAreaM2 = (lengthM: number): number => Math.PI * (LEAF_DISC * lengthM) ** 2;
 /** Radius in pixels below which a disc is too small to rasterise and is dithered instead. */
 const SUBPIXEL = 0.6;
 

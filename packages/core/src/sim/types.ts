@@ -7,6 +7,7 @@
  * event that caused it.
  */
 import type { Bower } from '../bower/types.ts';
+import type { Site } from '../light/site.ts';
 import type { Vec3 } from '../math/vec3.ts';
 import type { TaxonProfile } from '../taxon.ts';
 import type { AttachmentStatus, BudEnd, BudStage, GardenerEventType } from '../vocab.ts';
@@ -244,6 +245,16 @@ export interface Scenario {
   events: readonly GardenerEvent[];
   /** Where people stand and look: the design report measures coverage from each. */
   viewpoints?: readonly Viewpoint[];
+  /**
+   * Where the Bower stands. Left out, the Bower's own site is used, and failing
+   * that southern England is assumed (`DEFAULT_SITE`) and the report says so.
+   */
+  site?: Site;
+  /**
+   * False: light is still worked out and reported, but changes nothing in the
+   * run. For asking what light did, by running a scenario both ways.
+   */
+  lightResponse?: boolean;
 }
 
 // ---------------------------------------------------------------------------
