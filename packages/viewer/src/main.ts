@@ -8,7 +8,7 @@ import { type ReachView, type StationField, materials, reachView, routeInfo, sta
 import { ReachOverlay } from './overlay/view.ts';
 import type { FruitSite } from './plant/adapter.ts';
 import { makeTestPlant } from './plant/fixture.ts';
-import { growWisteria } from './plant/scenario.ts';
+import { type Care, type Planting, canGrow, growScenario } from './plant/scenario.ts';
 import { shared } from './plant/shaders.ts';
 import { PlantView, makePlantMaterials } from './plant/view.ts';
 import { makeSiteMaterials, makeStructureMaterials } from './scene/materials.ts';
@@ -19,8 +19,17 @@ import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
 type BowerKey = 'vault' | 'hemisphere';
 /** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
-type PlantSource = 'none' | 'trained' | 'untended' | 'fixture';
-const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'fixture'];
+type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'fixture';
+const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'fixture'];
+/** The sources that are scenarios of the growth engine. */
+const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>> = {
+  trained: { planting: 'wisteria', care: 'trained' },
+  untended: { planting: 'wisteria', care: 'untended' },
+  'mixed-trained': { planting: 'mixed', care: 'trained' },
+  'mixed-untended': { planting: 'mixed', care: 'untended' },
+};
+/** Tells two Bowers apart: a scenario may be grown on a Bower with more root stations than the default. */
+const signature = (b: Bower) => `${b.id}|${b.rootStations.map((s) => `${s.id}@${s.entryNodeIds.join('+')}`).join(',')}|${b.graph.edges.size}`;
 /** Detail of the organ pools, 0 to 1 (see PlantView.update). */
 const PLANT_DETAIL = 0.75;
 /** Time-lapse speed, days per second. */
@@ -100,7 +109,11 @@ function viewFromUrl(): ViewPreset | null {
 }
 
 // ---- the Bower ---------------------------------------------------------------
-function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget = false, keepDay = false): void {
+/**
+ * Build and show a Bower. `view`: a camera position to move to, 'default' for
+ * the opening view of this kind of Bower, or 'keep' to leave the camera alone.
+ */
+function showStructure(next: Bower, view: ViewPreset | 'default' | 'keep', keepBudget: boolean): void {
   if (structure) {
     stage.scene.remove(structure.group);
     structure.dispose();
@@ -109,14 +122,12 @@ function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget 
     stage.scene.remove(site.group);
     site.dispose();
   }
-  state.bowerKey = key;
-  bower = BOWERS[key]();
+  bower = next;
   structure = buildStructure(bower, structureMaterials);
   site = buildSite(bower, structure.feet, siteMaterials);
   stage.scene.add(structure.group, site.group);
-  stage.frame(structure.bounds, opening ?? defaultView(key, structure.bounds));
+  stage.frame(structure.bounds, view === 'keep' ? undefined : view === 'default' ? defaultView(state.bowerKey, structure.bounds) : view);
 
-  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-bower]')) b.setAttribute('aria-pressed', String(b.dataset['bower'] === key));
   el('bower-name').textContent = bower.name;
   const primary = bower.members.filter((m) => m.tier === 'primary').length;
   const cables = bower.supports.filter((s) => s.kind === 'cable').length;
@@ -139,8 +150,21 @@ function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget 
   showMaterials();
   const wanted = bower.rootStations.find((s) => s.id === state.stationId) ?? bower.rootStations[0];
   if (wanted) showStation(wanted.id, !keepBudget);
-  showPlants(state.plants, keepDay);
   invalidate();
+}
+
+function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget = false, keepDay = false): void {
+  state.bowerKey = key;
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-bower]')) b.setAttribute('aria-pressed', String(b.dataset['bower'] === key));
+  showStructure(BOWERS[key](), opening ?? 'default', keepBudget);
+  // a planting with no scenario on this Bower gives way to the wisteria under the same care
+  const select = el<HTMLSelectElement>('plants');
+  for (const o of select.options) {
+    const scenario = SCENARIOS[o.value as PlantSource];
+    o.disabled = !!scenario && !canGrow(scenario.planting, key);
+  }
+  const wanted = SCENARIOS[state.plants];
+  showPlants(wanted && !canGrow(wanted.planting, key) ? wanted.care : state.plants, keepDay);
 }
 
 function showMaterials(): void {
@@ -302,14 +326,20 @@ function showPlants(source: PlantSource, keepDay = false): void {
   el<HTMLSelectElement>('plants').value = source;
   document.body.classList.toggle('plants', source !== 'none');
   el('plant-bar').hidden = source === 'none';
+  el('log').hidden = true;
   stage.invalidateShadows();
   invalidate();
+  // a scenario is drawn on the Bower it was grown on; anything else on the default one
+  const scenario = SCENARIOS[source];
+  const run = scenario ? growScenario(scenario.planting, state.bowerKey, scenario.care) : null;
+  const on = run?.bower ?? BOWERS[state.bowerKey]();
+  if (signature(on) !== signature(bower)) showStructure(on, 'keep', true);
   if (source === 'none') return;
 
   let data: RenderData;
   let fruit: FruitSite[] = [];
-  if (source === 'fixture') ({ data, fruit } = makeTestPlant(bower));
-  else ({ data } = growWisteria(state.bowerKey, source));
+  if (run) data = run.data;
+  else ({ data, fruit } = makeTestPlant(bower));
   plantMaterials ??= makePlantMaterials({ bark: makeBarkTextures(), leafTex: makeLeafTexture() });
   plant = new PlantView(data, plantMaterials, { fruit });
   stage.scene.add(plant.group);
@@ -319,9 +349,60 @@ function showPlants(source: PlantSource, keepDay = false): void {
   slider.max = String(plant.timeline.lastDay);
   const labels = data.plants.map((p) => p.label).filter((l, i, all) => all.indexOf(l) === i);
   const missing = plant.withoutOrgans.filter((l, i, all) => all.indexOf(l) === i);
-  const stemsOnly = missing.length ? ` Shown as stems only, for want of leaf and flower models: ${missing.join(', ')}.` : '';
-  el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}${stemsOnly}`;
+  const flowerless = plant.withoutFlowers.filter((l, i, all) => all.indexOf(l) === i);
+  const stemsOnly =
+    (missing.length ? ` Shown as stems only, for want of leaf and flower models: ${missing.join(', ')}.` : '') +
+    (flowerless.length ? ` Shown without its flowers, for want of a flower model: ${flowerless.join(', ')}.` : '');
+  // how many of the numbers behind the run have each evidence status; "measured" is always said, even when none is
+  const counted = Object.entries(data.assumptions).filter(([status, n]) => n > 0 || status === 'measured');
+  const behind = counted.some(([, n]) => n > 0) ? ` Numbers behind this run: ${counted.map(([status, n]) => `${n} ${status.replaceAll('_', ' ')}`).join(', ')}.` : '';
+  el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}${behind}${stemsOnly}`;
+  showLog();
   showDay(keepDay && Number.isFinite(state.day) ? state.day : openingDay(data));
+}
+
+// ---- the gardener's log, beside the picture -----------------------------------------
+/** Fill the log with every entry of the run; an entry takes the timeline to its day. */
+function showLog(): void {
+  const list = el('log-list');
+  const events = plant?.timeline.events ?? [];
+  el('log').hidden = events.length === 0;
+  logMarked = -1;
+  list.replaceChildren(
+    ...events.map((e) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      const when = document.createElement('time');
+      when.dateTime = e.date;
+      when.textContent = `${e.date} · ${e.plantId}`;
+      button.append(when, e.outcome);
+      button.addEventListener('click', () => {
+        state.playing = false;
+        showDay(e.day);
+      });
+      li.append(button);
+      return li;
+    }),
+  );
+}
+
+/** Entries not yet made are dimmed; the latest one made is marked and kept in view. */
+let logMarked = -1;
+function markLog(): void {
+  if (!plant) return;
+  const made = plant.timeline.eventsBy(state.day);
+  if (made === logMarked) return;
+  logMarked = made;
+  const items = el('log-list').children;
+  for (let i = 0; i < items.length; i++) {
+    items[i]!.classList.toggle('future', i >= made);
+    items[i]!.classList.toggle('latest', i === made - 1);
+  }
+  const list = el('log-list');
+  const latest = items[Math.max(0, made - 1)] as HTMLElement | undefined;
+  // keep the latest entry in view without moving the page
+  if (latest) list.scrollTop = Math.max(0, latest.offsetTop - list.offsetTop - list.clientHeight / 2 + latest.offsetHeight / 2);
 }
 
 let lastPlantUpdate = 0;
@@ -334,10 +415,8 @@ function showDay(day: number): void {
   el<HTMLInputElement>('plant-day').value = String(Math.round(state.day));
   el('plant-date').textContent = t.dateLabel(state.day);
   const stats = plant.stats();
-  const event = t.latestEvent(state.day, 21);
-  el('plant-caption').textContent = event
-    ? `${event.date} · ${event.outcome}`
-    : `${stats.stems.toLocaleString()} stems · ${stats.leaves.toLocaleString()} leaves · ${stats.flowers.toLocaleString()} inflorescences${stats.fruit ? ` · ${stats.fruit} fruit` : ''}`;
+  el('plant-caption').textContent = `${stats.stems.toLocaleString()} stems · ${stats.leaves.toLocaleString()} leaves · ${stats.flowers.toLocaleString()} in flower${stats.fruit ? ` · ${stats.fruit} fruit` : ''}`;
+  markLog();
   el('play').innerHTML = state.playing ? '&#10073;&#10073;' : '&#9654;';
   stage.invalidateShadows();
   invalidate();

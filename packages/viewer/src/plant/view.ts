@@ -1,21 +1,20 @@
 // Draws the plants of a RenderData: stems as one mesh of tubes, and leaves,
-// inflorescences and fruit as instanced organs with per-organ level of detail.
+// flowers and fruit as instanced organs with per-organ level of detail.
 // Ported from buildPlant in the prototype (Wisteria/src/plant.js); the
 // difference is where time comes from. Here every "is it there, and in what
 // state" is answered by the adapter (adapter.ts) from the engine's days.
 //
-// The organ geometry and colours are Wisteria sinensis's (organs.ts), and
-// mechanism traits do not transfer: a honeysuckle must not be shown with
-// racemes and pinnate leaves. So organs are drawn only for the taxa the assets
-// belong to. Any other plant gets its stems, and `withoutOrgans` names it so
-// the caption can say what is missing.
+// Each plant is drawn with the leaf and flower models of its own taxon
+// (assets.ts). A plant whose taxon has none is drawn as stems only, and
+// `withoutOrgans` names it so the caption can say what is missing.
 import * as THREE from 'three';
 import type { RenderData, RenderFlower, RenderLeaf, RenderStem } from '@horti/core';
 import type { TexturePair } from '../textures.ts';
 import { clamp, hash2, lerp, smoothstep } from '../util.ts';
 import { type FruitSite, RenderTimeline } from './adapter.ts';
+import { type FlowerAsset, type LeafAsset, type TaxonAssets, assetsFor } from './assets.ts';
 import { LodPool, type LodRecord } from './lod.ts';
-import { LEAF_LODS, LEAF_VARIANTS, RACEME_LEN, RACEME_LODS, RACEME_VARIANTS, makeLeafGeometry, makePodGeometry, makeRacemeGeometry } from './organs.ts';
+import { makePodGeometry } from './organs.ts';
 import { WISTERIA_WOOD_LOOK, depthMaterial, patch } from './shaders.ts';
 import { buildWoodGeometry } from './wood.ts';
 
@@ -24,44 +23,49 @@ const UP = new V3(0, 1, 0);
 /** makePodGeometry draws its pods this long; an instance is scaled to the length in the data. */
 const POD_AUTHORED_LENGTH_M = 0.125;
 
-/** Taxa the organ assets in organs.ts may be used for: the plant they were modelled on, and the render test. */
-const HAS_WISTERIA_ORGANS: ReadonlySet<string> = new Set(['wisteria-sinensis', 'render-test']);
-
 const three = (t: readonly [number, number, number], out = new V3()): THREE.Vector3 => out.set(t[0], t[2], -t[1]);
 
+/** Materials are made once and kept: one set of leaf and flower materials per organ model, since each carries its taxon's colours. */
 export interface PlantMaterials {
   wood: THREE.Material;
-  flower: THREE.Material;
-  leafNear: THREE.Material;
-  leafFar: THREE.Material;
   pod: THREE.Material;
+  /** [near, near, far] for the three levels of detail of a leaf. */
+  leaf(asset: LeafAsset): THREE.Material[];
+  flower(asset: FlowerAsset): THREE.Material;
 }
 
 export function makePlantMaterials({ bark, leafTex }: { bark: TexturePair; leafTex: THREE.Texture }): PlantMaterials {
+  const leaves = new Map<string, THREE.Material[]>();
+  const flowers = new Map<string, THREE.Material>();
   return {
     wood: patch(new THREE.MeshStandardMaterial({ map: bark.map, bumpMap: bark.bump, bumpScale: 3, roughness: 0.94 }), 'wood'),
-    flower: patch(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, side: THREE.DoubleSide }), 'raceme', { translucency: 0.3, sheen: 0.1 }),
-    leafNear: patch(new THREE.MeshStandardMaterial({ map: leafTex, bumpMap: leafTex, bumpScale: 1.2, roughness: 0.5, side: THREE.DoubleSide }), 'leaf', { translucency: 0.45 }),
-    leafFar: patch(new THREE.MeshStandardMaterial({ map: leafTex, roughness: 0.6, side: THREE.DoubleSide }), 'leaf', { translucency: 0.45 }),
     pod: patch(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }), 'pod'),
+    leaf(asset) {
+      let m = leaves.get(asset.key);
+      if (!m) {
+        const options = { translucency: 0.45, palette: asset.palette };
+        const near = patch(new THREE.MeshStandardMaterial({ map: leafTex, bumpMap: leafTex, bumpScale: 1.2, roughness: asset.roughness, side: THREE.DoubleSide }), 'leaf', options);
+        const far = patch(new THREE.MeshStandardMaterial({ map: leafTex, roughness: Math.min(1, asset.roughness + 0.1), side: THREE.DoubleSide }), 'leaf', options);
+        leaves.set(asset.key, (m = [near, near, far]));
+      }
+      return m;
+    },
+    flower(asset) {
+      let m = flowers.get(asset.key);
+      if (!m) flowers.set(asset.key, (m = patch(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, side: THREE.DoubleSide }), 'raceme', { translucency: asset.translucency, sheen: asset.sheen, budTint: asset.budTint })));
+      return m;
+    },
   };
 }
 
-// organ geometry does not depend on the data: build once, lazily
-interface OrganGeometry {
-  raceme: THREE.BufferGeometry[][];
-  leaf: THREE.BufferGeometry[][];
-  pod: THREE.BufferGeometry;
+// organ geometry does not depend on the data: build each model once, when first needed
+const GEOMETRY = new Map<string, THREE.BufferGeometry[][]>();
+function geometriesOf(asset: LeafAsset | FlowerAsset): THREE.BufferGeometry[][] {
+  let g = GEOMETRY.get(asset.key);
+  if (!g) GEOMETRY.set(asset.key, (g = Array.from({ length: asset.variants }, (_, v) => Array.from({ length: asset.lods }, (_, l) => asset.make(v, l)))));
+  return g;
 }
-let GEO: OrganGeometry | null = null;
-function geometries(): OrganGeometry {
-  GEO ??= {
-    raceme: Array.from({ length: RACEME_VARIANTS }, (_, v) => Array.from({ length: RACEME_LODS }, (_, l) => makeRacemeGeometry(v, l))),
-    leaf: LEAF_VARIANTS.map((_, v) => Array.from({ length: LEAF_LODS }, (_, l) => makeLeafGeometry(v, l))),
-    pod: makePodGeometry(),
-  };
-  return GEO;
-}
+let POD: THREE.BufferGeometry | null = null;
 
 interface LeafRecord extends LodRecord {
   leaf: RenderLeaf;
@@ -91,23 +95,27 @@ export interface PlantStats {
 export class PlantView {
   readonly group = new THREE.Group();
   readonly timeline: RenderTimeline;
+  /** Labels of plants drawn as stems only, because there are no organ models for their taxon. */
+  readonly withoutOrgans: string[];
+  /** Labels of plants that flower in the data but have no flower model, so are drawn in leaf only. */
+  readonly withoutFlowers: string[];
   private readonly woodGeometry: THREE.BufferGeometry;
-  private readonly leaves: LodPool<LeafRecord>;
-  private readonly flowers: LodPool<FlowerRecord>;
+  private readonly leafPools: { asset: LeafAsset; pool: LodPool<LeafRecord> }[] = [];
+  private readonly flowerPools: { asset: FlowerAsset; pool: LodPool<FlowerRecord> }[] = [];
   private readonly fruit: LodPool<FruitRecord>;
   /** Day the base of each stem was laid down and day it was removed (-1: never). */
   private readonly stemSpans: [number, number][];
   private day = 0;
-  /** Labels of plants drawn as stems only, because there are no organ assets for their taxon yet. */
-  readonly withoutOrgans: string[];
 
   constructor(data: RenderData, mats: PlantMaterials, extras: { fruit?: readonly FruitSite[] } = {}) {
     this.timeline = new RenderTimeline(data);
     this.group.name = `plants:${data.scenario}`;
-    const geo = geometries();
     this.stemSpans = data.stems.filter((s) => s.bornDay.length >= 2).map((s) => [s.bornDay[0]!, s.removedDay[0]!]);
-    const drawable = new Set(data.plants.filter((p) => HAS_WISTERIA_ORGANS.has(p.taxonId)).map((p) => p.id));
-    this.withoutOrgans = data.plants.filter((p) => !drawable.has(p.id)).map((p) => p.label);
+
+    const assets = new Map<string, TaxonAssets | null>(data.plants.map((p) => [p.id, assetsFor(p.taxonId)]));
+    this.withoutOrgans = data.plants.filter((p) => !assets.get(p.id)).map((p) => p.label);
+    const flowering = new Set(data.flowers.map((f) => f.plantId));
+    this.withoutFlowers = data.plants.filter((p) => flowering.has(p.id) && assets.get(p.id) && !assets.get(p.id)!.flower).map((p) => p.label);
 
     // ---- wood ------------------------------------------------------------------
     this.woodGeometry = buildWoodGeometry(data.stems).geometry;
@@ -132,9 +140,10 @@ export class PlantView {
     // each leaf stands on a point of its stem: find it, to seat the leaf on the
     // stem's surface as the stem thickens and to sway it with that stem
     const stems = new Map(data.stems.map((s, index) => [s.id, { s, index }]));
-    const leafRecords: LeafRecord[] = [];
+    const leafRecords = new Map<LeafAsset, LeafRecord[]>();
     data.leaves.forEach((leaf, n) => {
-      if (!drawable.has(leaf.plantId)) return;
+      const asset = assets.get(leaf.plantId)?.leaf;
+      if (!asset) return;
       const r1 = hash2(n, 3);
       three(leaf.direction, Z).normalize();
       X.crossVectors(UP, Z);
@@ -179,65 +188,64 @@ export class PlantView {
       } else {
         a.set([p.x, p.y, p.z, r1], 4);
       }
-      leafRecords.push({
-        m: new Float32Array(m4.elements),
-        c: [tone, tone, tone],
-        a,
-        x: p.x,
-        y: p.y,
-        z: p.z,
-        variant: leaf.lengthM < 0.1 || r1 < 0.2 ? 0 : r1 < 0.8 ? 1 : 2,
-        rank: hash2(n, 5),
-        leaf,
-        stem,
-        pointIndex,
-        outX,
-        outY,
-        outZ,
+      const record: LeafRecord = { m: new Float32Array(m4.elements), c: [tone, tone, tone], a, x: p.x, y: p.y, z: p.z, variant: asset.pick(leaf.lengthM, r1), rank: hash2(n, 5), leaf, stem, pointIndex, outX, outY, outZ };
+      const list = leafRecords.get(asset);
+      if (list) list.push(record);
+      else leafRecords.set(asset, [record]);
+    });
+    for (const [asset, records] of leafRecords) {
+      const pool = new LodPool({
+        geometries: geometriesOf(asset),
+        materials: mats.leaf(asset),
+        attrs: [
+          { name: 'aState', size: 4 },
+          { name: 'aHost', size: 4 },
+          { name: 'aSup', size: 4 },
+          { name: 'aSeat', size: 4 },
+        ],
+        records,
+        depth: depthMaterial('leaf'),
       });
-    });
-    this.leaves = new LodPool({
-      geometries: geo.leaf,
-      materials: [mats.leafNear, mats.leafNear, mats.leafFar],
-      attrs: [
-        { name: 'aState', size: 4 },
-        { name: 'aHost', size: 4 },
-        { name: 'aSup', size: 4 },
-        { name: 'aSeat', size: 4 },
-      ],
-      records: leafRecords,
-      depth: depthMaterial('leaf'),
-    });
-    this.leaves.group.name = 'leaves';
-    this.group.add(this.leaves.group);
+      pool.group.name = asset.key;
+      this.group.add(pool.group);
+      this.leafPools.push({ asset, pool });
+    }
 
-    // ---- inflorescences ----------------------------------------------------------
-    const flowerRecords: FlowerRecord[] = [];
+    // ---- flowers -----------------------------------------------------------------
+    const flowerRecords = new Map<FlowerAsset, FlowerRecord[]>();
     data.flowers.forEach((flower, n) => {
-      if (!drawable.has(flower.plantId)) return;
+      const asset = assets.get(flower.plantId)?.flower;
+      if (!asset) return;
       const r1 = hash2(n, 23);
-      const scale = flower.lengthM / RACEME_LEN;
+      const scale = flower.lengthM / asset.authoredSize;
       three(flower.position, p);
       m4.compose(p, q.setFromEuler(e.set(0, hash2(n, 29) * Math.PI * 2, 0)), scl.set(scale, scale, scale));
       const tone = 0.92 + 0.16 * r1;
       const warm = (hash2(n, 7) - 0.5) * 0.08;
       const a = new Float32Array(8);
-      // swing room is not in the data: allow a moderate swing everywhere
-      a.set([0.6, r1, 0, 0], 4);
-      flowerRecords.push({ m: new Float32Array(m4.elements), c: [tone * (1 + warm), tone, tone * (1 - warm)], a, x: p.x, y: p.y - flower.lengthM / 2, z: p.z, variant: Math.floor(hash2(n, 31) * RACEME_VARIANTS), rank: hash2(n, 37), flower });
+      // how much room it has to swing is not in the data: each model swings as freely as its habit suggests
+      a.set([asset.swing, r1, 0, 0], 4);
+      const record: FlowerRecord = { m: new Float32Array(m4.elements), c: [tone * (1 + warm), tone, tone * (1 - warm)], a, x: p.x, y: p.y - flower.lengthM * asset.centreDrop, z: p.z, variant: asset.pick(hash2(n, 31)), rank: hash2(n, 37), flower };
+      const list = flowerRecords.get(asset);
+      if (list) list.push(record);
+      else flowerRecords.set(asset, [record]);
     });
-    this.flowers = new LodPool({
-      geometries: geo.raceme,
-      materials: [mats.flower, mats.flower, mats.flower, mats.flower],
-      attrs: [
-        { name: 'aState', size: 4 },
-        { name: 'aInst', size: 4 },
-      ],
-      records: flowerRecords,
-      depth: depthMaterial('raceme'),
-    });
-    this.flowers.group.name = 'inflorescences';
-    this.group.add(this.flowers.group);
+    for (const [asset, records] of flowerRecords) {
+      const material = mats.flower(asset);
+      const pool = new LodPool({
+        geometries: geometriesOf(asset),
+        materials: Array.from({ length: asset.lods }, () => material),
+        attrs: [
+          { name: 'aState', size: 4 },
+          { name: 'aInst', size: 4 },
+        ],
+        records,
+        depth: depthMaterial('raceme'),
+      });
+      pool.group.name = asset.key;
+      this.group.add(pool.group);
+      this.flowerPools.push({ asset, pool });
+    }
 
     // ---- fruit (not in the contract yet: only the test plant supplies any) --------
     const fruitRecords: FruitRecord[] = (extras.fruit ?? []).map((fruit, n) => {
@@ -246,7 +254,8 @@ export class PlantView {
       m4.compose(p, q.setFromEuler(e.set(0, hash2(n, 41) * Math.PI * 2, 0)), scl.set(scale, scale, scale));
       return { m: new Float32Array(m4.elements), c: [1, 1, 1], a: new Float32Array(4), x: p.x, y: p.y, z: p.z, variant: 0, rank: 0, fruit };
     });
-    this.fruit = new LodPool({ geometries: [[geo.pod]], materials: [mats.pod], attrs: [{ name: 'aState', size: 4 }], records: fruitRecords, depth: depthMaterial('pod') });
+    POD ??= makePodGeometry();
+    this.fruit = new LodPool({ geometries: [[POD]], materials: [mats.pod], attrs: [{ name: 'aState', size: 4 }], records: fruitRecords, depth: depthMaterial('pod') });
     this.fruit.group.name = 'fruit';
     this.group.add(this.fruit.group);
   }
@@ -268,42 +277,47 @@ export class PlantView {
     const fine = clamp((detail - 0.4) / 0.6, 0, 1);
     const [sway0, sway1] = WISTERIA_WOOD_LOOK.swayDays;
 
-    this.leaves.update(camera, {
-      alive: (r) => {
-        const s = t.leafDraw(r.leaf, day);
-        if (!s.visible) return false;
-        const a = r.a;
-        a[0] = s.expansion;
-        a[1] = s.colour;
-        if (!r.stem) return true;
-        // young wood sways and carries its leaves with it
-        a[11] = 1 - smoothstep(sway0, sway1, day - r.stem.bornDay[r.pointIndex]!);
-        const radius = t.stemRadiusM(r.stem, r.pointIndex, day);
-        a[12] = r.outX * radius;
-        a[13] = r.outY * radius;
-        a[14] = r.outZ * radius;
-        return true;
-      },
-      density,
-      dist: [1.6 * k, 5 * k],
-      caps: [Math.round(lerp(0, 60, fine)), Math.round(lerp(40, 800, detail * detail))],
-    });
+    for (const { asset, pool } of this.leafPools) {
+      pool.update(camera, {
+        alive: (r) => {
+          const s = t.leafDraw(r.leaf, day);
+          if (!s.visible) return false;
+          const a = r.a;
+          a[0] = s.expansion;
+          a[1] = s.colour;
+          if (!r.stem) return true;
+          // young wood sways and carries its leaves with it
+          a[11] = 1 - smoothstep(sway0, sway1, day - r.stem.bornDay[r.pointIndex]!);
+          const radius = t.stemRadiusM(r.stem, r.pointIndex, day);
+          a[12] = r.outX * radius;
+          a[13] = r.outY * radius;
+          a[14] = r.outZ * radius;
+          return true;
+        },
+        density,
+        dist: [1.6 * k * asset.detailReach, 5 * k * asset.detailReach],
+        caps: [Math.round(lerp(0, 60, fine)), Math.round(lerp(40, 800, detail * detail))],
+      });
+    }
 
-    this.flowers.update(camera, {
-      alive: (r) => {
-        const s = t.flowerDraw(r.flower, day);
-        if (!s.visible) return false;
-        const a = r.a;
-        a[0] = s.elongation;
-        a[1] = s.bloom;
-        a[2] = s.shed;
-        a[3] = 1;
-        return true;
-      },
-      density,
-      dist: [1.3 * k, 3.2 * k, 6.5 * k],
-      caps: [Math.round(lerp(0, 26, fine)), Math.round(lerp(8, 130, detail * detail)), Math.round(lerp(80, 800, detail * detail))],
-    });
+    for (const { asset, pool } of this.flowerPools) {
+      pool.update(camera, {
+        alive: (r) => {
+          const s = t.flowerDraw(r.flower, day);
+          if (!s.visible) return false;
+          const a = r.a;
+          a[0] = s.elongation;
+          a[1] = s.bloom;
+          a[2] = s.shed;
+          a[3] = 1;
+          return true;
+        },
+        density,
+        dist: asset.detailAt.map((d) => d * k),
+        // the finest model only at high detail; the rest in growing numbers
+        caps: asset.detailCaps.map((cap, i) => Math.round(i === 0 ? lerp(0, cap, fine) : lerp(cap * 0.08, cap, detail * detail))),
+      });
+    }
 
     this.fruit.update(camera, {
       alive: (r) => {
@@ -320,19 +334,20 @@ export class PlantView {
   /** What is on the plants on the day last shown. */
   stats(): PlantStats {
     const day = this.day;
+    const sum = (pools: { pool: { visible: number; triangles: number } }[], key: 'visible' | 'triangles') => pools.reduce((n, p) => n + p.pool[key], 0);
     return {
       stems: this.stemSpans.reduce((n, [born, removed]) => n + (born <= day && (removed < 0 || day < removed) ? 1 : 0), 0),
-      leaves: this.leaves.visible,
-      flowers: this.flowers.visible,
+      leaves: sum(this.leafPools, 'visible'),
+      flowers: sum(this.flowerPools, 'visible'),
       fruit: this.fruit.visible,
-      triangles: (this.woodGeometry.index?.count ?? 0) / 3 + this.leaves.triangles + this.flowers.triangles + this.fruit.triangles,
+      triangles: (this.woodGeometry.index?.count ?? 0) / 3 + sum(this.leafPools, 'triangles') + sum(this.flowerPools, 'triangles') + this.fruit.triangles,
     };
   }
 
   dispose(): void {
     this.woodGeometry.dispose();
-    this.leaves.dispose();
-    this.flowers.dispose();
+    for (const { pool } of this.leafPools) pool.dispose();
+    for (const { pool } of this.flowerPools) pool.dispose();
     this.fruit.dispose();
   }
 }

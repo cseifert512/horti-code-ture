@@ -206,13 +206,18 @@ export class RenderTimeline {
     return { visible: true, size: through(fruit.swell[0], fruit.swell[1]), ripeness: through(fruit.ripen[0], fruit.ripen[1]) };
   }
 
-  /** The gardener's most recent entry on or before `day`, if it is no older than `withinDays`. */
-  latestEvent(day: number, withinDays: number): RenderData['events'][number] | null {
-    let best: RenderData['events'][number] | null = null;
-    for (const e of this.data.events) {
-      if (e.day > day || e.day < day - withinDays || e.type === 'monitor') continue;
-      if (!best || e.day >= best.day) best = e;
-    }
-    return best;
+  /** The gardener's log in the order it happened. */
+  get events(): readonly RenderData['events'][number][] {
+    this.sortedEvents ??= [...this.data.events].sort((a, b) => a.day - b.day);
+    return this.sortedEvents;
+  }
+  private sortedEvents: RenderData['events'][number][] | null = null;
+
+  /** How many entries of the log had been made by the end of `day`. */
+  eventsBy(day: number): number {
+    const events = this.events;
+    let n = 0;
+    while (n < events.length && events[n]!.day <= day) n++;
+    return n;
   }
 }

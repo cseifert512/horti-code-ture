@@ -14,6 +14,7 @@
 // of one twiner and must not be applied to every stem.
 import * as THREE from 'three';
 import { CLOCK_GLSL, clock } from './adapter.ts';
+import type { LeafPalette, Triple } from './assets.ts';
 
 /**
  * How Wisteria sinensis wood LOOKS as it ages: the ages, in days, over which
@@ -160,16 +161,16 @@ const PROGRAMS: Record<ProgramKind, Program> = {
                 + pendulum( wp, org, 0.07 );
       wOff.y -= fall * fall * 0.35;
     `,
-    fragHead: /* glsl */ `varying vec3 vLeaf;`,
+    // the colours are the taxon's (assets.ts): mature, newly unfolded, autumn
+    fragHead: /* glsl */ `varying vec3 vLeaf; uniform vec3 uLeafGreenA, uLeafGreenB, uLeafYoung, uLeafAutumnA, uLeafAutumnB;`,
     fragColor: /* glsl */ `
       {
         float lum = diffuseColor.g;
         float v = clamp( vLeaf.z, 0.0, 1.0 );
-        vec3 green = mix( vec3( 0.145, 0.30, 0.050 ), vec3( 0.19, 0.36, 0.065 ), v );
-        vec3 bronze = vec3( 0.40, 0.27, 0.085 );
-        vec3 yellow = mix( vec3( 0.80, 0.56, 0.05 ), vec3( 0.62, 0.36, 0.06 ), v * v );
-        vec3 c = mix( green, bronze, vLeaf.x * 0.85 );
-        c = mix( c, yellow, vLeaf.y );
+        vec3 green = mix( uLeafGreenA, uLeafGreenB, v );
+        vec3 autumn = mix( uLeafAutumnA, uLeafAutumnB, v * v );
+        vec3 c = mix( green, uLeafYoung, vLeaf.x * 0.85 );
+        c = mix( c, autumn, vLeaf.y );
         diffuseColor.rgb = c * lum * 1.45;
       }
     `,
@@ -202,9 +203,9 @@ const PROGRAMS: Record<ProgramKind, Program> = {
     world: /* glsl */ `
       vec3 wOff = pendulum( wp, instanceMatrix[3].xyz, 0.13 * aInst.x );
     `,
-    fragHead: /* glsl */ `varying float vOpen;`,
+    fragHead: /* glsl */ `varying float vOpen; uniform vec3 uBudTint;`,
     fragColor: /* glsl */ `
-      diffuseColor.rgb *= mix( vec3( 0.62, 0.55, 0.86 ), vec3( 1.0 ), vOpen );
+      diffuseColor.rgb *= mix( uBudTint, vec3( 1.0 ), vOpen );
     `,
   },
 
@@ -265,14 +266,35 @@ export interface PatchOptions {
   translucency?: number;
   /** Soft rim light (velvety petals, leaf bloom). */
   sheen?: number;
+  /** For the leaf program: the taxon's leaf colours. */
+  palette?: LeafPalette;
+  /** For the raceme program: the tint of an unopened flower. */
+  budTint?: Triple;
 }
+
+/** The colours of the leaf the prototype was built for; used where a material names none. */
+const DEFAULT_PALETTE: LeafPalette = { greenA: [0.145, 0.3, 0.05], greenB: [0.19, 0.36, 0.065], young: [0.4, 0.27, 0.085], autumnA: [0.8, 0.56, 0.05], autumnB: [0.62, 0.36, 0.06] };
+const DEFAULT_BUD_TINT: Triple = [0.62, 0.55, 0.86];
 
 /** How much litter lies on the ground, shared by every litter material. */
 export const litter = { uLitter: { value: new THREE.Vector2(0, 0) } };
 
 /** Splice an organ program into a built-in material. */
-export function patch<M extends THREE.Material>(material: M, kind: ProgramKind, { translucency = 0, sheen = 0 }: PatchOptions = {}): M {
+export function patch<M extends THREE.Material>(material: M, kind: ProgramKind, { translucency = 0, sheen = 0, palette = DEFAULT_PALETTE, budTint = DEFAULT_BUD_TINT }: PatchOptions = {}): M {
   const prog = PROGRAMS[kind];
+  // one compiled program per kind; the colours are uniforms, so each material keeps its own
+  const colours: Record<string, { value: THREE.Vector3 }> =
+    kind === 'leaf'
+      ? {
+          uLeafGreenA: { value: new THREE.Vector3(...palette.greenA) },
+          uLeafGreenB: { value: new THREE.Vector3(...palette.greenB) },
+          uLeafYoung: { value: new THREE.Vector3(...palette.young) },
+          uLeafAutumnA: { value: new THREE.Vector3(...palette.autumnA) },
+          uLeafAutumnB: { value: new THREE.Vector3(...palette.autumnB) },
+        }
+      : kind === 'raceme'
+        ? { uBudTint: { value: new THREE.Vector3(...budTint) } }
+        : {};
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, {
       uTime: shared.uTime,
@@ -285,6 +307,7 @@ export function patch<M extends THREE.Material>(material: M, kind: ProgramKind, 
       ...clock,
     });
     if (kind === 'litter') shader.uniforms['uLitter'] = litter.uLitter;
+    Object.assign(shader.uniforms, colours);
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\n' + COMMON + prog.head)
       .replace('#include <begin_vertex>', prog.begin)

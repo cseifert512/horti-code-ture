@@ -591,3 +591,8 @@ export function makeLitterGeometry(): THREE.BufferGeometry {
   g.rotateX(-Math.PI / 2);
   return g;
 }
+
+// The surface and merge builders are plain geometry tools, shared with the organ
+// modules of other taxa. The shapes above stay Wisteria sinensis's.
+export { Merge, Surf, lin, mix };
+export type { RGB };
