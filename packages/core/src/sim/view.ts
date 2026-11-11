@@ -32,10 +32,19 @@ export interface ViewCoverage {
   day: number;
   /** Of the timber seen from here on the bare structure, the share still seen. */
   timberVisible: number;
-  /** Share of the structure's extent in the view that is leaf, and the part of that which is evergreen. */
+  /** Of that same timber, the share now behind leaf, and the part of it behind evergreen leaf. */
+  timberBehindLeaf: number;
+  timberBehindEvergreen: number;
+  /**
+   * Leaf as a share of the rectangle the structure fills in the view, and the
+   * part of that which is evergreen. The rectangle includes the open space
+   * between members, so on an open lattice these stay small whatever is
+   * planted: they compare months and scenarios, and are not a share of the
+   * structure.
+   */
   foliage: number;
   evergreenFoliage: number;
-  /** Share of the structure's extent in the view that is open flower. */
+  /** Open flower as a share of the same rectangle. */
   flowers: number;
 }
 
@@ -226,6 +235,8 @@ export function viewCoverage(bower: Bower, data: RenderData, vp: Viewpoint, days
     let leaf = 0;
     let evergreen = 0;
     let flowers = 0;
+    let behindLeaf = 0;
+    let behindEvergreen = 0;
     for (let y = y0; y <= y1; y++) {
       for (let x = x0; x <= x1; x++) {
         const i = y * width + x;
@@ -234,8 +245,22 @@ export function viewCoverage(bower: Bower, data: RenderData, vp: Viewpoint, days
         else if (k === LEAF) leaf++;
         else if (k === EVERGREEN) evergreen++;
         else if (k === FLOWER) flowers++;
+        // where timber showed on the bare structure and leaf shows now
+        if (bare.kind[i] === TIMBER && (k === LEAF || k === EVERGREEN)) {
+          behindLeaf++;
+          if (k === EVERGREEN) behindEvergreen++;
+        }
       }
     }
-    return { viewpointId: vp.id, day, timberVisible: timber0 ? timber / timber0 : 0, foliage: (leaf + evergreen) / extent, evergreenFoliage: evergreen / extent, flowers: flowers / extent };
+    return {
+      viewpointId: vp.id,
+      day,
+      timberVisible: timber0 ? timber / timber0 : 0,
+      timberBehindLeaf: timber0 ? behindLeaf / timber0 : 0,
+      timberBehindEvergreen: timber0 ? behindEvergreen / timber0 : 0,
+      foliage: (leaf + evergreen) / extent,
+      evergreenFoliage: evergreen / extent,
+      flowers: flowers / extent,
+    };
   });
 }

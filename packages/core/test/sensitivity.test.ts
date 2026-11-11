@@ -89,5 +89,8 @@ describe('the winter evergreen target on the reference palette', () => {
       expect(v.value, v.viewpointId).toBeLessThan(low / 2);
       expect(v.value, v.viewpointId).toBeGreaterThan(0);
     }
+    // nor is a quarter of the timber hidden from anywhere, though the evergreens hold a quarter of the route
+    for (const v of s.rows[0]!.winterTimberHidden) expect(v.value, v.viewpointId).toBeLessThan(low);
+    expect(s.rows[0]!.winterRouteHeldByEvergreens).toBeGreaterThan(low);
   });
 });

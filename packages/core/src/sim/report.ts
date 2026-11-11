@@ -63,12 +63,40 @@ export interface GardeningYear {
 /** `caveat`: something the taxon's profile says about how it holds on that the attachment rule does not act on. */
 export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'joints_reached' | 'crown_not_reached' | 'not_modelled' | 'assumed' | 'caveat' | 'not_replanted' | 'recorded_only';
 
-/** Winter evergreen cover from each viewpoint, read against the design target. */
+/**
+ * Winter evergreen cover, read against the design target.
+ *
+ * The target asks for a share of "visually prominent areas with retained
+ * winter evergreen coverage", with timber meant to show elsewhere. It does not
+ * say what the share is of, so the run is read two ways and both are given.
+ *
+ * As laid out: the share of all route that plants which keep their leaves
+ * hold. This is where winter green is, however thin.
+ *
+ * As seen: from each viewpoint, evergreen leaf as a share of the structure's
+ * extent in the view, open bays between members included; and beside it, how
+ * much of the timber seen on the bare structure that leaf hides. A plant on
+ * the outer face of a member hides none of it from a visitor inside.
+ *
+ * A planting can be laid out to the target and still read as bare timber:
+ * the gap between the two readings is leaf density, and bays with nothing
+ * across them for foliage to fill.
+ */
 export interface WinterCheck {
   target: Sourced<[number, number]>;
   /** ISO date the cover was read on. */
   date: string;
-  views: { viewpointId: string; evergreen: number; against: 'below' | 'within' | 'above' }[];
+  /** As laid out: share of all route held on that date by plants that keep their leaves. */
+  routeHeldByEvergreens: number;
+  layoutAgainst: 'below' | 'within' | 'above';
+  views: {
+    viewpointId: string;
+    /** As seen: evergreen leaf as a share of the structure's extent in the view. */
+    evergreen: number;
+    against: 'below' | 'within' | 'above';
+    /** Of the timber seen from here on the bare structure, the share hidden behind evergreen leaf. */
+    timberHidden: number;
+  }[];
 }
 
 export interface Alert {
@@ -223,11 +251,31 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
   });
   const flowerlessMonths = months.filter((m) => !Object.values(m.flowers).some((n) => n > 0)).map((m) => m.month);
   const [lo, hi] = WINTER_EVERGREEN_COVER.value!;
+  const against = (x: number): 'below' | 'within' | 'above' => (x < lo ? 'below' : x > hi ? 'above' : 'within');
   const january = months.find((m) => m.month === WINTER_MONTH);
-  const winter: WinterCheck | null =
-    january && january.views.length
-      ? { target: WINTER_EVERGREEN_COVER, date: january.date, views: january.views.map((v) => ({ viewpointId: v.viewpointId, evergreen: v.evergreenFoliage, against: v.evergreenFoliage < lo ? 'below' : v.evergreenFoliage > hi ? 'above' : 'within' })) }
-      : null;
+  let winter: WinterCheck | null = null;
+  if (january && january.views.length) {
+    // every stretch that a plant which keeps its leaves held on that day, on stems that are still there
+    const janDay = cal.dayOf(january.date);
+    const heldGreen = new Set<string>();
+    for (const plant of sim.plants.values()) {
+      if (sim.scenario.taxa.get(plant.taxonId)!.profile.leafHabit.value !== 'evergreen') continue;
+      for (const id of plant.axisIds) {
+        const a = sim.axes.get(id)!;
+        if (a.removedDay !== null && a.removedDay <= janDay) continue;
+        for (const r of a.runs) if (r.status !== 'detached' && r.day <= janDay) heldGreen.add(r.edgeId);
+      }
+    }
+    const routeM = graph.totalLength;
+    const routeHeldByEvergreens = routeM ? Math.min(1, [...heldGreen].reduce((s, e) => s + graph.edges.get(e)!.curve.length, 0) / routeM) : 0;
+    winter = {
+      target: WINTER_EVERGREEN_COVER,
+      date: january.date,
+      routeHeldByEvergreens,
+      layoutAgainst: against(routeHeldByEvergreens),
+      views: january.views.map((v) => ({ viewpointId: v.viewpointId, evergreen: v.evergreenFoliage, against: against(v.evergreenFoliage), timberHidden: v.timberBehindEvergreen })),
+    };
+  }
 
   // ---- flowers by height, and anything hanging into headroom ---------------------
   const byHeight = new Map<string, number>();
@@ -342,6 +390,7 @@ export function formatDesignReport(r: DesignReport): string {
   }
   if (r.months.length) {
     line(`THROUGH ${r.year}, on the 15th of each month`);
+    line('  timber seen: of the timber seen on the bare structure. The rest: of the rectangle the structure fills in the view, open space included');
     for (const vp of r.viewpoints) {
       line(`  ${vp.label}`);
       line(`    ${'month'.padEnd(6)}${'timber seen'.padStart(12)}${'in leaf'.padStart(9)}${'evergreen'.padStart(11)}${'in flower'.padStart(11)}`);
@@ -361,8 +410,18 @@ export function formatDesignReport(r: DesignReport): string {
   }
   if (r.winter) {
     const [lo, hi] = r.winter.target.value!;
+    const verdict = (a: 'below' | 'within' | 'above') => (a === 'within' ? 'within the target' : `${a} the target`);
+    const fine = (x: number) => `${(100 * x).toFixed(x < 0.1 ? 1 : 0)}%`;
     line(`WINTER EVERGREEN COVER on ${r.winter.date}, against the design target of ${pct(lo)} to ${pct(hi)} (a target to test, not a fact about plants)`);
-    for (const v of r.winter.views) line(`  ${(r.viewpoints.find((x) => x.id === v.viewpointId)?.label ?? v.viewpointId).padEnd(44)}${pct(v.evergreen).padStart(5)}  ${v.against === 'within' ? 'within the target' : `${v.against} the target`}`);
+    line(`  as laid out: plants that keep their leaves hold ${pct(r.winter.routeHeldByEvergreens)} of the route  ${verdict(r.winter.layoutAgainst)}`);
+    line("  as seen: evergreen leaf as a share of the structure's extent in each view, open bays included, and the timber it hides");
+    for (const v of r.winter.views) {
+      line(`    ${(r.viewpoints.find((x) => x.id === v.viewpointId)?.label ?? v.viewpointId).padEnd(44)}${fine(v.evergreen).padStart(6)}  ${verdict(v.against).padEnd(18)}  hides ${fine(v.timberHidden)} of the timber seen`);
+    }
+    if (r.winter.layoutAgainst !== 'below' && r.winter.views.some((v) => v.against === 'below')) {
+      line('  The evergreens hold enough of the structure and do not yet read as cover: the difference is how dense their leaf is,');
+      line('  which has not been measured, and whether the bays between members have anything across them for foliage to fill.');
+    }
     line();
   }
   if (r.flowersByHeight.length) {

@@ -60,8 +60,12 @@ export const STANDARD_VARIATIONS: readonly Variation[] = [
 export interface SensitivityRow {
   id: string;
   label: string;
-  /** Evergreen leaf in mid January, as a share of the structure seen from each viewpoint. */
+  /** Evergreen leaf in mid January, as a share of the structure's extent in the view from each viewpoint. */
   winterEvergreen: { viewpointId: string; value: number }[];
+  /** In mid January, the share of the timber seen from each viewpoint that is hidden behind evergreen leaf. */
+  winterTimberHidden: { viewpointId: string; value: number }[];
+  /** Share of all route held in mid January by plants that keep their leaves. */
+  winterRouteHeldByEvergreens: number;
   /** Leaf of any kind in mid July, and the share of the bare structure's timber still seen. */
   summerFoliage: { viewpointId: string; value: number }[];
   summerTimberVisible: { viewpointId: string; value: number }[];
@@ -98,6 +102,8 @@ export function sensitivity(make: (taxa: Growable) => Scenario, taxa: Growable, 
       id: v.id,
       label: v.label,
       winterEvergreen: (winter?.views ?? []).map((x) => ({ viewpointId: x.viewpointId, value: x.evergreenFoliage })),
+      winterTimberHidden: (winter?.views ?? []).map((x) => ({ viewpointId: x.viewpointId, value: x.timberBehindEvergreen })),
+      winterRouteHeldByEvergreens: r.winter?.routeHeldByEvergreens ?? 0,
       summerFoliage: (july?.views ?? []).map((x) => ({ viewpointId: x.viewpointId, value: x.foliage })),
       summerTimberVisible: (july?.views ?? []).map((x) => ({ viewpointId: x.viewpointId, value: x.timberVisible })),
       flowersOpened: sim.summaries.filter((s) => s.year === r.year).reduce((sum, s) => sum + s.flowersOpened, 0),
@@ -119,14 +125,14 @@ export function formatSensitivity(s: Sensitivity): string {
   for (const vp of s.viewpoints) {
     out.push('');
     out.push(`  ${vp.label}`);
-    out.push(`    ${''.padEnd(w)}${'evergreen, Jan'.padStart(16)}${'in leaf, Jul'.padStart(14)}${'timber seen, Jul'.padStart(18)}`);
+    out.push(`    ${''.padEnd(w)}${'evergreen, Jan'.padStart(16)}${'timber it hides'.padStart(17)}${'in leaf, Jul'.padStart(14)}${'timber seen, Jul'.padStart(18)}`);
     for (const r of s.rows) {
       const at = <T extends { viewpointId: string; value: number }>(list: T[]) => list.find((x) => x.viewpointId === vp.id)?.value ?? 0;
-      out.push(`    ${r.label.padEnd(w)}${pct(at(r.winterEvergreen)).padStart(16)}${pct(at(r.summerFoliage)).padStart(14)}${pct(at(r.summerTimberVisible)).padStart(18)}`);
+      out.push(`    ${r.label.padEnd(w)}${pct(at(r.winterEvergreen)).padStart(16)}${pct(at(r.winterTimberHidden)).padStart(17)}${pct(at(r.summerFoliage)).padStart(14)}${pct(at(r.summerTimberVisible)).padStart(18)}`);
     }
   }
   out.push('');
-  out.push(`  ${''.padEnd(w + 2)}${'flowers opened'.padStart(16)}${'route held'.padStart(14)}`);
-  for (const r of s.rows) out.push(`  ${r.label.padEnd(w + 2)}${String(r.flowersOpened).padStart(16)}${pct(r.routeHeldShare).padStart(14)}`);
+  out.push(`  ${''.padEnd(w + 2)}${'flowers opened'.padStart(16)}${'route held'.padStart(14)}${'by evergreens, Jan'.padStart(20)}`);
+  for (const r of s.rows) out.push(`  ${r.label.padEnd(w + 2)}${String(r.flowersOpened).padStart(16)}${pct(r.routeHeldShare).padStart(14)}${pct(r.winterRouteHeldByEvergreens).padStart(20)}`);
   return out.join('\n');
 }

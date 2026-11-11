@@ -94,32 +94,39 @@ export function renderReport(container: HTMLElement, report: DesignReport, actio
   if (report.winter) {
     const [lo, hi] = report.winter.target.value ?? [0, 0];
     const full = Math.max(0.5, hi * 1.25);
+    /** One reading against the target band: a name, a bar and the figure. */
+    const meterRow = (name: HTMLElement, value: number, against: 'below' | 'within' | 'above', what: string, aside = ''): HTMLElement => {
+      const row = el('div', 'meter-row');
+      const meter = el('div', 'meter');
+      meter.setAttribute('role', 'img');
+      meter.setAttribute('aria-label', `${percent(value)} ${what}, ${against} the target of ${percent(lo)} to ${percent(hi)}`);
+      const band = el('i', 'band');
+      band.style.left = `${(lo / full) * 100}%`;
+      band.style.width = `${((hi - lo) / full) * 100}%`;
+      const fill = el('i', `fill ${against}`);
+      fill.style.width = `${Math.min(1, value / full) * 100}%`;
+      meter.append(band, fill);
+      const reading = el('span', 'reading');
+      reading.append(el('b', undefined, percent(value)), ` ${against} target${aside}`);
+      row.append(name, meter, reading);
+      return row;
+    };
+    // as laid out: where the plants that keep their leaves are, however thin the leaf
+    winter.append(meterRow(el('span', 'where', 'As laid out: route held by evergreens'), report.winter.routeHeldByEvergreens, report.winter.layoutAgainst, 'of the route held by evergreens'));
+    // as seen: what a visitor standing in each place reads as green
     for (const v of report.winter.views) {
       const viewpoint = report.viewpoints.find((p) => p.id === v.viewpointId);
-      const row = el('div', 'meter-row');
       const where = el('button', 'where', viewpoint?.label ?? v.viewpointId);
       where.type = 'button';
       where.title = 'Stand here';
       if (viewpoint) where.addEventListener('click', () => actions.standAt(viewpoint));
-      const meter = el('div', 'meter');
-      meter.setAttribute('role', 'img');
-      meter.setAttribute('aria-label', `${percent(v.evergreen)} evergreen cover, ${v.against} the target of ${percent(lo)} to ${percent(hi)}`);
-      const band = el('i', 'band');
-      band.style.left = `${(lo / full) * 100}%`;
-      band.style.width = `${((hi - lo) / full) * 100}%`;
-      const fill = el('i', `fill ${v.against}`);
-      fill.style.width = `${Math.min(1, v.evergreen / full) * 100}%`;
-      meter.append(band, fill);
-      const reading = el('span', 'reading');
-      reading.append(el('b', undefined, percent(v.evergreen)), ` ${v.against === 'within' ? 'within' : v.against} target`);
-      row.append(where, meter, reading);
-      winter.append(row);
+      winter.append(meterRow(where, v.evergreen, v.against, 'evergreen cover as seen', ` · hides ${percent(v.timberHidden)} of the timber`));
     }
     winter.append(
       el(
         'p',
         'note',
-        `Evergreen leaf as a share of the structure seen from each place on ${report.winter.date}. The band is the design target of ${percent(lo)} to ${percent(hi)} (KEY.md section 6): a target to test, not a finding. Select a place to stand there.`,
+        `Read on ${report.winter.date}, two ways. As laid out: the share of all route held by plants that keep their leaves. As seen from each place: evergreen leaf as a share of the structure's extent in the view, open bays included, and how much of the timber it hides. The band is the design target of ${percent(lo)} to ${percent(hi)} (KEY.md section 6): a target to test, not a finding. Where the first reading meets the target and the second does not, the difference is leaf density, which has not been measured. Select a place to stand there.`,
       ),
     );
   } else {

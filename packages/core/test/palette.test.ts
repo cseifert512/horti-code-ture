@@ -119,21 +119,45 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
     expect(Object.keys(palette.months[6]!.leaves)).toHaveLength(12);
   });
 
-  it('falls far short of the winter evergreen target from every viewpoint, and says so', () => {
-    // KEY.md section 6: "test 25-40% of selected visually prominent areas with retained winter evergreen coverage"
+  // KEY.md section 6: "test 25-40% of selected visually prominent areas with retained winter evergreen coverage".
+  // The key does not say what the share is of, so the report reads it as laid out and as seen, and gives both.
+  it('lays its evergreens out to the winter target, and falls far short of it as seen from every viewpoint', () => {
     expect(WINTER_EVERGREEN_COVER.status).toBe('design_target');
     expect(WINTER_EVERGREEN_COVER.value).toEqual([0.25, 0.4]);
     const w = palette.winter!;
     expect(w.date).toBe('2038-01-15');
     expect(w.target).toBe(WINTER_EVERGREEN_COVER);
+    // as laid out: the five plants that keep their leaves hold between a quarter and two fifths of the route
+    expect(w.layoutAgainst).toBe('within');
+    expect(w.routeHeldByEvergreens).toBeGreaterThan(0.25);
+    expect(w.routeHeldByEvergreens).toBeLessThan(0.4);
+    // as seen: their leaf is a few per cent of the view at most, and hides less of the timber than that
     expect(w.views).toHaveLength(3);
     for (const v of w.views) {
       expect(v.against, v.viewpointId).toBe('below');
       expect(v.evergreen, v.viewpointId).toBeLessThan(0.05);
+      expect(v.timberHidden, v.viewpointId).toBeLessThan(0.05);
     }
     const text = formatDesignReport(palette);
     expect(text).toContain('WINTER EVERGREEN COVER on 2038-01-15, against the design target of 25% to 40%');
+    expect(text).toContain('as laid out: plants that keep their leaves hold 28% of the route  within the target');
     expect(text).toContain('below the target');
+    expect(text).toContain('do not yet read as cover');
+  });
+
+  // PROJECT_CONTEXT.md section 2: "Will the timber remain legible as designed, or become completely obscured?"
+  it('hides none of the timber from a visitor inside, because the plants are on the outer face', () => {
+    const inside = palette.viewpoints[1]!;
+    expect(inside.label).toContain('inside');
+    for (const m of palette.months) {
+      const v = m.views.find((x) => x.viewpointId === inside.id)!;
+      expect(v.timberBehindLeaf, m.date).toBeLessThan(0.02);
+      expect(v.timberBehindEvergreen, m.date).toBeLessThanOrEqual(v.timberBehindLeaf);
+    }
+    // from the approach the same plants do hide some in July, and what is hidden is not seen
+    const approach = palette.months[6]!.views[0]!;
+    expect(approach.timberBehindLeaf).toBeGreaterThan(0.03);
+    expect(approach.timberBehindLeaf).toBeLessThanOrEqual(1 - approach.timberVisible + 1e-9);
   });
 
   it('leaves the timber legible: most of it is still seen in high summer', () => {
