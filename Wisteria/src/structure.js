@@ -13,12 +13,16 @@ const V3 = THREE.Vector3;
 //          without anything in its way. (The pergola principle: posts for
 //          the trunk, lattice only overhead.)
 //  CANOPY  From the eave up, a diagrid of curved glulam members rides on the
-//          ribs. The diagonals rise at about 45 degrees - the line a climbing
-//          shoot takes most readily - and give the gardener something stout
-//          to tie the framework arms to.
-//  CABLES  Between the lattice nodes run thin stainless cables, level, about
-//          43 cm apart: the classic spacing for wisteria training wires. A
-//          cable is slender enough for a young shoot to twine round unaided.
+//          ribs. The diagonals cross the surface at roughly 40 degrees to the
+//          ribs; because the vault curves over, their true inclination to the
+//          horizontal falls from about 42 degrees at the eave to almost level
+//          at the crown (median 22; measured by scripts/assumptions.mjs).
+//          They give the gardener something stout to tie the framework arms
+//          to.
+//  CABLES  Between the lattice nodes run thin stainless cables, level, 34 to
+//          43 cm apart (median 37): close to the usual spacing for wisteria
+//          training wires. A 5 mm cable is assumed slender enough for a young
+//          shoot to twine round unaided - an assumption, not a measurement.
 //          They end AT the nodes (fixed to the sides of the timber, at
 //          mid-depth), so nothing lying on top of a member is ever trapped
 //          under a wire.

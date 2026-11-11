@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wisteria-prototype",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["Wisteria/node_modules/vite/bin/vite.js", "Wisteria", "--port", "5183", "--strictPort"],
+      "port": 5183
+    }
+  ]
+}

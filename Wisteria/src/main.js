@@ -212,12 +212,18 @@ function computeState() {
   shared.uGrowing.value = state.growing;
 }
 
-function phaseName(d) {
-  if (d < 0.2) return 'Dormant · pods still hanging';
-  if (d < 0.255) return 'Dormant · winter-pruned to spurs';
-  if (d < 0.3) return 'Buds break · racemes lengthen';
-  if (d < 0.39) return 'In flower';
-  if (d < 0.45) return 'Petal fall · leaves expand';
+// The label follows the calendar, but must not claim organs the plant does not
+// have yet: no flowers before the first bloom year, nothing to prune or shed
+// on a newly planted cane.
+function phaseName(d, yi) {
+  const firstBloom = plant ? plant.sk.plants[0].firstBloom : 0;
+  const flowers = yi >= firstBloom;
+  // pods come from the previous year's flowers
+  if (d < 0.2) return yi > firstBloom ? 'Dormant · pods still hanging' : 'Dormant';
+  if (d < 0.255) return yi < 1 ? 'Newly planted · dormant' : 'Dormant · winter-pruned to spurs';
+  if (d < 0.3) return flowers ? 'Buds break · racemes lengthen' : 'Buds break';
+  if (d < 0.39) return flowers ? 'In flower' : 'Leaves expand · too young to flower';
+  if (d < 0.45) return flowers ? 'Petal fall · leaves expand' : 'Leaves expand';
   if (d < 0.56) return 'Extension growth · whips twining';
   if (d < 0.62) return 'Summer prune';
   if (d < 0.74) return 'Pods swell · wood ripens';
@@ -238,7 +244,7 @@ function updateTimelineUI() {
   const d = t - Math.floor(t);
   const month = MONTHS[Math.min(11, Math.floor(d * 12))];
   dateEl.textContent = `Year ${Math.floor(t) + 1} · ${params.holdBloom ? 'held in bloom' : month}`;
-  phaseEl.textContent = params.holdBloom ? 'Structure grows, season held at early May' : phaseName(d);
+  phaseEl.textContent = params.holdBloom ? 'Structure grows, season held at early May' : phaseName(d, Math.floor(t));
   scrub.value = t;
   playBtn.innerHTML = params.playing ? '&#10073;&#10073;' : '&#9654;';
 }
