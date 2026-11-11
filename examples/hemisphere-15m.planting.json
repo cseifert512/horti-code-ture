@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "name": "The reference palette",
+  "plants": [
+    {"plantId":"rose","taxonId":"rosa-the-generous-gardener","stationId":"station.0"},
+    {"plantId":"summer-clematis","taxonId":"clematis-viticella-etoile-violette","stationId":"station.1"},
+    {"plantId":"evergreen-honeysuckle","taxonId":"lonicera-henryi","stationId":"station.2"},
+    {"plantId":"hydrangea","taxonId":"hydrangea-anomala-subsp-petiolaris","stationId":"station.3"},
+    {"plantId":"north-evergreen","taxonId":"lonicera-henryi","stationId":"station.4"},
+    {"plantId":"vine","taxonId":"vitis-coignetiae","stationId":"station.5"},
+    {"plantId":"honeysuckle","taxonId":"lonicera-periclymenum-graham-thomas","stationId":"station.6"},
+    {"plantId":"wisteria.1","taxonId":"wisteria-sinensis","stationId":"station.7"},
+    {"plantId":"spring-clematis","taxonId":"clematis-armandi","stationId":"station.8"},
+    {"plantId":"star-jasmine","taxonId":"trachelospermum-jasminoides","stationId":"station.9"},
+    {"plantId":"winter-clematis","taxonId":"clematis-cirrhosa-freckles","stationId":"station.10"},
+    {"plantId":"wisteria.0","taxonId":"wisteria-sinensis","stationId":"station.11"}
+  ]
+}

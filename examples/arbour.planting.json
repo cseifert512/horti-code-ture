@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "name": "Wisteria, a summer clematis, a rose and an evergreen honeysuckle",
+  "plants": [
+    { "plantId": "wisteria", "taxonId": "wisteria-sinensis", "stationId": "bed.sw" },
+    { "plantId": "clematis", "taxonId": "clematis-viticella-etoile-violette", "stationId": "bed.s" },
+    { "plantId": "rose", "taxonId": "rosa-the-generous-gardener", "stationId": "bed.ne" },
+    { "plantId": "honeysuckle", "taxonId": "lonicera-henryi", "stationId": "bed.n" }
+  ]
+}

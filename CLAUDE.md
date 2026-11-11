@@ -8,6 +8,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 - `docs/ASSUMPTIONS_AUDIT.md` — tested state of the spec and prototype, with the prototype model map.
 - `species/<id>/` — `SPECIES_PROFILE.md` (prose) and `taxon.json` (validated data) per taxon.
 - `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/sim/report.ts` turns a run into the design report; `src/render/contract.ts` is what a viewer draws from and `src/render/presence.ts` says what is on the plant on a given day (use it; do not re-derive seasons); `src/targets.ts` holds the design targets a run is read against; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
+- `examples/` — Bower descriptions and planting plans. `src/bower/description.ts` reads a designed structure from centre lines and works out its routes; `src/sim/planting.ts` turns it and a planting plan into a scenario.
 - `packages/viewer/` — `@horti/viewer`, the three.js viewer. It draws what the core gives it and holds no growth logic; `src/plant/adapter.ts` is the only file where days become what is drawn, and it asks `presence.ts`.
 - `Wisteria/` — the original three.js prototype. Reference only; it has its own `node_modules`.
 
@@ -17,6 +18,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 npm run check                   # tsc + vitest for packages/*
 npm test                        # vitest only
 npm run simulate                # reference scenario: yearly account, gardener's log, design report; render data and report in out/
+npm run simulate -- design examples/arbour.bower.json examples/arbour.planting.json   # a designed structure from two files
 npm run viewer:dev              # viewer on http://localhost:5193
 npm run viewer:build            # static build of the viewer
 npm run prototype:audit         # prototype interference audit
