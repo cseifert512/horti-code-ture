@@ -11,7 +11,7 @@
 | Climbing or support mechanism | Twining leaf petioles. |
 | RHS ultimate-height envelope | RHS: 4–8 m; 5–10 years to ultimate size category. |
 | Hardiness | H4 (RHS). |
-| Flower / leaf / fruit season | Glossy trifoliate leaves, fragrant cream-white spring flowers; early to mid spring window. |
+| Flower / leaf / fruit season | Glossy trifoliate leaves, fragrant cream-white spring flowers; early to mid spring window (RHS), April according to Bean. |
 | Aspect and exposure | Full sun, south/west, **sheltered** from cold winds. |
 | Soil | Moist but well-drained, neutral/alkaline commonly preferred. |
 

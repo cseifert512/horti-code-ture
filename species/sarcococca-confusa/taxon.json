@@ -38,10 +38,11 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "previous_season",
+      "status": "provisional_design_assumption",
+      "basis": "Inferred; no source states it for Sarcococca. The flowers open from late December to February (Bean, Trees and Shrubs Online), when no new growth has been made since autumn, so they are carried on shoots of the season before. The RHS says the same of another winter-flowering evergreen group, the Cirrhosa clematis (\"on the previous year's growth\"), and puts this shrub in pruning group 8, pruned if at all straight after flowering."
     },
-    "rhsPruningGroup": null,
+    "rhsPruningGroup": "8",
     "monthsUK": {
       "value": [
         12,
@@ -49,8 +50,8 @@
         2
       ],
       "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "source": "https://www.treesandshrubsonline.org/articles/sarcococca/sarcococca-confusa/",
+      "basis": "Bean (Trees and Shrubs Online): the flowers \"are borne from late December to February\". Stated in months. The RHS record says winter, the same three months."
     },
     "display": "Small cream-white, highly scented flowers; black berries.",
     "scented": true
@@ -96,6 +97,18 @@
     {
       "label": "RHS plant profile",
       "url": "https://www.rhs.org.uk/plants/16452/sarcococca-confusa/details"
+    },
+    {
+      "label": "RHS: how to grow sarcococca",
+      "url": "https://www.rhs.org.uk/plants/sarcococca/growing-guide"
+    },
+    {
+      "label": "RHS: pruning evergreen shrubs (pruning groups 8 to 10)",
+      "url": "https://www.rhs.org.uk/plants/types/shrubs/evergreen-pruning-guide"
+    },
+    {
+      "label": "Trees and Shrubs Online (Bean): Sarcococca confusa",
+      "url": "https://www.treesandshrubsonline.org/articles/sarcococca/sarcococca-confusa/"
     }
   ]
 }

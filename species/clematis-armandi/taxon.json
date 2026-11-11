@@ -53,7 +53,7 @@
       ],
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
-      "basis": "Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month)."
+      "basis": "RHS record: \"early to mid spring\", which is March and April by the season rule (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month). Only April is stated outright: Bean (Trees and Shrubs Online) says the flowers are \"produced in April\". March rests on the RHS wording alone."
     },
     "display": "Fragrant cream-white flowers; glossy three-part leaves.",
     "scented": true
@@ -116,6 +116,10 @@
     {
       "label": "RHS clematis pruning group 1",
       "url": "https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide"
+    },
+    {
+      "label": "Trees and Shrubs Online (Bean): Clematis armandii",
+      "url": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/"
     }
   ]
 }

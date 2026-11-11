@@ -32,7 +32,7 @@ npm run check                                  # the new core's tests
 | The RHS heights, time bands and hardiness ratings in the profiles are right | **True** wherever a value was given; six were blank | Blanks filled from the RHS records |
 | The palette is clear of invasive-species concerns in Great Britain | **False** for two taxa: *Akebia quinata* and *Lonicera henryi* (4.4) | Flagged in `KEY.md`, the profiles and the data |
 | The yearly spectacle in `KEY.md` matches the plants' seasons | **Two errors**: *W. sinensis* "early-spring", *Campsis* in June–August | Corrected |
-| Twining direction is known for every twiner | **False**: unknown for *Trachelospermum*, inferred only for *L. henryi* (4.2) | Recorded as unknown and provisional |
+| Twining direction is known for every twiner | **False**: unknown for *Trachelospermum*; for *L. henryi* it rests on congeners and two photographs (4.2, 4.6) | Recorded as unknown and provisional |
 | The documents use one vocabulary | **False**: three evidence-status lists, two bud-state lists | One canonical vocabulary, all terms mapped |
 | The yearly calendars cover the year | **False**: December missing in two documents | Fixed |
 
@@ -129,7 +129,7 @@ The pruning dates are worth noting: the prototype's winter cut falls in late Dec
 - The hemisphere arithmetic (`KEY.md` section 4, `SIMULATION_KEY.md` section 9, `DEVELOPMENT_GUIDE.md` stage 5).
 - The six attachment classes and their taxon assignments are consistent across `KEY.md`, `CONSTRAINTS_AND_PHENOLOGY.md` and `DEVELOPMENT_GUIDE.md`.
 - The gardener event catalogue is consistent with the acceptance checklist.
-- All 17 RHS plant-record URLs resolve to the plant named, and every guide URL resolves except one that returned a temporary maintenance page on the day (`/plants/types/climbers`).
+- All 17 RHS plant-record URLs resolve to the plant named, and every guide URL resolves. One (`/plants/types/climbers`) returned a "temporarily unavailable" page on several attempts and loaded later the same day (4.6).
 
 ### 3.2 Corrected
 
@@ -167,7 +167,7 @@ Checked against RHS plant records and Kew's World Checklist of Vascular Plants (
 | *Clematis armandi* | Correct. IPNI 709497-1, Kew and RHS all use one final "i". |
 | *Wisteria floribunda* 'Macrobotrys' | RHS synonym. Accepted: *W. floribunda* f. *multijuga* 'Kyushaku' (RHS 372711). The profile had the relationship backwards. |
 | *Clematis viticella* 'Étoile Violette' | RHS synonym. Accepted: *Clematis* 'Étoile Violette' (Vt) (RHS 92936). |
-| *Clematis cirrhosa* 'Freckles' | RHS synonym. Main record: *C. cirrhosa* var. *purpurascens* 'Freckles' (C) (RHS 89092; its status field was not read). |
+| *Clematis cirrhosa* 'Freckles' | RHS synonym. Main record: *C. cirrhosa* var. *purpurascens* 'Freckles' (C) (RHS 89092, name status "Accepted"; record 223017, *C. cirrhosa* 'Freckles', is marked "Synonym"). |
 | *Hydrangea anomala* subsp. *petiolaris* | Synonym at both RHS and Kew. Accepted: *Hydrangea petiolaris* Siebold & Zucc. (RHS 8948). |
 | *Lonicera henryi* | "Correct" at the RHS; Kew treats it as a synonym of *Lonicera acuminata* Wall. The two authorities disagree. |
 | *Rosa* 'The Generous Gardener' | A trade designation, not a cultivar name. RHS: *Rosa* The Generous Gardener ('Ausdrawn') (Cl). |
@@ -184,16 +184,16 @@ The RHS wisteria guide says Japanese wisteria twines clockwise and Chinese wiste
 | *Wisteria sinensis* | Right-handed (anticlockwise from above) | High. The prototype matches: every trunk and cable run it produces is right-handed. |
 | *Wisteria floribunda* | Left-handed (clockwise from above) | High |
 | *Lonicera periclymenum* | Left-handed | High for the geometry; no peer-reviewed species-level source |
-| *Akebia quinata* | Right-handed | High |
+| *Akebia quinata* | Right-handed | High. Rests on Darwin ("moves against the sun"). The University of Michigan page cited earlier says "dextrally (left to right)" of *Akebia* and of *Lonicera* alike, although the two twine in opposite senses, so its wording is not evidence of geometry. |
 | *Thunbergia alata* | Right-handed | Medium to high |
-| *Lonicera henryi* | Left-handed, **inferred from the genus** | Low to medium; entered as a provisional assumption |
-| *Trachelospermum jasminoides* | **Unknown** | No source in four languages; entered as unknown |
+| *Lonicera henryi* | Left-handed, **from the genus and two photographs** | Medium; still a provisional assumption. No written species-level source exists that could be found (4.6). |
+| *Trachelospermum jasminoides* | **Unknown** | No written source after a second search; one ambiguous photograph (4.6); entered as unknown |
 
 Contradictions exist in print for the wisterias (one guide swaps the two species; one university page contradicts itself), so observing real specimens remains on the validation list.
 
 ### 4.3 Traits
 
-Every RHS height band, time-to-size band and hardiness rating that the profiles stated was confirmed against the live RHS record. Flowering seasons were read from the RHS description text; its month-by-month grid did not come through the page reader, so the months in `taxon.json` are derived from the season wording by a stated rule and are an envelope, not a calendar.
+Every RHS height band, time-to-size band and hardiness rating that the profiles stated was confirmed against the live RHS record. Flowering seasons were read from the RHS description text. The RHS record has no month-by-month grid: read as raw HTML, the grid is four seasons against stem, flower, foliage and fruit. Months in `taxon.json` are therefore derived from season wording by a stated rule unless another UK source states months (4.6), and are an envelope, not a calendar.
 
 Findings beyond the corrections already listed in 3.2:
 
@@ -202,14 +202,14 @@ Findings beyond the corrections already listed in 3.2:
 - ***Lonicera henryi*** is "evergreen" to the RHS but "winter-green or semi-deciduous" in British field accounts. Its winter cover on an exposed Bower should not be assumed.
 - ***Akebia quinata*** is "semi-evergreen" to the RHS and "deciduous" in Flora of China. Expect it mostly leafless in cold winters.
 - **RHS size bands versus the path classes in `KEY.md` section 4:** the rose (band 4–8 m) and star jasmine (band 8–12 m) sit in the under-4 m class there. That table is a design heuristic and was left alone, but the mismatch is worth knowing.
-- **Flowering wood is not established** for *Lonicera* (both), *Trachelospermum*, the rose, *Vitis*, ivy, *Akebia* and *Sarcococca*. Those values are `unknown` in the data.
-- **"May–June" for the wisteria peak** has no month-level source. The RHS says spring and early summer; Flora of China says April–May in China.
+- **Flowering wood** was `unknown` for *Lonicera* (both), *Trachelospermum*, the rose, *Vitis*, ivy, *Akebia* and *Sarcococca*. All eight now carry a value (4.6), but only the rose's is a published statement; the other seven are inferences and are marked provisional.
+- **"May–June" for the wisteria peak**: May now has a source. Bean says *W. sinensis* flowers "towards the end of May" and *W. floribunda* two or three weeks later. June still rests on the RHS wording (spring and early summer) and on that remark. Flora of China says April–May in China.
 
 ### 4.4 Legal and invasive status in Great Britain
 
 None of the 17 taxa is on Schedule 9 of the Wildlife and Countryside Act 1981 (England and Wales) or on the list of species of special concern enforced by the Invasive Alien Species (Enforcement and Permitting) Order 2019, as those lists stood on 11 November 2026. Two need attention all the same:
 
-- ***Akebia quinata*** — the GB Non-Native Species Secretariat's risk assessment rates it **medium risk**, and it is **under consideration for the list of species of special concern**. Listing would make it illegal to sell or plant. No decision was found. It should not be specified for a Bower without checking the current position.
+- ***Akebia quinata*** — the GB Non-Native Species Secretariat's risk assessment rates it **medium risk**, and it is **under consideration for the list of species of special concern**. Listing would make it illegal to sell or plant. The Secretariat's species-of-special-concern page, read directly on 11 November 2026, names it as one of five plants (15 species) in the first cycle of the GB listing process and does not show it among the 36 listed plants. The page is current to at least September 2026, when it records a ministerial decision on de-listing; it shows no recommendation and no decision on the species under consideration. It should not be specified for a Bower without checking the current position.
 - ***Lonicera henryi*** — not legally listed, but a **naturalised, bird-sown and spreading** plant in Britain (BSBI), and on the **EPPO Alert List** under the name *Lonicera acuminata*. It is the palette's core evergreen, so this is a design consideration and not a footnote: it needs containment and should be kept away from semi-natural habitat.
 
 Elsewhere: in Scotland it is an offence to plant any non-native plant in the wild. Look-alikes that *are* listed and must not be substituted: *Rosa rugosa*, both *Parthenocissus* species, and (Northern Ireland) *Lonicera japonica*.
@@ -218,10 +218,93 @@ This is a desk check, not legal advice or an ecological assessment. `PROJECT_CON
 
 ### 4.5 What could not be checked
 
-- Kew's POWO site and the NNSS species-of-special-concern page refuse automated access; Kew names were read from its checklist through GBIF, and the NNSS position from its published risk assessment and a 2024 forum presentation.
-- One RHS guide (`/plants/types/climbers`) was returning a maintenance page.
-- The RHS name-status field for the 'Freckles' main record (89092) was not read.
-- RHS pages were read through an automated page reader, not as raw pages.
+- Kew's POWO site refuses automated access; Kew names were read from its checklist through GBIF.
+- Flora of China (efloras.org) serves a certificate that does not validate, so it was read over plain HTTP and is cited by name, not by URL, in the data.
+- The Biological Flora account of *Hedera helix* (Metcalfe 2005, *Journal of Ecology* 93: 632) is behind a publisher block and was not read.
+
+Three items listed here in the first pass were read in the follow-up and are closed: the NNSS species-of-special-concern page, the RHS page `/plants/types/climbers`, and the name status of RHS record 89092.
+
+### 4.6 Follow-up check, later on 11 November 2026
+
+A second pass went after the values left `unknown`. RHS pages were fetched as raw HTML this time (all 17 plant records and the guides they link to), not through a page reader; so were Trees and Shrubs Online (the text of Bean's *Trees and Shrubs Hardy in the British Isles*), the NNSS page and Darwin's *Climbing Plants*. Search snippets were used only to find pages, never as the source of a value.
+
+**Rules applied.**
+
+- A flowering-wood value is `published_plant_profile` only where a source states it outright for the plant or its horticultural class. Anything deduced, including the reading "pruned after flowering, therefore old wood", is `provisional_design_assumption` with its reasoning in `basis`. The reverse reading is unsafe on its own: the RHS gives ivy "any time" and the vine "midwinter" for reasons that have nothing to do with flowering wood.
+- `monthsUK` stays an envelope. Where a UK source states months, it is now cited and the `basis` says which months are stated outright and which still rest on RHS season wording. An envelope was not narrowed to a single month on the strength of one line of Bean: the RHS season word still describes flowering in the other months, and too narrow an envelope is the more harmful error for a model that must never show flowers the plant could not have.
+- Photographs support a provisional value at most, and the `basis` says they are photographs.
+
+**RHS pruning groups**, from the "Pruning" field of each plant record:
+
+| Taxon | RHS wording | Was |
+|---|---|---|
+| *Lonicera henryi* | pruning group 11 | not recorded |
+| *L. periclymenum* 'Graham Thomas' | pruning group 11 after flowering | 11 |
+| *Trachelospermum jasminoides* | pruning group 11 in early spring | not recorded |
+| *Rosa* The Generous Gardener | pruning group 17 (climbing roses) | 17 |
+| *Vitis coignetiae* | pruning group 11 in midwinter, and in midsummer, if restricted growth is required | not recorded |
+| *Hedera helix* | pruning group 11 at any time | not recorded |
+| *Akebia quinata* | pruning group 11 after flowering | not recorded |
+| *Sarcococca confusa* | pruning group 8 | not recorded |
+
+The two wisterias have no numbered group (the record says to prune twice a year and points to the wisteria guide). *Thunbergia alata* has none outdoors ("No pruning required outdoors. If grown under glass, pruning group 11").
+
+**Flowering wood.** The RHS definition of group 11 says its members "flower on previous or current year's growth", so the group number alone settles nothing.
+
+| Taxon | Value | Status | Rests on |
+|---|---|---|---|
+| *Rosa* The Generous Gardener | current season | published | BBC Gardeners' World Magazine: "Climbing roses flower on growth produced in the current year". A statement about the class. |
+| *L. periclymenum* 'Graham Thomas' | both | provisional | Sources disagree. RHS honeysuckle guide and Gardens Illustrated: side shoots from the previous year's stems. Bean: "if cut back in winter will flower from June to October". |
+| *Lonicera henryi* | current season | provisional | Gardens Illustrated lists it with the later-flowering species tidied in spring; the RHS guide says late-flowering types flower on current growth. Not stated for the species. |
+| *Trachelospermum jasminoides* | current season | provisional | RHS: prune in early spring; Bean: flowers in July and August on short lateral twigs. NC State Extension says prune after flowering, which points the other way. |
+| *Vitis coignetiae* | current season | provisional | Genus only: the RHS describes grapevine flowers on new side shoots from spurs. Nothing for the species. |
+| *Hedera helix* | current season | provisional | Terminal umbels on adult shoots only (Bean), in autumn. Growth phase, not wood age, decides flowering. |
+| *Akebia quinata* | previous season | provisional | RHS: prune after flowering; Flora of China: racemes axillary on short branches. |
+| *Sarcococca confusa* | previous season | provisional | Flowers from late December to February, before any new growth. |
+
+**Flowering months.** UK sources that state months were found for eight taxa:
+
+| Taxon | Months stated | Source | Effect on `monthsUK` |
+|---|---|---|---|
+| *L. periclymenum* 'Graham Thomas' | June to October | Bean, supplement | Widened from Jun–Aug |
+| *Hedera helix* | September to November | RHS, ivy on buildings | Unchanged; now sourced to months |
+| *Trachelospermum jasminoides* | July and August | Bean | Unchanged; now sourced to months |
+| *Sarcococca confusa* | late December to February | Bean | Unchanged; now sourced to months |
+| *Lonicera henryi* | June | Bean | Unchanged (Jun–Aug); July and August rest on the RHS word "summer" |
+| *Clematis armandi* | April | Bean | Unchanged (Mar–Apr); March rests on the RHS wording |
+| *Wisteria sinensis* | May, with a second smaller crop in August | Bean | Unchanged (May–Jun); the August crop is noted, not added |
+| *Wisteria floribunda* | two or three weeks after *W. sinensis* | Bean | Unchanged (May–Jun); June is not stated outright |
+
+*Vitis coignetiae* had no months and now has June to August, from the RHS words "summer flowers". No source that states months was found for it, or for *Akebia*, *Campsis*, the three clematis cultivars, the climbing hydrangea, the rose or *Thunbergia*; those nine remain season-derived. For *Akebia* the derived value (March only, from "early spring") is probably too narrow: Flora of China gives April–May, and a dated photograph on Trees and Shrubs Online shows it in flower in North Yorkshire on 30 May 2026. It was left alone because neither is a UK statement of months.
+
+**Management calendars** were added from RHS timing for the rose (winter prune December to February, tying in from autumn, deadheading through the flowering season, feeding in March or April and midsummer), *L. henryi* (spring tidy and spring mulch), *Trachelospermum* (early-spring thinning, yearly mulch in spring or autumn) and ivy (mid-spring trim, with the March-to-August nesting season as a constraint). For *L. henryi* the RHS record gives no timing; spring comes from the RHS guide's late-flowering type and from Gardens Illustrated, which names the species.
+
+**Twining direction.**
+
+- *Lonicera henryi*: no written source in English, German, Japanese or Chinese. Two photographs of identified plants on Wikimedia Commons (one in the Botanischer Garten Berlin-Dahlem, one of a stem on a metal post) each show the near side of the coil running from upper left to lower right, which is a left-handed helix. That matches the genus. The value stays provisional.
+- *Trachelospermum jasminoides*: no written source in those languages or in French, Italian and Spanish search terms. Japanese references class its relative *T. asiaticum* as a root climber and give no direction. The only photograph found showing stems on canes is of a pot-grown plant with crossings in both senses. Darwin lists two twiners of the same family (*Dipladenia*) as moving against the sun, which would be right-handed, but a family is not a species. The value stays `unknown`.
+
+**The three unread items.**
+
+- `/plants/types/climbers` loads. It is a short introduction, not a guide: "Climbers cling on using tendrils, twining stems, stem roots or sticky pads, while wall shrubs need to be tied to supports." It names three of the project's six attachment classes (tendril, stem twining, aerial root) and sticky pads, which no plant in the palette uses, and says nothing on petiole twiners, scramblers or handedness.
+- RHS record 89092: name status "Accepted". The value already in `taxon.json` was right.
+- *Akebia quinata*: unchanged since the risk assessment. See 4.4.
+
+**Still unknown or unsourced after this pass.**
+
+- Twining direction of *Trachelospermum jasminoides*.
+- A published statement of flowering wood for seven of the eight taxa above.
+- Stated flowering months for nine taxa, and June for *Wisteria floribunda*.
+- The outcome of the GB listing process for *Akebia quinata*.
+- Every grasp diameter (3.3), which no desk check can supply.
+
+**Noticed and not changed**, because they lie outside this pass:
+
+- The *Campsis* calendar has the spur prune in February only; the RHS record says "late winter or early spring".
+- The *Trachelospermum* management note still says "secondary wire", wording from the uncorrected brief.
+- A Japanese abstract reports *T. jasminoides* var. *pubescens* climbing "with aerial roots or rotating shoots"; the paper was not read. It bears on the unverified aerial-rootlet caveat in 4.3.
+- The handedness table in `CONSTRAINTS_AND_PHENOLOGY.md` section 2 and the annual cycle in `HORTICULTURAL_INTERVENTIONS.md` section 3 do not yet reflect this section.
+- The 'Freckles' record itself says Cirrhosa Group clematis flower "on the previous year's growth", a more direct basis than the group 1 guide now cited.
 
 ## 5. Decisions taken in the new core
 
@@ -245,7 +328,7 @@ These come from `npm run simulate -- palette trained 12`: the `KEY.md` reference
 
 | Question | Reading | What it rests on |
 |---|---|---|
-| Does the yearly spectacle in `KEY.md` section 6 hold together? | Yes, in order: winter clematis December to February, *C. armandi* March and April, wisteria in May (the peak of the year by a wide margin), hydrangea, honeysuckles, summer clematis, star jasmine and rose from June to August, the rose into October. Nothing is in flower in mid November unless ivy is planted | Fixed provisional flowering dates placed inside each taxon's RHS envelope. Five of these taxa show no flowers until their flowering wood is entered (4.3) |
+| Does the yearly spectacle in `KEY.md` section 6 hold together? | Yes, in order: winter clematis December to February, *C. armandi* March and April, wisteria in May (the peak of the year by a wide margin), hydrangea, honeysuckles, summer clematis, star jasmine and rose from June to August, the rose into October. Nothing is in flower in mid November unless ivy is planted | Fixed provisional flowering dates placed inside each taxon's RHS envelope. For the two honeysuckles and the star jasmine, which wood flowers is an inference and not a published statement (4.6); the rose's is published for climbing roses as a class |
 | Is the 25–40% winter evergreen target met? | No: about 2% of the structure's extent seen from the approach in mid January, less from inside. Ivy in place of the second evergreen honeysuckle does not change that | Leaf counts and sizes that are placeholders. The model puts leaves only at the nodes of stems it grows, and a real evergreen climber of this age is much denser than that. Leaf area per metre of stem, measured on real plants, is the first number to collect (`DEVELOPMENT_GUIDE.md` stage 7) |
 | Does the timber stay legible? | Yes: 85% or more of the timber seen on the bare structure is still seen in July from every viewpoint | The same leaf densities; and three wisterias, not a full canopy |
 | Which plants hold the glulam unaided? | Wisteria, climbing hydrangea, ivy and campsis. Every other climber has to be tied to timber and holds only the cables by itself | Grasp limits that are placeholders: 200 mm for wisteria, 60 mm or less for the rest. None has been measured |

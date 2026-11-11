@@ -38,13 +38,20 @@
   },
   "flowering": {
     "wood": {
-      "value": null,
-      "status": "unknown"
+      "value": "current_season",
+      "status": "provisional_design_assumption",
+      "basis": "Inferred from the genus; nothing found for V. coignetiae itself. On grapevines (Vitis vinifera) the RHS describes \"flower-carrying side-shoots\" as new shoots of the season growing from spurs on the permanent stems. The RHS record for this species says pruning group 11 in midwinter, which fits but does not prove it."
     },
-    "rhsPruningGroup": null,
+    "rhsPruningGroup": "11",
     "monthsUK": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        6,
+        7,
+        8
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "RHS record: \"tiny greenish summer flowers\"; its season grid shows flowers in summer only. Months read from the RHS season wording (spring = Mar-May, summer = Jun-Aug, autumn = Sep-Nov, winter = Dec-Feb; early, mid and late are the first, second and third month). No UK source that states months was found."
     },
     "display": "Grown for very large leaves turning scarlet and crimson in autumn; flowers are small and unobtrusive.",
     "scented": false
@@ -106,6 +113,14 @@
     {
       "label": "RHS plant profile",
       "url": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details"
+    },
+    {
+      "label": "RHS: pruning established climbers (pruning groups 11 to 13)",
+      "url": "https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide"
+    },
+    {
+      "label": "RHS: grapes, rod and spur pruning",
+      "url": "https://www.rhs.org.uk/fruit/grapes/rod-and-spur-pruning-system"
     }
   ]
 }

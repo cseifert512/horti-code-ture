@@ -12,7 +12,7 @@ import { RESOLVED_WOOD, withFloweringWood } from './helpers.ts';
 
 const speciesDir = fileURLToPath(new URL('../../../species', import.meta.url));
 const library = loadGrowable(speciesDir);
-// which wood flowers is fixed here for the taxa whose files may still leave it unknown
+// which wood flowers is an inference for most of these taxa, so it is fixed here and checked against the library below
 const taxa = withFloweringWood(library, RESOLVED_WOOD);
 const END = '2038-12-31';
 
@@ -27,6 +27,18 @@ describe('growth models for the climbing palette', () => {
     expect(without).toEqual(['sarcococca-confusa']);
     expect(all.get('sarcococca-confusa')!.attachment.mechanism).toBe('none');
     expect(library.size).toBe(16);
+  });
+
+  it('grow from a library that records which wood flowers for every taxon, as these tests assume it', () => {
+    const all = loadTaxa(speciesDir);
+    for (const [id, t] of all) expect(t.flowering.wood.value, id).not.toBeNull();
+    for (const [id, wood] of Object.entries(RESOLVED_WOOD)) {
+      expect(all.get(id)!.flowering.wood.value, id).toBe(wood);
+      // none of these is a measurement, and only the rose's is a published statement
+      expect(all.get(id)!.flowering.wood.status, id).toBe(id === 'rosa-the-generous-gardener' ? 'published_plant_profile' : 'provisional_design_assumption');
+    }
+    // a run on the library as it stands therefore leaves no plant without a flowering rule
+    expect(designReport(new Simulation(referencePalette({ taxa: library, years: 3 })).runUntil('2029-12-31')).alerts.filter((a) => a.kind === 'not_modelled')).toEqual([]);
   });
 
   it('say of themselves that they are borrowed, all but the one carried over from the prototype', () => {

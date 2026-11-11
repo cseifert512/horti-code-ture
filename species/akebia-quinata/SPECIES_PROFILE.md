@@ -33,13 +33,15 @@ Optional textural strip, not mixed unbounded with main wisteria and Vitis lanes.
 
 Prune after flowering to limit vigour, inspect spread and decide whether fruits should develop.
 
+RHS pruning group 11, after flowering. Flowering wood is provisionally the previous season's: inferred from that RHS timing and from Flora of China, which describes the racemes as axillary on short branches.
+
 ## Interactions with the broader palette
 
 Offers spring flowering and foliage; can overshadow smaller seasonal plants; review regional invasiveness status before use.
 
 ## Risks, exclusions and scientific caveats
 
-**GB status: check before specifying.** Not listed, but the GB Non-Native Species Secretariat rates it medium risk and it is under consideration for the list of species of special concern, which would ban its sale and planting (no decision found as of November 2026). Invasive in some other regions; a UK-appropriate planting option is not a globally appropriate species. Semi-evergreen is not permanent green cover in every winter.
+**GB status: check before specifying.** Not listed, but the GB Non-Native Species Secretariat rates it medium risk and it is one of five plants the GB Committee is considering for the list of species of special concern, which would ban its sale and planting. The Secretariat's own page, read on 11 November 2026 and current to at least September 2026, shows no recommendation and no ministerial decision. Invasive in some other regions; a UK-appropriate planting option is not a globally appropriate species. Semi-evergreen is not permanent green cover in every winter.
 
 ## Parameters to obtain or calibrate
 
@@ -55,5 +57,6 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 
 - Validated data for this taxon: [`taxon.json`](taxon.json) in this folder.
 - RHS taxon profile: https://www.rhs.org.uk/plants/747/akebia-quinata/details
+- NNSS, species of special concern: https://www.nonnativespecies.org/legislation/species-of-special-concern
 
 **Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.
