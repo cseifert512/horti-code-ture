@@ -20,7 +20,7 @@ A 2026 synthesis of FSPMs organizes the problem around **plant function, geometr
 - `TaxonProfile` (stable): accepted botanical name + cultivar, climbing mechanism, evergreen status, flowering-wood class, horticultural envelope, trait provenance and unknown parameters.
 - `PlantIndividual`: unique ID, root station, provenance, age since propagation/planting, health, resource state and gardener ownership/management regime.
 - `Axis / Stem / Internode`: plant-parent relationship, botanical age and cohort, 3-D geometry, diameter, fresh/woody state, mechanical orientation, growth potential, dominant/subordinate status and live/dead flag.
-- `Bud`: location, creation time, developmental state (`vegetative`, `competent`, `initiated_floral`, `dormant`, `aborted`, `open`, `spent`), overwintering history, host stem identity, source/uncertainty.
+- `Bud`: location, creation time, **fate** (`undetermined`, `vegetative`, `floral`), **stage** (`initiated`, `dormant`, `developing`, `open`, `spent`) and, where it stopped early, **end** (`aborted`, `removed_by_pruning`); overwintering history, host stem identity, source/uncertainty. Fate and stage are separate because a dormant bud must still know whether it is floral. Floral *competence* belongs to the bearing axis and plant (age, maturity), not to the bud. This vocabulary is canonical; `packages/core/src/vocab.ts` maps the older single-word state lists on to it.
 - `Leaf / Flower / Fruit cohort`: organ type, birth date, area/mass/colour, developmental stage and senescence time.
 - `SupportContact`: living node/segment ID, contact position and date, manufactured support ID, mechanism, attachment success, strain clearance, tie type and detach time.
 
@@ -37,7 +37,7 @@ A 2026 synthesis of FSPMs organizes the problem around **plant function, geometr
 
 - Position/length in **metres**, diameter in **millimetres**, area in **m²**, biomass/load in **kg / N**, temperatures in **°C** and dates in ISO format.
 - Keep light units explicit: PAR photon flux often **μmol photons m⁻² s⁻¹**; daily light integral **mol photons m⁻² day⁻¹**.
-- Classify every number as `measured`, `published_plant_profile`, `peer_reviewed`, `calibrated`, `provisional_design_assumption`, or `unknown`.
+- Classify every number as `measured`, `published_plant_profile`, `peer_reviewed`, `calibrated`, `provisional_design_assumption`, or `unknown`. Two further labels cover values that are choices and not facts about plants: `design_target` (a Bower design intention) and `site_dependent` (decided per site). These eight are the canonical evidence statuses (`packages/core/src/vocab.ts`); the shorter lists in `README.md` and `SOURCES_AND_ASSUMPTIONS.md` map on to them. Enforced rules: an `unknown` carries no value; evidence names its source; an assumption or target states its basis.
 - A flowering calendar or RHS height band is an **observational envelope**, not a calibrated growth coefficient.
 - Record source URL/DOI, taxon, cultivar, life stage, climate, method, study date, applicability and uncertainty distribution.
 - Unknown species parameters should stay **unfilled** rather than adopting universal constants without explanation.

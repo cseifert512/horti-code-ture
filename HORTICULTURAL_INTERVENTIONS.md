@@ -29,7 +29,7 @@ Pruning should remove descendants in the plant graph and any associated organ/at
 
 ## 3. Suggested annual cycle — UK baseline
 
-**Winter (January–February):** wisteria maintenance and spur pruning; late-winter Group 3 clematis pruning; structural/tie inspections; manage evergreen competition. Wisteria is typically pruned a second time in summer.
+**Winter (December–February):** wisteria maintenance and spur pruning (January–February); late-winter Group 3 clematis pruning; structural/tie inspections, easiest from December once deciduous stems are bare; manage evergreen competition. Wisteria is typically pruned a second time in summer.
 
 **Spring (March–May):** inspect winter survival; position and tie spring extension; replant *Thunbergia alata* after frost risk in late spring; monitor wisteria flower performance; manage roots and irrigation.
 

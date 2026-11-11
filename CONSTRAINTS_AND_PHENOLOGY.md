@@ -63,6 +63,8 @@ The relevant time concepts are not interchangeable:
 
 `undifferentiated` → `vegetative` or `floral_induction` → `floral_bud` → `dormant/overwintering` → `developing` → `open` → `senescent`, with `aborted` or `removed_by_pruning` exits possible at any appropriate stage. Preserve organ-host linkage.
 
+**In data** this life cycle is carried by three fields, not one state word, because a dormant bud must still know whether it is floral: **fate** (`undetermined`, `vegetative`, `floral`), **stage** (`initiated`, `dormant`, `developing`, `open`, `spent`) and **end** (`aborted`, `removed_by_pruning`). So `floral_bud` is fate `floral` at stage `initiated`; `dormant/overwintering` is stage `dormant` with the fate unchanged; `senescent` is stage `spent`. The full mapping, including the differently worded list in `SIMULATION_KEY.md`, is in `packages/core/src/vocab.ts`.
+
 ### Hard pruning test
 
 If a gardener removes an older *C. cirrhosa* shoot with overwintering flower buds, those buds cannot flower. If a gardener cuts back a Group 3 clematis late winter, new stems can subsequently produce flowers in the same season. For wisteria, heavy removal of established spur-bearing wood can depress or delay future bloom even if the plant regrows vigorously.

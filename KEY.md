@@ -37,6 +37,17 @@ A Bower should be a **managed multi-species plant community** supported by an ar
 
 *Taxonomic note:* Kew and RHS use the accepted spelling **Clematis armandi** (one final “i”), although **Clematis armandii** appears in some gardening contexts. The folder uses the authoritative spelling.
 
+*Working labels versus accepted names (checked 11 November 2026).* Several labels used in this table are familiar trade names that the RHS or Kew now file as synonyms. The labels are kept here and as folder ids; the accepted names are:
+
+| Working label | RHS accepted name (plant record) | Kew World Checklist |
+|---|---|---|
+| *Wisteria floribunda* 'Macrobotrys' | *Wisteria floribunda* f. *multijuga* 'Kyushaku' (372711); 'Macrobotrys' and 'Multijuga' are synonyms of it | *Wisteria floribunda* (Willd.) DC. |
+| *Clematis viticella* 'Étoile Violette' | *Clematis* 'Étoile Violette' (Vt) (92936) | cultivar; *C. viticella* L. is accepted |
+| *Clematis cirrhosa* 'Freckles' | *Clematis cirrhosa* var. *purpurascens* 'Freckles' (C) (89092) — the record that the RHS synonym page 223017 points to; its own status field was not read | *C. cirrhosa* L.; the variety is a horticultural name |
+| *Hydrangea anomala* subsp. *petiolaris* | *Hydrangea petiolaris* (8948) | *Hydrangea petiolaris* Siebold & Zucc. |
+| *Lonicera henryi* | *Lonicera henryi* (10471) | treated as a synonym of *Lonicera acuminata* Wall. |
+| *Rosa* 'The Generous Gardener' | *Rosa* The Generous Gardener ('Ausdrawn') (Cl) (196207): a trade designation; the cultivar epithet is 'Ausdrawn' | cultivar |
+
 ## 3. Relationships: complementary, competitive and operational
 
 | Relationship | Intended effect | Main risk | Representation |
@@ -92,7 +103,7 @@ Never replace actual support-diameter studies with a global constant. Placeholde
 
 ## 6. Single UK reference palette / yearly spectacle
 
-- **Jan–Feb:** evergreens and exposed woody lattice; *C. cirrhosa* and winter-scented *Sarcococca* at accessible edges.
+- **Dec–Feb:** evergreens and exposed woody lattice; *C. cirrhosa* and winter-scented *Sarcococca* at accessible edges.
 - **Mar–Apr:** winter clematis tails off; optional *C. armandi* in mild sunny sectors; young leaves emerge.
 - **May–Jun:** the major wisteria flowering peak, subject to plant maturity, spring frosts, bud survival and local conditions.
 - **Jun–Aug:** roses, honeysuckle, summer clematis, star jasmine and optional warm-site *Campsis*.

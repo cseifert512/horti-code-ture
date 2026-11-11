@@ -10,9 +10,9 @@
 
 ## General scientific and horticultural sources
 
-- Elements of a functional–structural plant model (2026), *in silico Plants* — https://doi.org/10.1093/insilicoplants/diag023
-- Goriely & Neukirch (2006), *Mechanics of Climbing and Attachment in Twining Plants*, *Physical Review Letters* — https://doi.org/10.1103/PhysRevLett.97.184302
-- Tendril biomechanics, *Journal of Experimental Botany* (2022) — https://pmc.ncbi.nlm.nih.gov/articles/PMC8866636/
+- Morales A, de Vries J, Smoleňová K, Bongers FJ, Evers JB (2026), *Elements of a functional–structural plant model*, *in silico Plants* 8(2) — https://doi.org/10.1093/insilicoplants/diag023
+- Goriely A, Neukirch S (2006), *Mechanics of Climbing and Attachment in Twining Plants*, *Physical Review Letters* 97, 184302 — https://doi.org/10.1103/PhysRevLett.97.184302
+- Klimm F, Schmier S, Bohn HF, Kleiser S, Thielen M, Speck T (2022), *Biomechanics of tendrils and adhesive pads of the climbing passion flower* Passiflora discophora, *Journal of Experimental Botany* 73(4): 1190–1203 — https://doi.org/10.1093/jxb/erab456 (open copy: https://pmc.ncbi.nlm.nih.gov/articles/PMC8866636/). **Scope caution:** one *Passiflora* species whose tendrils end in adhesive pads. It supports the general statements made here about contact-triggered coiling; it is not a study of *Vitis* and gives no grasp dimensions for *V. coignetiae*.
 - RHS: Climbers and attachment mechanisms — https://www.rhs.org.uk/plants/types/climbers
 - RHS: How to tie-in climbers — https://www.rhs.org.uk/plants/types/climbers/how-to-tie-in-climbers
 - RHS: Wisteria pruning — https://www.rhs.org.uk/plants/wisteria/pruning-guide
@@ -47,10 +47,13 @@ Each `SPECIES_PROFILE.md` contains its direct RHS profile URL. The species profi
 
 ## Provenance record template (documentation only)
 
-For every trait eventually measured or entered: **taxon/cultivar; parameter name; value or distribution; units; plant age; season/site; source URL/DOI or observation ID; measurement method; uncertainty; reviewer; status (`measured`, `published`, `model assumption`, `unknown`).**
+For every trait eventually measured or entered: **taxon/cultivar; parameter name; value or distribution; units; plant age; season/site; source URL/DOI or observation ID; measurement method; uncertainty; reviewer; status.**
+
+Status is one of the eight canonical evidence statuses defined in `SIMULATION_KEY.md` section 3 and `packages/core/src/vocab.ts`: `measured`, `peer_reviewed`, `published_plant_profile`, `calibrated`, `provisional_design_assumption`, `design_target`, `site_dependent`, `unknown`. (Earlier drafts of this template used the shorter words `published` and `model assumption`; they correspond to `published_plant_profile` or `peer_reviewed`, and to `provisional_design_assumption`.)
 
 ## Caveat on names and cultivars
 
-- Use accepted taxon labels when the authoritative source is clear; *Clematis armandi* replaces the earlier informal *armandii* spelling.
-- RHS uses multiple commercial and synonym labels for some cultivars (e.g., *Clematis* 'Étoile Violette' and *Rosa* 'The Generous Gardener'). Store an accepted display name **and** aliases in the eventual data structure.
+- Use accepted taxon labels when the authoritative source is clear; *Clematis armandi* replaces the earlier informal *armandii* spelling. (Checked 11 November 2026: IPNI record 709497-1, Kew's World Checklist and the RHS all use *armandi*.)
+- RHS uses multiple commercial and synonym labels for some cultivars (e.g., *Clematis* 'Étoile Violette' and *Rosa* 'The Generous Gardener'). Store an accepted display name **and** aliases in the data structure: `species/<id>/taxon.json`, field `names`.
+- **Five working labels in these documents are not the currently accepted name.** They are kept as labels and folder ids because they are the names the plants are sold under; the accepted names are listed in the taxonomic note in `KEY.md` section 2 and recorded per taxon. Checked 11 November 2026 against RHS plant records and Kew's World Checklist of Vascular Plants (June 2026 release, read through GBIF because Kew's POWO site refuses automated access).
 - A cultivar-specific mature size/flowering description cannot safely be inherited from its generic species if the cultivar profile differs.

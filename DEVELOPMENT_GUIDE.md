@@ -2,7 +2,11 @@
 
 ## Objective
 
-Extend the **already existing *Wisteria sinensis* generative algorithm** to a scientifically disciplined, multi-species, Bower-aware simulator without prematurely implementing computationally expensive biology or engineering. **This repository currently contains only documentation.** Agents should inspect the existing project and implement in its own codebase; do not assume a language, renderer, engine, geometric representation or package architecture.
+Extend the **already existing *Wisteria sinensis* generative algorithm** to a scientifically disciplined, multi-species, Bower-aware simulator without prematurely implementing computationally expensive biology or engineering.
+
+**Where the code is.** The existing algorithm is the prototype in `Wisteria/` (JavaScript, three.js, Vite). The new simulator is built beside it in `packages/core` (TypeScript, no rendering dependencies), with the taxon library in `species/`. The prototype's language, renderer and data layout are a starting point, not a constraint: its tested behaviour and the places it departs from this specification are recorded in `docs/ASSUMPTIONS_AUDIT.md`.
+
+**Conventions fixed so far** (acceptance checklist, "coordinate convention, handedness, time step and units written down"): world frame right-handed, metres, x east, y north, z up; twining handedness stated as helix chirality (`right_handed` = anticlockwise seen from above when climbing); the clock counts whole days on ISO dates; lengths m, diameters mm. Vocabulary lives in `packages/core/src/vocab.ts`.
 
 ## Roles / workstreams
 
@@ -24,11 +28,15 @@ A single person or agent may combine several roles. No role is licensed to inser
 
 **Exit check:** A written model map identifies where to attach future species data **without rewriting or discarding** existing work.
 
+**Status (11 November 2026): done.** The model map and behaviour baseline are in `docs/ASSUMPTIONS_AUDIT.md`; `npm run prototype:assumptions` reproduces the measurements. Finding: the prototype computes a plant's whole life in one pass and keeps no state that an event could change, so gardener actions, weather and bud history cannot be attached to it as it stands. Its geometry methods (contact-line stems, crossing resolution, coiling on cables, time-scrubbable rendering) are to be carried over; its growth logic is to be replaced by a stepped model.
+
 ## Stage 1 — define the data contract and provenance
 
 **Tasks:** Adopt shared conceptual entities in `SIMULATION_KEY.md` (Bower member, local support, root station, taxon profile, individual plant, stem/axis, bud, organ cohort, contact and gardener event). Define physical units, accepted taxon names, persistent IDs, age/cohort logic and source-quality labels.
 
 **Exit check:** One existing *W. sinensis* run can be expressed in the new structure; no unrelated assumptions are accidentally assigned to all climbers. Data provenance is reviewable.
+
+**Status (11 November 2026): in progress.** Done in `packages/core`: canonical vocabulary, provenance rules, taxon schema, manufactured-structure graph with route lengths, the two reference Bowers, calendar. Not yet done: the living plant graph (axes, buds, organ cohorts, contacts) and gardener events as data.
 
 ## Stage 2 — stabilise wisteria architecture, annual history and gardener control
 
