@@ -17,6 +17,8 @@ function bare(): RenderData {
     stems: [],
     leaves: [],
     flowers: [],
+    fruits: [],
+    appendages: [],
     seasons: [
       { plantId: 'p', year: 2030, budburstDay: 90, growthEndDay: 270, leafFlush: [100, 140], autumnColour: [280, 310], leafFall: [310, 340] },
       { plantId: 'p', year: 2031, budburstDay: 455, growthEndDay: 635, leafFlush: [465, 505], autumnColour: [645, 675], leafFall: [675, 705] },
