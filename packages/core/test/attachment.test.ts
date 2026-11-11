@@ -14,6 +14,8 @@ const edge = (over: Partial<SupportEdge>): SupportEdge => ({
   from: 'a',
   to: 'b',
   curve: new Polyline([v3(0, 0, 0), v3(0, 0, 1)]),
+  axis: new Polyline([v3(0, 0, 0), v3(0, 0, 1)]),
+  section: { shape: 'round', diameterMm: 5 },
   host: { type: 'support', id: 's' },
   kind: 'cable',
   gripDiameterMm: 5,

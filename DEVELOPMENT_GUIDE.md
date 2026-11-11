@@ -36,13 +36,15 @@ A single person or agent may combine several roles. No role is licensed to inser
 
 **Exit check:** One existing *W. sinensis* run can be expressed in the new structure; no unrelated assumptions are accidentally assigned to all climbers. Data provenance is reviewable.
 
-**Status (11 November 2026): in progress.** Done in `packages/core`: canonical vocabulary, provenance rules, taxon schema, manufactured-structure graph with route lengths, the two reference Bowers, calendar. Not yet done: the living plant graph (axes, buds, organ cohorts, contacts) and gardener events as data.
+**Status (11 November 2026): done.** In `packages/core`: canonical vocabulary, provenance rules, taxon schema and data for all 17 taxa, the structure as timber members and cables with a route graph, the two reference Bowers, calendar, the living plant graph (`sim/types.ts`: axes, runs, flower buds, leaf sites), gardener events as data, and a separate growth-model file per taxon holding every number the engine assumes (`species/wisteria-sinensis/model.json`: 54 parameters, 52 provisional, 2 published, none measured).
 
 ## Stage 2 — stabilise wisteria architecture, annual history and gardener control
 
 **Tasks:** Keep the existing *W. sinensis* procedural growth while adding perennial stem survival, growth cohorts, spring/summer season state, manual train/tie/prune and rudimentary flower-spur history. Distinguish actual botanical stem from Bower's timber members.
 
 **Exit check:** The same plant persists across ≥5 simulated years; annual shoot flush and winter leaf drop are plausible; a saved bud cannot bloom after its bearing shoot has been cut.
+
+**Status (11 November 2026): done for *W. sinensis*; exit check met and tested** (`packages/core/test/engine.test.ts`). `sim/engine.ts` steps a day at a time: stems persist and thicken, laterals break from buds left at nodes, whippy shoots are thrown each year, spurs form, flower buds form in late summer on spurs and summer-pruned shoots and open the next spring only if their wood is still there. `npm run simulate` prints the yearly account and the gardener's log. Not yet modelled, and worth knowing: tying-in is a standing instruction, not dated visits; nothing regrows from below a hard cut; stems sharing a member are drawn side by side but not lifted over one another as in the prototype; dates are fixed provisional days of the year, with no weather.
 
 ## Stage 3 — abstract mechanical attachment into shared strategies
 
@@ -58,6 +60,8 @@ A single person or agent may combine several roles. No role is licensed to inser
 Represent the glulam and its sub-lattice (lighter timber, slender cables) as one route graph that plants may use anywhere, with optional declared exclusions. Keep species-specific diameter and contact parameters uncalibrated until field evidence.
 
 **Exit check:** Each species can approach a support, attempt a biologically correct kind of contact, fail without support, and be rescued by an explicit gardener training event where legitimate.
+
+**Status (11 November 2026): rules done, one geometry done.** `attachment.ts` decides for each of the six classes whether a stretch of timber or cable can be held unaided, needs a tie, or cannot be shown either way because the grasp limit is unmeasured; the engine uses it for every route choice, and a shoot that stalls for want of a hold is led on when a gardener starts tying in (tested). Only stem twining has stem geometry so far (`sim/stem-path.ts`); leaf-stalk, tendril, clinging and tied canes still need theirs.
 
 ## Stage 4 — implement coarse phenology and flowering-wood rules
 

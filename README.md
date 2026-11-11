@@ -21,7 +21,8 @@ This is **not** a verified biological prediction model, a planting specification
 |---|---|
 | `PROJECT_CONTEXT.md` and the other root `.md` files | The specification. Read these before making global decisions. |
 | `species/<id>/` | One folder per taxon. Folder names are ASCII ids; botanical names, accepted names and synonyms are recorded inside. |
-| `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the manufactured-structure graph, reference Bowers, calendar. |
+| `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the structure as timber and cables with its route graph, reference Bowers, attachment rules, the daily-step growth engine, and the render-data contract a viewer draws from. |
+| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Only *Wisteria sinensis* has one so far. |
 | `Wisteria/` | The original three.js prototype of *W. sinensis* on a glulam vault. Self-contained (`npm install` inside it). |
 | `docs/ASSUMPTIONS_AUDIT.md` | What was tested on 11 November 2026, what held, what did not, and what was changed. |
 
@@ -44,6 +45,8 @@ Requires Node 24 or later.
 ```bash
 npm install          # workspace tooling for packages/*
 npm run check        # type-check and run the core tests
+npm run simulate     # ten years of trained wisteria on the vault: yearly account, gardener's log, render data in out/
+npm run simulate -- untended 10   # the same plants with nobody gardening
 ```
 
 The prototype is separate:

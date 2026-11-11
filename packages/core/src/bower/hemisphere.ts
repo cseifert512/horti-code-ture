@@ -80,11 +80,14 @@ export function makeHemisphereBower(options: HemisphereOptions = {}): Bower {
     for (let j = 0; j < levels.length; j++) {
       const e0 = elevation(j);
       const e1 = elevation(j + 1);
+      const segs = Math.max(2, Math.round(segmentsPerEdge * ((e1 - e0) / (Math.PI / 2)) * rings));
       graph.addEdge({
         id: `m${i}.l${j}-l${j + 1}`,
         from: nodeId(i, j),
         to: nodeId(i, j + 1),
-        curve: Polyline.sample((t) => at(R, azimuth(i), e0 + (e1 - e0) * t), Math.max(2, Math.round(segmentsPerEdge * ((e1 - e0) / (Math.PI / 2)) * rings))),
+        curve: Polyline.sample((t) => at(R, azimuth(i), e0 + (e1 - e0) * t), segs),
+        axis: Polyline.sample((t) => at(R - RIB.depthMm / 2000, azimuth(i), e0 + (e1 - e0) * t), segs),
+        section: RIB,
         host: { type: 'member', id: rib.id },
         kind: 'timber',
         gripDiameterMm: equivalentDiameterMm(RIB),
@@ -120,6 +123,8 @@ export function makeHemisphereBower(options: HemisphereOptions = {}): Bower {
           from: nodeId(i, j),
           to: nodeId((i + 1) % meridians, j),
           curve: Polyline.sample((t) => at(R, a0 + (a1 - a0) * t, theta), segmentsPerEdge),
+          axis: Polyline.sample((t) => at(R - RING.depthMm / 2000, a0 + (a1 - a0) * t, theta), segmentsPerEdge),
+          section: RING,
           host: { type: 'member', id: beam.id },
           kind: 'timber',
           gripDiameterMm: equivalentDiameterMm(RING),
@@ -135,7 +140,7 @@ export function makeHemisphereBower(options: HemisphereOptions = {}): Bower {
         const curve = new Polyline([at(R, azimuth(i), theta), at(R, azimuth(i2), theta)]);
         const id = `l${j}.m${i}-m${i2}`;
         supports.push({ id: `cable.${id}`, kind: 'cable', curve, diameterMm: cableDiameterMm, material: 'stainless steel', surface: 'smooth', contact: 'permitted', replaceable: true, mountedOn: [`rib.m${i}`, `rib.m${i2}`] });
-        graph.addEdge({ id, from: nodeId(i, j), to: nodeId(i2, j), curve, host: { type: 'support', id: `cable.${id}` }, kind: 'cable', gripDiameterMm: cableDiameterMm, surface: 'smooth', contact: 'permitted', zones: [] });
+        graph.addEdge({ id, from: nodeId(i, j), to: nodeId(i2, j), curve, axis: curve, section: { shape: 'round', diameterMm: cableDiameterMm }, host: { type: 'support', id: `cable.${id}` }, kind: 'cable', gripDiameterMm: cableDiameterMm, surface: 'smooth', contact: 'permitted', zones: [] });
       }
     }
   }

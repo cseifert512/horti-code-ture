@@ -55,6 +55,11 @@ export class Calendar {
     return Math.round((parseISO(iso) - this.epochMs) / MS_PER_DAY);
   }
 
+  /** Day index of the `dayOfYear`-th day (1 = 1 January) of a calendar year. */
+  dayOfYearDay(year: number, dayOfYear: number): number {
+    return Math.round((Date.UTC(year, 0, 1) - this.epochMs) / MS_PER_DAY) + dayOfYear - 1;
+  }
+
   dateOf(day: number): CalendarDate {
     if (!Number.isInteger(day)) throw new Error('the simulation clock counts whole days');
     const d = new Date(this.epochMs + day * MS_PER_DAY);
