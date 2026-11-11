@@ -50,7 +50,7 @@ describe('what is seen through the year', () => {
 
   it('shows winter green only from the evergreen, and counts it separately', () => {
     const jan = month(mixed, 1);
-    expect(Object.keys(jan.leaves)).toEqual(['honeysuckle']);
+    expect(Object.keys(jan.leaves).sort()).toEqual(['honeysuckle', 'winter-clematis']);
     for (const v of jan.views) expect(v.foliage).toBe(v.evergreenFoliage);
     expect(view(mixed, 1, 'lawn').evergreenFoliage).toBeGreaterThan(0);
     for (const v of month(mixed, 7).views) expect(v.evergreenFoliage).toBeLessThan(v.foliage);
@@ -61,14 +61,21 @@ describe('what is seen through the year', () => {
     for (const v of month(mixed, 1).views) expect(v.evergreenFoliage).toBeLessThan(0.1);
   });
 
-  it('puts the wisteria in flower in May and the clematis in July and August, and neither in winter', () => {
+  it('has something in flower in winter, spring and summer, each from a different plant', () => {
+    expect(Object.keys(month(mixed, 1).flowers)).toEqual(['winter-clematis']);
+    expect(month(mixed, 1).flowers['winter-clematis']).toBeGreaterThan(5);
+    expect(month(mixed, 12).flowers['winter-clematis']).toBeGreaterThan(5);
+    expect(month(mixed, 5).flowers['winter-clematis']).toBeUndefined();
+  });
+
+  it('puts the wisteria in flower in May and the summer clematis in July and August, and neither in winter', () => {
     expect(month(mixed, 5).flowers['wisteria.0']).toBeGreaterThan(100);
     expect(month(mixed, 5).flowers['clematis']).toBeUndefined();
     expect(month(mixed, 8).flowers['clematis']).toBeGreaterThan(5);
     expect(month(mixed, 8).flowers['wisteria.0']).toBeUndefined();
-    expect(month(mixed, 1).flowers).toEqual({});
     expect(view(mixed, 5, 'inside').flowers).toBeGreaterThan(0.05);
-    expect(view(mixed, 1, 'inside').flowers).toBe(0);
+    expect(month(wisteria, 1).flowers).toEqual({});
+    expect(view(wisteria, 1, 'inside').flowers).toBe(0);
   });
 
   it('sees all of the timber on a structure with nothing planted', () => {
@@ -127,7 +134,7 @@ describe('the gardener’s year, and what to keep in view', () => {
       6,
     );
     expect(neglected.gardening.map((g) => g.year)).toEqual([2027]);
-    expect(neglected.gardening[0]!.actions).toEqual({ plant: 4 });
+    expect(neglected.gardening[0]!.actions).toEqual({ plant: 5 });
     expect(neglected.gardening[0]!.tieIns).toBe(0);
   });
 
@@ -143,7 +150,7 @@ describe('the gardener’s year, and what to keep in view', () => {
   });
 
   it('flags shoots left without a hold when nobody gardens', () => {
-    for (const id of ['honeysuckle', 'clematis']) {
+    for (const id of ['honeysuckle', 'clematis', 'winter-clematis']) {
       const a = neglected.alerts.find((x) => x.kind === 'no_hold' && x.plantId === id)!;
       expect(a.count, id).toBeGreaterThan(0);
       expect(a.text, id).toContain('nobody tied the shoot in');
@@ -162,7 +169,7 @@ describe('the report as a whole', () => {
   it('states what it rests on and what it must not be used for', () => {
     expect(mixed.statement).toContain('not a forecast');
     expect(mixed.proxyNote).toContain('must not be used to size anything');
-    for (const taxonId of ['wisteria-sinensis', 'lonicera-henryi', 'clematis-viticella-etoile-violette']) {
+    for (const taxonId of ['wisteria-sinensis', 'lonicera-henryi', 'clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles']) {
       expect(mixed.assumptions[taxonId]!.measured, taxonId).toBe(0);
       expect(mixed.assumptions[taxonId]!.provisional_design_assumption, taxonId).toBeGreaterThan(50);
     }

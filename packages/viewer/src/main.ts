@@ -8,7 +8,7 @@ import { type ReachView, type StationField, materials, reachView, routeInfo, sta
 import { ReachOverlay } from './overlay/view.ts';
 import type { FruitSite } from './plant/adapter.ts';
 import { makeTestPlant } from './plant/fixture.ts';
-import { growWisteriaOnVault } from './plant/scenario.ts';
+import { growWisteria } from './plant/scenario.ts';
 import { shared } from './plant/shaders.ts';
 import { PlantView, makePlantMaterials } from './plant/view.ts';
 import { makeSiteMaterials, makeStructureMaterials } from './scene/materials.ts';
@@ -21,8 +21,6 @@ type BowerKey = 'vault' | 'hemisphere';
 /** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
 type PlantSource = 'none' | 'trained' | 'untended' | 'fixture';
 const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'fixture'];
-/** The engine's reference scenarios are written for the vault. */
-const needsVault = (source: PlantSource) => source === 'trained' || source === 'untended';
 /** Detail of the organ pools, 0 to 1 (see PlantView.update). */
 const PLANT_DETAIL = 0.75;
 /** Time-lapse speed, days per second. */
@@ -141,8 +139,7 @@ function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget 
   showMaterials();
   const wanted = bower.rootStations.find((s) => s.id === state.stationId) ?? bower.rootStations[0];
   if (wanted) showStation(wanted.id, !keepBudget);
-  for (const o of el<HTMLSelectElement>('plants').options) o.disabled = key !== 'vault' && needsVault(o.value as PlantSource);
-  showPlants(key !== 'vault' && needsVault(state.plants) ? 'none' : state.plants, keepDay);
+  showPlants(state.plants, keepDay);
   invalidate();
 }
 
@@ -312,7 +309,7 @@ function showPlants(source: PlantSource, keepDay = false): void {
   let data: RenderData;
   let fruit: FruitSite[] = [];
   if (source === 'fixture') ({ data, fruit } = makeTestPlant(bower));
-  else ({ data } = growWisteriaOnVault(source));
+  else ({ data } = growWisteria(state.bowerKey, source));
   plantMaterials ??= makePlantMaterials({ bark: makeBarkTextures(), leafTex: makeLeafTexture() });
   plant = new PlantView(data, plantMaterials, { fruit });
   stage.scene.add(plant.group);

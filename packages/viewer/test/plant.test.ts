@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EVIDENCE_STATUS, RENDER_CONTRACT, type RenderData, type RenderFlower, type RenderLeaf, type RenderStem, flowerState, leafState, makeHemisphereBower, makeVaultBower, seasonsOf, stemRadiusM } from '@horti/core';
 import { NEVER, RenderTimeline } from '../src/plant/adapter.ts';
 import { makeTestPlant } from '../src/plant/fixture.ts';
-import { growWisteriaOnVault } from '../src/plant/scenario.ts';
+import { growWisteria } from '../src/plant/scenario.ts';
 import { buildWoodGeometry } from '../src/plant/wood.ts';
 
 /** A one-plant, two-year run with nothing in it but dates. It starts on 1 January, so in the first year day = day of year - 1. */
@@ -202,8 +202,13 @@ describe('render test plant', () => {
 });
 
 describe('stems of the growth engine as geometry', () => {
+  it('grows a wisteria at every root station of either reference Bower', () => {
+    expect(growWisteria('vault', 'untended', 2).data.plants.map((p) => p.stationId)).toEqual(makeVaultBower().rootStations.map((s) => s.id));
+    expect(growWisteria('hemisphere', 'untended', 2).data.plants.map((p) => p.stationId)).toEqual(makeHemisphereBower().rootStations.map((s) => s.id));
+  });
+
   it('builds finite tubes from the reference scenario, each ring carrying its days and radius', () => {
-    const { data } = growWisteriaOnVault('trained', 3);
+    const { data } = growWisteria('vault', 'trained', 3);
     expect(data.stems.length).toBeGreaterThan(10);
     const { geometry, points } = buildWoodGeometry(data.stems);
     expect(points).toBe(data.stems.filter((s) => s.bornDay.length >= 2).reduce((n, s) => n + s.bornDay.length, 0));

@@ -1,7 +1,7 @@
-// Runs the core's reference scenario in the browser and returns its render
+// Runs the core's reference scenarios in the browser and returns their render
 // data. All growth happens in @horti/core; the taxon profile and the growth
 // model are the repository's own files, validated by the core as it loads them.
-import { type RenderData, Simulation, parseGrowthModel, parseTaxon, toRenderData, wisteriaOnVault } from '@horti/core';
+import { type RenderData, Simulation, parseGrowthModel, parseTaxon, toRenderData, wisteriaOnHemisphere, wisteriaOnVault } from '@horti/core';
 import modelJson from '../../../../species/wisteria-sinensis/model.json';
 import taxonJson from '../../../../species/wisteria-sinensis/taxon.json';
 
@@ -13,8 +13,13 @@ export interface ScenarioRun {
   ms: number;
 }
 
-/** Two Wisteria sinensis on the vault segment, as `npm run simulate` grows them. */
-export function growWisteriaOnVault(care: Care, years = 10, seed = 7): ScenarioRun {
+/**
+ * Wisteria sinensis at every root station of a reference Bower, as
+ * `npm run simulate` grows it: two plants on the vault segment, three on the
+ * 15 m hemisphere. Both scenarios build the Bower with its defaults, which is
+ * the one the viewer shows.
+ */
+export function growWisteria(on: 'vault' | 'hemisphere', care: Care, years = 10, seed = 7): ScenarioRun {
   const taxa = new Map([
     [
       'wisteria-sinensis',
@@ -25,7 +30,7 @@ export function growWisteriaOnVault(care: Care, years = 10, seed = 7): ScenarioR
     ],
   ]);
   const plantingYear = 2027;
-  const scenario = wisteriaOnVault({ taxa, care, years, seed, plantingYear });
+  const scenario = (on === 'vault' ? wisteriaOnVault : wisteriaOnHemisphere)({ taxa, care, years, seed, plantingYear });
   const t0 = performance.now();
   const sim = new Simulation(scenario).runUntil(`${plantingYear + years - 1}-12-31`);
   const data = toRenderData(sim);

@@ -496,8 +496,9 @@ export class Simulation {
     for (const b of this.liveBuds(plant)) {
       if (b.stage === 'dormant' && b.floweringYear === year) {
         b.stage = 'developing';
-        b.openDoy = plant.rng.flower.int(...param(model, 'phenology.flowerOpenDoy'));
-        b.fallDoy = plant.rng.flower.int(...param(model, 'phenology.petalFallDoy'));
+        b.developDay = this.day;
+        b.openPlannedDay = this.calendar.dayOfYearDay(year, plant.rng.flower.int(...param(model, 'phenology.flowerOpenDoy')));
+        b.spentPlannedDay = this.calendar.dayOfYearDay(year, plant.rng.flower.int(...param(model, 'phenology.petalFallDoy')));
       }
     }
 
@@ -623,23 +624,36 @@ export class Simulation {
    * each class has its own rule and none borrows another's.
    */
   private initiateFloralBuds(plant: Plant, date: CalendarDate): void {
-    const { profile } = this.taxon(plant);
+    const { profile, model } = this.taxon(plant);
     const wood = profile.flowering.wood.value;
-    if (wood === 'previous_season') this.budsOnOldWood(plant, date);
-    else if (wood === 'current_season') this.budsOnNewWood(plant, date);
+    // old-wood flowering comes in two kinds: on spurs, or along last summer's shoots once they have ripened
+    if (wood === 'previous_season') {
+      if (param(model, 'organs.spurChance') > 0) this.budsOnOldWood(plant, date);
+      else this.budsAlongShoots(plant, date, true);
+    } else if (wood === 'current_season') this.budsAlongShoots(plant, date, false);
     else if (date.year === plant.plantedYear) {
       this.note('not_modelled', plant, null, `no flowers are modelled for ${profile.names.label}: ${wood === null ? 'which of its wood flowers is not established' : 'flowering on both old and new wood is not modelled yet'}`);
     }
   }
 
   /**
-   * Current-season flowering: flowers form along the shoots made this year.
-   * A hard prune in late winter therefore costs nothing; a cut in early summer
-   * takes the flowers with the shoots.
+   * Flowers that form along the shoots made this year.
+   *
+   * Current-season flowering opens them the same season, so a hard prune in
+   * late winter costs nothing and a cut in early summer takes the flowers with
+   * the shoots. Old-wood flowering without spurs (`ripened`) forms them in the
+   * same way but opens them only after the growing season, in winter or the
+   * following spring, by which time the wood that bears them is last year's:
+   * a cut between forming and opening removes the whole display.
    */
-  private budsOnNewWood(plant: Plant, date: CalendarDate): void {
+  private budsAlongShoots(plant: Plant, date: CalendarDate, ripened: boolean): void {
     const { model } = this.taxon(plant);
     const year = date.year;
+    const [open0, open1] = param(model, 'phenology.flowerOpenDoy');
+    const [fall0, fall1] = param(model, 'phenology.petalFallDoy');
+    // an opening date earlier in the year than today means next year; a fall date earlier than the opening means the year after it
+    const openYear = open0 >= date.dayOfYear ? year : year + 1;
+    const fallYear = fall0 >= open0 ? openYear : openYear + 1;
     const ramp = year - plant.plantedYear - param(model, 'flowering.competenceYears');
     if (ramp < 0) return;
     const chance = Math.min(1, param(model, 'flowering.currentSeasonFlowersPerM') * listAt(model, 'flowering.maturityRamp', ramp) * mid(param(model, 'organs.leafSpacingM')));
@@ -660,14 +674,17 @@ export class Simulation {
       const a = this.axes.get(n.axisId)!;
       const flowers = plant.rng.flower.chance(chance);
       if (!flowers || a.removedDay !== null || n.pointIndex >= a.alive || (grown.get(a.id) ?? 0) < minShoot) continue;
-      this.newBud(plant, a, n.pointIndex, 'developing', year, plant.rng.flower.int(...param(model, 'phenology.flowerOpenDoy')), plant.rng.flower.int(...param(model, 'phenology.petalFallDoy')));
+      const opens = this.calendar.dayOfYearDay(openYear, plant.rng.flower.int(open0, open1));
+      const drops = this.calendar.dayOfYearDay(fallYear, plant.rng.flower.int(fall0, fall1));
+      // buds show for about a month before they open, or from now if that is sooner
+      this.newBud(plant, a, n.pointIndex, 'developing', openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops));
       made++;
     }
     this.yearStats.get(plant.id)!.initiated += made;
-    this.note('floral_initiated', plant, null, `${made} flower bud${made === 1 ? '' : 's'} formed on this year's growth (${[...grown.values()].filter((g) => g >= minShoot).length} shoots long enough to flower)`);
+    this.note('floral_initiated', plant, null, `${made} flower bud${made === 1 ? '' : 's'} formed on this year's growth (${[...grown.values()].filter((g) => g >= minShoot).length} shoots long enough to flower)${ripened ? `, to open from ${this.calendar.dateOf(this.calendar.dayOfYearDay(openYear, open0)).iso}: any cut before then takes them` : ''}`);
   }
 
-  private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, openDoy: number, fallDoy: number): FloralBud {
+  private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, developDay: number, openPlannedDay: number, spentPlannedDay: number): FloralBud {
     const { model } = this.taxon(plant);
     const bud: FloralBud = {
       id: `${plant.id}/bud${this.serial++}`,
@@ -685,8 +702,9 @@ export class Simulation {
       endedBy: null,
       position: null,
       lengthM: plant.rng.flower.range(...param(model, 'organs.racemeLengthM')),
-      openDoy,
-      fallDoy,
+      developDay,
+      openPlannedDay,
+      spentPlannedDay,
     };
     this.buds.push(bud);
     const list = this.budsByAxis.get(bearer.id);
@@ -715,7 +733,7 @@ export class Simulation {
       if (!(a.role === 'spur' || (a.role === 'whip' && a.summerPrunedYear === year))) continue;
       sites++;
       if (!plant.rng.flower.chance(chance)) continue;
-      this.newBud(plant, a, null, 'initiated', year + 1, 0, 0);
+      this.newBud(plant, a, null, 'initiated', year + 1, -1, -1, -1);
       made++;
     }
     this.yearStats.get(plant.id)!.initiated += made;
@@ -725,8 +743,8 @@ export class Simulation {
   private flowerDay(plant: Plant, date: CalendarDate): void {
     let opened = 0;
     for (const b of this.buds) {
-      if (b.plantId !== plant.id || b.end !== null || b.floweringYear !== date.year) continue;
-      if (b.stage === 'developing' && date.dayOfYear >= b.openDoy) {
+      if (b.plantId !== plant.id || b.end !== null || b.stage === 'spent' || b.openPlannedDay < 0) continue;
+      if (b.stage === 'developing' && this.day >= b.openPlannedDay) {
         const bearer = this.axes.get(b.axisId)!;
         b.stage = 'open';
         b.openDay = this.day;
@@ -734,7 +752,7 @@ export class Simulation {
         // a flower on the year's growth stands at its own node
         b.position = bearer.contact[b.pointIndex === null ? bearer.alive - 1 : b.pointIndex]!;
         opened++;
-      } else if (b.stage === 'open' && date.dayOfYear >= b.fallDoy) {
+      } else if (b.stage === 'open' && this.day >= b.spentPlannedDay) {
         b.stage = 'spent';
         b.spentDay = this.day;
       }

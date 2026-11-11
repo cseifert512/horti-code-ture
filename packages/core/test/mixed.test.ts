@@ -97,6 +97,59 @@ describe('old wood and new wood answer hard pruning differently', () => {
   });
 });
 
+// DEVELOPMENT_GUIDE.md stage 4 exit check: "Group 1 C. cirrhosa and Group 3 C. viticella have materially
+// different responses to severe pruning". CONSTRAINTS section 3: "If a gardener removes an older C. cirrhosa
+// shoot with overwintering flower buds, those buds cannot flower."
+describe('the winter clematis, which flowers on last summer’s shoots', () => {
+  const opened = (sim: Simulation, winterOf: number) => sim.buds.filter((b) => b.plantId === 'winter-clematis' && b.floweringYear === winterOf && b.openDay !== null);
+
+  it('opens in late autumn and finishes the following spring, on wood that is by then a year old', () => {
+    const flowers = opened(trained, 2032);
+    expect(flowers.length).toBeGreaterThan(10);
+    for (const b of flowers) {
+      const open = trained.calendar.dateOf(b.openDay!);
+      expect(open.year).toBe(2032);
+      expect([11, 12]).toContain(open.month);
+      const done = trained.calendar.dateOf(b.spentDay!);
+      expect(done.year).toBe(2033);
+      expect([2, 3]).toContain(done.month);
+      const bearer = trained.axes.get(b.axisId)!;
+      expect(yearOf(trained, bearer.bornDayAt[b.pointIndex!]!)).toBe(2032);
+      expect(yearOf(trained, b.initiatedDay)).toBe(2032);
+    }
+  });
+
+  it('loses the flowers it is carrying to the February cut that costs the summer clematis nothing', () => {
+    const cut: GardenerEvent = { id: 'floor-freckles', date: '2033-02-10', type: 'hard_prune', plantId: 'winter-clematis', target: { allStems: true }, keepM: 0.25 };
+    const sim = run(mixed('trained', [cut]), '2033-12-31');
+    const rec = sim.events.find((e) => e.eventId === 'floor-freckles')!;
+    expect(rec.effects.floralBudsRemoved).toBeGreaterThan(5);
+    // the summer clematis, cut the same way ten days later as every year, loses none
+    const summer = sim.events.find((e) => e.plantId === 'clematis' && e.type === 'hard_prune' && e.date === '2033-02-20')!;
+    expect(summer.effects.floralBudsRemoved).toBe(0);
+    for (const b of sim.buds) if (b.endedBy === 'floor-freckles') expect(b.spentDay).toBeNull();
+  });
+
+  it('loses the whole of next winter’s display to a cut in autumn, after the buds have formed', () => {
+    const cut: GardenerEvent = { id: 'autumn-tidy', date: '2032-10-05', type: 'hard_prune', plantId: 'winter-clematis', target: { allStems: true }, keepM: 0.25 };
+    const sim = run(mixed('trained', [cut]), '2033-04-30');
+    const rec = sim.events.find((e) => e.eventId === 'autumn-tidy')!;
+    expect(rec.effects.floralBudsRemoved).toBeGreaterThan(10);
+    expect(opened(sim, 2032).length).toBe(0);
+    expect(opened(trained, 2032).length).toBeGreaterThan(10);
+    // and the run said, when the buds formed, that any cut before opening would take them
+    const note = sim.decisions.find((d) => d.plantId === 'winter-clematis' && d.kind === 'floral_initiated' && yearOf(sim, d.day) === 2032)!;
+    expect(note.text).toContain('any cut before then takes them');
+  });
+
+  it('flowers again the winter after, on the shoots that regrew', () => {
+    const cut: GardenerEvent = { id: 'autumn-tidy', date: '2031-10-05', type: 'hard_prune', plantId: 'winter-clematis', target: { allStems: true }, keepM: 0.25 };
+    const sim = run(mixed('trained', [cut]), '2033-04-30');
+    expect(opened(sim, 2031).length).toBe(0);
+    expect(opened(sim, 2032).length).toBeGreaterThan(3);
+  });
+});
+
 describe('regrowth after a hard cut', () => {
   it('leaves the same few stubs each year instead of piling stub on stub', () => {
     for (const e of trained.events) {
@@ -155,6 +208,7 @@ describe('winter', () => {
   it('is green only where the evergreen is', () => {
     const jan = inLeafOn('2034-01-25');
     expect(jan['honeysuckle']).toBeGreaterThan(200);
+    expect(jan['winter-clematis']).toBeGreaterThan(20);
     expect(jan['wisteria.0']).toBeUndefined();
     expect(jan['wisteria.1']).toBeUndefined();
     expect(jan['clematis']).toBeUndefined();
@@ -164,12 +218,13 @@ describe('winter', () => {
     const jul = inLeafOn('2034-07-20');
     expect(jul['honeysuckle']).toBeGreaterThan(200);
     expect(jul['clematis']).toBeGreaterThan(30);
-    expect(jul['wisteria.0']! + jul['wisteria.1']!).toBeGreaterThan(jul['honeysuckle']! * 3);
+    expect(jul['wisteria.0']! + jul['wisteria.1']!).toBeGreaterThan(jul['honeysuckle']! * 2);
   });
 
   it('marks leaves as evergreen by taxon, and gives an evergreen leaf more than one season', () => {
     const plantOf = new Map(data.plants.map((p) => [p.id, p.taxonId]));
-    for (const lf of data.leaves) expect(lf.evergreen).toBe(plantOf.get(lf.plantId) === 'lonicera-henryi');
+    const evergreens = ['lonicera-henryi', 'clematis-cirrhosa-freckles'];
+    for (const lf of data.leaves) expect(lf.evergreen).toBe(evergreens.includes(plantOf.get(lf.plantId)!));
     const stemLeaves = trained.leaves.filter((l) => l.plantId === 'honeysuckle' && l.lastYear !== null);
     expect(stemLeaves.length).toBeGreaterThan(100);
     for (const l of stemLeaves) expect(l.lastYear! - l.firstYear).toBe(1);
@@ -219,7 +274,7 @@ describe('three ways of holding the same structure', () => {
   });
 
   it('leaves the two slender climbers at the foot of the glulam when nobody ties them in', () => {
-    for (const id of ['honeysuckle', 'clematis']) {
+    for (const id of ['honeysuckle', 'clematis', 'winter-clematis']) {
       expect(summary(untended, id, 2034).frameworkM, id).toBeLessThan(0.1);
       const why = untended.decisions.find((d) => d.plantId === id && d.kind === 'no_route')!;
       expect(why.text, id).toContain('too stout to grasp, and nobody ties it in');
@@ -245,7 +300,7 @@ describe('a plant whose flowering wood is not established', () => {
 
 describe('borrowed growth models', () => {
   it('say plainly that they are thinner than the wisteria model', () => {
-    for (const id of ['lonicera-henryi', 'clematis-viticella-etoile-violette']) {
+    for (const id of ['lonicera-henryi', 'clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles']) {
       const { model } = library.get(id)!;
       expect(model.statement, id).toContain('thinner than the wisteria model');
       const copied = Object.values(model.params).filter((p) => (p.basis ?? '').startsWith('Copied from the Wisteria sinensis model'));

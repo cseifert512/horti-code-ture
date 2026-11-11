@@ -91,7 +91,7 @@ export function toRenderData(sim: Simulation): RenderData {
       position: triple(bud.position),
       lengthM: round(bud.lengthM, 3),
       year: bud.floweringYear,
-      developDay: cal.dayOfYearDay(bud.floweringYear, param(model, 'phenology.budburstDoy')),
+      developDay: bud.developDay,
       openDay: bud.openDay,
       spentDay: bud.spentDay ?? -1,
     });

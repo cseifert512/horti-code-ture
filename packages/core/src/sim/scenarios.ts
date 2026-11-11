@@ -77,19 +77,22 @@ export function wisteriaOnVault(options: VaultScenarioOptions): Scenario {
 
 /**
  * The first mixed planting: the two wisterias as before, an evergreen
- * honeysuckle (Lonicera henryi) at the west foot of rib 3, and a Group 3
- * clematis ('Étoile Violette') at the east foot of rib 1. Three attachment
- * behaviours and three flowering habits on one structure.
+ * honeysuckle (Lonicera henryi) at the west foot of rib 3, a Group 3 clematis
+ * ('Étoile Violette') at the east foot of rib 1, and a winter-flowering
+ * Group 1 clematis ('Freckles') at the west foot of rib 2. Three ways of
+ * holding the structure and four flowering habits, with something in flower
+ * in spring, summer and winter.
  */
 export function mixedOnVault(options: VaultScenarioOptions): Scenario {
   const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained' } = options;
-  need(taxa, 'wisteria-sinensis', 'lonicera-henryi', 'clematis-viticella-etoile-violette');
+  need(taxa, 'wisteria-sinensis', 'lonicera-henryi', 'clematis-viticella-etoile-violette', 'clematis-cirrhosa-freckles');
   const bower = makeVaultBower({
     stations: [
       { side: 0, rib: 1 },
       { side: 1, rib: 3 },
       { side: 0, rib: 3 },
       { side: 1, rib: 1 },
+      { side: 0, rib: 2 },
     ],
   });
   const date = `${plantingYear}-03-12`;
@@ -99,9 +102,11 @@ export function mixedOnVault(options: VaultScenarioOptions): Scenario {
     { plantId: 'wisteria.1', taxonId: 'wisteria-sinensis', stationId: 'station.1', date, tieToTimber },
     { plantId: 'honeysuckle', taxonId: 'lonicera-henryi', stationId: 'station.2', date, tieToTimber },
     { plantId: 'clematis', taxonId: 'clematis-viticella-etoile-violette', stationId: 'station.3', date, tieToTimber },
+    // Group 1: pruned lightly after flowering if at all, which the model does not act on yet, so it has no routine here
+    { plantId: 'winter-clematis', taxonId: 'clematis-cirrhosa-freckles', stationId: 'station.4', date, tieToTimber },
   ];
   const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('clematis', plantingYear, years)] : [];
-  return { name: `Wisteria, evergreen honeysuckle and summer clematis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
+  return { name: `Wisteria, evergreen honeysuckle, summer clematis and winter clematis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
 }
 
 /** Three places a visitor to the 15 m hemisphere stands. Eye height 1.6 m. */

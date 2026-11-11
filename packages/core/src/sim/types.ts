@@ -136,9 +136,14 @@ export interface FloralBud {
   /** Set when it opens. */
   position: Vec3 | null;
   lengthM: number;
-  /** Day of year on which it will open and drop, drawn when it starts to develop. */
-  openDoy: number;
-  fallDoy: number;
+  /**
+   * Days on which it will begin to swell, open and drop, fixed when its
+   * development is set going; -1 until then. Days, not days of the year, so
+   * that a winter display can open in one year and finish in the next.
+   */
+  developDay: number;
+  openPlannedDay: number;
+  spentPlannedDay: number;
 }
 
 export interface PendingLateral {
