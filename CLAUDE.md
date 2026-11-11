@@ -7,7 +7,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 - Root `*.md` — the specification. `README.md` gives the reading order.
 - `docs/ASSUMPTIONS_AUDIT.md` — tested state of the spec and prototype, with the prototype model map.
 - `species/<id>/` — `SPECIES_PROFILE.md` (prose) and `taxon.json` (validated data) per taxon.
-- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies.
+- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/render/contract.ts` is what a viewer draws from; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
 - `Wisteria/` — the original three.js prototype. Reference only; it has its own `node_modules`.
 
 ## Commands
@@ -15,6 +15,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 ```bash
 npm run check                   # tsc + vitest for packages/*
 npm test                        # vitest only
+npm run simulate                # reference scenario: yearly account, gardener's log, render data in out/
 npm run prototype:audit         # prototype interference audit
 npm run prototype:assumptions   # prototype behaviour baseline
 ```
@@ -41,6 +42,8 @@ The prototype's dev server is pinned to port 5173, which another session may hol
 - Units: length m, diameter mm, area m2, mass kg, force N, temperature degC.
 - TypeScript: erasable syntax only (no enums, no parameter properties), relative imports end in `.ts`, zod `strictObject` for anything read from disk.
 - Tests name the specification clause they enforce.
+- Each plant has three random streams (`arch`, `organ`, `flower`). Draw from the one that matches what you are deciding, so that an intervention changes only what it touches and scenarios stay comparable.
+- Shell: put anything with quotes or non-ASCII text (patch scripts, commit messages) in a file and run that; long inline heredocs have failed to parse here.
 
 ## Git
 

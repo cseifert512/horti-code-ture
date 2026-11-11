@@ -71,6 +71,14 @@ export interface SupportEdge {
   to: string;
   /** The line a stem follows from `from` to `to`. Its length is the route length, never the height gained. */
   curve: Polyline;
+  /**
+   * Centre line of the element the route lies on, over the same stretch and
+   * in the same direction. A stem lying along the route rests on `curve`, on
+   * the side of `axis` that `curve` is on; a stem twining winds round `axis`.
+   */
+  axis: Polyline;
+  /** Cross-section of that element. */
+  section: Section;
   /** The manufactured element this stretch of route lies on. */
   host: { type: 'member' | 'support'; id: string };
   kind: RouteMaterial;

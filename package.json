@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc -p packages/core --noEmit",
     "check": "npm run typecheck && npm test",
+    "simulate": "node packages/core/scripts/simulate.ts",
     "prototype:dev": "npm --prefix Wisteria run dev",
     "prototype:audit": "npm --prefix Wisteria run audit",
     "prototype:assumptions": "npm --prefix Wisteria run assumptions"

@@ -114,8 +114,8 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
     members.push(m);
     return m;
   };
-  const timberRoute = (id: string, from: string, to: string, curve: Polyline, member: StructuralMember) => {
-    graph.addEdge({ id, from, to, curve, host: { type: 'member', id: member.id }, kind: 'timber', gripDiameterMm: equivalentDiameterMm(member.section), surface: member.surface, contact: member.contact, zones: [] });
+  const timberRoute = (id: string, from: string, to: string, curve: Polyline, axis: Polyline, member: StructuralMember) => {
+    graph.addEdge({ id, from, to, curve, axis, section: member.section, host: { type: 'member', id: member.id }, kind: 'timber', gripDiameterMm: equivalentDiameterMm(member.section), surface: member.surface, contact: member.contact, zones: [] });
   };
 
   // ---- primary structure: the glulam ribs --------------------------------------
@@ -148,7 +148,7 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
         const key = `${k}.${m}-${k + 1}.${m + dm}`;
         const member = timber(`diagrid.${key}`, 'sub_lattice', 'diagrid', onSurface(a, b, level(VAULT.diagrid.depthMm / 2000)), { shape: 'rect', ...VAULT.diagrid }, 'larch');
         // a stem lies along the top face of the member
-        timberRoute(`T.${key}`, nid(k, m), nid(k + 1, m + dm), onSurface(a, b, blend(top(k), top(k + 1))), member);
+        timberRoute(`T.${key}`, nid(k, m), nid(k + 1, m + dm), onSurface(a, b, blend(top(k), top(k + 1))), member.curve, member);
       }
     }
   }
@@ -168,7 +168,9 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
         for (let i = 0; i + 1 < stops.length; i++) {
           const m0 = stops[i]!;
           const m1 = stops[i + 1]!;
-          timberRoute(`E.${k}.${m0}-${k}.${m1}`, nid(k, m0), nid(k, m1), onSurface([u, m0 / (2 * NB)], [u, m1 / (2 * NB)], level(top(k))), eaves.get(k)!);
+          const a: UV = [u, m0 / (2 * NB)];
+          const b: UV = [u, m1 / (2 * NB)];
+          timberRoute(`E.${k}.${m0}-${k}.${m1}`, nid(k, m0), nid(k, m1), onSurface(a, b, level(top(k))), onSurface(a, b, level(VAULT.eave.depthMm / 2000)), eaves.get(k)!);
         }
         continue;
       }
@@ -199,6 +201,8 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
         from: nid(k, m),
         to: nid(k, m + 2),
         curve: new Polyline([aTop, a, b, bTop]),
+        axis: new Polyline([a, b]),
+        section: { shape: 'round', diameterMm: VAULT.cable.diameterMm },
         host: { type: 'support', id: `cable.${key}` },
         kind: 'cable',
         gripDiameterMm: VAULT.cable.diameterMm,
@@ -223,10 +227,12 @@ export function makeVaultBower(options: VaultOptions = {}): Bower {
     const footId = `foot.${index}`;
     graph.addNode({ id: footId, position: vaultPoint(uFoot, v, 0) });
     // up the outer face of the free-standing leg, rolling over the eave beam at the top
-    timberRoute(`L.${index}.leg`, footId, nid(K, m), onSurface([uFoot, v], [uEave, v], (t) => top(K) * smoothstep(0.88, 1, t), 3 * segmentsPerEdge), rib);
+    const ribCentre = level(-VAULT.rib.depthMm / 2000);
+    timberRoute(`L.${index}.leg`, footId, nid(K, m), onSurface([uFoot, v], [uEave, v], (t) => top(K) * smoothstep(0.88, 1, t), 3 * segmentsPerEdge), onSurface([uFoot, v], [uEave, v], ribCentre, 3 * segmentsPerEdge), rib);
     // and on up the rib to the first lattice node on its line, where there is one
     if (isVaultNode(K + step, m)) {
-      timberRoute(`L.${index}.head`, nid(K, m), nid(K + step, m), onSurface([uEave, v], [(K + step) / (2 * NA), v], blend(top(K), top(K + step))), rib);
+      const uHead = (K + step) / (2 * NA);
+      timberRoute(`L.${index}.head`, nid(K, m), nid(K + step, m), onSurface([uEave, v], [uHead, v], blend(top(K), top(K + step))), onSurface([uEave, v], [uHead, v], ribCentre), rib);
     }
     const foot = graph.nodes.get(footId)!.position;
     rootStations.push({
