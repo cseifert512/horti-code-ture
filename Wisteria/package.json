@@ -1,0 +1,19 @@
+{
+  "name": "wisteria-sinensis",
+  "version": "1.0.0",
+  "description": "Procedural 3D model of Wisteria sinensis (Chinese wisteria) for the web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173 --strictPort",
+    "build": "vite build",
+    "audit": "node scripts/audit.mjs",
+    "preview": "vite preview --port 5174"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21"
+  }
+}

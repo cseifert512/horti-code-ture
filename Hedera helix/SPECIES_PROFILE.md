@@ -1,0 +1,59 @@
+# Hedera helix
+
+**Common name:** Common ivy  
+**Place in palette:** OPTION WITH RESTRICTIONS — winter foliage and biodiversity
+
+## Observational / horticultural baseline
+
+| Trait | Currently supported description |
+|---|---|
+| Growth habit | Evergreen climbing shrub, including later adult reproductive phase. |
+| Climbing or support mechanism | Self-clinging via adventitious aerial roots; does not have grape tendrils. |
+| RHS ultimate-height envelope | RHS: 8–12 m height category; long-lived plant. |
+| Hardiness | Verify site-specific survival/foliage expectations; hardy in UK, but winter cover still varies. |
+| Flower / leaf / fruit season | Year-round foliage; nectar-rich autumn flowers on adult shoots, dark winter berries and wildlife shelter. |
+| Aspect and exposure | Shade to sun; tolerates exposed/sheltered settings but contact/substrate matter. |
+| Soil | Broad tolerance, fertile well-drained preferred. |
+
+**Evidence discipline:** height classes and mature size times are qualitative UK horticultural descriptors, **not** yearly extension, support-path reach or physical force values. This file makes no claim to cultivar-calibrated numerical growth rates.
+
+## Species-specific biological logic
+
+Can shift from juvenile climbing shoots to mature flowering, more shrubby shoots; model stage-dependent organ types and leaf morphology if needed.
+
+## What Bower must provide: local supports
+
+Dedicated **replaceable engineered substrate**, not uncontrolled roots/stems into structural timber gaps, joints, inspection faces or drainage details.
+
+## Global structure placement logic
+
+Only clearly bounded winter-green patches, normally secondary support or separate ground/stone surfaces.
+
+## Gardener intervention / pruning
+
+Explicit boundaries, periodic cutting/removal of encroachment, exposure of all timber junctions for inspection.
+
+## Interactions with the broader palette
+
+Can overwhelm and shade nearby climbers; wildlife benefits must be balanced against engineering/maintenance risk.
+
+## Risks, exclusions and scientific caveats
+
+RHS warns ivy stems can enter wooden fence gaps, thicken and force timber apart; concentrated adult growth can add weight; invasive in some non-UK regions; harmful if eaten/skin irritant.
+
+## Parameters to obtain or calibrate
+
+Spread/attachment on selected textures, self-clinging pressure and stem thickening, juvenile/adult stage transition, yearly inspection time, leaf-retention in shade.
+
+At minimum, bind all measured parameters to plant **age**, plant **part**, time step, site/climate, support properties and propagation/stock history. Keep missing values empty rather than extrapolating from species names or RHS maturity classes.
+
+## Immediate agent task
+
+The botanical curator should confirm taxon/cultivar identity; attachment agent should define a contact/failed-contact test; phenology agent should specify seasonal organ states and flowering-wood rules; gardener agent should turn the management note into observed interventions. See root `CONSTRAINTS_AND_PHENOLOGY.md` and `HORTICULTURAL_INTERVENTIONS.md` for shared specifications.
+
+## Source / provenance
+
+- RHS taxon profile: https://www.rhs.org.uk/plants/43091/hedera-helix/details
+- Additional source: https://www.rhs.org.uk/prevention-protection/ivy-on-buildings
+
+**Status:** initial handoff profile; site fit must be reviewed, no numerical simulation calibration yet.
