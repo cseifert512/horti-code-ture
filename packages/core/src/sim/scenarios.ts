@@ -152,9 +152,64 @@ export const ATTACHMENT_TRIAL = [
  * DEVELOPMENT_GUIDE.md stage 3 exit check.
  */
 export function attachmentTrial(options: VaultScenarioOptions): Scenario {
+  return plantsOnHemisphere(options, ATTACHMENT_TRIAL, 'Six ways of climbing');
+}
+
+/**
+ * Any list of plants, each at the foot of its own rib, evenly spaced round the
+ * 15 m hemisphere, with no pruning: for trying a taxon, or a few side by side.
+ */
+export function plantsOnHemisphere(options: VaultScenarioOptions, plants: readonly { plantId: string; taxonId: string }[], title: string): Scenario {
   const { taxa, plantingYear = 2027, seed = 7, care = 'trained' } = options;
-  need(taxa, ...ATTACHMENT_TRIAL.map((p) => p.taxonId));
-  const bower = makeHemisphereBower({ diameterM: 15, stations: ATTACHMENT_TRIAL.length });
-  const plantings: Planting[] = ATTACHMENT_TRIAL.map((p, i) => ({ ...p, stationId: bower.rootStations[i]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
-  return { name: `Six ways of climbing on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events: [], viewpoints: HEMISPHERE_VIEWPOINTS };
+  need(taxa, ...plants.map((p) => p.taxonId));
+  const bower = makeHemisphereBower({ diameterM: 15, stations: plants.length });
+  const plantings: Planting[] = plants.map((p, i) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[i]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
+  return { name: `${title} on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events: [], viewpoints: HEMISPHERE_VIEWPOINTS };
+}
+
+/**
+ * KEY.md section 6, the single UK reference palette, set out round the 15 m
+ * hemisphere: one plant at the foot of each of its twelve glulam ribs.
+ * Meridian 0 faces east, 3 north, 6 west and 9 south.
+ *
+ * The aspects follow KEY.md section 7 (warmth and shelter for the tender
+ * evergreens, shade for the hydrangea, long routes for the wisterias). The
+ * model has no light, wind or temperature yet, so aspect changes nothing in a
+ * run: the placing is recorded so that it can start to matter when they arrive.
+ */
+export const REFERENCE_PALETTE = [
+  { meridian: 0, aspect: 'east', plantId: 'rose', taxonId: 'rosa-the-generous-gardener', why: 'human-scale module by the morning side, tied in low' },
+  { meridian: 1, aspect: 'east-north-east', plantId: 'summer-clematis', taxonId: 'clematis-viticella-etoile-violette', why: 'summer module, where the yearly cut-down can be reached' },
+  { meridian: 2, aspect: 'north-north-east', plantId: 'evergreen-honeysuckle', taxonId: 'lonicera-henryi', why: 'core evergreen, tolerant of part shade' },
+  { meridian: 3, aspect: 'north', plantId: 'hydrangea', taxonId: 'hydrangea-anomala-subsp-petiolaris', why: 'the shade-tolerant climber, on the cool side' },
+  { meridian: 4, aspect: 'north-north-west', plantId: 'north-evergreen', taxonId: 'lonicera-henryi', why: 'a second evergreen on the shaded side; ivy is the alternative' },
+  { meridian: 5, aspect: 'west-north-west', plantId: 'vine', taxonId: 'vitis-coignetiae', why: 'autumn accent with a lane of its own' },
+  { meridian: 6, aspect: 'west', plantId: 'honeysuckle', taxonId: 'lonicera-periclymenum-graham-thomas', why: 'evening scent on the west side' },
+  { meridian: 7, aspect: 'west-south-west', plantId: 'wisteria.1', taxonId: 'wisteria-sinensis', why: 'primary canopy plant, in sun, with a long route to the crown' },
+  { meridian: 8, aspect: 'south-south-west', plantId: 'spring-clematis', taxonId: 'clematis-armandi', why: 'optional mild-site evergreen, in sun and shelter' },
+  { meridian: 9, aspect: 'south', plantId: 'star-jasmine', taxonId: 'trachelospermum-jasminoides', why: 'conditional evergreen, in the warmest place there is' },
+  { meridian: 10, aspect: 'south-south-east', plantId: 'winter-clematis', taxonId: 'clematis-cirrhosa-freckles', why: 'winter flowers on the sheltered sunny side, beside the approach' },
+  { meridian: 11, aspect: 'east-south-east', plantId: 'wisteria.0', taxonId: 'wisteria-sinensis', why: 'primary canopy plant, in sun, with a long route to the crown' },
+] as const;
+
+export interface PaletteOptions extends VaultScenarioOptions {
+  /** Plant ivy on the shaded side in place of the second evergreen honeysuckle. KEY.md: "controlled option, often excluded". */
+  ivy?: boolean;
+}
+
+/**
+ * The whole reference palette on the building-scale shell, which is what
+ * KEY.md section 7 step 7 asks for: "Render monthly time slices, check winter
+ * appearance and repeat with the gardener model active." Its report answers
+ * what is in flower in each month, and how much evergreen a winter visitor sees.
+ */
+export function referencePalette(options: PaletteOptions): Scenario {
+  const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained', ivy = false } = options;
+  const plan = REFERENCE_PALETTE.map((p) => (p.plantId === 'north-evergreen' && ivy ? { ...p, taxonId: 'hedera-helix' } : p));
+  need(taxa, ...plan.map((p) => p.taxonId));
+  const bower = makeHemisphereBower({ diameterM: 15, stations: plan.length });
+  const plantings: Planting[] = plan.map((p) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[p.meridian]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
+  // only the routines the model acts on: the wisterias' two prunes a year and the summer clematis's cut-down
+  const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('summer-clematis', plantingYear, years)] : [];
+  return { name: `The reference palette on the 15 m hemisphere${ivy ? ', with ivy' : ''}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS };
 }

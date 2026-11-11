@@ -1,5 +1,5 @@
 // Run a reference scenario and write its render data.
-//   npm run simulate -- [wisteria|mixed|dome|trial] [trained|untended] [years] [seed]
+//   npm run simulate -- [wisteria|mixed|dome|trial|palette] [trained|untended] [years] [seed]
 // Writes out/<scenario>-<care>-<years>y.json and prints the yearly account and the gardener's log.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -9,27 +9,28 @@ import { Simulation } from '../src/sim/engine.ts';
 import { modelProvenance } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
 import { designReport, formatDesignReport } from '../src/sim/report.ts';
-import { attachmentTrial, mixedOnVault, wisteriaOnHemisphere, wisteriaOnVault } from '../src/sim/scenarios.ts';
+import { attachmentTrial, mixedOnVault, referencePalette, wisteriaOnHemisphere, wisteriaOnVault } from '../src/sim/scenarios.ts';
 
 const args = process.argv.slice(2);
-const which = ['mixed', 'wisteria', 'dome', 'trial'].includes(args[0] ?? '') ? args.shift()! : 'wisteria';
+const which = ['mixed', 'wisteria', 'dome', 'trial', 'palette'].includes(args[0] ?? '') ? args.shift()! : 'wisteria';
 const care = args[0] === 'untended' ? 'untended' : 'trained';
 const years = Number(args[1] ?? 10);
 const seed = Number(args[2] ?? 7);
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 
 const taxa = loadGrowable(`${root}species`);
-const scenario = (which === 'mixed' ? mixedOnVault : which === 'dome' ? wisteriaOnHemisphere : which === 'trial' ? attachmentTrial : wisteriaOnVault)({ taxa, care, years, seed });
+const scenario = (which === 'mixed' ? mixedOnVault : which === 'dome' ? wisteriaOnHemisphere : which === 'trial' ? attachmentTrial : which === 'palette' ? referencePalette : wisteriaOnVault)({ taxa, care, years, seed });
 const t0 = performance.now();
 const sim = new Simulation(scenario).runUntil(`${2027 + years - 1}-12-31`);
 const ms = performance.now() - t0;
 
 console.log(`${scenario.name}`);
 console.log(`${sim.day + 1} days simulated in ${ms.toFixed(0)} ms\n`);
-console.log('year   plant        framework  long shoots  spurs  buds formed  flowers  held by plant / tied  route held  highest');
+const idW = Math.max(11, ...scenario.plantings.map((p) => p.plantId.length));
+console.log(`year   ${'plant'.padEnd(idW)}  framework  long shoots  spurs  buds formed  flowers  held by plant / tied  route held  highest`);
 for (const s of sim.summaries) {
   console.log(
-    `${s.year}   ${s.plantId.padEnd(11)}  ${s.frameworkM.toFixed(1).padStart(7)} m  ${s.whipM.toFixed(1).padStart(9)} m  ${String(s.spurs).padStart(5)}  ${String(s.floralBudsInitiated).padStart(11)}  ${String(s.flowersOpened).padStart(7)}  ${`${s.runsSelf} / ${s.runsTied}`.padStart(20)}  ${`${(100 * s.routeShare).toFixed(0)}%`.padStart(10)}  ${s.highestM.toFixed(2)} m`,
+    `${s.year}   ${s.plantId.padEnd(idW)}  ${s.frameworkM.toFixed(1).padStart(7)} m  ${s.whipM.toFixed(1).padStart(9)} m  ${String(s.spurs).padStart(5)}  ${String(s.floralBudsInitiated).padStart(11)}  ${String(s.flowersOpened).padStart(7)}  ${`${s.runsSelf} / ${s.runsTied}`.padStart(20)}  ${`${(100 * s.routeShare).toFixed(0)}%`.padStart(10)}  ${s.highestM.toFixed(2)} m`,
   );
 }
 
@@ -37,9 +38,9 @@ const acted = sim.events.filter((e) => e.type !== 'monitor');
 console.log(`\ngardener's log: ${sim.events.length} entries${acted.length > 12 ? ', the last 12 actions shown' : ''}`);
 for (const e of acted.slice(-12)) console.log(`  ${e.date}  ${e.plantId}  ${e.type}: ${e.outcome}`);
 
-const notes = sim.decisions.filter((d) => d.kind === 'not_modelled');
+const notes = sim.decisions.filter((d) => d.kind === 'not_modelled' || d.kind === 'assumed');
 if (notes.length) {
-  console.log('\nnot modelled in this run:');
+  console.log('\nnot modelled, or assumed, in this run:');
   for (const n of notes) console.log(`  ${n.plantId}: ${n.text}`);
 }
 

@@ -7,7 +7,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 - Root `*.md` — the specification. `README.md` gives the reading order.
 - `docs/ASSUMPTIONS_AUDIT.md` — tested state of the spec and prototype, with the prototype model map.
 - `species/<id>/` — `SPECIES_PROFILE.md` (prose) and `taxon.json` (validated data) per taxon.
-- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/sim/report.ts` turns a run into the design report; `src/render/contract.ts` is what a viewer draws from and `src/render/presence.ts` says what is on the plant on a given day (use it; do not re-derive seasons); `species/<id>/model.json` holds the numbers a taxon's growth assumes.
+- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/sim/report.ts` turns a run into the design report; `src/render/contract.ts` is what a viewer draws from and `src/render/presence.ts` says what is on the plant on a given day (use it; do not re-derive seasons); `src/targets.ts` holds the design targets a run is read against; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
 - `Wisteria/` — the original three.js prototype. Reference only; it has its own `node_modules`.
 
 ## Commands

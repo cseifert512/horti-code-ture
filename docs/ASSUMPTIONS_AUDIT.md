@@ -153,7 +153,7 @@ The pruning dates are worth noting: the prototype's winter cut falls in late Dec
 ### 3.3 Still open
 
 - `SOURCES_AND_ASSUMPTIONS.md` lists "three wisteria root stations on a 15 m reference shell" as a preliminary concept, but no other document describes that scheme. The hemisphere generator defaults to three stations so the concept can be tested; nothing validates it.
-- The 25–40% winter-evergreen target is a design hypothesis with no measure yet. It needs the coverage output (`SIMULATION_KEY.md` section 8, output 2) before it can be examined.
+- The 25–40% winter-evergreen target is a design hypothesis. It now has a measure (section 6), and the first reading is far below it; that reading rests on foliage densities nobody has measured.
 - No grasp-diameter limit exists for any taxon. The attachment rules return `unverified` wherever the answer depends on one.
 
 ## 4. Botany and names
@@ -238,3 +238,19 @@ These were choices, made so that work could proceed. Each is cheap to revisit no
 | Timber is treated as rough enough for aerial roots to cling to | Ivy and climbing hydrangea cling to timber in gardens; the verdict records that this rests on an assumption about the finish | Measure on the actual glulam finish |
 | Folder ids from the working labels | Least surprise: the folder matches the name in the documents | Ids from the accepted names |
 | Evidence status on every value, enforced | The specification's central rule, otherwise unenforceable | Convention only |
+
+## 6. First readings from the new core, and how far to trust them
+
+These come from `npm run simulate -- palette trained 12`: the `KEY.md` reference palette, one plant at the foot of each of the twelve ribs of the 15 m hemisphere, twelve years on. Every growth model behind them is a running model with placeholder numbers, so they are comparisons and prompts, not predictions.
+
+| Question | Reading | What it rests on |
+|---|---|---|
+| Does the yearly spectacle in `KEY.md` section 6 hold together? | Yes, in order: winter clematis December to February, *C. armandi* March and April, wisteria in May (the peak of the year by a wide margin), hydrangea, honeysuckles, summer clematis, star jasmine and rose from June to August, the rose into October. Nothing is in flower in mid November unless ivy is planted | Fixed provisional flowering dates placed inside each taxon's RHS envelope. Five of these taxa show no flowers until their flowering wood is entered (4.3) |
+| Is the 25–40% winter evergreen target met? | No: about 2% of the structure's extent seen from the approach in mid January, less from inside. Ivy in place of the second evergreen honeysuckle does not change that | Leaf counts and sizes that are placeholders. The model puts leaves only at the nodes of stems it grows, and a real evergreen climber of this age is much denser than that. Leaf area per metre of stem, measured on real plants, is the first number to collect (`DEVELOPMENT_GUIDE.md` stage 7) |
+| Does the timber stay legible? | Yes: 85% or more of the timber seen on the bare structure is still seen in July from every viewpoint | The same leaf densities; and three wisterias, not a full canopy |
+| Which plants hold the glulam unaided? | Wisteria, climbing hydrangea, ivy and campsis. Every other climber has to be tied to timber and holds only the cables by itself | Grasp limits that are placeholders: 200 mm for wisteria, 60 mm or less for the rest. None has been measured |
+| Which joints will clinging plants get into? | The report lists them: eight for the hydrangea, to 7.2 m | The assumption that aerial roots cling to this timber finish |
+
+**A correction to the measuring instrument.** The coverage figures come from a small renderer at 240 by 180 pixels. Until this date it drew anything narrower than a pixel a full pixel wide, so thin stems and small leaves seen from a distance counted for several times their real area: mid-January timber visibility from the approach to the hemisphere read 70% where the corrected figure is 92%. A thing narrower than a pixel now takes a pixel with a chance equal to the share of the pixel it covers, and a test compares the result with a render at four times the resolution. Coverage figures quoted from earlier runs overstated how much the plants hide.
+
+**Height.** A plant's reported height is now that of its permanent stems. Shoots of the year stand above them (the vine's canes by two metres), and counting them had the vine at 9.7 m on a structure that ends at 7.5 m.

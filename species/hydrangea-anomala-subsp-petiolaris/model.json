@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "hydrangea-anomala-subsp-petiolaris",
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "params": {
+    "phenology.budburstDoy": {
+      "value": 90,
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "phenology.growthEndDoy": {
+      "value": 280,
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "phenology.leafFlushDoy": {
+      "value": [
+        100,
+        155
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.autumnColourDoy": {
+      "value": [
+        283,
+        310
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.leafFallDoy": {
+      "value": [
+        310,
+        344
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "phenology.floralInitiationDoy": {
+      "value": [
+        213,
+        244
+      ],
+      "unit": "day of year",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/hydrangea/climbing",
+      "basis": "RHS: climbing hydrangeas flower on shoots made the previous year. Bud formation is taken as August; the dates are not from the source."
+    },
+    "phenology.flowerOpenDoy": {
+      "value": [
+        160,
+        180
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Placed inside the RHS flowering envelope of early summer (9 to 29 June), on shoots made the summer before."
+    },
+    "phenology.petalFallDoy": {
+      "value": [
+        190,
+        215
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder (9 July to 3 August)."
+    },
+    "phenology.flowerLastsDays": {
+      "value": [
+        0,
+        0
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Not used: the flowerheads are taken to go over together."
+    },
+    "extension.leaderMPerSeason": {
+      "value": 1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "RHS: over 12 m in 10 to 20 years, and slow to start. A size band is not a growth rate; a placeholder."
+    },
+    "extension.lateralMPerSeasonByOrder": {
+      "value": [
+        0.8,
+        0.6,
+        0.4
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Scaled down from the leader rate. Not measured."
+    },
+    "extension.whipMPerSeason": {
+      "value": 0.8,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+    },
+    "extension.establishmentFactorByYear": {
+      "value": [
+        0.3,
+        0.5,
+        0.8
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "RHS: slow to establish. The factors are placeholders."
+    },
+    "architecture.trunkStemStartYears": {
+      "value": [
+        0,
+        0,
+        0
+      ],
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Three stems from the base in the first season. A placeholder."
+    },
+    "architecture.nurseryCaneM": {
+      "value": 0.3,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "A typical nursery plant. Not measured."
+    },
+    "architecture.maxBranchOrder": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.leaderLengthM": {
+      "value": [
+        12,
+        15
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "RHS: over 12 m. Used as a cap on stem length; a height is not a route length, so this is a placeholder."
+    },
+    "architecture.lateralLengthMByOrder": {
+      "value": [
+        3,
+        1.5,
+        0.8
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Scaled down from the leader. Not measured."
+    },
+    "architecture.lateralLengthSpread": {
+      "value": 0.3,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.lateralChanceByParentOrder": {
+      "value": [
+        0.9,
+        0.75,
+        0.55
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.budExtraDormancyChance": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.budExtraDormancyYears": {
+      "value": [
+        1,
+        3
+      ],
+      "unit": "years",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "architecture.maxStemsPerRoute": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "Ivy stems are slender and lie side by side. A placeholder."
+    },
+    "architecture.maxStemsPerPrimaryMember": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.occupancyCost": {
+      "value": 1.6,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.downhillCostPerM": {
+      "value": 5,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.uphillBonusPerM": {
+      "value": 1.2,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.straightOnBonus": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.riserBonus": {
+      "value": 1.4,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.tierBonus": {
+      "value": 1.2,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.roleDropChance": {
+      "value": 0.12,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.noise": {
+      "value": 0.9,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "routing.giveUpCost": {
+      "value": 4.2,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "attachment.maxGraspDiameterMm": {
+      "value": 1,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "Not used: ivy holds by aerial roots, not by passing round its support."
+    },
+    "attachment.minPitchM": {
+      "value": 0.3,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to this plant; present because every model carries every parameter."
+    },
+    "attachment.pitchPerCircumference": {
+      "value": 1.46,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to this plant; present because every model carries every parameter."
+    },
+    "organs.leafSpacingM": {
+      "value": [
+        0.07,
+        0.12
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "organs.leafLengthM": {
+      "value": [
+        0.07,
+        0.11
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "organs.leavesPerNode": {
+      "value": 2,
+      "status": "provisional_design_assumption",
+      "basis": "Leaves in opposite pairs. A character of the genus, not sourced here."
+    },
+    "organs.spurChance": {
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "No spurs: this plant flowers along shoots made the summer before, not on short spurs."
+    },
+    "organs.spurLengthM": {
+      "value": [
+        0.03,
+        0.08
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Short leafy side shoots. A placeholder."
+    },
+    "organs.spurLeafCount": {
+      "value": [
+        2,
+        4
+      ],
+      "unit": "leaves",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "organs.racemeLengthM": {
+      "value": [
+        0.15,
+        0.2
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "RHS: flowerheads to 20 cm across. The lower figure is a placeholder."
+    },
+    "organs.whipShareOfNodes": {
+      "value": 0.06,
+      "status": "provisional_design_assumption",
+      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+    },
+    "organs.whipsPerYearMax": {
+      "value": 60,
+      "status": "provisional_design_assumption",
+      "basis": "A cap on new side shoots a year. A placeholder."
+    },
+    "organs.whipLengthM": {
+      "value": [
+        0.2,
+        0.5
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Length of a side shoot of the year. A placeholder."
+    },
+    "organs.leafLifespanYears": {
+      "value": 1,
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Deciduous: a leaf lasts the season it grew in."
+    },
+    "organs.clearStemHeightM": {
+      "value": 0,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Clothed to the ground."
+    },
+    "flowering.competenceYears": {
+      "value": 4,
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "Slow to reach flowering. A placeholder."
+    },
+    "flowering.maturityRamp": {
+      "value": [
+        0.3,
+        0.6,
+        1
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "flowering.spurFloralChance": {
+      "value": 0.85,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to this plant; present because every model carries every parameter."
+    },
+    "flowering.unprunedFactor": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to this plant; present because every model carries every parameter."
+    },
+    "flowering.currentSeasonFlowersPerM": {
+      "value": 1.5,
+      "unit": "per m",
+      "status": "provisional_design_assumption",
+      "basis": "Flowerheads per metre of the summer growth, opening the following June. A placeholder."
+    },
+    "flowering.currentSeasonMinShootM": {
+      "value": 0.15,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "pruning.summerLeavesKept": {
+      "value": [
+        5,
+        6
+      ],
+      "unit": "leaves",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to this plant; present because every model carries every parameter."
+    },
+    "pruning.winterBudsKept": {
+      "value": [
+        2,
+        3
+      ],
+      "unit": "buds",
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to this plant; present because every model carries every parameter."
+    },
+    "regrowth.shootsPerCut": {
+      "value": [
+        1,
+        2
+      ],
+      "unit": "shoots",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "thickening.tipRadiusSquaredMm2": {
+      "value": 4,
+      "unit": "mm2",
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    },
+    "thickening.radiusSquaredPerMetreMm2": {
+      "value": 8,
+      "unit": "mm2 per m",
+      "status": "provisional_design_assumption",
+      "basis": "A placeholder."
+    },
+    "thickening.branchShare": {
+      "value": 0.9,
+      "status": "provisional_design_assumption",
+      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+    }
+  }
+}

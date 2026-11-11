@@ -259,7 +259,8 @@ export interface EventRecord {
   modelled: boolean;
 }
 
-export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled';
+/** `assumed`: the model had to pick something a profile leaves unknown, in order to draw the plant at all. */
+export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'assumed';
 
 /** Why the plant did what it did: the trace asked for by PROJECT_CONTEXT.md section 7.6. */
 export interface Decision {
@@ -287,5 +288,6 @@ export interface YearSummary {
   runsTied: number;
   /** Share of all route length in the Bower that carries this plant. */
   routeShare: number;
+  /** Highest point of the permanent stems; shoots of the year standing above them are not counted. */
   highestM: number;
 }
