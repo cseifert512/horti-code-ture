@@ -46,8 +46,12 @@ export interface Stage {
   frame(bounds: THREE.Box3, view?: ViewPreset, shadowBoxM?: number): void;
   /** Mark the shadow map stale (the subject or the sun changed). */
   invalidateShadows(): void;
-  /** Draw a frame. `moving`: the picture is changing (playing, scrubbing, turning), so it is drawn the quicker way. */
-  render(moving?: boolean): void;
+  /**
+   * Draw a frame. The quick way by default: the scene straight to the window, tone-mapped as it is drawn, as the
+   * viewer always did. `careful`: through the pipeline, with its shading of corners, for a picture that will be
+   * looked at (a scene at rest, a specimen, ?quality=high).
+   */
+  render(careful?: boolean): void;
   /** Draw the present view into a target of any size, for a still. The camera's aspect is the caller's to set. */
   renderTo(target: THREE.WebGLRenderTarget, width: number, height: number): void;
   /**
@@ -80,13 +84,14 @@ function makeSky(): Sky {
 }
 
 export function createStage(canvas: HTMLCanvasElement, quality: Partial<PipelineSettings> = {}): Stage {
-  // the scene is multisampled in the pipeline's own target; the window's buffer only receives the finished picture
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;
-  // exposure, tone mapping and the display encoding are applied once, by the pipeline
-  renderer.toneMapping = THREE.NoToneMapping;
+  // Drawn straight to the window, a material tone-maps itself with this curve and exposure. Drawn into the pipeline's
+  // target, three.js leaves the light linear and the pipeline applies the same curve and exposure at the end: the two
+  // ways give the same picture, but for the shading of corners and the finer edges of the careful one.
+  renderer.toneMapping = THREE.NeutralToneMapping;
   const pipeline = new Pipeline(renderer, quality);
   const baseExposure = pipeline.settings.exposure;
 
@@ -177,6 +182,7 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
     fog.color.setRGB(1.02, 1.17, 1.32).multiplyScalar((0.1 + 0.9 * dusk) * (0.7 + 0.3 * low));
     // a low sun gives less light; the picture is opened up a little for it, as an eye or a camera would
     pipeline.settings.exposure = baseExposure * (1.3 - 0.3 * low) * (1 + 0.5 * (1 - dusk));
+    renderer.toneMappingExposure = pipeline.settings.exposure;
     // the sky's light on the scene follows the sun, but not every small step of it: that is dear
     if (envSun.angleTo(sunDir) > THREE.MathUtils.degToRad(2.5) || !envRT) {
       envSun.copy(sunDir);
@@ -252,18 +258,22 @@ export function createStage(canvas: HTMLCanvasElement, quality: Partial<Pipeline
     invalidateShadows() {
       shadowsStale = true;
     },
-    render(moving = false) {
+    render(careful = false) {
       freshShadows();
-      const buffer = renderer.getDrawingBufferSize(new THREE.Vector2());
-      const atRest = { samples: pipeline.settings.samples, ambientOcclusion: pipeline.settings.ambientOcclusion };
-      if (moving) {
-        pipeline.settings.samples = pipeline.settings.samplesMoving;
-        pipeline.settings.ambientOcclusion = pipeline.settings.ambientOcclusionMoving;
+      const overlay = overlayScene.children.some((c) => c.visible) ? overlayScene : null;
+      if (careful) {
+        const buffer = renderer.getDrawingBufferSize(new THREE.Vector2());
+        pipeline.render(scene, overlay, camera, buffer.x, buffer.y, null);
+        return;
       }
-      try {
-        pipeline.render(scene, overlayScene.children.some((c) => c.visible) ? overlayScene : null, camera, buffer.x, buffer.y, null);
-      } finally {
-        Object.assign(pipeline.settings, atRest);
+      renderer.setRenderTarget(null);
+      renderer.autoClear = true;
+      renderer.render(scene, camera);
+      if (overlay) {
+        // over the picture, with its depth: an overlay is hidden where timber is in front of it
+        renderer.autoClear = false;
+        renderer.render(overlay, camera);
+        renderer.autoClear = true;
       }
     },
     renderTo(target, width, height) {

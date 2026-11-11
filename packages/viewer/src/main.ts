@@ -92,9 +92,7 @@ const specimen: SpecimenRequest | null = url.has('specimen')
 
 let stage: ReturnType<typeof createStage>;
 try {
-  // ?quality=draft leaves out the multisampling and the shading of corners, for a slow machine;
-  // ?quality=full keeps both on even while the picture moves
-  stage = createStage(canvas, url.get('quality') === 'draft' ? { samples: 0, samplesMoving: 0, ambientOcclusion: 0, ambientOcclusionMoving: 0 } : url.get('quality') === 'full' ? { samplesMoving: 4, ambientOcclusionMoving: 0.9 } : {});
+  stage = createStage(canvas);
 } catch (e) {
   const box = el('error');
   box.style.display = 'flex';
@@ -1110,12 +1108,27 @@ function applyViewOffset(): void {
 let lastRender = 0;
 /** When the picture last changed by someone's hand: the timeline, the camera. A moving picture is drawn the quicker way. */
 let lastMoved = 0;
-let drawnMoving = false;
+/**
+ * How the picture is drawn. By default the quick way while anything in it moves (the timeline, the camera, leaves in
+ * the wind) and the careful way, with its shading of corners, once it is at rest with nothing moving.
+ * ?quality=high: always the careful way. ?quality=draft: never, for a slow machine.
+ */
+const QUALITY: 'draft' | 'default' | 'high' = url.get('quality') === 'draft' ? 'draft' : url.get('quality') === 'high' || url.get('quality') === 'full' ? 'high' : 'default';
+/** Whether the frame now due should be drawn the careful way. */
+function careful(): boolean {
+  // a specimen's picture is a study: until it is final, and for good where it is a still
+  if (specimenShown !== null && (!specimenShown.ready || specimen?.still === true)) return true;
+  if (QUALITY !== 'default') return QUALITY === 'high';
+  const moving = state.playing || performance.now() - lastMoved < 280;
+  const swaying = plant !== null && shared.uWind.value > 0.001;
+  return !moving && !swaying;
+}
+let drawnCareful = false;
 function render(): void {
   applyViewOffset();
   overlay.update(stage.camera, window.innerWidth, window.innerHeight, stage.renderer.getPixelRatio());
-  drawnMoving = state.playing || performance.now() - lastMoved < 280;
-  stage.render(drawnMoving);
+  drawnCareful = careful();
+  stage.render(drawnCareful);
   lastRender = performance.now();
 }
 
@@ -1261,7 +1274,8 @@ stage.renderer.setAnimationLoop(() => {
 
   // nothing moves in a bare structure, so it is drawn on demand, with a slow
   // heartbeat so that screen capture always finds a fresh frame
-  if (drawnMoving && !state.playing && performance.now() - lastMoved >= 280) dirty = true;
+  // once the picture has come to rest, it is drawn once more the careful way
+  if (!drawnCareful && careful()) dirty = true;
   if (!dirty && performance.now() - lastRender < 500) return;
   dirty = false;
   render();

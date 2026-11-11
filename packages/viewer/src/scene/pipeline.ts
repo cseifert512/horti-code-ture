@@ -1,12 +1,16 @@
-// How a frame is made. The scene is drawn once, in linear light with room
-// above white, into a multisampled target with its depth kept. From that
-// depth the shading of corners and crevices is worked out (ambient occlusion:
-// where a rib meets a ring, under a leaf, at a foot on its pad), blurred along
-// surfaces and not across edges, and laid over the picture. Exposure, tone
-// mapping and the display's colour encoding are applied once, at the end, to
-// everything alike. Design overlays are then drawn over the result in their
-// own exact colours, with the scene's depth to hide them where timber is in
-// front.
+// The careful way of making a picture: for stills, for a specimen's portrait,
+// for a scene that has come to rest with nothing moving in it, and for
+// ?quality=high. (The quick way, for everything that moves, is in stage.ts: the
+// scene drawn straight to the window, as the viewer always did.)
+//
+// The scene is drawn once, in linear light with room above white, into a
+// multisampled target with its depth kept. From that depth the shading of
+// corners and crevices is worked out (ambient occlusion: where a rib meets a
+// ring, under a leaf, at a foot on its pad), blurred along surfaces and not
+// across edges, and laid over the picture. Exposure, tone mapping and the
+// display's colour encoding are applied once, at the end, to everything alike.
+// Design overlays are then drawn over the result in their own exact colours,
+// with the scene's depth to hide them where timber is in front.
 //
 // None of this knows anything about plants or timber: it is how light is
 // turned into a picture.
@@ -47,7 +51,7 @@ const AO_FRAGMENT = /* glsl */ `
     return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
   }
 
-  const int SAMPLES = 9;
+  const int SAMPLES = 12;
   const float TURNS = 7.0;
 
   void main() {
@@ -67,11 +71,15 @@ const AO_FRAGMENT = /* glsl */ `
     vec3 N = normalize(cross(dx, dy));
 
     float aspect = uTexel.y / uTexel.x;
-    // the radius on screen, capped so that a surface under the camera's nose does not sample the whole picture
-    float screenRadius = min(0.5 * uProjection[1][1] * uRadius / max(0.05, -P.z), 0.1);
+    // The reach is given in metres, so that a joint reads the same on a 4 m vault as on a 15 m dome. Seen close, that
+    // reach would cover half the picture and smother it: there it is drawn in to what a twelfth of the picture's
+    // height stands for at that depth, and the shading becomes that of small things touching.
+    float perMetre = 0.5 * uProjection[1][1] / max(0.05, -P.z);
+    float reach = min(uRadius, 0.085 / perMetre);
+    float screenRadius = perMetre * reach;
     float phase = turn(gl_FragCoord.xy) * 6.2831853;
-    float radius2 = uRadius * uRadius;
-    float bias = 0.012 + 0.0012 * -P.z;
+    float radius2 = reach * reach;
+    float bias = 0.03 * reach + 0.0008 * -P.z;
     float sum = 0.0;
     for (int i = 0; i < SAMPLES; i++) {
       float t = (float(i) + 0.5) / float(SAMPLES);
@@ -81,7 +89,7 @@ const AO_FRAGMENT = /* glsl */ `
       float vv = dot(v, v);
       float vn = dot(v, N);
       float f = max(radius2 - vv, 0.0);
-      sum += f * f * f * max((vn - bias) / (vv + 0.0004), 0.0);
+      sum += f * f * f * max((vn - bias) / (vv + 0.0025 * radius2), 0.0);
     }
     float ao = max(0.0, 1.0 - sum * uIntensity * 5.0 / (float(SAMPLES) * radius2 * radius2 * radius2));
     // far away a pixel is wider than the radius, and there is nothing to find
@@ -185,18 +193,14 @@ const COMPOSITE_FRAGMENT = /* glsl */ `
 export interface PipelineSettings {
   /** Samples per pixel when the scene is drawn. 4 smooths cables and leaf edges; 0 turns it off. */
   samples: number;
-  /** The same while the picture is moving, when an edge is not looked at for long enough to see its steps. */
-  samplesMoving: number;
   /** Shading of corners and crevices, 0 (off) to 1. */
   ambientOcclusion: number;
-  /** The same while the picture is moving. */
-  ambientOcclusionMoving: number;
   /** Reach of that shading, metres. */
   occlusionRadiusM: number;
   exposure: number;
 }
 
-export const DEFAULT_PIPELINE: PipelineSettings = { samples: 4, samplesMoving: 0, ambientOcclusion: 0.9, ambientOcclusionMoving: 0, occlusionRadiusM: 0.4, exposure: 0.62 };
+export const DEFAULT_PIPELINE: PipelineSettings = { samples: 4, ambientOcclusion: 0.85, occlusionRadiusM: 0.4, exposure: 0.62 };
 
 export class Pipeline {
   readonly settings: PipelineSettings;
@@ -245,10 +249,8 @@ export class Pipeline {
       this.width = width;
       this.height = height;
       const half = { type: THREE.UnsignedByteType, depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter } as const;
-      const w2 = Math.max(1, Math.ceil(width / 2));
-      const h2 = Math.max(1, Math.ceil(height / 2));
-      this.ao = new THREE.WebGLRenderTarget(w2, h2, half);
-      this.aoBlur = new THREE.WebGLRenderTarget(w2, h2, half);
+      this.ao = new THREE.WebGLRenderTarget(width, height, half);
+      this.aoBlur = new THREE.WebGLRenderTarget(width, height, half);
     }
     const samples = Math.max(0, Math.min(this.settings.samples, this.renderer.capabilities.maxSamples));
     let target = this.scenes.get(samples);
@@ -296,10 +298,10 @@ export class Pipeline {
       b['uNear']!.value = camera.near;
       b['uFar']!.value = camera.far;
       b['tAo']!.value = this.ao!.texture;
-      (b['uStep']!.value as THREE.Vector2).set(2 / width, 0);
+      (b['uStep']!.value as THREE.Vector2).set(1.5 / width, 0);
       this.draw(this.blurMaterial, this.aoBlur);
       b['tAo']!.value = this.aoBlur!.texture;
-      (b['uStep']!.value as THREE.Vector2).set(0, 2 / height);
+      (b['uStep']!.value as THREE.Vector2).set(0, 1.5 / height);
       this.draw(this.blurMaterial, this.ao);
     }
 

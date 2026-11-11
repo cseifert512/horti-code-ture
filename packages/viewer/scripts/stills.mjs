@@ -34,7 +34,6 @@ const only = flag('only', '');
 const hour = flag('hour', '');
 const exportSize = flag('export', '');
 const measure = has('measure');
-const breakdown = has('breakdown');
 const [outArg, tag] = args;
 if (!outArg || !tag) {
   console.error('usage: node packages/viewer/scripts/stills.mjs <out-dir> <tag> [--port 5196] [--measure] [--only vault|hemisphere] [--size 1600x900] [--hour 11] [--export 3840x2160]');
@@ -126,8 +125,8 @@ const frames = (ms) =>
  * `step` days are added to the clock before each frame: 0 times drawing alone,
  * anything else times a scrub of the timeline.
  */
-const drawTime = (n, step) =>
-  js(`(() => { const B = __bower; const gl = B.stage.renderer.getContext(); const px = new Uint8Array(4); const day0 = B.state.day; const t = []; for (let i = 0; i < ${n}; i++) { const t0 = performance.now(); if (${step}) B.showDay(day0 - i * ${step}); B.stage.invalidateShadows(); B.stage.render(${step} !== 0); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); t.push(performance.now() - t0); } B.showDay(day0); t.sort((a, b) => a - b); return { medianMs: +t[Math.floor(t.length / 2)].toFixed(1), p95Ms: +t[Math.floor(t.length * 0.95)].toFixed(1), worstMs: +t[t.length - 1].toFixed(1) }; })()`);
+const drawTime = (n, step, careful = false) =>
+  js(`(() => { const B = __bower; const gl = B.stage.renderer.getContext(); const px = new Uint8Array(4); const day0 = B.state.day; const t = []; for (let i = 0; i < ${n}; i++) { const t0 = performance.now(); if (${step}) B.showDay(day0 - i * ${step}); B.stage.invalidateShadows(); B.stage.render(${careful}); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); t.push(performance.now() - t0); } B.showDay(day0); t.sort((a, b) => a - b); return { medianMs: +t[Math.floor(t.length / 2)].toFixed(1), p95Ms: +t[Math.floor(t.length * 0.95)].toFixed(1), worstMs: +t[t.length - 1].toFixed(1) }; })()`);
 
 const report = { tag, size: [width, height], scenes: {}, problems };
 try {
@@ -185,24 +184,14 @@ try {
       m.idle = await frames(4000);
       m.draw = await drawTime(40, 0);
       m.scrub = await drawTime(60, 3);
+      // the careful way, where the viewer has one: what a still scene, a specimen and ?quality=high are drawn with
+      if (await js(`!!__bower.stage.pipeline`)) m.drawCareful = await drawTime(40, 0, true);
       // a year of playback, as a visitor to the page would watch it
       const year = scene.dates.may.slice(0, 4);
       await js(`(() => { const B = __bower; B.showDay(B.plant.timeline.calendar.dayOf('${year}-03-01')); document.getElementById('play').click(); })()`);
       m.playing = await frames(6000);
       await js(`(() => { if (__bower.state.playing) document.getElementById('play').click(); })()`);
       m.triangles = await js(`__bower.stage.renderer.info.render.triangles`);
-      // what each part of the picture costs: the same frame with parts of the pipeline left out
-      if (breakdown && (await js(`!!__bower.stage.pipeline`))) {
-        m.breakdown = {};
-        for (const [name, samples, ao] of [['full', 4, 0.9], ['no occlusion', 4, 0], ['two samples', 2, 0.9], ['no multisampling', 0, 0.9], ['neither', 0, 0]]) {
-          await js(`(() => { const p = __bower.stage.pipeline.settings; p.samples = ${samples}; p.ambientOcclusion = ${ao}; })()`);
-          await drawTime(4, 0);
-          m.breakdown[name] = (await drawTime(24, 0)).medianMs;
-        }
-        await js(`(() => { const p = __bower.stage.pipeline.settings; p.samples = 4; p.ambientOcclusion = 0.9; })()`);
-        m.breakdown['full, shadows not redrawn'] = await js(`(() => { const B = __bower; const gl = B.stage.renderer.getContext(); const px = new Uint8Array(4); const t = []; for (let i = 0; i < 24; i++) { const t0 = performance.now(); B.stage.render(); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); t.push(performance.now() - t0); } t.sort((a, b) => a - b); return +t[12].toFixed(1); })()`);
-      }
-      console.log(`  frame time: ${JSON.stringify(m)}`);
     }
   }
   writeFileSync(join(out, `stills-${tag}.json`), JSON.stringify(report, null, 2));
