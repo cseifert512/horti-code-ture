@@ -28,6 +28,8 @@ export interface VaultScenarioOptions {
    * 'untended'   nobody touches the plants after planting
    */
   care?: 'trained' | 'untended';
+  /** Which wisteria to plant where a scenario plants wisteria: Chinese by default, or the long-racemed Japanese. */
+  wisteria?: 'wisteria-sinensis' | 'wisteria-floribunda-macrobotrys';
 }
 /** Kept for callers written against the first scenario. */
 export type WisteriaVaultOptions = VaultScenarioOptions;
@@ -67,12 +69,12 @@ function groupThreeRoutine(plantId: string, plantingYear: number, years: number)
 
 /** Two Wisteria sinensis on the barrel-vault segment, one at each planted rib foot. */
 export function wisteriaOnVault(options: VaultScenarioOptions): Scenario {
-  const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained' } = options;
-  need(taxa, 'wisteria-sinensis');
+  const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained', wisteria = 'wisteria-sinensis' } = options;
+  need(taxa, wisteria);
   const bower = makeVaultBower();
-  const plantings: Planting[] = bower.rootStations.map((s, i) => ({ plantId: `wisteria.${i}`, taxonId: 'wisteria-sinensis', stationId: s.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
+  const plantings: Planting[] = bower.rootStations.map((s, i) => ({ plantId: `wisteria.${i}`, taxonId: wisteria, stationId: s.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
   const events = care === 'trained' ? plantings.flatMap((p) => wisteriaRoutine(p.plantId, plantingYear, years)) : [];
-  return { name: `Wisteria sinensis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
+  return { name: `${taxa.get(wisteria)!.profile.names.label} on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
 }
 
 /**
