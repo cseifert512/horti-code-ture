@@ -4,8 +4,26 @@
     {
       "name": "wisteria-prototype",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["Wisteria/node_modules/vite/bin/vite.js", "Wisteria", "--port", "5183", "--strictPort"],
+      "runtimeArgs": [
+        "Wisteria/node_modules/vite/bin/vite.js",
+        "Wisteria",
+        "--port",
+        "5183",
+        "--strictPort"
+      ],
       "port": 5183
+    },
+    {
+      "name": "bower-viewer",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "node_modules/vite/bin/vite.js",
+        "packages/viewer",
+        "--port",
+        "5193",
+        "--strictPort"
+      ],
+      "port": 5193
     }
   ]
 }

@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bower viewer</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28V17a12 12 0 0 1 24 0v11' fill='none' stroke='%23c28236' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --glass: rgba(26, 21, 40, 0.74);
+        --glass-line: rgba(255, 255, 255, 0.16);
+        --ink: #ffffff;
+        --ink-2: rgba(255, 255, 255, 0.78);
+        --ink-3: rgba(255, 255, 255, 0.58);
+        --accent: #ff9ad0;
+        --timber: #c28236;
+        --steel: #3987e5;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #bcd3e6;
+        font-family: system-ui, 'Segoe UI', sans-serif;
+        color: var(--ink);
+      }
+      canvas#scene {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        touch-action: none;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      body.bare #title,
+      body.bare .card:not(#plant-bar),
+      body.bare #hint,
+      body.bare #plant-bar > :not(#plant-statement) {
+        display: none;
+      }
+      /* the statement travels with any picture of plants, even a bare one */
+      body.bare #plant-bar {
+        width: auto;
+        max-width: calc(100vw - 32px);
+        padding: 6px 12px;
+        display: block;
+      }
+
+      #title {
+        position: fixed;
+        left: 24px;
+        top: 18px;
+        text-shadow: 0 1px 10px rgba(30, 20, 60, 0.55);
+        pointer-events: none;
+        user-select: none;
+      }
+      #title h1 {
+        margin: 0;
+        font: italic 500 clamp(20px, 2.6vw, 30px) 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+      }
+      #title p {
+        margin: 4px 0 0;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.92;
+      }
+      #title p.stats {
+        text-transform: none;
+        letter-spacing: 0.02em;
+        opacity: 0.78;
+      }
+
+      .card {
+        position: fixed;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: var(--glass);
+        border: 1px solid var(--glass-line);
+        backdrop-filter: blur(10px);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+      }
+      .card h2:not(:first-child) {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--glass-line);
+      }
+      .card p {
+        margin: 0;
+      }
+      .note {
+        color: var(--ink-3);
+        font-size: 12px;
+      }
+      button,
+      select,
+      input {
+        font: inherit;
+        color: inherit;
+      }
+      button,
+      select {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 8px;
+        height: 30px;
+        padding: 0 10px;
+        cursor: pointer;
+      }
+      select option {
+        color: #1b1630;
+      }
+      button:hover,
+      select:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid #ffd3ea;
+        outline-offset: 2px;
+      }
+      input[type='range'] {
+        width: 100%;
+        margin: 0;
+        accent-color: var(--accent);
+      }
+
+      /* ---- left: what is shown ------------------------------------------------ */
+      #left {
+        position: fixed;
+        left: 20px;
+        top: 104px;
+        bottom: 18px;
+        width: 262px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        pointer-events: none;
+      }
+      #left .card {
+        position: static;
+        pointer-events: auto;
+      }
+      /* the side columns stop above the timeline, however tall its statement makes it */
+      body.plants #left {
+        bottom: var(--bar-clear, 150px);
+      }
+      #controls {
+        flex: none;
+        display: grid;
+        /* one column no wider than the card, whatever the longest choice in a list */
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+      }
+      #controls select {
+        width: 100%;
+        min-width: 0;
+      }
+      #log {
+        flex: 0 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding-right: 6px;
+      }
+      #log ol {
+        list-style: none;
+        margin: 0;
+        padding: 0 6px 0 0;
+        overflow-y: auto;
+        min-height: 0;
+      }
+      #log li button {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: 5px 7px;
+        border: 0;
+        border-radius: 7px;
+        background: none;
+        text-align: left;
+        line-height: 1.3;
+      }
+      #log li button:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+      #log li time {
+        display: block;
+        font-size: 11px;
+        color: var(--ink-2);
+        font-variant-numeric: tabular-nums;
+      }
+      #log li.future button {
+        opacity: 0.45;
+      }
+      #log li.latest button {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .segmented {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+      .segmented button {
+        border-radius: 0;
+        padding: 0 6px;
+        white-space: nowrap;
+      }
+      .segmented button:first-child {
+        border-radius: 8px 0 0 8px;
+      }
+      .segmented button:last-child {
+        border-radius: 0 8px 8px 0;
+        border-left: 0;
+      }
+      .segmented button[aria-pressed='true'] {
+        background: rgba(255, 255, 255, 0.92);
+        color: #1b1630;
+        font-weight: 600;
+      }
+      .switch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .switch input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: var(--accent);
+      }
+      .switch kbd {
+        margin-left: auto;
+        font: 11px ui-monospace, Consolas, monospace;
+        color: var(--ink-3);
+        border: 1px solid var(--glass-line);
+        border-radius: 4px;
+        padding: 0 5px;
+      }
+      details summary {
+        cursor: pointer;
+        color: var(--ink-2);
+      }
+      details .rows {
+        display: grid;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .field {
+        display: grid;
+        gap: 3px;
+      }
+      .field > span {
+        display: flex;
+        justify-content: space-between;
+        color: var(--ink-2);
+        font-size: 12px;
+      }
+      .field output {
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .actions button {
+        flex: 1;
+      }
+
+      /* ---- right: the design overlay ------------------------------------------- */
+      #right {
+        position: fixed;
+        right: 20px;
+        top: 18px;
+        bottom: 18px;
+        width: 318px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        pointer-events: none;
+      }
+      #right .card {
+        position: static;
+        pointer-events: auto;
+        flex: 0 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+      }
+      body.plants #right {
+        bottom: var(--bar-clear, 150px);
+      }
+
+      /* ---- the design report ------------------------------------------------------ */
+      table.calendar {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 2px;
+        table-layout: fixed;
+      }
+      table.calendar th:first-child {
+        width: 96px;
+        text-align: left;
+        font-weight: 400;
+        font-size: 11px;
+        color: var(--ink-2);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      table.calendar thead button {
+        width: 100%;
+        height: 18px;
+        padding: 0;
+        border: 0;
+        border-radius: 4px;
+        background: none;
+        font-size: 11px;
+        color: var(--ink-2);
+      }
+      table.calendar thead button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--ink);
+      }
+      table.calendar td {
+        height: 12px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      /* one hue, from near the surface up to bright: more flowers, brighter */
+      .s1 {
+        background: #5c2f55 !important;
+      }
+      .s2 {
+        background: #96357c !important;
+      }
+      .s3 {
+        background: #d04a9f !important;
+      }
+      .s4 {
+        background: #ff9ad0 !important;
+      }
+      .unknown {
+        background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 5px) !important;
+      }
+      table.calendar tfoot th,
+      table.calendar tfoot td {
+        border-top: 4px solid transparent;
+      }
+      table.calendar td.some {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      table.calendar td.bare {
+        background: none;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      }
+      .key {
+        margin-top: 6px !important;
+      }
+      .key i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        margin: 0 1px -1px;
+      }
+      .finding {
+        margin-top: 8px !important;
+        padding: 8px 10px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .finding b {
+        font-weight: 600;
+      }
+      .meter-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3px;
+        margin-bottom: 9px;
+      }
+      .meter-row .where {
+        height: auto;
+        padding: 2px 6px;
+        margin-left: -6px;
+        border: 0;
+        background: none;
+        text-align: left;
+        justify-self: start;
+        text-decoration: underline;
+        text-decoration-color: rgba(255, 255, 255, 0.4);
+        text-underline-offset: 2px;
+      }
+      .meter-row .where:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+      .meter {
+        position: relative;
+        height: 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+      .meter .band {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.24);
+      }
+      .meter .fill {
+        position: absolute;
+        left: 0;
+        top: 2px;
+        bottom: 2px;
+        min-width: 3px;
+        border-radius: 3px;
+        background: #fff;
+      }
+      .meter-row .reading {
+        font-size: 12px;
+        color: var(--ink-2);
+        font-variant-numeric: tabular-nums;
+      }
+      .meter-row .reading b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      #overlay-panel select {
+        width: 100%;
+      }
+      .budget {
+        margin-top: 10px;
+      }
+      .budget output {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1;
+      }
+      .budget > span {
+        align-items: baseline;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .chips button {
+        height: auto;
+        min-height: 26px;
+        padding: 3px 9px;
+        font-size: 12px;
+        text-align: left;
+      }
+      .legend {
+        margin-top: 12px;
+      }
+      .legend .bar {
+        position: relative;
+        height: 10px;
+        border-radius: 5px;
+        background: linear-gradient(90deg, #ff9ad0, #d6218c 50%, #5b0d52);
+      }
+      .legend .beyond {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        border-radius: 0 5px 5px 0;
+        background: #aab0b9;
+      }
+      .legend .mark {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        width: 2px;
+        margin-left: -1px;
+        background: #fff;
+        box-shadow: 0 0 0 1px rgba(20, 10, 30, 0.7);
+      }
+      .legend .mark.summit {
+        width: 0;
+        background: none;
+        box-shadow: none;
+        border-left: 2px dotted #fff;
+      }
+      .legend .ticks {
+        position: relative;
+        height: 30px;
+        margin-top: 5px;
+        font-size: 11px;
+        color: var(--ink-2);
+        font-variant-numeric: tabular-nums;
+      }
+      .legend .ticks span {
+        position: absolute;
+        top: 0;
+        white-space: nowrap;
+      }
+      .legend .ticks .end {
+        right: 0;
+      }
+      .legend .ticks .at {
+        top: 14px;
+        transform: translateX(-50%);
+        color: var(--ink);
+      }
+      .legend .ticks .at.left {
+        transform: none;
+      }
+      .legend .ticks .at.right {
+        transform: translateX(-100%);
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .tile {
+        padding: 8px 10px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .tile .label {
+        font-size: 11px;
+        color: var(--ink-2);
+      }
+      .tile .value {
+        margin-top: 2px;
+        font-size: 19px;
+        font-weight: 600;
+      }
+      .tile .of {
+        font-size: 11px;
+        color: var(--ink-2);
+      }
+      #verdict {
+        margin-top: 10px;
+        padding: 8px 10px;
+        border-radius: 9px;
+        border-left: 3px solid #aab0b9;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      #verdict.reached {
+        border-left-color: var(--accent);
+      }
+      #verdict b {
+        font-weight: 600;
+      }
+      table.kv {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table.kv th {
+        text-align: left;
+        font-weight: 400;
+        color: var(--ink-2);
+        padding: 2px 8px 2px 0;
+      }
+      table.kv td {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        padding: 2px 0;
+      }
+      .split {
+        display: flex;
+        gap: 2px;
+        height: 10px;
+        margin: 8px 0 5px;
+      }
+      .split i {
+        display: block;
+        border-radius: 3px;
+        min-width: 3px;
+      }
+      .split .timber {
+        background: var(--timber);
+      }
+      .split .steel {
+        background: var(--steel);
+      }
+      .split-key {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--ink-2);
+      }
+      .split-key i {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        margin-right: 5px;
+      }
+
+      /* ---- in the scene --------------------------------------------------------- */
+      #labels {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .scene-label {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: auto;
+        padding: 2px 8px;
+        border-radius: 7px;
+        border: 1px solid var(--glass-line);
+        background: var(--glass);
+        color: var(--ink);
+        font-size: 12px;
+        white-space: nowrap;
+        will-change: transform;
+      }
+      .scene-label.station {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+      .scene-label.station.active {
+        background: #fff;
+        color: #1b1630;
+        font-weight: 600;
+      }
+      .scene-label.summit {
+        margin-top: -12px;
+        border-left: 3px solid #aab0b9;
+      }
+      .scene-label.summit.reached {
+        border-left-color: var(--accent);
+      }
+      #tip {
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 7px 10px;
+        border-radius: 9px;
+        background: rgba(20, 16, 32, 0.92);
+        border: 1px solid var(--glass-line);
+        font-size: 12px;
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 5;
+      }
+      #tip b {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 2px;
+      }
+
+      /* ---- bottom: the render test plant --------------------------------------- */
+      #plant-bar {
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%);
+        width: min(820px, calc(100vw - 32px));
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 4px 14px;
+        align-items: center;
+      }
+      #play {
+        grid-row: span 2;
+        width: 44px;
+        height: 36px;
+        font-size: 15px;
+      }
+      #when {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+      #when b {
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      #when span {
+        color: var(--ink-2);
+        text-align: right;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #plant-statement {
+        grid-column: 1 / -1;
+        margin-top: 2px;
+      }
+      body.plants #hint {
+        display: none;
+      }
+
+      #hint {
+        position: fixed;
+        left: 24px;
+        bottom: 16px;
+        font-size: 12px;
+        color: #fff;
+        opacity: 0.8;
+        text-shadow: 0 1px 8px rgba(30, 20, 60, 0.6);
+        pointer-events: none;
+      }
+      #error {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        color: #33264d;
+        text-align: center;
+      }
+      @media (max-width: 760px) {
+        #title p.stats,
+        #hint {
+          display: none;
+        }
+        #left {
+          top: 84px;
+          left: 12px;
+        }
+        #log {
+          display: none;
+        }
+        #right {
+          top: auto;
+          bottom: 12px;
+          right: 12px;
+          left: 12px;
+          width: auto;
+          max-height: 46vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="labels" hidden></div>
+
+    <div id="title">
+      <h1>Bower viewer</h1>
+      <p id="bower-name"></p>
+      <p class="stats" id="stats"></p>
+    </div>
+
+    <div id="left">
+    <div id="controls" class="card">
+      <div class="segmented" role="group" aria-label="Bower">
+        <button type="button" data-bower="vault" aria-pressed="true">Vault</button>
+        <button type="button" data-bower="hemisphere" aria-pressed="false">15 m hemisphere</button>
+      </div>
+      <label class="switch"><input type="checkbox" id="overlay-toggle" /> Design overlay <kbd>O</kbd></label>
+      <label class="field"
+        ><span>Plants</span>
+        <select id="plants">
+          <option value="none">None: the structure alone</option>
+          <optgroup label="Grown by the engine">
+            <option value="trained">Wisteria, trained</option>
+            <option value="untended">Wisteria, untended</option>
+            <option value="mixed-trained">Mixed planting, trained</option>
+            <option value="mixed-untended">Mixed planting, untended</option>
+            <option value="palette-trained">Reference palette, trained</option>
+            <option value="palette-untended">Reference palette, untended</option>
+            <option value="palette-ivy">Reference palette with ivy, trained</option>
+          </optgroup>
+          <optgroup label="Not a simulation">
+            <option value="fixture">Render test plant (hand-made)</option>
+          </optgroup>
+        </select></label
+      >
+      <details id="scene-controls">
+        <summary>Scene</summary>
+        <div class="rows">
+          <label class="field"
+            ><span>Sun height <output id="sun-elevation-out"></output></span><input type="range" id="sun-elevation" min="3" max="80" step="1"
+          /></label>
+          <label class="field"
+            ><span>Sun direction <output id="sun-azimuth-out"></output></span><input type="range" id="sun-azimuth" min="-180" max="180" step="1"
+          /></label>
+          <label class="field"><span>Wind <output id="wind-out"></output></span><input type="range" id="wind" min="0" max="2" step="0.01" /></label>
+          <label class="switch"><input type="checkbox" id="orbit" /> Orbit</label>
+          <div class="actions">
+            <button type="button" id="reset-view">Reset view</button>
+            <button type="button" id="save-image">Save image</button>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div id="log" class="card" hidden>
+      <h2>Gardener's log</h2>
+      <ol id="log-list"></ol>
+    </div>
+    </div>
+
+    <div id="right">
+    <div id="overlay-panel" class="card" hidden>
+      <h2>Reach from a root station</h2>
+      <select id="station" aria-label="Root station"></select>
+      <p class="note" id="station-note"></p>
+
+      <label class="field budget"
+        ><span>Route budget <output id="budget-out"></output></span><input type="range" id="budget" min="0" max="25" step="0.1"
+      /></label>
+      <div class="chips">
+        <button type="button" id="chip-height"></button>
+        <button type="button" id="chip-route"></button>
+      </div>
+
+      <div class="legend" aria-hidden="true">
+        <div class="bar">
+          <div class="beyond" id="legend-beyond"></div>
+          <div class="mark summit" id="legend-summit"></div>
+          <div class="mark" id="legend-budget"></div>
+        </div>
+        <div class="ticks">
+          <span>0 m of route</span><span class="end" id="legend-max"></span>
+          <span class="at" id="legend-budget-label"></span>
+        </div>
+      </div>
+
+      <div class="tiles">
+        <div class="tile">
+          <div class="label">Nodes reached</div>
+          <div class="value" id="tile-nodes"></div>
+          <div class="of" id="tile-nodes-of"></div>
+        </div>
+        <div class="tile">
+          <div class="label">Route within budget</div>
+          <div class="value" id="tile-route"></div>
+          <div class="of" id="tile-route-of"></div>
+        </div>
+        <div class="tile">
+          <div class="label">Highest height reached</div>
+          <div class="value" id="tile-height"></div>
+          <div class="of" id="tile-height-of"></div>
+        </div>
+        <div class="tile">
+          <div class="label">Route to highest node</div>
+          <div class="value" id="tile-summit"></div>
+          <div class="of" id="tile-summit-of"></div>
+        </div>
+      </div>
+      <p id="verdict"></p>
+
+      <h2>Route</h2>
+      <div id="route-info"><p class="note">Hover over a route, or click one to keep it.</p></div>
+      <h2>Materials</h2>
+      <table class="kv">
+        <tr>
+          <th>Glulam, primary</th>
+          <td id="mat-primary"></td>
+        </tr>
+        <tr>
+          <th>Timber sub-lattice</th>
+          <td id="mat-sub"></td>
+        </tr>
+        <tr>
+          <th>Steel cable</th>
+          <td id="mat-steel"></td>
+        </tr>
+      </table>
+      <div class="split" id="mat-split" role="img"><i class="timber"></i><i class="steel"></i></div>
+      <div class="split-key">
+        <span><i style="background: var(--timber)"></i><span id="mat-route-timber"></span></span>
+        <span><i style="background: var(--steel)"></i><span id="mat-route-steel"></span></span>
+      </div>
+
+    </div>
+
+    <div id="report" class="card" hidden></div>
+    </div>
+
+    <div id="plant-bar" class="card" hidden>
+      <button type="button" id="play" aria-label="Play or pause the time-lapse">&#9654;</button>
+      <div id="when"><b id="plant-date"></b><span id="plant-caption"></span></div>
+      <input type="range" id="plant-day" min="0" max="100" step="1" aria-label="Day shown" />
+      <p class="note" id="plant-statement"></p>
+    </div>
+
+    <div id="tip" hidden></div>
+    <div id="hint">Drag to orbit &middot; scroll to zoom &middot; <b>H</b> hides the interface</div>
+    <div id="error"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

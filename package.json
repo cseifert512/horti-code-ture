@@ -13,11 +13,13 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -p packages/core --noEmit",
+    "typecheck": "tsc -p packages/core --noEmit && tsc -p packages/viewer --noEmit",
     "check": "npm run typecheck && npm test",
     "simulate": "node packages/core/scripts/simulate.ts",
     "export-bower": "node packages/core/scripts/export-bower.ts",
     "sensitivity": "node packages/core/scripts/sensitivity.ts",
+    "viewer:dev": "npm --workspace @horti/viewer run dev",
+    "viewer:build": "npm --workspace @horti/viewer run build",
     "prototype:dev": "npm --prefix Wisteria run dev",
     "prototype:audit": "npm --prefix Wisteria run audit",
     "prototype:assumptions": "npm --prefix Wisteria run assumptions"

@@ -23,6 +23,7 @@ This is **not** a verified biological prediction model, a planting specification
 | `species/<id>/` | One folder per taxon. Folder names are ASCII ids; botanical names, accepted names and synonyms are recorded inside. |
 | `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the structure as timber and cables with its route graph, reference Bowers, attachment rules, the daily-step growth engine, and the render-data contract a viewer draws from. |
 | `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Sixteen: every climber in the library. *Wisteria sinensis* is carried over from the prototype; the other fifteen are derived from it or from one another, mostly copies and placeholders and marked as such. The shrub has none, because it does not climb. |
+| `packages/viewer/` | `@horti/viewer` — three.js and Vite. Renders a Bower from the core at the prototype's visual quality, a design overlay (reach from a root station under a route budget, material summary), and the plants of any render data: the growth engine's scenarios, run in the browser, or a hand-made render test. Holds no growth logic. |
 | `Wisteria/` | The original three.js prototype of *W. sinensis* on a glulam vault. Self-contained (`npm install` inside it). |
 | `examples/` | A small arbour and the 15 m hemisphere as Bower descriptions, each with a planting plan: the two files a design is run from. |
 | `docs/ASSUMPTIONS_AUDIT.md` | What was tested on 11 November 2026, what held, what did not, and what was changed. |
@@ -53,6 +54,8 @@ npm run simulate -- dome trained 12   # three wisterias on the 15 m hemisphere
 npm run simulate -- trial untended 7  # one plant of each way of climbing, nobody gardening
 npm run simulate -- palette trained 12  # the KEY.md reference palette, one plant at each of the dome's twelve ribs
 npm run sensitivity -- palette trained 12  # the same run with leaf area and side shoots multiplied: which readings hold
+npm run viewer:dev   # the viewer on http://localhost:5193: both reference Bowers, the design overlay, plants through time
+npm run viewer:build # static build in packages/viewer/dist
 ```
 
 ### Your own Bower
