@@ -18,13 +18,17 @@
 //                  lying in a plane. Its depth axis is in that plane, on the
 //                  convex side, leaning out of it by whatever rules 1 and 2
 //                  found nearest. With nothing found, it does not lean.
-//   4. outward     A straight member with nothing to go on faces away from the
-//                  middle of the Bower.
+//   4. upright     A member read from a design file has its routes on its own
+//                  centre line, and the core lays a stem on its upper face:
+//                  the face that looks up, squared to the member's line. The
+//                  viewer turns the section the same way, by the core's own
+//                  rule, so that what is drawn is what the stems rest on. A
+//                  member with nothing else to go on is turned this way too.
 //
 // This is an inference. It is reported per member (`source`) so that it can be
 // seen, and replaced when the core carries section orientation itself.
 import * as THREE from 'three';
-import type { Bower, Polyline, StructuralMember, Vec3 } from '@horti/core';
+import { type Bower, type Polyline, type StructuralMember, type Vec3, vec } from '@horti/core';
 
 const V3 = THREE.Vector3;
 
@@ -33,8 +37,8 @@ export function toThree(p: Vec3, out: THREE.Vector3 = new V3()): THREE.Vector3 {
   return out.set(p.x, p.z, -p.y);
 }
 
-/** How a member's section was turned: wholly by its routes, with help from its neighbours, by its own plane alone, or by default. */
-export type FrameSource = 'hosted_routes' | 'neighbours' | 'own_plane' | 'outward';
+/** How a member's section was turned: wholly by its routes, with help from its neighbours, by its own plane alone, or upper face up. */
+export type FrameSource = 'hosted_routes' | 'neighbours' | 'own_plane' | 'upright';
 
 export interface MemberFrames {
   /** Centre line of the section. */
@@ -72,8 +76,24 @@ function nearestOnSegment(p: THREE.Vector3, a: THREE.Vector3, b: THREE.Vector3, 
 
 type Known = (THREE.Vector3 | null)[];
 
-/** Rule 1: the depth axis wherever a hosted route runs abreast of the centre line. */
-function fromRoutes(C: readonly THREE.Vector3[], T: readonly THREE.Vector3[], routes: readonly THREE.Vector3[][], depthM: number): Known {
+/**
+ * The upper face of a member whose routes run on its centre line: up, squared
+ * to the member's line; for an upright member, where "up" says nothing, the
+ * same arbitrary side the core picks (frames() in sim/stem-path.ts).
+ */
+function upperFace(t: THREE.Vector3): THREE.Vector3 {
+  const v = new V3(0, 1, 0).addScaledVector(t, -t.y);
+  if (v.length() > 1e-6) return v.normalize();
+  const d = vec.anyPerpendicular(vec.v3(t.x, -t.z, t.y));
+  return new V3(d.x, d.z, -d.y);
+}
+
+/**
+ * Rule 1: the depth axis wherever a hosted route runs abreast of the centre
+ * line and clear of it. `onAxis` is set where a route runs on the centre line
+ * itself, which is how a member read from a design file carries its routes.
+ */
+function fromRoutes(C: readonly THREE.Vector3[], T: readonly THREE.Vector3[], routes: readonly THREE.Vector3[][], depthM: number, onAxis: boolean[]): Known {
   const q = new V3();
   const best = new V3();
   return C.map((c, i) => {
@@ -93,7 +113,12 @@ function fromRoutes(C: readonly THREE.Vector3[], T: readonly THREE.Vector3[], ro
     const along = v.dot(T[i]!);
     v.addScaledVector(T[i]!, -along);
     const out = v.length();
-    return Math.abs(along) <= RULES.abreastM && out > 1e-4 && out <= RULES.reachDepths * depthM ? v.normalize() : null;
+    if (Math.abs(along) > RULES.abreastM) return null;
+    if (out <= 1e-4) {
+      onAxis[i] = true;
+      return null;
+    }
+    return out <= RULES.reachDepths * depthM ? v.normalize() : null;
   });
 }
 
@@ -125,27 +150,6 @@ function ownPlane(C: readonly THREE.Vector3[], T: readonly THREE.Vector3[]): THR
   return N;
 }
 
-function outward(C: readonly THREE.Vector3[], T: readonly THREE.Vector3[], middle: THREE.Vector3): THREE.Vector3[] {
-  return C.map((p, i) => {
-    const t = T[i]!;
-    const v = new V3().subVectors(p, middle);
-    v.addScaledVector(t, -v.dot(t));
-    if (v.lengthSq() < 1e-8) {
-      v.set(0, 1, 0).addScaledVector(t, -t.y);
-      if (v.lengthSq() < 1e-8) v.set(1, 0, 0).addScaledVector(t, -t.x);
-    }
-    return v.normalize();
-  });
-}
-
-/** Centre of the box round every member, in the three.js frame. */
-export function bowerMiddle(bower: Bower): THREE.Vector3 {
-  const box = new THREE.Box3();
-  const p = new V3();
-  for (const m of bower.members) for (const q of m.curve.points) box.expandByPoint(toThree(q, p));
-  return box.isEmpty() ? new V3() : box.getCenter(new V3());
-}
-
 /** The route curves hosted on each member, keyed by member id. */
 export function hostedRoutes(bower: Bower): Map<string, Polyline[]> {
   const out = new Map<string, Polyline[]>();
@@ -163,13 +167,15 @@ const depthOf = (m: StructuralMember): number => (m.section.shape === 'rect' ? m
 /** Section frames for every member of a Bower, keyed by member id. */
 export function bowerFrames(bower: Bower): Map<string, MemberFrames> {
   const routes = hostedRoutes(bower);
-  const middle = bowerMiddle(bower);
   const work = bower.members.map((member) => {
     const C = member.curve.points.map((p) => toThree(p));
     const T = tangents(C);
     const hosted = (routes.get(member.id) ?? []).map((r) => r.points.map((p) => toThree(p)));
-    const known = fromRoutes(C, T, hosted, depthOf(member));
-    return { member, C, T, known, byRoutes: known.filter(Boolean).length };
+    const onAxis: boolean[] = C.map(() => false);
+    const known = fromRoutes(C, T, hosted, depthOf(member), onAxis);
+    const byRoutes = known.filter(Boolean).length;
+    // routes on the centre line and none clear of it: a member from a design file
+    return { member, C, T, known, byRoutes, imported: byRoutes === 0 && onAxis.some(Boolean) };
   });
 
   // rule 2: what rule 1 found, as a cloud of oriented points other members may borrow from
@@ -182,7 +188,10 @@ export function bowerFrames(bower: Bower): Map<string, MemberFrames> {
     const { member, C, T, known } = w;
     const n = C.length;
     let source: FrameSource = 'hosted_routes';
-    if (w.byRoutes < n) {
+    if (w.imported) {
+      source = 'upright';
+      for (let i = 0; i < n; i++) known[i] = upperFace(T[i]!);
+    } else if (w.byRoutes < n) {
       for (let i = 0; i < n; i++) {
         if (known[i]) continue;
         let best: THREE.Vector3 | null = null;
@@ -202,11 +211,11 @@ export function bowerFrames(bower: Bower): Map<string, MemberFrames> {
       }
       // rule 3 or 4 gives the base frame; what is known leans it, and the lean is carried across the gaps
       const plane = ownPlane(C, T);
-      const base = plane ?? outward(C, T, middle);
+      const base = plane ?? T.map(upperFace);
       const lean: (number | null)[] = known.map((k, i) => (k ? Math.atan2(k.dot(new V3().crossVectors(T[i]!, base[i]!)), k.dot(base[i]!)) : null));
       const firstKnown = lean.findIndex((l) => l !== null);
       if (firstKnown < 0) {
-        source = plane ? 'own_plane' : 'outward';
+        source = plane ? 'own_plane' : 'upright';
         for (let i = 0; i < n; i++) known[i] = base[i]!;
       } else {
         source = 'neighbours';

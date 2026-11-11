@@ -126,5 +126,7 @@ export function renderReport(container: HTMLElement, report: DesignReport, actio
     winter.append(el('p', 'note', 'The run has no winter to read, or no viewpoints to read it from.'));
   }
 
-  container.replaceChildren(el('h2', undefined, `In flower, month by month · ${report.year}`), calendar, key, gaps, el('h2', undefined, 'Evergreen cover in winter'), winter);
+  // coverage is read from where a visitor stands: a design that names no viewpoint has none to show
+  const coverage = report.viewpoints.length ? [el('h2', undefined, 'Evergreen cover in winter'), winter] : [];
+  container.replaceChildren(el('h2', undefined, `In flower, month by month · ${report.year}`), calendar, key, gaps, ...coverage);
 }

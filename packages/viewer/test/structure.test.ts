@@ -39,7 +39,7 @@ describe('section orientation of timber members', () => {
   it('orients the lattice of the vault from its routes, and the ribs from the routes and lattice they carry', () => {
     const vault = makeVaultBower();
     const built = buildStructure(vault, materials());
-    expect(built.frameSources).toEqual({ hosted_routes: vault.members.length - 5, neighbours: 5, own_plane: 0, outward: 0 });
+    expect(built.frameSources).toEqual({ hosted_routes: vault.members.length - 5, neighbours: 5, own_plane: 0, upright: 0 });
     // a rib's depth axis follows the surface normal the core built it from, to within 2.5 degrees
     // (unhelped, an end rib would lean 12 degrees away from the lattice that sits on it)
     let worst = 1;
@@ -77,7 +77,7 @@ describe('structure meshes', () => {
       built.group.traverse((o) => {
         if (!(o instanceof THREE.Mesh)) return;
         const pos = o.geometry.getAttribute('position');
-        for (let i = 0; i < pos.array.length; i++) expect(Number.isFinite(pos.array[i])).toBe(true);
+        expect(Array.prototype.every.call(pos.array, Number.isFinite), 'every position is a finite number').toBe(true);
       });
       expect(built.bounds.max.y).toBeGreaterThan(3);
       built.dispose();

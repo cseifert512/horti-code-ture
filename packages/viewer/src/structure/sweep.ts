@@ -1,5 +1,6 @@
-// Swept rectangular timber sections (ribs, lattice members, ring and eave
-// beams). Ported from the Wisteria prototype (Wisteria/src/sweep.js).
+// Swept timber sections. The rectangular sweep (ribs, lattice members, ring
+// and eave beams) is ported from the Wisteria prototype (Wisteria/src/sweep.js);
+// the round one, for poles and posts in a designed Bower, is its companion.
 //
 // UV layout matches makeGlulamTextures(): one lamination is 1/8 of the texture
 // width, so the two side faces show `lams` glue lines and the top and bottom
@@ -108,6 +109,15 @@ export class RectSweep {
     return this.n;
   }
 
+  /** Append this sweep's triangles to arrays being gathered for one geometry. */
+  appendTo(pos: number[], nor: number[], uv: number[], idx: number[], offset: number): number {
+    for (const v of this.pos) pos.push(v);
+    for (const v of this.nor) nor.push(v);
+    for (const v of this.uv) uv.push(v);
+    for (const v of this.idx) idx.push(v + offset);
+    return this.n;
+  }
+
   build(): THREE.BufferGeometry {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
@@ -115,5 +125,88 @@ export class RectSweep {
     g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
     g.setIndex(this.idx);
     return g;
+  }
+}
+
+/** Sides of a round section: enough that a 150 mm post reads as round. */
+const ROUND_SIDES = 14;
+
+/** Swept round timber sections: poles and round posts. */
+export class RoundSweep {
+  private readonly pos: number[] = [];
+  private readonly nor: number[] = [];
+  private readonly uv: number[] = [];
+  private readonly idx: number[] = [];
+  private n = 0;
+
+  /**
+   * C: centres, N and B: any two unit axes square to the line and to each
+   * other, per sample. The grain runs along V; round the section the texture
+   * spans a few boards' width, with no glue lines to speak of.
+   */
+  add(C: readonly THREE.Vector3[], N: readonly THREE.Vector3[], B: readonly THREE.Vector3[], radius: number, vScale = 1, vOffset = 0): void {
+    const m = C.length;
+    if (m < 2) return;
+    const base = this.n;
+    const ring = ROUND_SIDES + 1;
+    let len = 0;
+    for (let i = 0; i < m; i++) {
+      if (i > 0) len += C[i]!.distanceTo(C[i - 1]!);
+      for (let j = 0; j < ring; j++) {
+        const th = ((j % ROUND_SIDES) / ROUND_SIDES) * Math.PI * 2;
+        const nx = N[i]!.x * Math.cos(th) + B[i]!.x * Math.sin(th);
+        const ny = N[i]!.y * Math.cos(th) + B[i]!.y * Math.sin(th);
+        const nz = N[i]!.z * Math.cos(th) + B[i]!.z * Math.sin(th);
+        this.pos.push(C[i]!.x + nx * radius, C[i]!.y + ny * radius, C[i]!.z + nz * radius);
+        this.nor.push(nx, ny, nz);
+        this.uv.push(0.02 + 0.085 * (1 - Math.abs(1 - (2 * j) / ROUND_SIDES)), vOffset + len * vScale);
+      }
+    }
+    for (let i = 0; i < m - 1; i++) {
+      for (let j = 0; j < ROUND_SIDES; j++) {
+        const a = base + i * ring + j;
+        this.idx.push(a, a + ring, a + 1, a + 1, a + ring, a + ring + 1);
+      }
+    }
+    this.n += m * ring;
+    // end caps: a fan round the centre, facing out along the line
+    for (const i of [0, m - 1]) {
+      const out = new V3().subVectors(C[i]!, C[i === 0 ? 1 : m - 2]!).normalize();
+      const centre = this.n;
+      this.pos.push(C[i]!.x, C[i]!.y, C[i]!.z);
+      this.nor.push(out.x, out.y, out.z);
+      this.uv.push(0.06, 0.03);
+      for (let j = 0; j < ROUND_SIDES; j++) {
+        const th = (j / ROUND_SIDES) * Math.PI * 2;
+        const dx = N[i]!.x * Math.cos(th) + B[i]!.x * Math.sin(th);
+        const dy = N[i]!.y * Math.cos(th) + B[i]!.y * Math.sin(th);
+        const dz = N[i]!.z * Math.cos(th) + B[i]!.z * Math.sin(th);
+        this.pos.push(C[i]!.x + dx * radius, C[i]!.y + dy * radius, C[i]!.z + dz * radius);
+        this.nor.push(out.x, out.y, out.z);
+        this.uv.push(0.06 + 0.03 * Math.cos(th), 0.03 + 0.03 * Math.sin(th));
+      }
+      // wind each triangle to face along `out`
+      const ccw = new V3().crossVectors(N[i]!, B[i]!).dot(out) > 0;
+      for (let j = 0; j < ROUND_SIDES; j++) {
+        const a = centre + 1 + j;
+        const b = centre + 1 + ((j + 1) % ROUND_SIDES);
+        if (ccw) this.idx.push(centre, a, b);
+        else this.idx.push(centre, b, a);
+      }
+      this.n += ROUND_SIDES + 1;
+    }
+  }
+
+  get vertexCount(): number {
+    return this.n;
+  }
+
+  /** Append this sweep's triangles to arrays being gathered for one geometry. */
+  appendTo(pos: number[], nor: number[], uv: number[], idx: number[], offset: number): number {
+    for (const v of this.pos) pos.push(v);
+    for (const v of this.nor) nor.push(v);
+    for (const v of this.uv) uv.push(v);
+    for (const v of this.idx) idx.push(v + offset);
+    return this.n;
   }
 }

@@ -4,11 +4,12 @@
 // calls core functions.
 import * as THREE from 'three';
 import { type Bower, type RenderData, type SupportEdge, type Viewpoint, makeHemisphereBower, makeVaultBower } from '@horti/core';
+import { ARBOUR_EXAMPLE, DesignDesk, type DesignFile } from './design/open.ts';
 import { type ReachView, type StationField, materials, reachView, routeInfo, stationField } from './overlay/model.ts';
 import { ReachOverlay } from './overlay/view.ts';
 import type { FruitSite } from './plant/adapter.ts';
 import { makeTestPlant } from './plant/fixture.ts';
-import { type Care, type Planting, canGrow, growScenario } from './plant/scenario.ts';
+import { type Care, type Planting, canGrow, growDesign, growScenario } from './plant/scenario.ts';
 import { shared } from './plant/shaders.ts';
 import { PlantView, makePlantMaterials } from './plant/view.ts';
 import { renderReport } from './report/panel.ts';
@@ -18,7 +19,8 @@ import { DEFAULT_SUN, type ViewPreset, createStage } from './scene/stage.ts';
 import { type BuiltStructure, buildStructure } from './structure/build.ts';
 import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
-type BowerKey = 'vault' | 'hemisphere';
+/** The two reference shells, or a design read from files. */
+type BowerKey = 'vault' | 'hemisphere' | 'design';
 /** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
 type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'fixture';
 const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'fixture'];
@@ -40,7 +42,7 @@ const signature = (b: Bower) => `${b.id}|${b.rootStations.map((s) => `${s.id}@${
 const PLANT_DETAIL = 0.75;
 /** Time-lapse speed, days per second. */
 const DAYS_PER_SECOND = 40;
-const BOWERS: Record<BowerKey, () => Bower> = {
+const BOWERS: Record<'vault' | 'hemisphere', () => Bower> = {
   vault: () => makeVaultBower(),
   hemisphere: () => makeHemisphereBower(),
 };
@@ -72,6 +74,8 @@ stage.scene.add(overlay.group);
 
 const state = {
   bowerKey: (url.get('bower') === 'hemisphere' ? 'hemisphere' : 'vault') as BowerKey,
+  /** Years a design's planting plan is grown for. */
+  years: Math.min(30, Math.max(1, Math.round(Number(url.get('years')) || 10))),
   overlay: url.get('overlay') === '1',
   stationId: url.get('station') ?? '',
   budgetM: url.has('budget') ? Number(url.get('budget')) : NaN,
@@ -84,6 +88,18 @@ const state = {
   playing: false,
   wind: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.6,
 };
+
+/** The design last opened without fault. A file that is refused leaves it, and the scene, as they were. */
+const desk = new DesignDesk();
+/** The Bower a key stands for: a reference shell built afresh, or the design that is open. */
+const bowerOf = (key: BowerKey): Bower => (key === 'design' ? desk.current!.bower : BOWERS[key]());
+/** Whether a choice of plants can be shown on a Bower. A design grows its own planting plan, if it came with one. */
+function canShow(source: PlantSource, key: BowerKey): boolean {
+  const scenario = SCENARIOS[source];
+  if (!scenario) return true;
+  if (key === 'design') return scenario.planting === 'wisteria' && !!desk.current?.plan;
+  return canGrow(scenario.planting, key);
+}
 
 let bower: Bower;
 let structure: BuiltStructure | null = null;
@@ -137,7 +153,9 @@ function showStructure(next: Bower, view: ViewPreset | 'default' | 'keep', keepB
   el('bower-name').textContent = bower.name;
   const primary = bower.members.filter((m) => m.tier === 'primary').length;
   const cables = bower.supports.filter((s) => s.kind === 'cable').length;
-  el('stats').textContent = `${primary} glulam members · ${bower.members.length - primary} lattice members · ${cables} steel cables · ${bower.graph.edges.size} plant routes`;
+  // a design's primary timber need not be glulam: say what it is where every primary member agrees
+  const made = new Set(bower.members.filter((m) => m.tier === 'primary').map((m) => m.material));
+  el('stats').textContent = `${primary} ${made.size === 1 && made.has('glulam') ? 'glulam' : 'primary'} members · ${bower.members.length - primary} lattice members · ${cables} steel cables · ${bower.graph.edges.size} plant routes`;
 
   overlay.setBower(bower);
   const select = el<HTMLSelectElement>('station');
@@ -160,18 +178,98 @@ function showStructure(next: Bower, view: ViewPreset | 'default' | 'keep', keepB
 }
 
 function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget = false, keepDay = false): void {
+  if (key === 'design' && !desk.current) return;
   state.bowerKey = key;
   for (const b of document.querySelectorAll<HTMLButtonElement>('[data-bower]')) b.setAttribute('aria-pressed', String(b.dataset['bower'] === key));
-  showStructure(BOWERS[key](), opening ?? 'default', keepBudget);
-  // a planting with no scenario on this Bower gives way to the wisteria under the same care
+  showStructure(bowerOf(key), opening ?? 'default', keepBudget);
+  // on a design, "trained" and "untended" grow the plan it came with; on a shell, wisteria
   const select = el<HTMLSelectElement>('plants');
   for (const o of select.options) {
-    const scenario = SCENARIOS[o.value as PlantSource];
-    o.disabled = !!scenario && !canGrow(scenario.planting, key);
+    const source = o.value as PlantSource;
+    o.disabled = !canShow(source, key);
+    if (source === 'trained' || source === 'untended') o.textContent = `${key === 'design' ? 'Its planting plan' : 'Wisteria'}, ${source}`;
   }
-  const wanted = SCENARIOS[state.plants];
-  showPlants(wanted && !canGrow(wanted.planting, key) ? wanted.care : state.plants, keepDay);
+  // a planting with no scenario on this Bower gives way to the same care of what can be grown here, or to nothing
+  const care = SCENARIOS[state.plants]?.care;
+  showPlants(canShow(state.plants, key) ? state.plants : care && canShow(care, key) ? care : 'none', keepDay);
+  showDesign();
 }
+
+// ---- a design read from files -------------------------------------------------------
+/** Whether the design section is open although a reference shell is on show: the designer has asked for it. */
+let designAsked = false;
+
+/** Show what is known of the design: its name and files, what the core warns of, and why the latest files were refused. */
+function showDesign(): void {
+  const shown = state.bowerKey === 'design';
+  const d = desk.current;
+  el('design').hidden = !(shown || designAsked);
+  const name = el('design-name');
+  name.hidden = !d;
+  if (d) {
+    name.replaceChildren(d.bower.name, Object.assign(document.createElement('small'), { textContent: `${d.files.bower}${d.files.planting ? ` + ${d.files.planting}` : ' · no planting plan'}${shown ? '' : ' · not on show'}` }));
+  }
+  el('design-years-field').hidden = !(shown && d?.plan);
+  el<HTMLInputElement>('design-years').value = String(state.years);
+  const warnings = el('design-warnings');
+  warnings.hidden = !(shown && d && d.warnings.length);
+  if (d && d.warnings.length) {
+    const list = document.createElement('ul');
+    for (const w of d.warnings) list.append(Object.assign(document.createElement('li'), { textContent: w }));
+    warnings.replaceChildren(Object.assign(document.createElement('b'), { textContent: `${d.warnings.length === 1 ? 'A warning' : `${d.warnings.length} warnings`} from reading the structure` }), list);
+  }
+  const error = el('design-error');
+  error.hidden = !desk.error;
+  if (desk.error) error.replaceChildren(Object.assign(document.createElement('b'), { textContent: 'Not opened. The picture is as it was.' }), desk.error);
+}
+
+/** Try to open a design. Only one read without fault changes what is on show. */
+function openFiles(files: readonly DesignFile[]): void {
+  designAsked = true;
+  if (!desk.open(files)) {
+    showDesign();
+    return;
+  }
+  // a design that comes with a planting plan is shown planted
+  if (desk.current!.plan && !SCENARIOS[state.plants]) state.plants = 'trained';
+  showBower('design');
+}
+
+async function readFiles(list: FileList | null | undefined): Promise<void> {
+  if (!list || list.length === 0) return;
+  openFiles(await Promise.all([...list].map(async (f) => ({ name: f.name, text: await f.text() }))));
+}
+
+el('design-example').addEventListener('click', () => openFiles(ARBOUR_EXAMPLE));
+el('design-choose').addEventListener('click', () => el<HTMLInputElement>('design-files').click());
+el<HTMLInputElement>('design-files').addEventListener('change', (e) => {
+  const input = e.target as HTMLInputElement;
+  void readFiles(input.files).then(() => {
+    input.value = ''; // so that the same files can be chosen again after they are corrected
+  });
+});
+el<HTMLInputElement>('design-years').addEventListener('change', (e) => {
+  const years = Math.round(Number((e.target as HTMLInputElement).value));
+  state.years = Math.min(30, Math.max(1, Number.isFinite(years) ? years : state.years));
+  (e.target as HTMLInputElement).value = String(state.years);
+  if (state.bowerKey === 'design' && SCENARIOS[state.plants]) showPlants(state.plants);
+});
+// files dropped anywhere on the window
+const carriesFiles = (e: DragEvent) => [...(e.dataTransfer?.types ?? [])].includes('Files');
+window.addEventListener('dragover', (e) => {
+  if (!carriesFiles(e)) return;
+  e.preventDefault();
+  el('drop').hidden = false;
+});
+window.addEventListener('dragleave', (e) => {
+  if (e.relatedTarget === null) el('drop').hidden = true;
+});
+window.addEventListener('drop', (e) => {
+  if (!carriesFiles(e)) return;
+  e.preventDefault();
+  el('drop').hidden = true;
+  void readFiles(e.dataTransfer?.files);
+});
 
 function showMaterials(): void {
   const m = materials(bower);
@@ -339,8 +437,15 @@ function showPlants(source: PlantSource, keepDay = false): void {
   invalidate();
   // a scenario is drawn on the Bower it was grown on; anything else on the default one
   const scenario = SCENARIOS[source];
-  const run = scenario ? growScenario(scenario.planting, state.bowerKey, scenario.care) : null;
-  const on = run?.bower ?? BOWERS[state.bowerKey]();
+  const design = state.bowerKey === 'design' ? desk.current : null;
+  const run = !scenario
+    ? null
+    : state.bowerKey === 'design'
+      ? design?.plan
+        ? growDesign({ bower: design.bower, plan: design.plan, viewpoints: design.viewpoints }, scenario.care, state.years)
+        : null
+      : growScenario(scenario.planting, state.bowerKey, scenario.care);
+  const on = run?.bower ?? bowerOf(state.bowerKey);
   if (signature(on) !== signature(bower)) showStructure(on, 'keep', true);
   if (source === 'none') return;
 
@@ -501,7 +606,10 @@ el('play').addEventListener('click', () => {
 for (const b of document.querySelectorAll<HTMLButtonElement>('[data-bower]')) {
   b.addEventListener('click', () => {
     const key = b.dataset['bower'] as BowerKey;
+    // "A design..." opens the place to choose one; it shows a design only once one has been read
+    designAsked = key === 'design';
     if (key !== state.bowerKey) showBower(key);
+    showDesign();
   });
 }
 el<HTMLInputElement>('overlay-toggle').addEventListener('change', (e) => showOverlay((e.target as HTMLInputElement).checked));
@@ -557,15 +665,31 @@ el('save-image').addEventListener('click', () => {
   }, 'image/png');
 });
 
+/** Whether the keyboard is being used to write something: only then are the letter keys left alone. */
+function writing(target: EventTarget | null): boolean {
+  if (target instanceof HTMLTextAreaElement) return true;
+  if (target instanceof HTMLElement && target.isContentEditable) return true;
+  return target instanceof HTMLInputElement && !['range', 'checkbox', 'radio', 'button', 'file', 'color'].includes(target.type);
+}
+let focusBeforeBare: HTMLElement | null = null;
 window.addEventListener('keydown', (e) => {
-  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.ctrlKey || e.metaKey || e.altKey) return;
-  if (e.code === 'Space' && plant) {
+  if (e.ctrlKey || e.metaKey || e.altKey || writing(e.target)) return;
+  // H and O work wherever the focus is. On a list they would otherwise jump to an entry beginning with that letter.
+  if (e.code === 'KeyH') {
+    e.preventDefault();
+    // a hidden control cannot hold the focus: remember where it was, and give it back with the interface
+    const hiding = !document.body.classList.contains('bare');
+    if (hiding) focusBeforeBare = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
+    document.body.classList.toggle('bare');
+    if (!hiding) focusBeforeBare?.focus({ preventScroll: true });
+    invalidate();
+  } else if (e.code === 'KeyO') {
+    e.preventDefault();
+    showOverlay(!state.overlay);
+  } else if (e.code === 'Space' && plant && !(e.target instanceof HTMLButtonElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLInputElement)) {
+    // the space bar keeps its own meaning on a button, a list or a slider
     e.preventDefault();
     el('play').click();
-  } else if (e.code === 'KeyO') showOverlay(!state.overlay);
-  else if (e.code === 'KeyH') {
-    document.body.classList.toggle('bare');
-    invalidate();
   }
 });
 
@@ -640,6 +764,11 @@ function render(): void {
   lastRender = performance.now();
 }
 
+// ?bower=arbour opens the example design, planted unless the address says otherwise
+if (url.get('bower') === 'arbour' && desk.open(ARBOUR_EXAMPLE)) {
+  state.bowerKey = 'design';
+  if (!url.has('plants')) state.plants = 'trained';
+}
 showBower(state.bowerKey, viewFromUrl(), Number.isFinite(state.budgetM), true);
 showOverlay(state.overlay);
 if (url.get('ui') === '0') document.body.classList.add('bare');
@@ -696,6 +825,8 @@ Object.assign(window, {
     showOverlay,
     showPlants,
     showDay,
+    openFiles,
+    desk,
     invalidate,
     get plant() {
       return plant;

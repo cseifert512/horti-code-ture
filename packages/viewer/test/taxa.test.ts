@@ -63,7 +63,10 @@ describe('organ models are per taxon', () => {
             const g = asset.make(v, lod);
             const pos = g.getAttribute('position');
             expect(pos.count).toBeGreaterThan(3);
-            for (let i = 0; i < pos.array.length; i++) expect(Number.isFinite(pos.array[i]), `${asset.key} ${v}/${lod}`).toBe(true);
+            // one assertion for the whole array: an assertion for each number took this test to its time limit
+            let notFinite = -1;
+            for (let i = 0; i < pos.array.length && notFinite < 0; i++) if (!Number.isFinite(pos.array[i])) notFinite = i;
+            expect(notFinite, `${asset.key} ${v}/${lod}: position ${notFinite} is not a finite number`).toBe(-1);
             expect(g.getAttribute('aPart').count).toBe(pos.count);
             expect(g.getAttribute('normal').count).toBe(pos.count);
             if (v === 0) {
