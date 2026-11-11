@@ -4,7 +4,10 @@
  * "Will the timber remain legible as designed, or become completely obscured?"
  *
  * A small software renderer: everything is splatted into a depth buffer as
- * discs, nearest wins. It is coarse on purpose. It exists to compare months,
+ * discs, nearest wins. Anything narrower than a pixel takes a pixel with a
+ * chance equal to the share of the pixel it really covers, so that a thin
+ * stem or a small leaf seen from a distance counts for its true area and not
+ * for a whole pixel. It is coarse on purpose. It exists to compare months,
  * viewpoints and scenarios with one another, not to make pictures; the leaf
  * and flower outlines are stand-ins of about the right area.
  */
@@ -46,6 +49,21 @@ const FLOWER = 6;
 
 /** Silhouette of a leaf as a disc: about a quarter of its length squared in area. */
 const LEAF_DISC = 0.28;
+/** Radius in pixels below which a disc is too small to rasterise and is dithered instead. */
+const SUBPIXEL = 0.6;
+
+/**
+ * A fixed pseudo-random number in [0, 1) for a place in the world. The same
+ * element gets the same number on every day and in every run, so months and
+ * scenarios are compared on common ground.
+ */
+function placeHash(p: Vec3): number {
+  let h = Math.imul(Math.round(p.x * 4096), 73856093) ^ Math.imul(Math.round(p.y * 4096), 19349663) ^ Math.imul(Math.round(p.z * 4096), 83492791);
+  h ^= h >>> 13;
+  h = Math.imul(h, 0x5bd1e995);
+  h ^= h >>> 15;
+  return (h >>> 0) / 4294967296;
+}
 
 class Frame {
   readonly w: number;
@@ -71,14 +89,30 @@ class Frame {
     this.scale = h / 2 / Math.tan((vp.fovDeg * Math.PI) / 360);
   }
 
-  /** A disc of the given radius (metres) facing the eye. */
-  splat(p: Vec3, radiusM: number, kind: number): void {
+  /**
+   * A disc of the given radius (metres) facing the eye. `areaM2` is the area it
+   * stands for where that is not the disc's own: one bead of a rod stands for
+   * the stretch of rod between it and the next.
+   */
+  splat(p: Vec3, radiusM: number, kind: number, areaM2 = Math.PI * radiusM * radiusM): void {
     const v = sub(p, this.eye);
     const z = dot(v, this.f);
     if (z < 0.1) return;
     const cx = this.w / 2 + (dot(v, this.r) / z) * this.scale;
     const cy = this.h / 2 - (dot(v, this.u) / z) * this.scale;
-    const rad = Math.max(0.6, (radiusM * this.scale) / z);
+    const rad = (radiusM * this.scale) / z;
+    if (rad < SUBPIXEL) {
+      const x = Math.floor(cx);
+      const y = Math.floor(cy);
+      if (x < 0 || y < 0 || x >= this.w || y >= this.h) return;
+      if (placeHash(p) >= areaM2 * (this.scale / z) ** 2) return;
+      const i = y * this.w + x;
+      if (z < this.depth[i]!) {
+        this.depth[i] = z;
+        this.kind[i] = kind;
+      }
+      return;
+    }
     if (cx + rad < 0 || cy + rad < 0 || cx - rad >= this.w || cy - rad >= this.h) return;
     const x0 = Math.max(0, Math.floor(cx - rad));
     const x1 = Math.min(this.w - 1, Math.ceil(cx + rad));
@@ -100,10 +134,13 @@ class Frame {
   /** A run of discs along a segment. */
   rod(a: Vec3, b: Vec3, radiusM: number, kind: number): void {
     const len = Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+    if (len < 1e-9) return;
     const n = Math.max(1, Math.ceil(len / Math.max(0.01, radiusM * 0.8)));
-    for (let i = 0; i <= n; i++) {
-      const t = i / n;
-      this.splat(v3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t), radiusM, kind);
+    // beads at the middle of n equal stretches, each standing for its own stretch of the rod
+    const area = 2 * radiusM * (len / n);
+    for (let i = 0; i < n; i++) {
+      const t = (i + 0.5) / n;
+      this.splat(v3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t), radiusM, kind, area);
     }
   }
 }

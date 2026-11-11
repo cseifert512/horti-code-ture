@@ -9,8 +9,9 @@
  */
 import { type MaterialSummary, materialSummary, zoneContains } from '../bower/types.ts';
 import { v3 } from '../math/vec3.ts';
-import { type ProvenanceEntry, summariseProvenance } from '../provenance.ts';
+import { type ProvenanceEntry, type Sourced, summariseProvenance } from '../provenance.ts';
 import { flowerState, leafState, seasonsOf } from '../render/presence.ts';
+import { WINTER_EVERGREEN_COVER, WINTER_MONTH } from '../targets.ts';
 import type { EvidenceStatus, GardenerEventType } from '../vocab.ts';
 import type { Simulation } from './engine.ts';
 import { modelProvenance } from './model.ts';
@@ -25,6 +26,7 @@ export interface PlantAccount {
   frameworkM: number;
   annualShootsM: number;
   spurs: number;
+  /** Highest point of the permanent stems; shoots of the year standing above them are not counted. */
   highestM: number;
   /** Length of route this plant holds, and its share of all route in the Bower. */
   routeHeldM: number;
@@ -58,7 +60,16 @@ export interface GardeningYear {
   floralBudsRemoved: number;
 }
 
-export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'crown_not_reached' | 'not_modelled' | 'recorded_only';
+/** `caveat`: something the taxon's profile says about how it holds on that the attachment rule does not act on. */
+export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'joints_reached' | 'crown_not_reached' | 'not_modelled' | 'assumed' | 'caveat' | 'recorded_only';
+
+/** Winter evergreen cover from each viewpoint, read against the design target. */
+export interface WinterCheck {
+  target: Sourced<[number, number]>;
+  /** ISO date the cover was read on. */
+  date: string;
+  views: { viewpointId: string; evergreen: number; against: 'below' | 'within' | 'above' }[];
+}
 
 export interface Alert {
   kind: AlertKind;
@@ -79,8 +90,14 @@ export interface DesignReport {
   variations: { taxonId: string; parameter: string; value: unknown; basis: string }[];
   /** Route held by any plant, and route nothing has reached. */
   routes: { heldM: number; freeM: number; heldShare: number };
+  /** Joints between timber members that a plant holding by aerial roots has reached with nobody tying it: where to inspect. */
+  jointsReached: { plantId: string; nodeIds: string[]; highestM: number }[];
   viewpoints: Viewpoint[];
   months: MonthAccount[];
+  /** Months of the year, of those sampled, in which no plant had a flower open on the 15th. */
+  flowerlessMonths: number[];
+  /** Null where the run has no viewpoints or does not reach the winter of the year reported. */
+  winter: WinterCheck | null;
   /** Flowers that opened in the year, by plant and by height above the ground. */
   flowersByHeight: { plantId: string; zone: HeightZone; count: number }[];
   gardening: GardeningYear[];
@@ -119,11 +136,20 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
   // ---- plants and routes ------------------------------------------------------
   const heldAll = new Set<string>();
   const alerts: Alert[] = [];
+  // a joint is a node where two or more different timber members meet
+  const joints = new Set<string>();
+  for (const n of graph.nodes.keys()) {
+    const members = new Set<string>();
+    for (const e of graph.edges.values()) if ((e.from === n || e.to === n) && e.kind === 'timber' && e.host.type === 'member') members.add(e.host.id);
+    if (members.size >= 2) joints.add(n);
+  }
+  const jointsReached: DesignReport['jointsReached'] = [];
   const plants: PlantAccount[] = [];
   for (const plant of sim.plants.values()) {
     const { profile } = sim.scenario.taxa.get(plant.taxonId)!;
     const acc: PlantAccount = { plantId: plant.id, label: profile.names.label, taxonId: plant.taxonId, frameworkM: 0, annualShootsM: 0, spurs: 0, highestM: 0, routeHeldM: 0, routeShare: 0, heldUnaided: 0, tiedIn: 0, stemVolumeM3: 0 };
     const held = new Set<string>();
+    const clung = new Set<string>();
     let watch = 0;
     let thickest = 0;
     for (const id of plant.axisIds) {
@@ -133,8 +159,9 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
       if (a.role === 'leader' || a.role === 'lateral') acc.frameworkM += len;
       else if (a.role === 'whip') acc.annualShootsM += len;
       else acc.spurs++;
+      const permanent = a.role === 'leader' || a.role === 'lateral';
       for (let i = 0; i < a.alive; i++) {
-        acc.highestM = Math.max(acc.highestM, a.contact[i]!.z);
+        if (permanent) acc.highestM = Math.max(acc.highestM, a.contact[i]!.z);
         if (i) acc.stemVolumeM3 += Math.PI * (a.radiusMm[i]! / 1000) ** 2 * (a.lengthAt[i]! - a.lengthAt[i - 1]!);
       }
       for (const r of a.runs) {
@@ -142,6 +169,8 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
         held.add(r.edgeId);
         if (r.by === 'plant') acc.heldUnaided++;
         else acc.tiedIn++;
+        // a stretch clung to from end to end has brought the plant to the joint at its far end
+        if (profile.attachment.mechanism === 'aerial_root' && r.by === 'plant' && joints.has(r.toNode) && a.nodesPassed.some((n) => n.nodeId === r.toNode && n.pointIndex < a.alive)) clung.add(r.toNode);
         // a stem wound round timber goes on thickening where it is: CONSTRAINTS section 2, "Ageing/thickening risk"
         if (r.mode === 'twine' && graph.edges.get(r.edgeId)!.kind === 'timber') {
           let d = 0;
@@ -160,11 +189,19 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     acc.routeShare = routeM ? acc.routeHeldM / routeM : 0;
     plants.push(acc);
 
+    if (clung.size) {
+      const nodeIds = [...clung].sort();
+      const top = nodeIds.reduce((best, id) => (graph.nodes.get(id)!.position.z > graph.nodes.get(best)!.position.z ? id : best), nodeIds[0]!);
+      const highestM = graph.nodes.get(top)!.position.z;
+      jointsReached.push({ plantId: plant.id, nodeIds, highestM });
+      alerts.push({ kind: 'joints_reached', plantId: plant.id, count: nodeIds.length, text: `has clung its way unaided to ${nodeIds.length} joint${nodeIds.length === 1 ? '' : 's'} between timber members, the highest ${highestM.toFixed(1)} m up (${top}): stems can enter gaps there and thicken, so these are the joints to inspect` });
+    }
     if (watch) alerts.push({ kind: 'thickening_watch', plantId: plant.id, count: watch, text: `${watch} stretch${watch === 1 ? '' : 'es'} where a stem of ${watchMm} mm or more is wound round a timber member (thickest ${Math.round(thickest)} mm): it will go on thickening there, so keep these in view` });
     const stalled = sim.decisions.filter((d) => d.plantId === plant.id && d.kind === 'no_route' && d.text.includes('nobody ties it in'));
     if (stalled.length) alerts.push({ kind: 'no_hold', plantId: plant.id, count: stalled.length, text: `${stalled.length} shoot${stalled.length === 1 ? '' : 's'} stopped for want of a hold, and nobody tied the shoot in. First: ${stalled[0]!.text}` });
     if (acc.frameworkM > 0 && acc.highestM < crown * 0.97) alerts.push({ kind: 'crown_not_reached', plantId: plant.id, count: 1, text: `reached ${acc.highestM.toFixed(1)} m on a structure whose routes go to ${crown.toFixed(1)} m: route length, not height, is what ran out` });
-    for (const d of sim.decisions) if (d.plantId === plant.id && d.kind === 'not_modelled') alerts.push({ kind: 'not_modelled', plantId: plant.id, count: 1, text: d.text });
+    for (const d of sim.decisions) if (d.plantId === plant.id && (d.kind === 'not_modelled' || d.kind === 'assumed')) alerts.push({ kind: d.kind, plantId: plant.id, count: 1, text: d.text });
+    if (profile.attachment.caveat) alerts.push({ kind: 'caveat', plantId: plant.id, count: 1, text: `the profile says of how it holds on, and the model does not act on it: ${profile.attachment.caveat}` });
   }
   const heldM = [...heldAll].reduce((s, e) => s + graph.edges.get(e)!.curve.length, 0);
 
@@ -181,6 +218,13 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     const date = cal.dateOf(day);
     return { month: date.month, date: date.iso, views: views.map((v) => v[k]!), leaves, flowers };
   });
+  const flowerlessMonths = months.filter((m) => !Object.values(m.flowers).some((n) => n > 0)).map((m) => m.month);
+  const [lo, hi] = WINTER_EVERGREEN_COVER.value!;
+  const january = months.find((m) => m.month === WINTER_MONTH);
+  const winter: WinterCheck | null =
+    january && january.views.length
+      ? { target: WINTER_EVERGREEN_COVER, date: january.date, views: january.views.map((v) => ({ viewpointId: v.viewpointId, evergreen: v.evergreenFoliage, against: v.evergreenFoliage < lo ? 'below' : v.evergreenFoliage > hi ? 'above' : 'within' })) }
+      : null;
 
   // ---- flowers by height, and anything hanging into headroom ---------------------
   const byHeight = new Map<string, number>();
@@ -246,8 +290,11 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     variations,
     // summed in a different order from the total, so guard the last decimal place
     routes: { heldM: Math.min(heldM, routeM), freeM: Math.max(0, routeM - heldM), heldShare: routeM ? Math.min(1, heldM / routeM) : 0 },
+    jointsReached,
     viewpoints,
     months,
+    flowerlessMonths,
+    winter,
     flowersByHeight,
     gardening: [...gardening.values()].sort((a, b) => a.year - b.year),
     gardeningHours: null,
@@ -264,6 +311,9 @@ const pct = (x: number) => `${Math.round(100 * x)}%`;
 export function formatDesignReport(r: DesignReport): string {
   const out: string[] = [];
   const line = (s = '') => out.push(s);
+  const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  // wide enough for the longest plant id in the run
+  const idW = Math.max(12, ...r.plants.map((p) => p.plantId.length + 2));
   line(r.scenario);
   line(r.statement);
   line();
@@ -274,22 +324,21 @@ export function formatDesignReport(r: DesignReport): string {
   line('PLANTS at the end of the run');
   for (const p of r.plants) {
     line(`  ${p.plantId} (${p.label})`);
-    line(`    framework ${p.frameworkM.toFixed(1)} m, shoots of the year ${p.annualShootsM.toFixed(1)} m, ${p.spurs} spurs, highest point ${p.highestM.toFixed(2)} m`);
+    line(`    framework ${p.frameworkM.toFixed(1)} m, shoots of the year ${p.annualShootsM.toFixed(1)} m, ${p.spurs} spurs, framework reaches ${p.highestM.toFixed(2)} m`);
     line(`    holds ${p.routeHeldM.toFixed(0)} m of route (${pct(p.routeShare)}): ${p.heldUnaided} stretches by itself, ${p.tiedIn} tied in by the gardener`);
   }
   line(`  route held by any plant ${pct(r.routes.heldShare)}; ${r.routes.freeM.toFixed(0)} m carries nothing`);
   line();
   if (r.milestones.length) {
     line('OVER THE YEARS (at the end of each plant’s 1st, 3rd, 5th and 10th years, and of the run)');
-    line(`  ${'plant'.padEnd(12)}${'year'.padStart(5)}${'framework'.padStart(11)}${'route held'.padStart(12)}${'highest'.padStart(9)}${'flowers'.padStart(9)}`);
+    line(`  ${'plant'.padEnd(idW)}${'year'.padStart(5)}${'framework'.padStart(11)}${'route held'.padStart(12)}${'highest'.padStart(9)}${'flowers'.padStart(9)}`);
     for (const m of r.milestones) {
-      line(`  ${m.plantId.padEnd(12)}${String(m.yearsAfterPlanting).padStart(5)}${`${m.frameworkM.toFixed(1)} m`.padStart(11)}${pct(m.routeShare).padStart(12)}${`${m.highestM.toFixed(1)} m`.padStart(9)}${String(m.flowersOpened).padStart(9)}`);
+      line(`  ${m.plantId.padEnd(idW)}${String(m.yearsAfterPlanting).padStart(5)}${`${m.frameworkM.toFixed(1)} m`.padStart(11)}${pct(m.routeShare).padStart(12)}${`${m.highestM.toFixed(1)} m`.padStart(9)}${String(m.flowersOpened).padStart(9)}`);
     }
     line();
   }
   if (r.months.length) {
     line(`THROUGH ${r.year}, on the 15th of each month`);
-    const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     for (const vp of r.viewpoints) {
       line(`  ${vp.label}`);
       line(`    ${'month'.padEnd(6)}${'timber seen'.padStart(12)}${'in leaf'.padStart(9)}${'evergreen'.padStart(11)}${'in flower'.padStart(11)}`);
@@ -299,17 +348,25 @@ export function formatDesignReport(r: DesignReport): string {
       }
     }
     line('  flowers open, by plant');
+    line(`    ${''.padEnd(idW)}${r.months.map((m) => names[m.month - 1]!.padStart(5)).join('')}`);
     for (const p of r.plants) {
-      const row = r.months.map((m) => String(m.flowers[p.plantId] ?? 0).padStart(5)).join('');
-      if (r.months.some((m) => m.flowers[p.plantId])) line(`    ${p.plantId.padEnd(12)}${row}`);
+      const row = r.months.map((m) => String(m.flowers[p.plantId] || '.').padStart(5)).join('');
+      if (r.months.some((m) => m.flowers[p.plantId])) line(`    ${p.plantId.padEnd(idW)}${row}`);
     }
+    line(r.flowerlessMonths.length ? `  nothing in flower in mid ${r.flowerlessMonths.map((m) => names[m - 1]).join(', ')}` : '  something in flower in the middle of every month');
+    line();
+  }
+  if (r.winter) {
+    const [lo, hi] = r.winter.target.value!;
+    line(`WINTER EVERGREEN COVER on ${r.winter.date}, against the design target of ${pct(lo)} to ${pct(hi)} (a target to test, not a fact about plants)`);
+    for (const v of r.winter.views) line(`  ${(r.viewpoints.find((x) => x.id === v.viewpointId)?.label ?? v.viewpointId).padEnd(44)}${pct(v.evergreen).padStart(5)}  ${v.against === 'within' ? 'within the target' : `${v.against} the target`}`);
     line();
   }
   if (r.flowersByHeight.length) {
     line(`FLOWERS that opened in ${r.year}, by height`);
     for (const p of r.plants) {
       const cells = HEIGHT_ZONES.map((z) => `${z}: ${r.flowersByHeight.find((f) => f.plantId === p.plantId && f.zone === z)?.count ?? 0}`);
-      if (r.flowersByHeight.some((f) => f.plantId === p.plantId)) line(`  ${p.plantId.padEnd(12)} ${cells.join('; ')}`);
+      if (r.flowersByHeight.some((f) => f.plantId === p.plantId)) line(`  ${p.plantId.padEnd(idW)} ${cells.join('; ')}`);
     }
     line();
   }

@@ -149,6 +149,9 @@ export class Simulation {
       this.note('stopped', plant, null, `${profile.names.label} is a shrub: it stays in its bed and is not routed on to the structure`);
       return;
     }
+    if (profile.attachment.mechanism === 'stem_twining' && (profile.attachment.handedness?.value ?? null) === null) {
+      this.note('assumed', plant, null, `which way ${profile.names.label} twines is not known: it is drawn right-handed so that it can be drawn at all, and that direction is not a finding`);
+    }
     // the plant arrives as a cane already some way up
     const cane = this.newTrunkStem(plant, 0);
     if (cane) this.advance(plant, cane, param(model, 'architecture.nurseryCaneM'));
@@ -633,8 +636,10 @@ export class Simulation {
       if (param(model, 'organs.spurChance') > 0) this.budsOnOldWood(plant, date);
       else this.budsAlongShoots(plant, date, true);
     } else if (wood === 'current_season') this.budsAlongShoots(plant, date, false);
+    // a first flush from last year's stems, carried on by the growth of the year
+    else if (wood === 'both') this.budsAlongShoots(plant, date, false, true);
     else if (date.year === plant.plantedYear) {
-      this.note('not_modelled', plant, null, `no flowers are modelled for ${profile.names.label}: ${wood === null ? 'which of its wood flowers is not established' : 'flowering on both old and new wood is not modelled yet'}`);
+      this.note('not_modelled', plant, null, `no flowers are modelled for ${profile.names.label}: which of its wood flowers is not established`);
     }
   }
 
@@ -647,8 +652,12 @@ export class Simulation {
    * same way but opens them only after the growing season, in winter or the
    * following spring, by which time the wood that bears them is last year's:
    * a cut between forming and opening removes the whole display.
+   *
+   * A plant that flowers on both (`firstFlush`) also flowers from the nodes of
+   * last year's stems that are still there, and those open first: a winter cut
+   * costs it the early flowers and leaves the later ones.
    */
-  private budsAlongShoots(plant: Plant, date: CalendarDate, ripened: boolean): void {
+  private budsAlongShoots(plant: Plant, date: CalendarDate, ripened: boolean, firstFlush = false): void {
     const { model } = this.taxon(plant);
     const year = date.year;
     const [open0, open1] = param(model, 'phenology.flowerOpenDoy');
@@ -672,12 +681,18 @@ export class Simulation {
       if (first < a.alive) grown.set(a.id, a.lengthAt[a.alive - 1]! - a.lengthAt[Math.max(0, first - 1)]!);
     }
     let made = 0;
+    let early = 0;
+    // where both kinds of wood flower, the old wood has the first third of the season and the new growth the rest
+    const split = firstFlush ? open0 + Math.round((open1 - open0) / 3) : open0;
     for (const n of plant.leafNodes) {
-      if (n.year !== year) continue;
+      const old = firstFlush && n.year === year - 1;
+      if (n.year !== year && !old) continue;
       const a = this.axes.get(n.axisId)!;
       const flowers = plant.rng.flower.chance(chance);
-      if (!flowers || a.removedDay !== null || n.pointIndex >= a.alive || (grown.get(a.id) ?? 0) < minShoot) continue;
-      const opens = this.calendar.dayOfYearDay(openYear, plant.rng.flower.int(open0, open1));
+      if (!flowers || a.removedDay !== null || a.role === 'spur' || n.pointIndex >= a.alive) continue;
+      if (!old && (grown.get(a.id) ?? 0) < minShoot) continue;
+      if (old) early++;
+      const opens = this.calendar.dayOfYearDay(openYear, old ? plant.rng.flower.int(open0, split) : plant.rng.flower.int(split, open1));
       // either each flower lasts its own few weeks, or the whole display falls together
       const drops = lasts[1] > 0 ? opens + plant.rng.flower.int(lasts[0], lasts[1]) : this.calendar.dayOfYearDay(fallYear, plant.rng.flower.int(fall0, fall1));
       // buds show for about a month before they open, or from now if that is sooner
@@ -685,7 +700,8 @@ export class Simulation {
       made++;
     }
     this.yearStats.get(plant.id)!.initiated += made;
-    this.note('floral_initiated', plant, null, `${made} flower bud${made === 1 ? '' : 's'} formed on this year's growth (${[...grown.values()].filter((g) => g >= minShoot).length} shoots long enough to flower)${ripened ? `, to open from ${this.calendar.dateOf(this.calendar.dayOfYearDay(openYear, open0)).iso}: any cut before then takes them` : ''}`);
+    const where = firstFlush ? `${early} on last year's stems for the first flush and ${made - early} on this year's growth` : `on this year's growth`;
+    this.note('floral_initiated', plant, null, `${made} flower bud${made === 1 ? '' : 's'} formed ${where} (${[...grown.values()].filter((g) => g >= minShoot).length} shoots long enough to flower)${ripened ? `, to open from ${this.calendar.dateOf(this.calendar.dayOfYearDay(openYear, open0)).iso}: any cut before then takes them` : ''}`);
   }
 
   private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, developDay: number, openPlannedDay: number, spentPlannedDay: number): FloralBud {
@@ -1095,10 +1111,12 @@ export class Simulation {
     for (const id of plant.axisIds) {
       const a = this.axes.get(id)!;
       if (a.removedDay !== null) continue;
-      if (a.role === 'leader' || a.role === 'lateral') frameworkM += this.lengthOf(a);
-      else if (a.role === 'whip') whipM += this.lengthOf(a);
+      if (a.role === 'leader' || a.role === 'lateral') {
+        frameworkM += this.lengthOf(a);
+        // shoots of the year wave about above the framework and are not what has been reached
+        for (let i = 0; i < a.alive; i++) highestM = Math.max(highestM, a.contact[i]!.z);
+      } else if (a.role === 'whip') whipM += this.lengthOf(a);
       else spurs++;
-      for (let i = 0; i < a.alive; i++) highestM = Math.max(highestM, a.contact[i]!.z);
       for (const run of a.runs) {
         if (run.status === 'detached') continue;
         held.add(run.edgeId);

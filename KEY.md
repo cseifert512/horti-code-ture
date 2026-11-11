@@ -111,6 +111,8 @@ Never replace actual support-diameter studies with a global constant. Placeholde
 - **Jun–Aug:** roses, honeysuckle, summer clematis and star jasmine; optional warm-site *Campsis* starts in August.
 - **Sep–Nov:** residual flowers, with *Campsis* continuing to the first frosts; *Vitis* and deciduous wisteria autumn leaves; ivy flowers then berries; winter clematis begins where established.
 
+This palette is a runnable scenario: `npm run simulate -- palette` sets one plant at the foot of each of the twelve ribs of the 15 m hemisphere and reports the flowering calendar and the winter cover it produces.
+
 **Design target, not biological fact:** test 25–40% of selected visually prominent areas with retained winter evergreen coverage, with exposed timber intentionally visible elsewhere. There is **no assurance** of continuous profuse winter flowers above 3–4 m; plan winter as foliage + scent + architectural skeleton + selected lower flowers.
 
 ## 7. Placement logic — qualitative order of operations
