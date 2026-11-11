@@ -3,15 +3,30 @@
 // a hand-made plant. The viewer holds no growth logic: it reads core data and
 // calls core functions.
 import * as THREE from 'three';
-import { type Bower, type SupportEdge, makeHemisphereBower, makeVaultBower } from '@horti/core';
+import { type Bower, type RenderData, type SupportEdge, makeHemisphereBower, makeVaultBower } from '@horti/core';
 import { type ReachView, type StationField, materials, reachView, routeInfo, stationField } from './overlay/model.ts';
 import { ReachOverlay } from './overlay/view.ts';
+import type { FruitSite } from './plant/adapter.ts';
+import { makeTestPlant } from './plant/fixture.ts';
+import { growWisteriaOnVault } from './plant/scenario.ts';
+import { shared } from './plant/shaders.ts';
+import { PlantView, makePlantMaterials } from './plant/view.ts';
 import { makeSiteMaterials, makeStructureMaterials } from './scene/materials.ts';
 import { type BuiltSite, buildSite } from './scene/site.ts';
 import { DEFAULT_SUN, type ViewPreset, createStage } from './scene/stage.ts';
 import { type BuiltStructure, buildStructure } from './structure/build.ts';
+import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
 type BowerKey = 'vault' | 'hemisphere';
+/** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
+type PlantSource = 'none' | 'trained' | 'untended' | 'fixture';
+const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'fixture'];
+/** The engine's reference scenarios are written for the vault. */
+const needsVault = (source: PlantSource) => source === 'trained' || source === 'untended';
+/** Detail of the organ pools, 0 to 1 (see PlantView.update). */
+const PLANT_DETAIL = 0.75;
+/** Time-lapse speed, days per second. */
+const DAYS_PER_SECOND = 40;
 const BOWERS: Record<BowerKey, () => Bower> = {
   vault: () => makeVaultBower(),
   hemisphere: () => makeHemisphereBower(),
@@ -51,6 +66,10 @@ const state = {
   orbit: false,
   selected: null as string | null,
   hovered: null as string | null,
+  plants: (PLANT_SOURCES.find((p) => p === url.get('plants')) ?? 'none') as PlantSource,
+  day: url.has('day') ? Number(url.get('day')) : NaN,
+  playing: false,
+  wind: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.6,
 };
 
 let bower: Bower;
@@ -58,6 +77,8 @@ let structure: BuiltStructure | null = null;
 let site: BuiltSite | null = null;
 let field: StationField;
 let view: ReachView;
+let plant: PlantView | null = null;
+let plantMaterials: ReturnType<typeof makePlantMaterials> | null = null;
 let dirty = true;
 const invalidate = () => {
   dirty = true;
@@ -81,7 +102,7 @@ function viewFromUrl(): ViewPreset | null {
 }
 
 // ---- the Bower ---------------------------------------------------------------
-function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget = false): void {
+function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget = false, keepDay = false): void {
   if (structure) {
     stage.scene.remove(structure.group);
     structure.dispose();
@@ -120,6 +141,8 @@ function showBower(key: BowerKey, opening: ViewPreset | null = null, keepBudget 
   showMaterials();
   const wanted = bower.rootStations.find((s) => s.id === state.stationId) ?? bower.rootStations[0];
   if (wanted) showStation(wanted.id, !keepBudget);
+  for (const o of el<HTMLSelectElement>('plants').options) o.disabled = key !== 'vault' && needsVault(o.value as PlantSource);
+  showPlants(key !== 'vault' && needsVault(state.plants) ? 'none' : state.plants, keepDay);
   invalidate();
 }
 
@@ -259,6 +282,90 @@ function showOverlay(on: boolean): void {
   invalidate();
 }
 
+// ---- plants --------------------------------------------------------------------
+/** A day worth opening on: the middle of flowering in the last year that has flowers, else late in the run. */
+function openingDay(data: RenderData): number {
+  const lastYear = data.flowers.reduce((y, f) => Math.max(y, f.year), -Infinity);
+  const days = data.flowers
+    .filter((f) => f.year === lastYear && f.spentDay >= 0)
+    .map((f) => f.openDay + 0.45 * (f.spentDay - f.openDay))
+    .sort((a, b) => a - b);
+  const median = days[Math.floor(days.length / 2)];
+  return Math.round(median ?? Math.max(0, data.lastDay - 150));
+}
+
+function showPlants(source: PlantSource, keepDay = false): void {
+  if (plant) {
+    stage.scene.remove(plant.group);
+    plant.dispose();
+    plant = null;
+  }
+  state.plants = source;
+  state.playing = false;
+  el<HTMLSelectElement>('plants').value = source;
+  document.body.classList.toggle('plants', source !== 'none');
+  el('plant-bar').hidden = source === 'none';
+  stage.invalidateShadows();
+  invalidate();
+  if (source === 'none') return;
+
+  let data: RenderData;
+  let fruit: FruitSite[] = [];
+  if (source === 'fixture') ({ data, fruit } = makeTestPlant(bower));
+  else ({ data } = growWisteriaOnVault(source));
+  plantMaterials ??= makePlantMaterials({ bark: makeBarkTextures(), leafTex: makeLeafTexture() });
+  plant = new PlantView(data, plantMaterials, { fruit });
+  stage.scene.add(plant.group);
+
+  const slider = el<HTMLInputElement>('plant-day');
+  slider.min = String(plant.timeline.firstDay);
+  slider.max = String(plant.timeline.lastDay);
+  const labels = data.plants.map((p) => p.label).filter((l, i, all) => all.indexOf(l) === i);
+  el('plant-statement').textContent = `${labels.join(', ')} · ${data.scenario}. ${data.statement}`;
+  showDay(keepDay && Number.isFinite(state.day) ? state.day : openingDay(data));
+}
+
+let lastPlantUpdate = 0;
+function showDay(day: number): void {
+  if (!plant) return;
+  const t = plant.timeline;
+  state.day = Math.min(t.lastDay, Math.max(t.firstDay, day));
+  plant.update(stage.camera, state.day, PLANT_DETAIL);
+  lastPlantUpdate = performance.now();
+  el<HTMLInputElement>('plant-day').value = String(Math.round(state.day));
+  el('plant-date').textContent = t.dateLabel(state.day);
+  const stats = plant.stats();
+  const event = t.latestEvent(state.day, 21);
+  el('plant-caption').textContent = event
+    ? `${event.date} · ${event.outcome}`
+    : `${stats.stems.toLocaleString()} stems · ${stats.leaves.toLocaleString()} leaves · ${stats.flowers.toLocaleString()} inflorescences${stats.fruit ? ` · ${stats.fruit} fruit` : ''}`;
+  el('play').innerHTML = state.playing ? '&#10073;&#10073;' : '&#9654;';
+  stage.invalidateShadows();
+  invalidate();
+}
+
+el<HTMLSelectElement>('plants').addEventListener('change', (e) => showPlants((e.target as HTMLSelectElement).value as PlantSource));
+el<HTMLInputElement>('plant-day').addEventListener('input', (e) => {
+  state.playing = false;
+  showDay(Number((e.target as HTMLInputElement).value));
+});
+el('play').addEventListener('click', () => {
+  if (!plant) return;
+  // from the end, play again from planting day
+  if (!state.playing && state.day >= plant.timeline.lastDay - 1) state.day = plant.timeline.firstDay;
+  state.playing = !state.playing;
+  showDay(state.day);
+});
+{
+  const wind = el<HTMLInputElement>('wind');
+  wind.value = String(state.wind);
+  el('wind-out').textContent = state.wind.toFixed(2);
+  wind.addEventListener('input', () => {
+    state.wind = Number(wind.value);
+    el('wind-out').textContent = state.wind.toFixed(2);
+  });
+}
+
 // ---- controls ------------------------------------------------------------------
 for (const b of document.querySelectorAll<HTMLButtonElement>('[data-bower]')) {
   b.addEventListener('click', () => {
@@ -317,7 +424,10 @@ el('save-image').addEventListener('click', () => {
 
 window.addEventListener('keydown', (e) => {
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.ctrlKey || e.metaKey || e.altKey) return;
-  if (e.code === 'KeyO') showOverlay(!state.overlay);
+  if (e.code === 'Space' && plant) {
+    e.preventDefault();
+    el('play').click();
+  } else if (e.code === 'KeyO') showOverlay(!state.overlay);
   else if (e.code === 'KeyH') {
     document.body.classList.toggle('bare');
     invalidate();
@@ -394,14 +504,40 @@ function render(): void {
   lastRender = performance.now();
 }
 
-showBower(state.bowerKey, viewFromUrl(), Number.isFinite(state.budgetM));
+showBower(state.bowerKey, viewFromUrl(), Number.isFinite(state.budgetM), true);
 showOverlay(state.overlay);
 if (url.get('ui') === '0') document.body.classList.add('bare');
 
+const timer = new THREE.Timer();
+const sunView = new THREE.Vector3();
+let frameNo = 0;
 stage.renderer.setAnimationLoop(() => {
+  timer.update();
+  const dt = Math.min(timer.getDelta(), 0.1);
+  frameNo++;
   stage.controls.update();
   if (stage.syncSize()) dirty = true;
-  // nothing moves in a still scene, so it is drawn on demand, with a slow
+
+  if (plant) {
+    // living things move: wind, and the time-lapse while it plays
+    shared.uTime.value += dt;
+    shared.uWind.value += (state.wind - shared.uWind.value) * Math.min(1, dt * 3);
+    shared.uSunColor.value.copy(stage.sun.color).multiplyScalar(stage.sun.intensity * 0.32);
+    shared.uSunDirView.value.copy(sunView.copy(stage.sunDir).transformDirection(stage.camera.matrixWorldInverse));
+    if (state.playing) {
+      const next = state.day + dt * DAYS_PER_SECOND;
+      if (next >= plant.timeline.lastDay) state.playing = false;
+      showDay(next);
+    } else if (performance.now() - lastPlantUpdate > 180) {
+      // level of detail follows the camera
+      plant.update(stage.camera, state.day, PLANT_DETAIL);
+      lastPlantUpdate = performance.now();
+    }
+    if (frameNo % 2 === 0 && shared.uWind.value > 0.001) stage.invalidateShadows();
+    dirty = true;
+  }
+
+  // nothing moves in a bare structure, so it is drawn on demand, with a slow
   // heartbeat so that screen capture always finds a fresh frame
   if (!dirty && performance.now() - lastRender < 500) return;
   dirty = false;
@@ -419,7 +555,12 @@ Object.assign(window, {
     showStation,
     showBudget,
     showOverlay,
+    showPlants,
+    showDay,
     invalidate,
+    get plant() {
+      return plant;
+    },
     get bower() {
       return bower;
     },

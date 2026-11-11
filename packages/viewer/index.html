@@ -38,9 +38,17 @@
         display: none !important;
       }
       body.bare #title,
-      body.bare .card,
-      body.bare #hint {
+      body.bare .card:not(#plant-bar),
+      body.bare #hint,
+      body.bare #plant-bar > :not(#plant-statement) {
         display: none;
+      }
+      /* the statement travels with any picture of plants, even a bare one */
+      body.bare #plant-bar {
+        width: auto;
+        max-width: calc(100vw - 32px);
+        padding: 6px 12px;
+        display: block;
       }
 
       #title {
@@ -138,7 +146,7 @@
       #controls {
         left: 20px;
         top: 104px;
-        width: 232px;
+        width: 262px;
         display: grid;
         gap: 10px;
       }
@@ -453,20 +461,45 @@
         left: 50%;
         bottom: 18px;
         transform: translateX(-50%);
-        width: min(760px, calc(100vw - 32px));
+        width: min(820px, calc(100vw - 32px));
         display: grid;
         grid-template-columns: auto 1fr;
-        gap: 6px 16px;
+        gap: 4px 14px;
         align-items: center;
       }
-      #plant-bar .what {
-        grid-column: 1 / -1;
+      #play {
+        grid-row: span 2;
+        width: 44px;
+        height: 36px;
+        font-size: 15px;
+      }
+      #when {
         display: flex;
         justify-content: space-between;
         gap: 12px;
+        font-variant-numeric: tabular-nums;
       }
-      #plant-bar .what b {
+      #when b {
         font-weight: 600;
+        white-space: nowrap;
+      }
+      #when span {
+        color: var(--ink-2);
+        text-align: right;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #plant-statement {
+        grid-column: 1 / -1;
+        margin-top: 2px;
+      }
+      body.plants #hint {
+        display: none;
+      }
+      /* leave the timeline clear of the overlay panel */
+      body.plants #overlay-panel {
+        max-height: calc(100vh - 150px);
       }
       #hint {
         position: fixed;
@@ -524,7 +557,15 @@
         <button type="button" data-bower="hemisphere" aria-pressed="false">15 m hemisphere</button>
       </div>
       <label class="switch"><input type="checkbox" id="overlay-toggle" /> Design overlay <kbd>O</kbd></label>
-      <label class="switch"><input type="checkbox" id="plant-toggle" /> Render test plant <kbd>P</kbd></label>
+      <label class="field"
+        ><span>Plants</span>
+        <select id="plants">
+          <option value="none">None: the structure alone</option>
+          <option value="trained">Wisteria, trained (growth engine)</option>
+          <option value="untended">Wisteria, untended (growth engine)</option>
+          <option value="fixture">Render test plant (hand-made)</option>
+        </select></label
+      >
       <details id="scene-controls">
         <summary>Scene</summary>
         <div class="rows">
@@ -619,12 +660,10 @@
     </div>
 
     <div id="plant-bar" class="card" hidden>
-      <div class="what">
-        <span><b>Render test plant.</b> A hand-made fixture that exercises the plant renderer. It is not a simulation.</span>
-        <span class="note" id="plant-stats"></span>
-      </div>
-      <select id="plant-state" aria-label="Organ states shown"></select>
-      <label class="field"><span>Day of the fixture <output id="plant-day-out"></output></span><input type="range" id="plant-day" min="0" max="100" step="1" /></label>
+      <button type="button" id="play" aria-label="Play or pause the time-lapse">&#9654;</button>
+      <div id="when"><b id="plant-date"></b><span id="plant-caption"></span></div>
+      <input type="range" id="plant-day" min="0" max="100" step="1" aria-label="Day shown" />
+      <p class="note" id="plant-statement"></p>
     </div>
 
     <div id="tip" hidden></div>

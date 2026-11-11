@@ -8,6 +8,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 - `docs/ASSUMPTIONS_AUDIT.md` — tested state of the spec and prototype, with the prototype model map.
 - `species/<id>/` — `SPECIES_PROFILE.md` (prose) and `taxon.json` (validated data) per taxon.
 - `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/render/contract.ts` is what a viewer draws from; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
+- `packages/viewer/` — `@horti/viewer`, the three.js viewer. It draws what the core gives it and holds no growth logic; `src/plant/adapter.ts` is the only file that turns the render contract's days into what is drawn.
 - `Wisteria/` — the original three.js prototype. Reference only; it has its own `node_modules`.
 
 ## Commands
@@ -16,11 +17,13 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 npm run check                   # tsc + vitest for packages/*
 npm test                        # vitest only
 npm run simulate                # reference scenario: yearly account, gardener's log, render data in out/
+npm run viewer:dev              # viewer on http://localhost:5193
+npm run viewer:build            # static build of the viewer
 npm run prototype:audit         # prototype interference audit
 npm run prototype:assumptions   # prototype behaviour baseline
 ```
 
-The prototype's dev server is pinned to port 5173, which another session may hold. `.claude/launch.json` starts it on 5183 instead.
+The prototype's dev server is pinned to port 5173, which another session may hold. `.claude/launch.json` starts it on 5183 instead, and the viewer (`bower-viewer`) on 5193.
 
 ## Rules that are easy to break
 

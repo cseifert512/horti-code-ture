@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import type { Bower, StructuralMember } from '@horti/core';
 import { hash2 } from '../util.ts';
-import { type FrameSource, type MemberFrames, bowerMiddle, hostedRoutes, memberFrames, toThree } from './frames.ts';
+import { type FrameSource, type MemberFrames, bowerFrames, toThree } from './frames.ts';
 import { RectSweep } from './sweep.ts';
 
 const V3 = THREE.Vector3;
@@ -116,15 +116,11 @@ export function buildStructure(bower: Bower, mats: StructureMaterials): BuiltStr
   const group = new THREE.Group();
   group.name = `structure:${bower.id}`;
   const bounds = new THREE.Box3();
-  const middle = bowerMiddle(bower);
-  const routes = hostedRoutes(bower);
-
-  const frames = new Map<string, MemberFrames>();
-  const frameSources: Record<FrameSource, number> = { hosted_routes: 0, own_plane: 0, outward: 0 };
+  const frames = bowerFrames(bower);
+  const frameSources: Record<FrameSource, number> = { hosted_routes: 0, neighbours: 0, own_plane: 0, outward: 0 };
   const rect = bower.members.filter((m) => m.section.shape === 'rect');
   for (const m of rect) {
-    const f = memberFrames(m, routes.get(m.id) ?? [], middle);
-    frames.set(m.id, f);
+    const f = frames.get(m.id)!;
     frameSources[f.source]++;
     for (const p of f.C) bounds.expandByPoint(p);
   }
