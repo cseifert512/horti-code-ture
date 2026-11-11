@@ -2,7 +2,7 @@
 // data, the Bower each was grown on, and the core's design report of the run.
 // All growth happens in @horti/core; the taxon profiles and growth models are
 // the repository's own files, validated by the core as it loads them.
-import { type Bower, type DesignReport, type Growable, type RenderData, Simulation, designReport, mixedOnVault, parseGrowthModel, parseTaxon, referencePalette, toRenderData, wisteriaOnHemisphere, wisteriaOnVault } from '@horti/core';
+import { type Bower, type DesignReport, type Growable, type PlantingPlan, type RenderData, type Scenario, Simulation, type Viewpoint, designReport, mixedOnVault, parseGrowthModel, parseTaxon, plantingOn, referencePalette, toRenderData, wisteriaOnHemisphere, wisteriaOnVault } from '@horti/core';
 
 // every taxon folder under species/: the profile, and the growth model where there is one
 const PROFILES = import.meta.glob('../../../../species/*/taxon.json', { eager: true, import: 'default' });
@@ -71,6 +71,19 @@ export function growScenario(planting: Planting, on: 'vault' | 'hemisphere', car
         : on === 'vault'
           ? wisteriaOnVault(options)
           : wisteriaOnHemisphere(options);
+  return run(scenario, plantingYear, years);
+}
+
+/**
+ * Grow a planting plan on a designed Bower: any structure read from a file,
+ * with the viewpoints its description gave for the report's coverage figures.
+ */
+export function growDesign(design: { bower: Bower; plan: PlantingPlan; viewpoints: readonly Viewpoint[] }, care: Care, years: number, seed = 7): ScenarioRun {
+  const plantingYear = 2027;
+  return run(plantingOn(design.bower, design.plan, { taxa: growable(), care, years, seed, plantingYear, viewpoints: design.viewpoints }), plantingYear, years);
+}
+
+function run(scenario: Scenario, plantingYear: number, years: number): ScenarioRun {
   const t0 = performance.now();
   const sim = new Simulation(scenario).runUntil(`${plantingYear + years - 1}-12-31`);
   const data = toRenderData(sim);

@@ -1,11 +1,13 @@
 // Turns a core Bower into meshes: timber as swept laminated sections, steel
 // cables as fine tubes, stone pads under the feet of the primary members.
-// Geometry comes only from the Bower; nothing here is specific to one design.
+// Geometry comes only from the Bower's members and cables: each member is a
+// line of any shape with a rectangular or round section, so a structure read
+// from a design file is drawn by the same code as the reference shells.
 import * as THREE from 'three';
 import type { Bower, StructuralMember } from '@horti/core';
 import { hash2 } from '../util.ts';
 import { type FrameSource, type MemberFrames, bowerFrames, toThree } from './frames.ts';
-import { RectSweep } from './sweep.ts';
+import { RectSweep, RoundSweep } from './sweep.ts';
 
 const V3 = THREE.Vector3;
 
@@ -45,6 +47,8 @@ export interface BuiltStructure {
   frames: Map<string, MemberFrames>;
   /** How many members were oriented by each rule. */
   frameSources: Record<FrameSource, number>;
+  /** Ids of the members and cables that were drawn: every one the Bower has. */
+  drawn: { members: string[]; cables: string[] };
   triangles: number;
   dispose(): void;
 }
@@ -53,10 +57,8 @@ const sameSection = (a: StructuralMember, b: StructuralMember) =>
   a.tier === b.tier &&
   a.role === b.role &&
   a.material === b.material &&
-  a.section.shape === 'rect' &&
-  b.section.shape === 'rect' &&
-  a.section.widthMm === b.section.widthMm &&
-  a.section.depthMm === b.section.depthMm;
+  ((a.section.shape === 'rect' && b.section.shape === 'rect' && a.section.widthMm === b.section.widthMm && a.section.depthMm === b.section.depthMm) ||
+    (a.section.shape === 'round' && b.section.shape === 'round' && a.section.diameterMm === b.section.diameterMm));
 
 /**
  * Join members that continue one another end to end (the same section, the same
@@ -117,20 +119,19 @@ export function buildStructure(bower: Bower, mats: StructureMaterials): BuiltStr
   group.name = `structure:${bower.id}`;
   const bounds = new THREE.Box3();
   const frames = bowerFrames(bower);
-  const frameSources: Record<FrameSource, number> = { hosted_routes: 0, neighbours: 0, own_plane: 0, outward: 0 };
-  const rect = bower.members.filter((m) => m.section.shape === 'rect');
-  for (const m of rect) {
+  const frameSources: Record<FrameSource, number> = { hosted_routes: 0, neighbours: 0, own_plane: 0, upright: 0 };
+  const drawn = { members: [] as string[], cables: [] as string[] };
+  for (const m of bower.members) {
     const f = frames.get(m.id)!;
     frameSources[f.source]++;
     for (const p of f.C) bounds.expandByPoint(p);
   }
 
-  // ---- timber ------------------------------------------------------------------
-  const sweeps = new Map<THREE.Material, RectSweep>();
+  // ---- timber: one geometry per material, of rectangular and round sweeps -----------
+  const sweeps = new Map<THREE.Material, { rect: RectSweep; round: RoundSweep }>();
   const feet: Foot[] = [];
-  for (const chain of chains(rect, frames)) {
+  for (const chain of chains(bower.members, frames)) {
     const first = chain[0]!;
-    if (first.section.shape !== 'rect') continue;
     const C: THREE.Vector3[] = [];
     const N: THREE.Vector3[] = [];
     const B: THREE.Vector3[] = [];
@@ -144,29 +145,46 @@ export function buildStructure(bower: Bower, mats: StructureMaterials): BuiltStr
         N.push(f.N[i]!);
         B.push(flip ? f.B[i]!.clone().negate() : f.B[i]!);
       }
+      drawn.members.push(m.id);
     });
-    const w = first.section.widthMm / 1000;
-    const d = first.section.depthMm / 1000;
+    const section = first.section;
+    // the widest the section reaches across, for the pad under a foot
+    const across = section.shape === 'rect' ? Math.max(section.widthMm, section.depthMm) / 1000 : section.diameterMm / 1000;
     // a member standing on the ground: note the foot, and carry the timber into the ground
     for (const end of [0, C.length - 1]) {
       const p = C[end]!;
       if (Math.abs(p.y) > TIMBER.footToleranceM) continue;
-      if (first.tier === 'primary') feet.push({ position: new V3(p.x, 0, p.z), padRadiusM: 1.1 * Math.max(w, d), memberId: chain[end === 0 ? 0 : chain.length - 1]!.id });
+      if (first.tier === 'primary') feet.push({ position: new V3(p.x, 0, p.z), padRadiusM: 1.1 * across, memberId: chain[end === 0 ? 0 : chain.length - 1]!.id });
       const inward = C[end === 0 ? 1 : C.length - 2]!;
       p.addScaledVector(new V3().subVectors(p, inward).normalize(), TIMBER.buryM);
     }
     const mat = first.material === 'glulam' || first.tier === 'primary' ? mats.glulam : mats.larch;
-    let sweep = sweeps.get(mat);
-    if (!sweep) sweeps.set(mat, (sweep = new RectSweep()));
-    const lams = Math.max(1, Math.round(first.section.depthMm / TIMBER.lamellaMm));
-    sweep.add(C, N, B, w, d, lams, TIMBER.grainPerM, hash2(sweep.vertexCount, C.length));
+    let pair = sweeps.get(mat);
+    if (!pair) sweeps.set(mat, (pair = { rect: new RectSweep(), round: new RoundSweep() }));
+    const grainFrom = hash2(pair.rect.vertexCount + pair.round.vertexCount, C.length);
+    if (section.shape === 'rect') {
+      const lams = Math.max(1, Math.round(section.depthMm / TIMBER.lamellaMm));
+      pair.rect.add(C, N, B, section.widthMm / 1000, section.depthMm / 1000, lams, TIMBER.grainPerM, grainFrom);
+    } else {
+      pair.round.add(C, N, B, section.diameterMm / 2000, TIMBER.grainPerM, grainFrom);
+    }
   }
   let triangles = 0;
   const geometries: THREE.BufferGeometry[] = [];
-  for (const [mat, sweep] of sweeps) {
-    const g = sweep.build();
+  for (const [mat, pair] of sweeps) {
+    const pos: number[] = [];
+    const nor: number[] = [];
+    const uv: number[] = [];
+    const idx: number[] = [];
+    const offset = pair.rect.appendTo(pos, nor, uv, idx, 0);
+    pair.round.appendTo(pos, nor, uv, idx, offset);
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx);
     geometries.push(g);
-    triangles += g.index!.count / 3;
+    triangles += idx.length / 3;
     const mesh = new THREE.Mesh(g, mat);
     mesh.name = mat === mats.glulam ? 'glulam' : 'timber sub-lattice';
     mesh.castShadow = mesh.receiveShadow = true;
@@ -182,6 +200,7 @@ export function buildStructure(bower: Bower, mats: StructureMaterials): BuiltStr
       runs.push({ a: pts[i]!, b: pts[i + 1]!, r: s.diameterMm / 2000 });
       bounds.expandByPoint(pts[i]!).expandByPoint(pts[i + 1]!);
     }
+    drawn.cables.push(s.id);
   }
   if (runs.length) {
     const cyl = new THREE.CylinderGeometry(1, 1, 1, 8, 1, true);
@@ -223,6 +242,7 @@ export function buildStructure(bower: Bower, mats: StructureMaterials): BuiltStr
     feet,
     frames,
     frameSources,
+    drawn,
     triangles,
     dispose() {
       for (const g of geometries) g.dispose();

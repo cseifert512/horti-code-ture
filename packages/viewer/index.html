@@ -55,7 +55,10 @@
         position: fixed;
         left: 24px;
         top: 18px;
-        text-shadow: 0 1px 10px rgba(30, 20, 60, 0.55);
+        /* the second, tight shadow keeps the words legible where a low camera puts pale sky behind them */
+        text-shadow:
+          0 1px 2px rgba(24, 16, 48, 0.7),
+          0 1px 10px rgba(30, 20, 60, 0.55);
         pointer-events: none;
         user-select: none;
       }
@@ -215,8 +218,11 @@
       }
       .segmented {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: auto 1fr auto;
         gap: 0;
+      }
+      .segmented button:not(:first-child) {
+        border-left: 0;
       }
       .segmented button {
         border-radius: 0;
@@ -235,6 +241,78 @@
         color: #1b1630;
         font-weight: 600;
       }
+      /* ---- opening a design ------------------------------------------------------- */
+      #design {
+        display: grid;
+        gap: 8px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--glass-line);
+      }
+      #design-name {
+        font-weight: 600;
+        overflow-wrap: anywhere;
+      }
+      #design-name small {
+        display: block;
+        font-weight: 400;
+        font-size: 12px;
+        color: var(--ink-2);
+      }
+      #design input[type='number'] {
+        height: 30px;
+        padding: 0 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.12);
+      }
+      #design-years-field {
+        grid-template-columns: 1fr 76px;
+        align-items: center;
+      }
+      #design-warnings,
+      #design-error {
+        margin: 0;
+        padding: 8px 10px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.08);
+        font: inherit;
+        font-size: 12px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-height: 30vh;
+        overflow-y: auto;
+      }
+      /* a warning and a refusal are told apart by their words and their mark, not by colour alone */
+      #design-warnings {
+        border-left: 3px solid #e8c15a;
+      }
+      #design-warnings b,
+      #design-error b {
+        display: block;
+        margin-bottom: 3px;
+        font-weight: 600;
+      }
+      #design-warnings ul {
+        margin: 0;
+        padding-left: 16px;
+      }
+      #design-error {
+        border-left: 3px solid #ff8a7a;
+      }
+      #drop {
+        position: fixed;
+        inset: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed rgba(255, 255, 255, 0.85);
+        border-radius: 18px;
+        background: rgba(26, 21, 40, 0.55);
+        font-size: 18px;
+        pointer-events: none;
+        z-index: 9;
+      }
+
       .switch {
         display: flex;
         align-items: center;
@@ -284,6 +362,11 @@
       }
       .actions button {
         flex: 1;
+      }
+      #design .actions button {
+        flex: 1 1 auto;
+        padding-inline: 8px;
+        white-space: nowrap;
       }
 
       /* ---- right: the design overlay ------------------------------------------- */
@@ -767,7 +850,20 @@
     <div id="controls" class="card">
       <div class="segmented" role="group" aria-label="Bower">
         <button type="button" data-bower="vault" aria-pressed="true">Vault</button>
-        <button type="button" data-bower="hemisphere" aria-pressed="false">15 m hemisphere</button>
+        <button type="button" data-bower="hemisphere" aria-pressed="false">Hemisphere</button>
+        <button type="button" data-bower="design" aria-pressed="false">A design...</button>
+      </div>
+      <div id="design" hidden>
+        <div class="actions">
+          <button type="button" id="design-example">Arbour example</button>
+          <button type="button" id="design-choose">Choose files...</button>
+        </div>
+        <input type="file" id="design-files" multiple accept=".json,application/json" hidden />
+        <p class="note" id="design-hint">A .bower.json and its .planting.json, chosen together or dropped on the window.</p>
+        <p id="design-name" hidden></p>
+        <label class="field" id="design-years-field" hidden><span>Years to grow</span><input type="number" id="design-years" min="1" max="30" step="1" value="10" /></label>
+        <div id="design-warnings" hidden></div>
+        <pre id="design-error" role="alert" hidden></pre>
       </div>
       <label class="switch"><input type="checkbox" id="overlay-toggle" /> Design overlay <kbd>O</kbd></label>
       <label class="field"
@@ -898,6 +994,7 @@
       <p class="note" id="plant-statement"></p>
     </div>
 
+    <div id="drop" hidden>Drop a .bower.json and its .planting.json to open the design</div>
     <div id="tip" hidden></div>
     <div id="hint">Drag to orbit &middot; scroll to zoom &middot; <b>H</b> hides the interface</div>
     <div id="error"></div>

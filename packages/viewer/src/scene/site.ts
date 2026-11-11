@@ -9,8 +9,8 @@ import { toThree } from '../structure/frames.ts';
 import type { Foot } from '../structure/build.ts';
 
 const SITE = {
-  /** How far a walk runs on beyond the ends of its headroom zone, m (the prototype's 15 m path through a 5.8 m zone). */
-  walkRunoutM: 4.6,
+  /** How far a walk runs on beyond each end of its headroom zone, as a share of the zone's length (the prototype's 15 m path through a 5.8 m zone). */
+  walkRunout: 0.8,
   bedWidthM: 0.9,
   /** A bed is centred this far outside the line of feet, m. */
   bedOffsetM: 0.14,
@@ -53,7 +53,7 @@ export function buildSite(bower: Bower, feet: readonly Foot[], mats: SiteMateria
     const z0 = -zone.max.y;
     const z1 = -zone.min.y;
     const alongZ = z1 - z0 >= x1 - x0;
-    const run = SITE.walkRunoutM;
+    const run = SITE.walkRunout * Math.max(x1 - x0, z1 - z0);
     const walk = alongZ ? slab(x1 - x0, z1 - z0 + 2 * run, (x0 + x1) / 2, (z0 + z1) / 2, 0.004, mats.gravel) : slab(x1 - x0 + 2 * run, z1 - z0, (x0 + x1) / 2, (z0 + z1) / 2, 0.004, mats.gravel);
     walk.name = `walk:${zone.id}`;
     group.add(walk);
