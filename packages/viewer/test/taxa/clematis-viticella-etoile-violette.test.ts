@@ -502,8 +502,11 @@ describe('the growth model and the shape numbers', () => {
     expect(model.statement).not.toContain('thinner than the wisteria model');
     expect(model.statement).toContain('not a calibrated one');
     expect(model.statement).toContain('none has been measured on a plant');
-    // no parameter this plant needs is left unknown: fruit, clasp and side shoots are all switched on or off
-    for (const [name, p] of Object.entries(model.params)) expect(p.status, name).not.toBe('unknown');
+    // no parameter this file gives is left unknown: fruit, clasp and side shoots are all switched on or off. (A
+    // parameter the engine gains later and this file does not mention is read as unknown until it is researched.)
+    const given = Object.keys((json(`species/${ID}/model.json`) as { params: Record<string, unknown> }).params);
+    expect(given.length).toBeGreaterThanOrEqual(78);
+    for (const name of given) expect(model.params[name as keyof typeof model.params].status, name).not.toBe('unknown');
   });
 
   it('claim a source only where one was read, and leave unknown what none gives', () => {
