@@ -24,6 +24,8 @@ export class RectSweep {
   private readonly uv: number[] = [];
   private readonly idx: number[] = [];
   private n = 0;
+  /** The two ends, apart from the sides: UV runs 0 to 1 across the width and 0 to `lams` across the depth. */
+  private readonly cap = { pos: [] as number[], nor: [] as number[], uv: [] as number[], idx: [] as number[], n: 0 };
 
   /**
    * C: centres, N: depth axis, B: width axis (unit vectors per sample)
@@ -79,7 +81,6 @@ export class RectSweep {
     }
     // end caps
     for (const i of [0, m - 1]) {
-      const base = this.n;
       const t = new V3().crossVectors(B[i]!, N[i]!).multiplyScalar(i === 0 ? 1 : -1);
       const tn = new V3().subVectors(C[i === 0 ? 1 : m - 2]!, C[i]!).normalize();
       if (t.dot(tn) > 0) t.negate();
@@ -89,24 +90,35 @@ export class RectSweep {
         [1, 1],
         [-1, 1],
       ];
+      const cap = this.cap;
+      const capBase = cap.n;
       for (const s of sg) {
         corner(i, s, pa);
-        this.pos.push(pa.x, pa.y, pa.z);
-        this.nor.push(t.x, t.y, t.z);
-        this.uv.push(0.03 + 0.03 * (s[0] + 1), 0.03 * (s[1] + 1));
+        cap.pos.push(pa.x, pa.y, pa.z);
+        cap.nor.push(t.x, t.y, t.z);
+        cap.uv.push((s[0] + 1) / 2, ((s[1] + 1) / 2) * lams);
       }
       corner(i, sg[0]!, pa);
       corner(i, sg[1]!, pb);
       corner(i, sg[2]!, pc);
       const ccw = pb.sub(pa).cross(pc.sub(pa)).dot(t) > 0;
-      if (ccw) this.idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
-      else this.idx.push(base, base + 2, base + 1, base, base + 3, base + 2);
-      this.n += 4;
+      if (ccw) cap.idx.push(capBase, capBase + 1, capBase + 2, capBase, capBase + 2, capBase + 3);
+      else cap.idx.push(capBase, capBase + 2, capBase + 1, capBase, capBase + 3, capBase + 2);
+      cap.n += 4;
     }
   }
 
   get vertexCount(): number {
     return this.n;
+  }
+
+  /** Append the two ends of every member swept so far to arrays being gathered for the end-grain geometry. */
+  appendCapsTo(pos: number[], nor: number[], uv: number[], idx: number[], offset: number): number {
+    for (const v of this.cap.pos) pos.push(v);
+    for (const v of this.cap.nor) nor.push(v);
+    for (const v of this.cap.uv) uv.push(v);
+    for (const v of this.cap.idx) idx.push(v + offset);
+    return this.cap.n;
   }
 
   /** Append this sweep's triangles to arrays being gathered for one geometry. */
@@ -138,6 +150,8 @@ export class RoundSweep {
   private readonly uv: number[] = [];
   private readonly idx: number[] = [];
   private n = 0;
+  /** The two ends, apart from the sides. */
+  private readonly cap = { pos: [] as number[], nor: [] as number[], uv: [] as number[], idx: [] as number[], n: 0 };
 
   /**
    * C: centres, N and B: any two unit axes square to the line and to each
@@ -172,33 +186,43 @@ export class RoundSweep {
     // end caps: a fan round the centre, facing out along the line
     for (const i of [0, m - 1]) {
       const out = new V3().subVectors(C[i]!, C[i === 0 ? 1 : m - 2]!).normalize();
-      const centre = this.n;
-      this.pos.push(C[i]!.x, C[i]!.y, C[i]!.z);
-      this.nor.push(out.x, out.y, out.z);
-      this.uv.push(0.06, 0.03);
+      const cap = this.cap;
+      const centre = cap.n;
+      cap.pos.push(C[i]!.x, C[i]!.y, C[i]!.z);
+      cap.nor.push(out.x, out.y, out.z);
+      cap.uv.push(0.5, 0.5);
       for (let j = 0; j < ROUND_SIDES; j++) {
         const th = (j / ROUND_SIDES) * Math.PI * 2;
         const dx = N[i]!.x * Math.cos(th) + B[i]!.x * Math.sin(th);
         const dy = N[i]!.y * Math.cos(th) + B[i]!.y * Math.sin(th);
         const dz = N[i]!.z * Math.cos(th) + B[i]!.z * Math.sin(th);
-        this.pos.push(C[i]!.x + dx * radius, C[i]!.y + dy * radius, C[i]!.z + dz * radius);
-        this.nor.push(out.x, out.y, out.z);
-        this.uv.push(0.06 + 0.03 * Math.cos(th), 0.03 + 0.03 * Math.sin(th));
+        cap.pos.push(C[i]!.x + dx * radius, C[i]!.y + dy * radius, C[i]!.z + dz * radius);
+        cap.nor.push(out.x, out.y, out.z);
+        cap.uv.push(0.5 + 0.5 * Math.cos(th), 0.5 + 0.5 * Math.sin(th));
       }
       // wind each triangle to face along `out`
       const ccw = new V3().crossVectors(N[i]!, B[i]!).dot(out) > 0;
       for (let j = 0; j < ROUND_SIDES; j++) {
         const a = centre + 1 + j;
         const b = centre + 1 + ((j + 1) % ROUND_SIDES);
-        if (ccw) this.idx.push(centre, a, b);
-        else this.idx.push(centre, b, a);
+        if (ccw) cap.idx.push(centre, a, b);
+        else cap.idx.push(centre, b, a);
       }
-      this.n += ROUND_SIDES + 1;
+      cap.n += ROUND_SIDES + 1;
     }
   }
 
   get vertexCount(): number {
     return this.n;
+  }
+
+  /** Append the two ends of every member swept so far to arrays being gathered for the end-grain geometry. */
+  appendCapsTo(pos: number[], nor: number[], uv: number[], idx: number[], offset: number): number {
+    for (const v of this.cap.pos) pos.push(v);
+    for (const v of this.cap.nor) nor.push(v);
+    for (const v of this.cap.uv) uv.push(v);
+    for (const v of this.cap.idx) idx.push(v + offset);
+    return this.cap.n;
   }
 
   /** Append this sweep's triangles to arrays being gathered for one geometry. */
