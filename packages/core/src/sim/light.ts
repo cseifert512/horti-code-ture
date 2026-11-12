@@ -78,6 +78,7 @@ export class LightField {
   private canopyNow: Foliage | undefined;
   /** Which way the light comes from, by place read, year and plant; null where none arrives. */
   private readonly directions = new Map<number, Vec3 | null>();
+  private readonly nearestReading = new Map<number, number>();
 
   constructor(sim: Simulation) {
     this.sim = sim;
@@ -218,15 +219,21 @@ export class LightField {
   from(plant: Plant, at: Vec3, date: CalendarDate): Vec3 | null {
     if (!this.acts) return null;
     const g = this.geometry;
-    let nearest = -1;
-    let least = DIRECTION_REACH_M * DIRECTION_REACH_M;
-    for (let i = 0; i < g.points.length; i++) {
-      const p = g.points[i]!.position;
-      const d = (p.x - at.x) ** 2 + (p.y - at.y) ** 2 + (p.z - at.z) ** 2;
-      if (d < least) {
-        least = d;
-        nearest = i;
+    // the nearest place light is read at is looked for once for each quarter-metre cell a shoot asks from
+    const cell = (Math.floor(at.x * 4) + 2048) * 16777216 + (Math.floor(at.y * 4) + 2048) * 4096 + (Math.floor(at.z * 4) + 2048);
+    let nearest = this.nearestReading.get(cell);
+    if (nearest === undefined) {
+      nearest = -1;
+      let least = DIRECTION_REACH_M * DIRECTION_REACH_M;
+      for (let i = 0; i < g.points.length; i++) {
+        const p = g.points[i]!.position;
+        const d = (p.x - at.x) ** 2 + (p.y - at.y) ** 2 + (p.z - at.z) ** 2;
+        if (d < least) {
+          least = d;
+          nearest = i;
+        }
       }
+      this.nearestReading.set(cell, nearest);
     }
     if (nearest < 0) return null;
     const me = this.numberOf(plant.id);

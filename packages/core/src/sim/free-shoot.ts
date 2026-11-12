@@ -62,6 +62,12 @@ export const GRAVITY = 9.80665;
 export const GREENHILL = 1.986;
 /** How much a shoot grows between one asking of which way the light is and the next, m: light changes slowly along a shoot. */
 export const LIGHT_EVERY_M = 0.2;
+/** How much a shoot grows between one feeling for a support within reach and the next, m: a third of the least reach any model is likely to give. */
+export const FEEL_EVERY_M = 0.02;
+/** How much a shoot grows between one solving of its rod and the next, m: half a rod segment. A shoot that lays more than this in a day is solved every day. */
+export const SOLVE_EVERY_M = 0.02;
+/** The shortest length the mechanics take as one segment of the rod, m: a slow shoot lays a few millimetres a day, and the rod need not be cut so fine. */
+export const ROD_SEGMENT_M = 0.04;
 /** A shoot whose tip is within this of straight down is hanging plumb, and is not solved for any more. */
 export const PLUMB_RAD = (172 * Math.PI) / 180;
 
@@ -149,7 +155,7 @@ export function solveRod(rod: Rod, near = 0): RodSolution {
     let flo = fa;
     let hi = start;
     let fhi = fa;
-    let step = most * 0.004;
+    let step = Math.max(Math.abs(start) * 0.03, most * 5e-4);
     let bracketed = false;
     for (let i = 0; i < 80 && !bracketed; i++) {
       const up = Math.min(1.5 * most, hi + step);
@@ -177,13 +183,13 @@ export function solveRod(rod: Rod, near = 0): RodSolution {
       fhi = fup;
       lo = down;
       flo = fdown;
-      step *= 1.5;
+      step *= 2;
     }
     if (!bracketed) return { tipIncline: tip, unloadedIncline: unloaded, baseMoment: start, found: false };
     // close in: false position with the Illinois correction, which cannot leave the bracket. A moment known to a
-    // part in a thousand million of the most it could be turns the tip by far less than can be drawn.
+    // part in a hundred million of the most it could be turns the tip by far less than can be drawn.
     let side = 0;
-    for (let i = 0; i < 60 && Math.abs(b - a) > 1e-9 * most; i++) {
+    for (let i = 0; i < 60 && Math.abs(b - a) > 1e-8 * most; i++) {
       const c = fb === fa ? (a + b) / 2 : b - (fb * (b - a)) / (fb - fa);
       const fc = left(c);
       if (Math.abs(fc) <= 1e-12 * most) {
@@ -233,6 +239,10 @@ export interface FreeShoot {
   /** Which way the light was when it last asked, and how long it was then: it asks again every `LIGHT_EVERY_M` of growth. */
   light: Vec3 | null;
   lightAskedAtM: number;
+  /** How long it was when it last felt for a support within reach: it feels again every `FEEL_EVERY_M` of growth. */
+  feltAtM: number;
+  /** How long it was when its rod was last solved: it is solved again every `SOLVE_EVERY_M` of growth, and in between the tip keeps the sag it had. */
+  solvedAtM: number;
 }
 
 /** The level direction a vector leans in, or `fallback` where it stands plumb. Kept on the same side as `fallback`. */
@@ -253,7 +263,7 @@ export function startFreeShoot(basePoint: number, dir: Vec3): FreeShoot {
   const d = normalize(dir);
   const plane = levelOf(d, v3(1, 0, 0));
   const incline = inclineOf(d, plane);
-  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null, light: null, lightAskedAtM: 0 };
+  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null, light: null, lightAskedAtM: 0, feltAtM: -1, solvedAtM: -1 };
 }
 
 /**
@@ -324,7 +334,7 @@ function nearestOnSegment(p: Vec3, a: Vec3, b: Vec3): Vec3 {
 }
 
 /** The least distance between segments p1-q1 and p2-q2 (Ericson, Real-Time Collision Detection, 5.1.9). */
-function segmentDistance(p1: Vec3, q1: Vec3, p2: Vec3, q2: Vec3): number {
+export function segmentDistance(p1: Vec3, q1: Vec3, p2: Vec3, q2: Vec3): number {
   const d1 = sub(q1, p1);
   const d2 = sub(q2, p2);
   const r = sub(p1, p2);

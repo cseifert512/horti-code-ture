@@ -34,7 +34,7 @@ import type { SupportEdge } from '../bower/types.ts';
 import { Calendar, type CalendarDate } from '../calendar.ts';
 import { type Vec3, UP, ZERO, add, addScaled, anyPerpendicular, cross, distance, dot, length, lerp, normalize, scale, smoothstep, sub, v3 } from '../math/vec3.ts';
 import type { AppendageKind, GardenerEventType, MemberTier, OrganHeld } from '../vocab.ts';
-import { type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, type Rod, Surroundings, directionAt, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
+import { FEEL_EVERY_M, type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, ROD_SEGMENT_M, SOLVE_EVERY_M, type Rod, Surroundings, directionAt, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
 import { type LightFrom, openSkyLight } from './light-from.ts';
 import { LightField } from './light.ts';
 import { type GrowthModel, type OptionalParamKey, genericShootKeys, known, listAt, param, shootParam } from './model.ts';
@@ -800,22 +800,39 @@ export class Simulation {
     const wood = shootParam(model, 'mechanics.woodModulusMPa');
     const setDays = shootParam(model, 'mechanics.woodSetDays');
     const density = shootParam(model, 'mechanics.stemFreshDensityKgM3');
-    const compliance = new Array<number>(m);
-    const load = new Array<number>(m).fill(0);
+    // A slow shoot lays a few millimetres a day. The lengths laid are gathered, base to tip, into segments of
+    // ROD_SEGMENT_M or more: `into[k]` is the segment of the rod that laid length k is part of.
+    const into = new Array<number>(m);
+    const lengthM: number[] = [];
+    const turn: number[] = [];
+    const compliance: number[] = [];
+    const load: number[] = [];
+    let open = false;
     for (let k = 0; k < m; k++) {
-      // the joint at the near end of segment k is point basePoint + k of the axis
+      if (!open) {
+        lengthM.push(0);
+        turn.push(0);
+        compliance.push(0);
+        load.push(0);
+      }
+      const at = lengthM.length - 1;
+      into[k] = at;
+      // the joint at the near end of laid length k is point basePoint + k of the axis
       const i = shoot.basePoint + k;
       const r = axis.radiusMm[i]! / 1000;
-      compliance[k] = shoot.lengthM[k]! / (modulusPa(this.day - axis.bornDayAt[i]!, green, wood, setDays) * secondMomentM4(r));
-      // the stem's own weight, half of each segment to each of its ends; the half at the base rests on the support
+      lengthM[at]! += shoot.lengthM[k]!;
+      turn[at]! += shoot.turn[k]!;
+      compliance[at]! += shoot.lengthM[k]! / (modulusPa(this.day - axis.bornDayAt[i]!, green, wood, setDays) * secondMomentM4(r));
+      // the stem's own weight, half of each length to each of its ends; the half at the base rests on the support
       const half = (density * GRAVITY * Math.PI * r * r * shoot.lengthM[k]!) / 2;
-      load[k]! += half;
-      if (k > 0) load[k - 1]! += half;
+      load[at]! += half;
+      if (k > 0) load[into[k - 1]!]! += half;
+      open = lengthM[at]! < ROD_SEGMENT_M && k < m - 1;
     }
-    // what stands at point p hangs at the far end of segment p - basePoint - 1
+    // what stands at point p of the axis hangs at the far end of laid length p - basePoint - 1
     const hang = (pointIndex: number, kg: number) => {
       const k = pointIndex - shoot.basePoint - 1;
-      if (k >= 0 && k < m) load[k]! += kg * GRAVITY;
+      if (k >= 0 && k < m) load[into[k]!]! += kg * GRAVITY;
     };
     const leafKgM2 = shootParam(model, 'mechanics.leafFreshMassPerAreaKgM2');
     for (const leaf of this.leavesByAxis.get(axis.id) ?? []) if (leaf.removedDay === null) hang(leaf.pointIndex, leafSilhouetteAreaM2(leaf.lengthM) * leafKgM2);
@@ -830,7 +847,7 @@ export class Simulation {
       if (fruit.removedDay !== null) continue;
       hang(fruit.pointIndex, fruitKg * Math.min(1, Math.max(0, (this.day - fruit.swell[0]) / Math.max(1, fruit.swell[1] - fruit.swell[0]))));
     }
-    return { baseIncline: shoot.baseIncline, lengthM: shoot.lengthM, turn: shoot.turn, compliance, load };
+    return { baseIncline: shoot.baseIncline, lengthM, turn, compliance, load };
   }
 
   /**
@@ -850,7 +867,10 @@ export class Simulation {
     const radiusM = axis.radiusMm[n - 1]! / 1000;
     // a flowering side shoot stands free by nature; every other shoot in the air is looking for a support
     const searcher = axis.role !== 'side_shoot';
-    if (searcher && this.takeHold(plant, axis, shoot, last, tip.dir)) return 0;
+    if (searcher && tip.grownM - shoot.feltAtM >= FEEL_EVERY_M) {
+      shoot.feltAtM = tip.grownM;
+      if (this.takeHold(plant, axis, shoot, last, tip.dir)) return 0;
+    }
 
     // its small wanderings: three numbers from the plant's organ stream for each length laid, as there always were;
     // a side shoot's come from where it is, and draw on no stream
@@ -873,16 +893,20 @@ export class Simulation {
       shoot.plane = turned.plane;
       shoot.lengthM.push(go);
       shoot.turn.push(turned.incline - shoot.incline);
-      // then its weight has its say: the tip of the rod, with this length on it, points where the mechanics put it
-      const solved = solveRod(this.rodOf(plant, axis, shoot), shoot.baseMoment);
-      shoot.baseMoment = solved.baseMoment;
-      let incline = solved.tipIncline;
-      if (!solved.found) incline = Math.PI;
-      const side = incline < 0 ? -1 : 1;
-      const sag = side * (incline - solved.unloadedIncline);
-      if (!solved.found || Math.abs(incline) >= PLUMB_RAD) shoot.posture = 'plumb';
-      // below the level, and above it but for its weight: it can no longer hold itself out
-      else if (shoot.posture === 'self_supporting' && Math.abs(incline) > Math.PI / 2 && Math.abs(incline) - sag <= Math.PI / 2) shoot.posture = 'pendulous';
+      // then its weight has its say: the tip of the rod, with this length on it, points where the mechanics put it.
+      // A shoot that lays only millimetres in a day keeps the sag it had until it has grown SOLVE_EVERY_M.
+      let incline = turned.incline;
+      if (tip.grownM + go - shoot.solvedAtM >= SOLVE_EVERY_M) {
+        shoot.solvedAtM = tip.grownM + go;
+        const solved = solveRod(this.rodOf(plant, axis, shoot), shoot.baseMoment);
+        shoot.baseMoment = solved.baseMoment;
+        incline = solved.found ? solved.tipIncline : Math.PI;
+        const side = incline < 0 ? -1 : 1;
+        const sag = side * (incline - solved.unloadedIncline);
+        if (!solved.found || Math.abs(incline) >= PLUMB_RAD) shoot.posture = 'plumb';
+        // below the level, and above it but for its weight: it can no longer hold itself out
+        else if (shoot.posture === 'self_supporting' && Math.abs(incline) > Math.PI / 2 && Math.abs(incline) - sag <= Math.PI / 2) shoot.posture = 'pendulous';
+      }
       shoot.incline = incline;
       dir = directionAt(incline, shoot.plane);
     }
@@ -1005,9 +1029,9 @@ export class Simulation {
    * is full. The two are kept apart on purpose. A shoot of the year is not
    * framework: were its holds to use up the framework's room, more or longer
    * shoots of the year would reroute the framework, and two runs could no
-   * longer be compared for what a cut or a change of leaf did. The price is
-   * that a member can carry, for as long as such a shoot lasts, a stem more
-   * than its stated capacity where framework arrives after it.
+   * longer be compared for what a cut or a change of leaf did. Where
+   * framework then comes to a member such shoots have filled, the last of
+   * them gives up its place (`enter`), so the capacity is never exceeded.
    */
   private stemsOn(edgeId: string, axis: Axis): number {
     const framework = this.occupancy.get(edgeId)?.length ?? 0;
@@ -1019,12 +1043,35 @@ export class Simulation {
     return this.tookHold.has(axis.id) ? this.capacity(edge, model) + (this.holds.get(edge.id)?.length ?? 0) : counted;
   }
 
-  /** Enter a stem on a stretch of route it has just taken. */
+  /**
+   * Enter a stem on a stretch of route it has just taken. Where framework
+   * comes to a member that a shoot from the air has filled, the last such
+   * shoot to arrive gives up its place: the member never carries more stems
+   * than it is given to carry. The shoot is left lying where it is, grows no
+   * further, and is counted as holding nothing there.
+   */
   private enter(edgeId: string, axis: Axis): void {
-    const map = this.tookHold.has(axis.id) ? this.holds : this.occupancy;
+    const fromAir = this.tookHold.has(axis.id);
+    const map = fromAir ? this.holds : this.occupancy;
     const on = map.get(edgeId);
     if (on) on.push(axis.id);
     else map.set(edgeId, [axis.id]);
+    if (fromAir) return;
+    const held = this.holds.get(edgeId);
+    if (!held || !held.length) return;
+    const plant = this.plants.get(axis.plantId)!;
+    const room = this.capacity(this.scenario.bower.graph.edges.get(edgeId)!, this.taxon(plant).model);
+    while (held.length && map.get(edgeId)!.length + held.length > room) {
+      const shoot = this.axes.get(held[held.length - 1]!)!;
+      const run = shoot.runs.find((r) => r.edgeId === edgeId && r.status !== 'detached');
+      if (!run) {
+        held.pop();
+        continue;
+      }
+      this.release(shoot, run);
+      if (shoot.tip.state !== 'stopped') shoot.tip = { state: 'stopped', reason: `crowded off ${edgeId} by the framework` };
+      this.note('stopped', this.plants.get(shoot.plantId)!, shoot, `a shoot of the year that had taken hold of ${edgeId} from the air gave up its place there to ${axis.id}: the member carries no more than ${room} stems`);
+    }
   }
 
   /**

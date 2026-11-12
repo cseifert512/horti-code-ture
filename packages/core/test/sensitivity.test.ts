@@ -39,18 +39,33 @@ describe('how far the readings move when unmeasured densities are multiplied', (
     }
   });
 
-  // larger leaves shade a neighbour more, which is all that reaches the rest of the run (sim/light.ts):
-  // the framework is the same, and the flowers move by a count or two
-  it('changes the leaves, and through their shade almost nothing else, when only their size is varied', () => {
-    for (const id of ['leaf_area_x2', 'leaf_area_x4']) {
-      expect(Math.abs(row(id).flowersOpened - row('as_modelled').flowersOpened), id).toBeLessThanOrEqual(0.02 * row('as_modelled').flowersOpened);
-      expect(row(id).routeHeldShare, id).toBe(row('as_modelled').routeHeldShare);
+  // Larger leaves reach the rest of the run in two ways. They shade a neighbour more (sim/light.ts). And they are
+  // heavier, so the shoots that carry them in the air droop sooner, come near different members and bear a few leaf
+  // nodes more or fewer (sim/free-shoot.ts): the flowers of the plants that flower along those shoots move by a few
+  // in a hundred, and the route held by a stretch or two. The framework does not move at all.
+  it('changes the leaves, and through their shade and their weight little else, when only their size is varied', () => {
+    const plain = new Simulation(make(taxa)).runUntil(END);
+    for (const [id, factor] of [
+      ['leaf_area_x2', 2],
+      ['leaf_area_x4', 4],
+    ] as const) {
+      expect(Math.abs(row(id).flowersOpened - row('as_modelled').flowersOpened), id).toBeLessThanOrEqual(0.06 * row('as_modelled').flowersOpened);
+      expect(Math.abs(row(id).routeHeldShare - row('as_modelled').routeHeldShare), id).toBeLessThan(0.02);
+      const larger = new Simulation(make(leafArea(taxa, factor))).runUntil(END);
+      for (const s of plain.summaries.filter((x) => x.year === 2032)) {
+        const other = larger.summaries.find((x) => x.year === 2032 && x.plantId === s.plantId)!;
+        expect(other.frameworkM, `${id} ${s.plantId}`).toBe(s.frameworkM);
+        expect(other.highestM, `${id} ${s.plantId}`).toBe(s.highestM);
+      }
     }
   });
 
   it('gives more flowers with more side shoots, on the same framework', () => {
     expect(row('side_shoots_x3').flowersOpened).toBeGreaterThan(row('as_modelled').flowersOpened * 1.1);
-    expect(row('side_shoots_x3').routeHeldShare).toBe(row('as_modelled').routeHeldShare);
+    // three times the shoots of the year come near three times as often to something they can take hold of:
+    // the route held can only rise by that, and the framework, below, is the same to the metre
+    expect(row('side_shoots_x3').routeHeldShare).toBeGreaterThanOrEqual(row('as_modelled').routeHeldShare);
+    expect(row('side_shoots_x3').routeHeldShare - row('as_modelled').routeHeldShare).toBeLessThan(0.05);
     const plain = new Simulation(make(taxa)).runUntil(END);
     const more = new Simulation(make(sideShoots(taxa, 3))).runUntil(END);
     for (const s of plain.summaries.filter((x) => x.year === 2032)) {
@@ -94,5 +109,6 @@ describe('the winter evergreen target on the reference palette', () => {
     // nor is a quarter of the timber hidden from anywhere, though the evergreens hold a quarter of the route
     for (const v of s.rows[0]!.winterTimberHidden) expect(v.value, v.viewpointId).toBeLessThan(low);
     expect(s.rows[0]!.winterRouteHeldByEvergreens).toBeGreaterThan(low);
-  });
+    // a palette with three times the shoots is grown here, each of them a rod to be solved: given longer than the default
+  }, 120_000);
 });

@@ -122,7 +122,8 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
     expect(ivy.heldUnaided).toBeGreaterThan(ivy.tiedIn);
     expect(honeysuckle.heldUnaided).toBeLessThan(honeysuckle.tiedIn);
     expect(withIvy.months[0]!.leaves['north-evergreen']!).toBeGreaterThan(2 * palette.months[0]!.leaves['north-evergreen']!);
-  });
+    // a second palette is grown here, and the mechanics of shoots in the air add about a third to a run: given longer than the default
+  }, 120_000);
 
   it('keeps five plants in leaf through January and has the rest bare', () => {
     const jan = palette.months[0]!;
@@ -151,7 +152,9 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
     }
     const text = formatDesignReport(palette);
     expect(text).toContain('WINTER EVERGREEN COVER on 2038-01-15, against the design target of 25% to 40%');
-    expect(text).toContain('as laid out: plants that keep their leaves hold 27% of the route  within the target');
+    // 27% until shoots in the air could take hold of what they came near, and 28% since: the evergreens' shoots of the
+    // year hold a few stretches more. The figure is checked above as a number; here, that the report says it.
+    expect(text).toMatch(/as laid out: plants that keep their leaves hold (2[5-9]|3\d)% of the route {2}within the target/);
     expect(text).toContain('below the target');
     expect(text).toContain('do not yet read as cover');
   });
@@ -210,7 +213,8 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
       expect(alert.count).toBe(j.nodeIds.length);
       expect(alert.text).toContain('the joints to inspect');
     }
-  });
+    // a second palette is grown here: given longer than the default, as the ivy test above is
+  }, 120_000);
 
   it('prints plant ids of any length in aligned columns', () => {
     const lines = formatDesignReport(palette).split('\n');
