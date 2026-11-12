@@ -1,105 +1,112 @@
 {
   "schemaVersion": 1,
   "taxonId": "vitis-coignetiae",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one, and still thinner than the wisteria model. Two things in it were measured on plants of this species, in Japan: the spacing of the leaves and the thickening of young stems (Gifu Prefecture 2003). What the plant is (leaf size, one leaf to a node in two ranks, a tendril missing at every third node, how long a plant is in flower, when the fruit ripens, that it is slow to start) is taken from published descriptions, each named beside its number. How fast and how much it grows in the UK, its dates here, how many of the year's shoots it makes and how far they reach, how much of it flowers and fruits, and the mechanics of a shoot in the air are choices made so that the model runs, each with its basis, and the route-finding numbers are still those of the wisteria model. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "hanging",
+    "fruitHeld": "hanging",
+    "basis": "The bunch of berries hangs (RHS: \"bunches of small blue-black berries\"; Ashridge: \"bunches of black grapes in autumn\"). No source read says how the panicle is held in flower; it is drawn hanging too, as the same organ a few weeks earlier. One leaf form, one flower form and one fruit form: no source read describes more on an established plant (Bean: only seedlings have the more deeply lobed leaf)."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 105,
+      "value": 108,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Vines break late. A placeholder."
+      "basis": "Mid to late April. No UK date for this species was found in any source read. Chosen late because the young growth is frost-tender (Plants for a Future: \"young spring growth can be damaged by late frosts\") and outdoor vines in the UK start late."
     },
     "phenology.growthEndDoy": {
-      "value": 275,
+      "value": 250,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Early September, when extension stops and the canes ripen. The engine spreads a season's growth evenly either side of its middle, which this puts at the end of June. No date found; a choice."
     },
     "phenology.leafFlushDoy": {
       "value": [
         110,
-        160
+        150
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Leaves on wood that was there already open from budburst to the end of May. No date found; a choice."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        265,
-        300
+        264,
+        292
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Grown for its autumn colour (RHS). Dates are a placeholder."
+      "basis": "Colour builds from late September to mid October. The RHS and Bean say only \"autumn\"; no source read gives UK dates, and they move with the weather and the site."
     },
     "phenology.leafFallDoy": {
       "value": [
-        300,
-        330
+        296,
+        328
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Leaves drop from late October to late November. No date found; a choice."
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        213,
-        258
+        135,
+        150
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The day the engine commits the year's panicles, set to late May when they show on the young shoots. In a vine the panicle is laid down in the bud the summer before; the engine has no such two-year chain for growth of the current season, so this date stands for the panicle appearing, not for its initiation."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        121,
-        135
+        165,
+        186
       ],
       "unit": "day of year",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://pfaf.org/user/Plant.aspx?LatinName=Vitis+coignetiae",
+      "basis": "Mid June to early July. Plants for a Future: in flower \"June to July\"; RHS: \"tiny greenish summer flowers\". The days within those months are a choice."
     },
     "phenology.petalFallDoy": {
       "value": [
-        146,
-        166
+        176,
+        198
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used while a flowering time is given (phenology.flowerLastsDays): each panicle goes over that many days after it opens. Kept in step with it."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        0,
-        0
+        9,
+        10
       ],
       "unit": "days",
-      "status": "provisional_design_assumption",
-      "basis": "Not used: no flowers are drawn for this plant."
+      "status": "peer_reviewed",
+      "source": "https://www.jstage.jst.go.jp/article/hrj/6/2/6_2_229/_article/-char/en",
+      "basis": "Honma, Shishido and Taira (2007), plants in Yamagata, Japan: flowering lasted 10 days on female plants and 9 on male. Taken as the time one panicle is in flower."
     },
     "extension.leaderMPerSeason": {
       "value": 3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: over 12 m, in 10 to 20 years, and described as vigorous. Not a growth rate; a placeholder of that order."
+      "source": "https://www.k-agri.rd.pref.gifu.lg.jp/hukyu/15_hukyu/15-1hukyu.pdf",
+      "basis": "Gifu Prefectural Research Institute for Agricultural Technology in Hilly and Mountainous Areas, information sheet on raising Vitis coignetiae (yamabudo) from hardwood cuttings (2003), table 2: ten plants from cuttings measured in their second year after planting out (1990): the longest new shoot of each plant in its first year after planting out was 1.05 to 4.49 m, 3.24 m on average. Taken a little lower for a UK garden, which is cooler than the mountains of Gifu and where the plant is said to be slow to start (Plants for a Future). A wall-greening supplier gives 2 to 5 m a year (fassadengruen.de, read only as a search excerpt). Not measured in the UK."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        2.4,
         1.8,
-        1.2
+        1.4,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate. Not measured."
+      "basis": "Scaled down from the leader by branch order. Not measured."
     },
     "extension.whipMPerSeason": {
       "value": 3.5,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Long canes of the year. Rate is a placeholder."
+      "basis": "A cane that finds no hold makes its length within the season: the pace at which a free cane reaches the length organs.whipLengthM gives it. Not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -107,42 +114,43 @@
         0.8
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Plants for a Future: \"often slow to establish, taking 1 - 2 years from planting out before much new growth\". Against that, rooted cuttings planted out in Gifu grew strongly from their first year (3.24 m longest shoot, 33.5 m of new shoot in all in the second year: Gifu Prefecture 2003, table 2). The two factors are a choice between them."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
-        0
+        1,
+        2
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Two stems from the base. A placeholder."
+      "basis": "One cane at planting and a further stem from the base in each of the next two years: an unpruned vine is many-stemmed from low down. How many is a choice."
     },
     "architecture.nurseryCaneM": {
-      "value": 1,
+      "value": 0.8,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant. Not measured."
+      "basis": "A nursery plant in a 3 litre pot on a cane (Burncoose sells it so). The length is a choice."
     },
     "architecture.maxBranchOrder": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Branches of branches of branches, and no further: a limit of the model, not a fact about the plant."
     },
     "architecture.leaderLengthM": {
       "value": [
-        10,
+        12,
         15
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: over 12 m, about 15 m. Used as a cap on stem length; a height is not a route length, so this is a placeholder."
+      "basis": "RHS: ultimate height over 12 m, \"about 15m tall\". Used as a cap on the length of a stem; a height is not a route length, so this is a choice of that order."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
+        6,
         4,
-        2,
-        1
+        2.5
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -151,40 +159,40 @@
     "architecture.lateralLengthSpread": {
       "value": 0.3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Laterals vary by about a third either way. A choice."
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
         0.9,
-        0.75,
-        0.55
+        0.8,
+        0.6
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A vigorous vine branches at most places where it meets another support. A choice."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.5,
+      "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Most buds on a cane break the spring after it is made; about a third wait. A choice."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
         1,
-        3
+        2
       ],
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A bud that waits breaks within two more years. A choice."
     },
     "architecture.maxStemsPerRoute": {
       "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Two canes along one lath or cable before the next looks elsewhere. A choice: it sets how fast an unpruned plant takes a structure over, for which no figure was found."
     },
     "architecture.maxStemsPerPrimaryMember": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "One more on a glulam member, which has the room. A choice."
     },
     "routing.occupancyCost": {
       "value": 1.6,
@@ -235,7 +243,7 @@
       "value": 12,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. A tendril is taken to coil round nothing stouter than this: a cable qualifies, timber of any size here does not, and the plant has to be tied to it."
+      "basis": "No measurement exists for this species or, in any source read, for the genus. A tendril is taken to coil round nothing stouter than this: a cable or a wire qualifies, a 40 mm lath does not, and the plant has to be tied to timber. It fits the advice that it \"needs wire or netting to cling to\" (BBC Gardeners' World) but is not drawn from it. Darwin describes the forked tendril of the common vine clasping a support and then contracting into a spring, with no size of support; a review of tendrils (Sousa-Baena and others 2018) says only that climbing by tendrils gets harder as the support thickens. The largest lath or pole a tendril of this plant holds needs measuring: it decides whether the timber sub-lattice needs ties."
     },
     "attachment.minPitchM": {
       "value": 0.3,
@@ -250,32 +258,34 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.12,
-        0.2
+        0.09,
+        0.14
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "status": "measured",
+      "source": "https://www.k-agri.rd.pref.gifu.lg.jp/hukyu/15_hukyu/15-1hukyu.pdf",
+      "basis": "Gifu Prefectural Research Institute for Agricultural Technology in Hilly and Mountainous Areas, information sheet on raising Vitis coignetiae (yamabudo) from hardwood cuttings (2003), table 2: ten plants from cuttings measured in their second year after planting out (1990): the mean internode of each plant's new shoots was 9.0 to 13.7 cm, 11.8 cm over the ten (283 nodes on 33.5 m of shoot). One leaf to a node, so this is the distance from leaf to leaf. Measured on young plants in Japan, not in the UK."
     },
     "organs.leafLengthM": {
       "value": [
-        0.2,
-        0.3
+        0.105,
+        0.225
       ],
       "unit": "m",
       "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
-      "basis": "RHS: very large leaves, to 30 cm."
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "What the engine and the drawing mean by leaf length for this plant: from the node to the farthest point of the leaf along the line of its stalk. The blade is nearly flat and slopes down and outwards from the top of a long stalk (photographs of plants on walls and frames), so this length is about half stalk, and the blade is about as wide as the whole of it (0.99 of it in the drawing). Bean: blade \"ordinarily 4 to 8 in. wide\", at most 12 in. long and 10 in. broad; stalk \"from 2 to 6 in. long\". So 0.105 to 0.225 m is a blade 0.10 to 0.22 m wide on a stalk of 0.05 to 0.15 m. The coverage and light figures take a leaf as a disc 0.56 of this length across, which for this plant is about a third of the area of the blade: the shade it casts is understated there."
     },
     "organs.leavesPerNode": {
       "value": 1,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://landscapeplants.oregonstate.edu/plants/vitis-coignetiae",
+      "basis": "Oregon State University: \"Leaves alternate, simple\". One leaf to a node."
     },
     "organs.spurChance": {
-      "value": 0.4,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Short leafy spurs on old wood. A placeholder."
+      "basis": "A vine has no spurs of the wisteria kind. Its short leafy shoots from older wood are grown as side shoots (sideShoots.*), which are renewed each year."
     },
     "organs.spurLengthM": {
       "value": [
@@ -284,7 +294,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used: no spurs form (organs.spurChance is 0)."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -293,86 +303,85 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used: no spurs form (organs.spurChance is 0)."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.2,
-        0.34
+        0.07,
+        0.12
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The length of a panicle in flower, stalk and all. No source read gives it for this species. Chosen a little shorter than the bunch it becomes (fruit.lengthM), which goes on lengthening as the berries swell. Darwin measured a flower stalk of 8 1/2 in. on the common vine, a larger thing."
     },
     "organs.whipShareOfNodes": {
       "value": 0.03,
       "status": "provisional_design_assumption",
-      "basis": "The share of older nodes that throw a long cane each year. A placeholder."
+      "basis": "The share of older nodes on the framework that throw a long cane each year. A choice: no count of canes on a plant of known age was found."
     },
     "organs.whipsPerYearMax": {
-      "value": 40,
+      "value": 14,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new canes a year. A placeholder."
+      "basis": "A cap on new long canes a year, for a plant on a frame of a few metres. A choice."
     },
     "organs.whipLengthM": {
       "value": [
-        1,
-        2.5
+        1.5,
+        3.5
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a cane of the year. A placeholder."
+      "basis": "A cane of the year that has found no hold. From the \"2 - 5 metres\" of annual shoot growth and \"hanging / cascading growth\" a wall-greening supplier gives (fassadengruen.de, read as a search excerpt only), taken a little shorter because a cane with nothing to climb makes less than one that has."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "Deciduous (RHS): a leaf lasts one growing season."
     },
     "organs.clearStemHeightM": {
-      "value": 1.5,
+      "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Shoots break from low down on an unpruned vine; only the foot is kept clean. A choice."
     },
     "flowering.competenceYears": {
       "value": 3,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A vine raised from a layer is taken to flower from its fourth summer. No source read says when this species first flowers."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.3,
-        0.55,
-        0.8,
-        0.92,
+        0.4,
+        0.7,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Flowering builds over three summers. A choice."
     },
     "flowering.spurFloralChance": {
-      "value": 0.85,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable: no spurs of the wisteria kind (organs.spurChance is 0)."
     },
     "flowering.unprunedFactor": {
-      "value": 0.5,
+      "value": 1,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable: summer pruning is not what makes this plant flower."
     },
     "flowering.currentSeasonFlowersPerM": {
       "value": 0,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flowers are small and unobtrusive (RHS) and are not drawn."
+      "basis": "None along the long growth. A vine carries its panicles opposite a leaf at the third to sixth node or so of the year's shoots, in the place of a tendril, and nowhere further out (the genus: Bean; the common vine: Darwin). The engine can put a flower at any leaf node of a long shoot or at the end of a short one; the second is nearer, so the panicles are at the ends of the short yearly shoots (sideShoots.terminalFlowerShare)."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not used: no flowers along the long growth (flowering.currentSeasonFlowersPerM is 0)."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -381,37 +390,38 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not acted on: the model has no pruning routine for this plant. Bean, of the genus: young shoots \"shortened once or twice in summer\"."
     },
     "pruning.winterBudsKept": {
-      "value": [
-        2,
-        3
-      ],
-      "unit": "buds",
-      "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
-    },
-    "regrowth.shootsPerCut": {
       "value": [
         1,
         2
       ],
+      "unit": "buds",
+      "status": "provisional_design_assumption",
+      "basis": "Not acted on: the model has no pruning routine for this plant. Bean, of the genus: cut back hard in December or January \"to one or two buds\"."
+    },
+    "regrowth.shootsPerCut": {
+      "value": [
+        1,
+        3
+      ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A vine cut hard breaks strongly from below the cut. A choice."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 6.25,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A growing shoot 5 mm through a little behind its tip. Not measured on this species; the shoots are \"round, ribbed\" (Bean) and the one-year cane is 8.7 mm through in its lower half (Gifu Prefecture 2003), so the young end is taken as somewhat over half of that."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 20,
+      "value": 4,
       "unit": "mm2 per m",
-      "status": "provisional_design_assumption",
-      "basis": "A woody vine, somewhat slighter than wisteria. A placeholder."
+      "status": "calibrated",
+      "source": "https://www.k-agri.rd.pref.gifu.lg.jp/hukyu/15_hukyu/15-1hukyu.pdf",
+      "basis": "Fitted to Gifu Prefectural Research Institute for Agricultural Technology in Hilly and Mountainous Areas, information sheet on raising Vitis coignetiae (yamabudo) from hardwood cuttings (2003), table 2: ten plants from cuttings measured in their second year after planting out (1990): trunk girth 72 mm on average (a diameter of 23 mm, radius squared 132 mm2) on plants carrying 33.5 m of new shoot, which is (132 - 6.25) / 33.5 = 3.8 mm2 for each metre carried. The same sheet takes its cuttings from the lower half of one-year canes 8.7 mm through; a 3 m cane by this figure is 8.3 mm through at its base. A fit to two numbers from young plants, not a measured pipe model."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -419,90 +429,309 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.3,
+      "status": "provisional_design_assumption",
+      "basis": "The share of panicles that become a bunch. The species is dioecious and sets poorly without pollen from another vine (Honma and others 2007: 24 to 55% of the berries of a cluster set with hand pollination; Kimura and others 1998: natural cross-pollination is low), yet the RHS describes the fruit of the garden plant. No source read says what sex the plant in the UK trade is or how often it fruits here, so this is a choice, and the first thing to check on a real plant."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.08,
+        0.13
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The length of a bunch, stalk and berries together. No source read gives it for this species: chosen for some forty berries 10 mm across (RHS: 1 cm; Bean: 1/2 in.; Oregon State: 10 mm). A germplasm record seen only as a search excerpt gives a cluster of 34 g at 0.9 g a berry."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        60,
+        80
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Berries are full size about ten weeks after flowering, at the start of September. A choice that fits the ripening months below."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        250,
+        285
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://pfaf.org/user/Plant.aspx?LatinName=Vitis+coignetiae",
+      "basis": "Plants for a Future: seeds ripen \"September to October\". Early September to mid October; the days are a choice."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        300,
+        345
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Ripe bunches are taken by birds or shrivel and drop from late October to mid December. A choice; a nursery notes the grapes are \"left on the vine for birds\"."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        1,
+        1,
+        0
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean, of this species: a tendril is \"missing at every third joint\". Two nodes with a tendril, then one without, as in most of the genus."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0.12,
+        0.3
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No source read gives the length of a tendril of this species. Darwin measured one of 16 in. on a common vine \"not growing vigorously\"; taken somewhat shorter on average, on a plant with larger leaves."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "The leaf stalks do not coil: it climbs by tendrils (RHS; Bean)."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0.05,
+        0.15
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: leaf stalk \"from 2 to 6 in. long\". Recorded for completeness: no stalk coils (appendages.leafStalkCoilShare is 0), so none is drawn as a hold."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No clinging rootlets: it climbs by tendrils (RHS; Bean)."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No clinging rootlets: it climbs by tendrils (RHS; Bean)."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: no source read mentions prickles."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: no source read mentions prickles."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Buds on wood made last year and on older wood break into the year's shoots: Bean, of the genus, has the year's shoots cut back to \"one or two buds\" in winter, and those buds carry the next year's growth. RHS, of grapevines: the flower-carrying side shoots are new shoots of the season from the permanent stems."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 6,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The year's shoots that break from the buds of older wood. Pruned as Bean gives for the genus (\"cut hard back in December or January to one or two buds\"), a framework keeps a spur every few nodes; at 0.118 m from node to node (Gifu Prefecture 2003) one or two shoots to every two or three nodes is some four to eight a metre. The low end is taken. Set so that an established plant is clothed in overlapping leaves, as every photograph of a plant on a wall or frame shows (Commons: Capel Manor patio, Brno botanic garden)."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.4,
+        1.8
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A shoot of the year from a spur, by the end of its season. Annual shoots of 2 to 5 m are given by a wall-greening supplier (fassadengruen.de, excerpt only) and the longest shoot of a young plant in Gifu made 3.24 m on average; on a framework of many spurs most stay shorter, and the gardener shortens them \"once or twice during the summer\" (Bean, of the genus), which the model does not do. Taken from a short shoot to one that arches and hangs: Bean, of the genus, \"if the shoots are allowed to hang loosely, they are very elegant\"."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 1,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The year's shoots are cut \"hard back in December or January to one or two buds\" (Bean, of the genus), so on the gardened plant they are gone before the next spring and the next year's shoots break from the spur. On a plant left alone they would stay and become canes; the engine has one lifespan for both, and the gardened plant is the baseline."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.35,
+      "status": "provisional_design_assumption",
+      "basis": "About a third of the short shoots carry a panicle once the plant is old enough. A choice: no count was found. The panicle is at the end of the shoot only because the engine cannot put it opposite a leaf part-way along."
+    },
+    "sideShoots.branchAngleDeg": {
+      "value": [
+        30,
+        65
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "No angle was found measured for this species. A vine shoot from a spur sets out leaning forward along the cane that bears it and soon turns up and out; 30 to 65 degrees is a choice, a little closer to the cane than the generic side shoot."
+    },
+    "sideShoots.breakSpreadDays": {
+      "value": [
+        0,
+        21
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Buds along a pruned framework break within about three weeks of one another. A choice; no UK record of bud break on this species was found."
+    },
+    "sideShoots.startTowardsLight": {
+      "value": 0.35,
+      "status": "provisional_design_assumption",
+      "basis": "A choice: a shoot from a bud on the shaded side of a cane turns out to the light early. Not measured."
+    },
+    "sideShoots.baseDiameterMm": {
+      "value": 9,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "source": "https://www.k-agri.rd.pref.gifu.lg.jp/hukyu/15_hukyu/15-1hukyu.pdf",
+      "basis": "A shoot of the longest length the model gives, at its foot. Gifu Prefecture (2003) takes cuttings from the lower half of one-year canes and gives them as 8.7 to 8.9 mm through; taken as 9 mm. Not measured on a UK plant."
+    },
+    "organs.alternateDivergenceDeg": {
+      "value": 180,
+      "unit": "degrees",
+      "status": "peer_reviewed",
+      "source": "https://scholarworks.uni.edu/facpub/3594",
+      "basis": "Gerrath, Posluszny and Dengler (2001), International Journal of Plant Sciences 162: 729-745, take Vitis riparia as the type of \"distichous phyllotaxy and a three-node modular pattern\" in the vine family: the leaves of a shoot stand in two ranks, each half way round from the last. Of the genus, not measured on this species; photographs of V. coignetiae shoots on Commons show the same two ranks."
+    },
+    "organs.sideShootLeafSpacingM": {
+      "value": [
+        0.09,
+        0.14
+      ],
+      "unit": "m",
+      "status": "measured",
+      "source": "https://www.k-agri.rd.pref.gifu.lg.jp/hukyu/15_hukyu/15-1hukyu.pdf",
+      "basis": "The year's shoots from spurs are the same shoots as the canes and are spaced the same. Gifu Prefectural Research Institute for Agricultural Technology in Hilly and Mountainous Areas, information sheet on raising Vitis coignetiae (yamabudo) from hardwood cuttings (2003), table 2: ten plants from cuttings measured in their second year after planting out (1990): the mean internode of each plant's new shoots was 9.0 to 13.7 cm, 11.8 cm over the ten (283 nodes on 33.5 m of shoot). One leaf to a node, so this is the distance from leaf to leaf. Measured on young plants in Japan, not in the UK."
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 3000,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "No bending test on this species was found. Hattermann et al. 2022 measured searcher shoots of 29 climbers, the common vine (Vitis vinifera) among the tendril climbers, and found that about 3000 MN/m2 was needed to hold a reach of more than about 0.8 m; they do not give the vine its own figure. A study of Cabernet Sauvignon shoots gives a flexural modulus near 5900 MPa (Bu and others 2025, BioResources 20(3), seen only as a search excerpt and not entered). 3000 is kept.",
+      "range": [
+        800,
+        6000
+      ]
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 300,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "No measurement on this species. The soft end of a shoot is taken as a tenth of the set value, near the least stiff searcher base in Hattermann et al. 2022 (213 MN/m2).",
+      "range": [
+        100,
+        1000
+      ]
+    },
+    "mechanics.woodSetDays": {
+      "value": 40,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Not measured. A vine shoot is taken to stay green and pliable for some weeks behind its tip; six weeks is a choice.",
+      "range": [
+        20,
+        90
+      ]
+    },
+    "mechanics.stemFreshDensityKgM3": {
+      "value": 1000,
+      "unit": "kg/m3",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1098/rsif.2017.0001",
+      "basis": "Not weighed. A fresh shoot is mostly water; 1000 kg/m3 as Chelakkot and Mahadevan 2017 take for a young shoot.",
+      "range": [
+        800,
+        1200
+      ]
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.25,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. A large leaf with a thick felt beneath (Bean: \"a thick rusty brown felt\"; the Kyoto Red Data Book, seen as an excerpt, calls it thick) on a stout stalk 5 to 15 cm long: taken as a quarter of a millimetre of water over its outline, a little heavier than a thin leaf. The leaves are most of what a vine shoot carries; weigh some to settle it.",
+      "range": [
+        0.15,
+        0.4
+      ]
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.004,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. A panicle of about a hundred \"tiny\" flowers (RHS) on a branched stalk some 10 cm long: a few grams.",
+      "range": [
+        0.001,
+        0.015
+      ]
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.03,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "Worked out, not weighed: a bunch of some forty berries (morphology.json) 1 cm across (RHS) to 1/2 in. (Bean), each about 0.5 to 0.9 g if as dense as water, is 20 to 36 g with its stalk. A germplasm record seen only as a search excerpt gives a cluster of 34 g.",
+      "range": [
+        0.01,
+        0.1
+      ]
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.8,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "Hattermann et al. 2022: the longest self-supporting searchers of the tendril and root climbers they measured, the common vine among them, reached 0.14 to 0.91 m from base to tip; the vine is not given a figure of its own. 0.8 m is taken for a stout vine shoot. Bean of the genus: shoots \"allowed to hang loosely\", and a supplier's \"hanging / cascading growth\" (excerpt only): beyond its reach a shoot bends over and hangs.",
+      "range": [
+        0.14,
+        0.91
+      ]
+    },
+    "tropism.turnPerM": {
+      "value": 0.8,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "basis": "Chosen, not measured: a shoot lying across the way it seeks turns through about a right angle in a metre of growth. A vine shoot tip leans out and nods rather than standing plumb.",
+      "range": [
+        0.5,
+        5
+      ]
+    },
+    "tropism.lightShare": {
+      "value": 0.65,
+      "status": "provisional_design_assumption",
+      "basis": "Chosen, not measured: half way between plumb and the light. The plant is a forest climber that makes for the light of the canopy (Bean: to \"the tops of the highest trees\").",
+      "range": [
+        0,
+        1
+      ]
+    },
+    "attachment.graspReachM": {
+      "value": 0.15,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How near a shoot must come to a support for a tendril to catch it: about the length of a tendril (appendages.tendrilLengthM, 0.12 to 0.3 m, itself assumed from Darwin's 16 in. tendril on a common vine). A choice at the short end.",
+      "range": [
+        0.05,
+        0.3
+      ]
     }
   }
 }

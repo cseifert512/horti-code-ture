@@ -385,10 +385,14 @@ describe('the light section of the design report', () => {
 
   it('reads each plant against its own profile', () => {
     expect(report.light.plants).toHaveLength(12);
+    // every plant has more than half the light of open ground. The dimmest is no longer above 0.6: the evergreen on
+    // the north-north-west stands next to the vine, whose leaves (10 to 22 cm, Bean) now clothe its lane and shade it
+    // on summer afternoons
     for (const p of report.light.plants) {
-      expect(p.seasonShare, p.plantId).toBeGreaterThan(0.6);
+      expect(p.seasonShare, p.plantId).toBeGreaterThan(0.5);
       expect(p.seasonShare, p.plantId).toBeLessThanOrEqual(1);
     }
+    expect(plant('north-evergreen').seasonShare).toBeLessThan(plant('vine').seasonShare);
     // the two clematis whose profiles ask for sun are held back by what the structure takes; the rest are not
     expect(plant('spring-clematis').growthFactor).toBeLessThan(0.97);
     expect(plant('winter-clematis').growthFactor).toBeLessThan(0.97);
