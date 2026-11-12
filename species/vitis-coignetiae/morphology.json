@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "vitis-coignetiae",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous woody tendril climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "RHS plant record: \"vigorous, deciduous climber about 15m tall\". Bean: \"a very vigorous deciduous climber\" reaching \"the tops of the highest trees\"."
+    },
+    "habit.heightM": {
+      "value": 15,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "RHS plant record: \"about 15m tall\"; ultimate height class over 12 m, reached in 10 to 20 years. A height on a tall support, not a route length."
+    },
+    "habit.annualShootLengthM": {
+      "value": [2, 5],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "A wall-greening supplier (fassadengruen.de, wild vines and creepers) gives \"an annual shoot growth of 2 - 5 metres\" and \"hanging / cascading growth\". Read only as a search-engine excerpt: the page itself would not open, so it is entered as an assumption and not as a published value."
+    },
+    "stem.youngShootSection": {
+      "value": "round, ribbed",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: young shoots \"round, ribbed\"."
+    },
+    "stem.youngShootCovering": {
+      "value": "loose greyish floss",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: young shoots \"at first covered with a loose greyish floss\". Oregon State University: \"young shoots brown, tomentose\"."
+    },
+    "stem.barkOld": {
+      "value": "separating in long fibrous strips",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/",
+      "basis": "Bean, of the genus: the bark of older branches separates in \"long fibrous strips\". No source read describes the old bark of this species in particular."
+    },
+    "stem.caneDiameterM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "stem.internodeLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "tendril.position": {
+      "value": "opposite the leaf",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/",
+      "basis": "Bean, of the genus: tendrils \"borne opposite the leaves\", \"without adhesive tips\"."
+    },
+    "tendril.nodesBearingInThree": {
+      "value": 2,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean, of this species: a tendril is \"missing from every third joint\": two nodes in three bear one. Oregon State University says the same. The growth model's appendages.tendrilNodePattern is [1, 1, 0]."
+    },
+    "tendril.arms": {
+      "value": 2,
+      "status": "provisional_design_assumption",
+      "basis": "No source read describes the tendril of this species. Darwin, of the common vine (Vitis vinifera): a stalk bearing \"two branches which diverge equally\", the one with a scale at its base the longer. Taken to be the same here, as it is across the genus; to be checked on the plant."
+    },
+    "tendril.lengthM": {
+      "value": [0.12, 0.3],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "No source read gives it for this species. Darwin measured a tendril 16 in. long on a common vine \"not growing vigorously\". The same range as the growth model's appendages.tendrilLengthM."
+    },
+    "tendril.unattachedFate": {
+      "value": "withers and drops",
+      "status": "provisional_design_assumption",
+      "basis": "Darwin, of the vine family: tendrils that catch nothing \"hang down, remaining straight, until they wither and drop off\"; one that has clasped \"contracts spirally\" and turns woody. Not recorded for this species in any source read."
+    },
+    "leaf.arrangement": {
+      "value": "alternate",
+      "status": "published_plant_profile",
+      "source": "https://landscapeplants.oregonstate.edu/plants/vitis-coignetiae",
+      "basis": "Oregon State University: \"Leaves alternate, simple\"."
+    },
+    "leaf.outline": {
+      "value": ["roundish", "broadly heart-shaped"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"roundish\". RHS: \"broadly heart-shaped\". Oregon State University: \"rounded ovate\"."
+    },
+    "leaf.lobeCount": {
+      "value": [3, 5],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"rather obscurely three- or five-lobed\", \"the lobes and apex pointed\". RHS: \"slightly 3-5 lobed\". Seedlings are more deeply lobed (Bean); the established plant is what is drawn."
+    },
+    "leaf.base": {
+      "value": "deeply heart-shaped",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"the base deeply heart-shaped\"."
+    },
+    "leaf.margin": {
+      "value": "shallowly to coarsely toothed",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"shallowly to coarsely toothed\". Oregon State University: \"dentate\"."
+    },
+    "leaf.mainVeins": {
+      "value": 5,
+      "status": "provisional_design_assumption",
+      "basis": "Five main veins spread from the top of the stalk, one to each lobe or angle, as in the leaves of the genus. No source read states the number for this species; the Kyoto Red Data Book (seen as a search excerpt) calls the leaf five-angled. To be checked on a leaf."
+    },
+    "leaf.bladeLengthMaxM": {
+      "value": 0.305,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: leaves \"sometimes 12 in. long\". RHS: \"to 30cm in length\"."
+    },
+    "leaf.bladeWidthMaxM": {
+      "value": 0.254,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: the largest leaves \"10 in. broad\" for 12 in. long. The proportion of the blade drawn, five to six, is taken from this pair of numbers."
+    },
+    "leaf.bladeWidthM": {
+      "value": [0.102, 0.203],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"ordinarily 4 to 8 in. wide\". Oregon State University: 10 to 25 cm wide."
+    },
+    "leaf.stalkLengthM": {
+      "value": [0.051, 0.152],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"stalk from 2 to 6 in. long, somewhat woolly\". Oregon State University: petiole 5 to 15 cm."
+    },
+    "leaf.surfaceAbove": {
+      "value": "dark green, glabrous, dimpled",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"dark green and glabrous above\". BBC Gardeners' World: \"large rounded, dimpled leaves\". No source read says the veins are sunken; the dimpling is drawn as the blade swelling a little between its veins."
+    },
+    "leaf.surfaceBeneath": {
+      "value": "thick rusty brown felt",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"covered beneath with a thick rusty brown felt\". RHS: \"brown-felted beneath\". Oregon State University: \"thickly tomentose below\"."
+    },
+    "leaf.colourAutumn": {
+      "value": ["scarlet", "crimson"],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "RHS: \"turning scarlet and crimson in autumn\". Bean: \"brilliant scarlet\", crimson at Knap Hill. Provender Nurseries: \"shades of crimson and plum with greenish or yellow veins\". BBC Gardeners' World: \"fiery shades of red, gold and orange\"."
+    },
+    "leaf.colourYoung": {
+      "value": "fawn, felted, tinged rust",
+      "status": "provisional_design_assumption",
+      "basis": "No source read describes the unfolding leaf. Drawn in the colour of the felt that covers the young shoot and the leaf's underside (Bean: shoots \"covered with a loose greyish floss\", leaves rusty brown beneath), which is what shows before the blade has flattened. A nursery (seen as a search excerpt) calls the leaves \"rusty red in spring\"."
+    },
+    "inflorescence.type": {
+      "value": "panicle",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/",
+      "basis": "Bean, of the genus: flowers in panicles. The Korea Forest Service leaflet on this species (seen as a search excerpt) has the panicle standing opposite a leaf, as a tendril does."
+    },
+    "inflorescence.lengthM": {
+      "value": [0.07, 0.12],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "No source read gives the length of the panicle of this species. The same range as the growth model's organs.racemeLengthM: the stalk and the flowering part together, a little shorter than the bunch it becomes."
+    },
+    "inflorescence.flowerCount": {
+      "value": 120,
+      "status": "provisional_design_assumption",
+      "basis": "No count was found for this species. A cultivated plant in Yamagata carries about a hundred berries to a well-pollinated cluster where about half the flowers set (a university bulletin seen as a search excerpt; Honma and others 2007 for the share), which would be some two hundred flowers; a garden panicle is drawn with fewer. A number chosen for the picture."
+    },
+    "flower.colour": {
+      "value": "greenish",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "RHS: \"insignificant tiny greenish summer flowers\"."
+    },
+    "flower.petalCount": {
+      "value": 5,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/",
+      "basis": "Bean, of the genus: five petals \"united at their ends into a sort of cap, which is shed as the flower expands\". An open flower therefore shows no petals: stamens and ovary only."
+    },
+    "flower.stamenCount": {
+      "value": 5,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/",
+      "basis": "Bean, of the genus: five stamens, alternating with five nectar glands; calyx minute; style short."
+    },
+    "flower.widthM": {
+      "value": 0.005,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Across the spread stamens. No source read gives the size of the flower, only that it is \"tiny\" (RHS). Chosen so that the flowers of a panicle 0.1 m long sit close without merging."
+    },
+    "flower.sex": {
+      "value": "dioecious",
+      "status": "peer_reviewed",
+      "source": "https://www.jstage.jst.go.jp/article/hrj/6/2/6_2_229/_article/-char/en",
+      "basis": "Honma, Shishido and Taira (2007) and Kimura, Okamoto and Hirano (1998): male and female plants, the female needing pollen from another vine to set. Which sex the plant in the UK trade is was not found; the flower is drawn with both stamens and ovary, as the flower of a female plant has (its stamens bent back and sterile)."
+    },
+    "flower.daysInFlower": {
+      "value": [9, 10],
+      "unit": "days",
+      "status": "peer_reviewed",
+      "source": "https://www.jstage.jst.go.jp/article/hrj/6/2/6_2_229/_article/-char/en",
+      "basis": "Honma, Shishido and Taira (2007), Yamagata, Japan: flowering lasted 10 days on female plants and 9 on male."
+    },
+    "fruit.type": {
+      "value": "berry, in bunches",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "RHS: \"bunches of small blue-black berries 1cm across\"."
+    },
+    "fruit.berryDiameterM": {
+      "value": [0.01, 0.0127],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details",
+      "basis": "RHS: \"1cm across\". Bean: \"1/2 in. wide\". Oregon State University: \"10 mm thick\". Plants for a Future: about 12 mm."
+    },
+    "fruit.colourRipe": {
+      "value": "black with a purple bloom",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
+      "basis": "Bean: \"berries black with a purple bloom\". RHS: \"blue-black\"."
+    },
+    "fruit.bunchLengthM": {
+      "value": [0.08, 0.13],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Stalk and berries together. No source read gives it for this species. The same range as the growth model's fruit.lengthM, chosen for some forty berries a centimetre across."
+    },
+    "fruit.berriesPerBunch": {
+      "value": 40,
+      "status": "provisional_design_assumption",
+      "basis": "No count was found for a garden plant. A germplasm record seen only as a search excerpt gives a cluster of 34 g at 0.9 g a berry, which is 38 berries; cultivated plants in Japan carry about a hundred. A number chosen for the picture."
+    },
+    "fruit.seedCount": {
+      "value": [2, 4],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/",
+      "basis": "Bean, of the genus: seeds two to four, pear-shaped. Not drawn."
+    },
+    "fruit.ripeMonths": {
+      "value": "September to October",
+      "status": "published_plant_profile",
+      "source": "https://pfaf.org/user/Plant.aspx?LatinName=Vitis+coignetiae",
+      "basis": "Plants for a Future: seeds ripen \"September to October\"; a warm sunny position is needed for the fruit to ripen."
+    }
+  }
+}
