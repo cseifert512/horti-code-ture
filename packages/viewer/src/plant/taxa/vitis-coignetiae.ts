@@ -7,9 +7,12 @@
 //             veins, and the blade swells a little between them. The upper
 //             side is dark green, the under side felted rusty buff: the model
 //             is two sheets, so that what is seen from beneath a canopy is the
-//             felt. The blade is held at an angle to its long stalk and hangs
-//             towards its tip. Scarlet and crimson in autumn, from the palette
-//             and the season data; nothing here knows a date.
+//             felt. Its veins and the fine net between them, into which the
+//             blade is puckered, are a texture of its own (VINE_VEINS). The
+//             viewer holds the blade in the world (leaf.hold): sloping down and
+//             out from the top of its long stalk, face to the open side,
+//             whichever way the stalk points. Scarlet and crimson in autumn,
+//             from the palette and the season data; nothing here knows a date.
 //   panicle   the "insignificant tiny greenish" flowers: a branched panicle of
 //             about a hundred and twenty. A vine's flower has no petals to
 //             show (they are shed as a cap as it opens), so what opens here
@@ -31,7 +34,7 @@ import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/vitis-coignetiae/morphology.json';
 import { RNG, lerp, smoothstep } from '../../util.ts';
-import { MIDRIB, Merge, type RGB, Surf, WHITE, coilPath, lin, mix, path } from '../kit.ts';
+import { GROUND, Merge, type PalmateVeins, type RGB, Surf, WHITE, coilPath, lin, mix, palmateTexture, path, veinUv } from '../kit.ts';
 import { type AppendageAsset, type FlowerAsset, type FruitAsset, type LeafAsset, type TaxonLook, type WoodLook } from '../look.ts';
 
 const morphology = parseMorphology(morphologyJson, 'species/vitis-coignetiae/morphology.json');
@@ -59,9 +62,8 @@ const STALK_TO_BLADE = mid(characterRange(morphology, 'leaf.stalkLengthM')) / (m
 /**
  * The ground one vein feeds: from the notch on one side of it to the notch on
  * the other. The blade is a fan of these about the top of the stalk, which is
- * how the leaf is veined, and each carries the shared leaf texture with its
- * pale midrib on the vein, so that the side veins of the texture leave every
- * main vein as they do on the plant.
+ * how the leaf is veined; the veins themselves are the leaf's own texture
+ * (VINE_VEINS), laid flat over the whole blade.
  */
 interface Sector {
   /** Angle of the vein and of the two edges, radians from the tip of the leaf, increasing to the right. */
@@ -83,7 +85,11 @@ interface LeafShape {
   /** How far the margin dips between the middle lobe and the next, and between the side lobes, as a share of the reach there. */
   sinus: number;
   shoulder: number;
-  /** The blade leaves its stalk at one angle and curls on over through another by its tip, radians: it hangs. */
+  /**
+   * The blade leaves its stalk at one angle and curls on over through another by its tip, radians. The viewer holds
+   * the blade in the world (leaf.hold), so the drawn blade leaves its stalk flat and only curls; `tilt` is the angle
+   * at which the unit of the leaf is measured (LEAF_REACH), so that a leaf of a given length is the same size of leaf.
+   */
   tilt: number;
   curl: number;
   /** How far the blade falls away from the top of the stalk towards its margin, and its tip beyond that. */
@@ -250,6 +256,7 @@ function hang(shape: LeafShape, y: number, z: number): [number, number] {
  */
 function bladeSheet(shape: LeafShape, sectors: readonly Sector[], lod: number, drop: number, under: boolean, widen: number): { geometry: THREE.BufferGeometry; tones: number[] } {
   const grid = LEAF_GRID[lod]!;
+  const bearings = veinBearings(sectors, widen);
   const pos: number[] = [];
   const uv: number[] = [];
   const tones: number[] = [];
@@ -261,11 +268,9 @@ function bladeSheet(shape: LeafShape, sectors: readonly Sector[], lod: number, d
     // where the vein leaves the stalk
     const [topY, topZ] = hang(shape, -drop, 0);
     pos.push(0, topY, topZ);
-    uv.push(0.5, 0.03);
-    tones.push(under ? UNDER_TONE : shape.tone + 0.1);
+    uv.push(...veinUv(VINE_VEINS, 0, 0));
+    tones.push(under ? UNDER_TONE : shape.tone);
     n++;
-    // the texture has eleven pairs of side veins from end to end: a vein shows as many as its length earns
-    const veins = 0.45 * s.tip;
     for (let j = 1; j <= grid.rings; j++) {
       const v = Math.pow(j / grid.rings, 0.85);
       for (let k = 0; k <= cells; k++) {
@@ -283,11 +288,10 @@ function bladeSheet(shape: LeafShape, sectors: readonly Sector[], lod: number, d
         const y = heightOf(shape, s, si === 0, phi, v, theta, r, z);
         const [hy, hz] = hang(shape, y - drop, z);
         pos.push(x, hy, hz);
-        // the pale line of the texture is the vein: it is kept narrow out to the margin, where a sector is wide
-        const u = 0.5 + 0.5 * Math.sign(phi) * Math.pow(Math.abs(phi), lerp(1, 0.5, v));
-        // the felt beneath hides the side veins: the under side takes the foot of the texture, where there are none
-        uv.push(u, under ? 0.02 : 0.03 + veins * v);
-        tones.push(under ? UNDER_TONE : shape.tone + 0.1 * Math.max(0, 1 - Math.abs(phi) / 0.25) * (1 - 0.6 * v));
+        // the leaf's own texture, laid flat over the blade and turned on to this leaf's veins; the under side takes the same
+        // veins, which stand out from the felt there as they do on the plant
+        uv.push(...veinUv(VINE_VEINS, x, z, bearings));
+        tones.push(under ? UNDER_TONE : shape.tone);
         n++;
       }
     }
@@ -305,6 +309,52 @@ function bladeSheet(shape: LeafShape, sectors: readonly Sector[], lod: number, d
   geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   geometry.setIndex(idx);
   return { geometry, tones };
+}
+
+/**
+ * The veins of the leaf, drawn into a texture of its own (the kit's `palmateTexture`; uv as LeafTexture in look.ts
+ * says, the flat blade's units being the midrib's length). Five main veins from the top of the stalk (leaf.mainVeins),
+ * at the angles and reaches the outline gives them (sectorsOf), the lowest pair each with its strong branch into the
+ * lobe beside the stalk; straight secondaries leaving them forwards and running out to the teeth
+ * (leaf.secondaryVein*); and the whole blade netted by fine veins, puckered between them (leaf.veinNetCell, leaf.surfaceAbove:
+ * "dimpled"). The veins are paler and yellower than the blade (reference photographs 06 and 13).
+ */
+const VINE_VEINS: PalmateVeins = {
+  origin: 0.32,
+  span: 1.6,
+  main: [
+    { deg: -91, length: 0.74 },
+    { deg: -47, length: 0.84 },
+    { deg: 0, length: 0.96 },
+    { deg: 47, length: 0.84 },
+    { deg: 91, length: 0.74 },
+    { deg: -127, length: 0.5, from: { vein: 0, at: 0.1 } },
+    { deg: 127, length: 0.5, from: { vein: 4, at: 0.1 } },
+  ],
+  secondary: {
+    angle: characterNumber(morphology, 'leaf.secondaryVeinAngleDeg'),
+    spacing: characterNumber(morphology, 'leaf.secondaryVeinSpacing'),
+    first: 0.07,
+    reach: 0.5,
+    curve: 8,
+  },
+  net: { cell: characterNumber(morphology, 'leaf.veinNetCell'), jitter: 0.9 },
+  width: { main: 0.026, secondary: 0.01, net: 0.003 },
+  ground: 0.7,
+  pale: { main: 0.26, secondary: 0.18, net: 0.06 },
+  tint: { main: 0.75, secondary: 0.55, net: 0.22 },
+  relief: { vein: 0.75, pucker: 0.85 },
+  seed: 9,
+};
+if (VINE_VEINS.main.filter((m) => !m.from).length !== MAIN_VEINS) throw new Error(`the vine leaf's texture is drawn with a different number of main veins from the ${MAIN_VEINS} of its morphology`);
+
+/** The bearings this leaf's veins stand at as drawn, the outline widened, in the order of VINE_VEINS.main. */
+function veinBearings(sectors: readonly Sector[], widen: number): number[] {
+  const at = (theta: number) => Math.atan2(Math.sin(theta) * widen, Math.cos(theta)) / DEG;
+  const veins = sectors.filter((s) => !s.basal).map((s) => s.vein);
+  const basal = sectors.filter((s) => s.basal).map((s) => s.vein);
+  // the five from the stalk, left to right, then the left and right branches into the basal lobes
+  return [...veins.sort((a, b) => a - b).map(at), ...basal.sort((a, b) => a - b).map(at)];
 }
 
 /** A blade laid out and measured before it is built. */
@@ -346,7 +396,13 @@ function planBlade(shape: LeafShape): BladePlan {
   return { sectors, widen: (BLADE_WIDTH_TO_LENGTH * (front - back)) / (2 * widest), length: front - back, reach };
 }
 
-const BLADE_PLANS = LEAF_SHAPES.map(planBlade);
+/**
+ * The angle below the line of its stalk at which every blade is measured for the leaf's one unit (BladeHold.unitAt): the
+ * middle of the tilts above, read off photographs. The viewer holds the blade in the world; this keeps the length in the
+ * data what the growth model measures, from the stem to the farthest point of a blade as it is held.
+ */
+const UNIT_AT = LEAF_SHAPES.reduce((sum, s) => sum + s.tilt, 0) / LEAF_SHAPES.length / DEG;
+const BLADE_PLANS = LEAF_SHAPES.map((shape) => planBlade({ ...shape, tilt: UNIT_AT * DEG }));
 const mean = (xs: readonly number[]): number => xs.reduce((a, b) => a + b, 0) / xs.length;
 /**
  * The stalk in lengths of the midrib: Bean's stalk of 2 to 6 in. to a blade ordinarily 4 to 8 in. wide, the blade
@@ -379,13 +435,15 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
     stalkSides,
     WHITE,
     WHITE,
-    MIDRIB,
+    GROUND,
   );
   const join = new V3(0, 0, stalkLength);
   // the blade hangs from the end of its stalk, its upper side to the light
   const seat = new THREE.Matrix4().makeTranslation(join.x, join.y, join.z);
+  // the blade is drawn leaving its stalk flat, and only curling on towards its tip: the viewer holds it (leaf.hold)
+  const flat = { ...shape, tilt: 0 };
   for (const under of [false, true]) {
-    const sheet = bladeSheet(shape, plan.sectors, lod, under ? grid.gap : 0, under, plan.widen);
+    const sheet = bladeSheet(flat, plan.sectors, lod, under ? grid.gap : 0, under, plan.widen);
     const start = mg.n;
     mg.add(sheet.geometry, seat, WHITE, join, 0);
     // each point's own place on the palette's ramp: the upper side green, paler along the veins, the under side felt
@@ -820,6 +878,15 @@ const leaf: LeafAsset = {
   translucency: 0.3,
   // a leaf a hand and a half across keeps its lobes and teeth at a distance a small leaf would not
   detailReach: 1.5,
+  texture: palmateTexture(VINE_VEINS, 1024, 1.4),
+  // on a wall or a frame the blades slope down and out from the tops of their stalks and overlap like shingles; on a
+  // shoot out in the open they are held flatter to the sky (morphology.json leaf.posture and leaf.faceRise*)
+  hold: {
+    unitAt: UNIT_AT,
+    rise: characterRange(morphology, 'leaf.faceRiseDeg'),
+    riseOpen: characterRange(morphology, 'leaf.faceRiseOpenDeg'),
+    turn: characterNumber(morphology, 'leaf.bladeTurnDeg'),
+  },
 };
 
 const panicle: FlowerAsset = {
@@ -854,6 +921,8 @@ const bunch: FruitAsset = {
   // "black with a purple bloom": nearly black in the shade of the berry, dusty blue-violet where the bloom is
   ripe: [0.032, 0.03, 0.04],
   ripeShade: [0.75 - ((1.9 - 0.75) / (UNRIPE.high - UNRIPE.low)) * UNRIPE.low, (1.9 - 0.75) / (UNRIPE.high - UNRIPE.low)],
+  // the branched stalk of the bunch stays green under the black berries (reference photograph 19-Vitis_coignetiae_cluster)
+  stalkKeepsColour: true,
   roughness: 0.62,
   swing: 0.45,
   detailAt: [1.6, 5],

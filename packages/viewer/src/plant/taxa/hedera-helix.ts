@@ -29,16 +29,21 @@
 // for most). Made from descriptions and measurements; outlines, postures and
 // colours checked against photographs, named where they are used.
 //
+// The climbing leaf carries a texture of its own (IVY_VEINS): five pale main
+// veins from the top of the stalk, pale secondaries off them and a fine pale
+// net over the dark blade, drawn by the kit's palmate vein generator. Its
+// blade is held in the world by the viewer (climbingLeaf.hold): face out from
+// what the stem clings to and tip down, whichever way the stalk points.
+//
 // What cannot be drawn here: the paler underside of the leaf (both faces are
 // drawn alike), the purple flush of leaves in cold weather (an evergreen leaf
-// is given no winter state), the spiral of leaves round an adult shoot (the
-// render data sets them to left and right), and the fine pale net between the
-// secondary veins (see SECONDARY).
+// is given no winter state), and the spiral of leaves round an adult shoot (the
+// render data sets them to left and right).
 import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/hedera-helix/morphology.json';
 import { RNG, clamp, hash2, lerp } from '../../util.ts';
-import { MIDRIB, Merge, type RGB, Surf, WHITE, lathe, lin, mix } from '../kit.ts';
+import { GROUND, MIDRIB, Merge, type PalmateVeins, type RGB, Surf, WHITE, lathe, lin, mix, palmateTexture, veinUv } from '../kit.ts';
 import { type AppendageAsset, type FlowerAsset, type FruitAsset, type LeafAsset, type TaxonLook, type WoodLook } from '../look.ts';
 
 const morphology = parseMorphology(morphologyJson, 'species/hedera-helix/morphology.json');
@@ -105,6 +110,12 @@ const CLIMBING_LEAVES: readonly ClimbingLeaf[] = [
   { half: [tip(0, 1), sinus(36, 0.7), tip(60, 0.8), edge(100, 0.6), edge(145, 0.32), edge(180, 0.05)], hang: 68, roll: -3, yaw: 5, tipsDown: [0.04, 0.03, 0.02], seed: 41 },
   { half: [tip(0, 1), sinus(32, 0.66), tip(60, 0.75), sinus(92, 0.5), tip(118, 0.5), edge(152, 0.28), edge(180, 0.05)], hang: 70, roll: 2, yaw: -6, tipsDown: [0.04, 0.04, 0.02], seed: 47 },
 ];
+/**
+ * The angle below the line of its stalk at which every climbing blade is measured for the leaf's one unit (BladeHold.unitAt):
+ * the middle of the hangs above, which were read off photographs. The viewer holds the blade in the world; this only keeps
+ * the length in the data the reach of a leaf as it hangs.
+ */
+const UNIT_AT = CLIMBING_LEAVES.reduce((sum, leaf) => sum + leaf.hang, 0) / CLIMBING_LEAVES.length;
 const LOBES = CLIMBING_LEAVES.map((leaf) => 2 * leaf.half.filter((k) => k.kind === 'tip').length - 1);
 if (Math.min(...LOBES) !== FEWEST_LOBES || Math.max(...LOBES) !== MOST_LOBES) throw new Error(`hedera-helix: the climbing leaves are drawn with ${LOBES.join(', ')} lobes, and its morphology gives ${FEWEST_LOBES} to ${MOST_LOBES}`);
 
@@ -113,45 +124,68 @@ if (Math.min(...LOBES) !== FEWEST_LOBES || Math.max(...LOBES) !== MOST_LOBES) th
  * rounded shoulders behind the stalk add a third again, so the whole blade is about as long as the reach.
  */
 const CLIMBING_BLADE = 0.7;
-/** How pale a main vein is drawn: its share of the way from the green of the blade to the palette's vein colour. */
-const VEIN = 0.55;
-/** Half the width of the pale band along a main vein where it leaves the stalk, the end lobe being 1. */
-const VEIN_HALF_WIDTH = 0.02;
 
 interface BladeDetail {
-  /** Pieces each stretch of the outline is cut into, rings from the stalk outwards, and whether a main vein has a narrow band of its own. */
+  /** Pieces each stretch of the outline is cut into, and rings from the stalk outwards. The veins are the texture's: the mesh carries only the outline and the gentle dome. */
   pieces: number;
   rings: number;
-  veins: boolean;
-  /** How pale the vein columns are: less on the coarsest model, where a vein is as wide as half a lobe. */
-  pale: number;
   /** Fine relief: the wave of the edge. */
   fine: boolean;
-  /** Whether the pale secondary veins are drawn (see `SECONDARY`): only where the mesh is fine enough to carry them. */
-  net: boolean;
 }
 const BLADE_DETAIL: readonly BladeDetail[] = [
-  { pieces: 6, rings: 12, veins: true, pale: VEIN, fine: true, net: true },
-  { pieces: 2, rings: 4, veins: true, pale: VEIN, fine: false, net: false },
+  { pieces: 5, rings: 6, fine: true },
+  { pieces: 2, rings: 3, fine: false },
   // from far off: a flat fan of triangles to the curved outline
-  { pieces: 2, rings: 1, veins: false, pale: 0.1, fine: false, net: false },
+  { pieces: 2, rings: 1, fine: false },
 ];
 
 /**
- * The pale secondary veins. The shared leaf texture's pinnate side veins are drawn white with a dark line beside each,
- * and on a lobed blade they read as dark grooves; its midrib, a crisp pale line at u = 0.5, is the only pale line it
- * has. So u is set at each vertex from a field that crosses 0.5 along the secondary veins: the texture then draws its
- * midrib wherever the interpolated u passes 0.5, as a sharp pale line, and v keeps to the strip below the first side
- * vein. In each lobe's frame the veins leave the main vein forwards at `angle` degrees, `spacing` apart along it (of
- * the end lobe's length), as on the photographed leaves (Commons: Efeublatt 06.jpg, Ivy leaf (50844400051).jpg,
- * Hedera helix 2.jpg; morphology.json leaf.juvenile.secondaryVein*). The field is squared, so that u lingers near 0.5 across a band
- * either side of a vein and runs out towards the darker edge of the texture between veins: `gain` sets how far.
+ * The veins of the climbing leaf, drawn into a texture of its own (the kit's `palmateTexture`; uv as LeafTexture in
+ * look.ts says, the flat blade's units being the end lobe's length). Five main veins from the top of the stalk: to the
+ * end lobe, to each side lobe and to each basal lobe or shoulder (morphology.json leaf.juvenile.mainVeins, and the
+ * bearings and reaches of the measured outlines above); secondaries leaving them forwards at `angle`, `spacing` apart
+ * (leaf.juvenile.secondaryVein*) and arching on towards the margin; a fine net between them, its cells
+ * leaf.juvenile.veinNetCell across (Commons: Efeublatt 06.jpg; the vein-net photograph leaf-10). The veins are pale and
+ * greyish (the palette's greenB) on the dark blade; they lie a little sunk in it, and the blade is hardly puckered.
  */
-const SECONDARY = {
-  angle: characterNumber(morphology, 'leaf.juvenile.secondaryVeinAngleDeg'),
-  spacing: characterNumber(morphology, 'leaf.juvenile.secondaryVeinSpacing'),
-  gain: 0.4,
+const IVY_VEINS: PalmateVeins = {
+  origin: 0.3,
+  span: 1.6,
+  main: [
+    { deg: -120, length: 0.42 },
+    { deg: -64, length: 0.74 },
+    { deg: 0, length: 0.95 },
+    { deg: 64, length: 0.74 },
+    { deg: 120, length: 0.42 },
+  ],
+  secondary: {
+    angle: characterNumber(morphology, 'leaf.juvenile.secondaryVeinAngleDeg'),
+    spacing: characterNumber(morphology, 'leaf.juvenile.secondaryVeinSpacing'),
+    first: 0.08,
+    reach: 0.24,
+    curve: 40,
+  },
+  net: { cell: characterNumber(morphology, 'leaf.juvenile.veinNetCell'), jitter: 0.85 },
+  width: { main: 0.02, secondary: 0.008, net: 0.0035 },
+  ground: 0.74,
+  pale: { main: 0.24, secondary: 0.12, net: 0.04 },
+  tint: { main: 0.85, secondary: 0.6, net: 0.22 },
+  relief: { vein: 0.25, pucker: 0.06 },
+  seed: 5,
 };
+if (IVY_VEINS.main.length !== characterNumber(morphology, 'leaf.juvenile.mainVeins')) throw new Error('hedera-helix: the texture draws a different number of main veins from the morphology file');
+
+/**
+ * The leaf's own bearings of the five main veins, in the order of IVY_VEINS.main: the tips of the end and side lobes,
+ * and the basal lobes or, on a three-lobed leaf, the middle of the rounded shoulder. The texture is turned on to them
+ * (the kit's `veinUv`), so that each pale main vein runs to its own lobe's tip.
+ */
+function veinBearings(leaf: ClimbingLeaf): number[] {
+  const tips = leaf.half.filter((k) => k.kind === 'tip' && k.deg > 0).map((k) => k.deg);
+  const side = tips[0]!;
+  const basal = tips[1] ?? (side + 180) / 2 - 2;
+  return [-basal, -side, 0, side, basal];
+}
 
 /**
  * Gives vertices that stand at the same place the same normal. A lobed blade
@@ -234,9 +268,8 @@ function outlinePoint(ring: readonly Knot[], i: number, f: number): [number, num
 /**
  * A lobed blade lying in the XZ plane, upper side +Y, the stalk joining at the
  * origin and the tip of the end lobe at z = 1. One sheet to each lobe, fanned
- * from the stalk between the two sinuses beside it, with the lobe's main vein
- * up its middle: so the shared leaf texture, whose midrib is at u = 0.5, puts
- * a pale vein up every lobe and its side veins either side of that.
+ * from the stalk between the two sinuses beside it. Its veins are the leaf's
+ * own texture (IVY_VEINS), laid flat over the blade.
  */
 function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
   const rng = new RNG(leaf.seed);
@@ -244,11 +277,10 @@ function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
   // the whole outline, from the notch round the left side, over the end lobe and back down the right side to the notch
   const ring: Knot[] = [...leaf.half.slice(1).map((k) => ({ ...k, deg: -k.deg })).reverse(), ...leaf.half];
   const at = (k: Knot): [number, number] => [k.r * Math.sin(k.deg * DEG), k.r * Math.cos(k.deg * DEG)];
-  const longest = Math.max(...ring.map((k) => k.r));
 
   const sb = new Surf();
   const uvs: number[] = [];
-  const pale: number[] = [];
+  const bearings = veinBearings(leaf);
   // a lobe runs from one sinus to the next; the notch at the stalk ends the two basal ones
   let start = 0;
   let lobe = 0;
@@ -266,87 +298,58 @@ function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
     interface Column {
       x: number;
       z: number;
-      /** 0 an ordinary column, 1 the main vein, 2 the edge of the vein's pale band (its neighbour on the rim is `beside`). */
-      vein: 0 | 1 | 2;
-      beside: number;
+      /** 1 where the lobe's main vein meets the rim, at its tip. */
+      vein: 0 | 1;
     }
     const rim: Column[] = [];
     for (let k = 0; k < knots.length - 1; k++) {
       for (let s = 0; s < detail.pieces; s++) {
         const [x, z] = outlinePoint(ring, from + k, s / detail.pieces);
-        rim.push({ x, z, vein: s === 0 && knots[k]!.kind === 'tip' ? 1 : 0, beside: 0 });
+        rim.push({ x, z, vein: s === 0 && knots[k]!.kind === 'tip' ? 1 : 0 });
       }
     }
     const last = knots[knots.length - 1]!;
-    rim.push({ x: at(last)[0], z: at(last)[1], vein: 0, beside: 0 });
+    rim.push({ x: at(last)[0], z: at(last)[1], vein: 0 });
     const veinAt = rim.findIndex((c) => c.vein === 1);
     if (veinAt <= 0 || veinAt >= rim.length - 1) throw new Error('hedera-helix: every lobe of a climbing leaf needs one tip between two sinuses');
 
-    // the columns of the sheet: the rim, with a narrow column either side of the vein where the model is fine enough
-    const columns: Column[] = [];
-    rim.forEach((c, i) => {
-      const side = (towards: number): Column => ({ x: lerp(c.x, rim[towards]!.x, 0.2), z: lerp(c.z, rim[towards]!.z, 0.2), vein: 2, beside: 0 });
-      if (i === veinAt && detail.veins) columns.push(side(i - 1));
-      columns.push(c);
-      if (i === veinAt && detail.veins) columns.push(side(i + 1));
-    });
-    const veinColumn = columns.findIndex((c) => c.vein === 1);
-    columns.forEach((c, i) => {
-      if (c.vein === 2) c.beside = i < veinColumn ? i - 1 : i + 1;
-    });
-    // across the lobe for the texture: the vein at 0.5, the sinuses at the two edges, by distance along the rim
+    // the columns of the sheet: the rim
+    const columns: Column[] = rim;
+    const veinColumn = veinAt;
+    // across the lobe: 0 on its main vein, 1 at the sinuses, by distance along the rim (for the dome between them)
     const along: number[] = [0];
     for (let i = 1; i < columns.length; i++) along.push(along[i - 1]! + Math.hypot(columns[i]!.x - columns[i - 1]!.x, columns[i]!.z - columns[i - 1]!.z));
     const us = columns.map((_, i) => (i <= veinColumn ? 0.5 * (along[i]! / along[veinColumn]!) : 0.5 + 0.5 * ((along[i]! - along[veinColumn]!) / (along[columns.length - 1]! - along[veinColumn]!))));
     const vein = columns[veinColumn]!;
     const reach = Math.hypot(vein.x, vein.z);
     const down = leaf.tipsDown[Math.min(2, Math.round(rank))]!;
-    // the lobe's own frame, along and across its main vein, in which its secondary veins are laid
-    const axisX = vein.x / reach;
-    const axisZ = vein.z / reach;
 
     const nu = columns.length - 1;
     sb.surf(nu, detail.rings, (u01, v01) => {
       const i = Math.round(u01 * nu);
       const c = columns[i]!;
       const rho = Math.pow(v01, 0.85);
-      let x = rho * c.x;
-      let z = rho * c.z;
-      if (c.vein === 2) {
-        // a band of its own width along the vein, narrowing to the tip, and never wider than half way to the next column
-        const n = columns[c.beside]!;
-        const dx = rho * (n.x - vein.x);
-        const dz = rho * (n.z - vein.z);
-        const gap = Math.hypot(dx, dz);
-        const w = Math.min(VEIN_HALF_WIDTH * (1 - 0.75 * rho), 0.5 * gap);
-        x = rho * vein.x + (gap > 1e-9 ? (dx / gap) * w : 0);
-        z = rho * vein.z + (gap > 1e-9 ? (dz / gap) * w : 0);
-      }
+      const x = rho * c.x;
+      const z = rho * c.z;
       const r = Math.hypot(x, z);
       const across = Math.abs(us[i]! - 0.5) * 2;
       // nearly flat: a little domed, the blade swelling slightly between its veins, the lobe tips turned down.
       // Nothing here differs between two lobes along the sinus line they share, or the blade would gape there
       let y = -0.05 * r * r + 0.009 * Math.sin(Math.PI * Math.min(1, across)) * Math.pow(rho, 0.6) * (1 - 0.35 * rho) - down * rho * rho * reach * (1 - Math.min(1, across));
       if (detail.fine) y += 0.008 * Math.sin(Math.atan2(x, z) * 4.3 + phase) * rho * rho * rho;
-      // the texture (see SECONDARY): a field that is zero along each secondary vein, running forward and out from the
-      // lobe's main vein, so that the texture's pale midrib is drawn along it. The palmate main veins are `pale` below
-      const sideways = x * axisZ - z * axisX;
-      const ahead = x * axisX + z * axisZ;
-      const lean = 1 / Math.tan(SECONDARY.angle * DEG);
-      const field = detail.net ? Math.sin((Math.PI * (ahead - lean * Math.abs(sideways))) / (SECONDARY.spacing * longest) + lobe) : 0.85;
-      uvs.push(0.5 + SECONDARY.gain * Math.sign(field) * field * field, 0.006);
-      pale.push(c.vein === 1 && v01 > 0 ? detail.pale * (1 - 0.55 * v01) : 0);
+      // the leaf's own texture, laid flat over the blade and turned on to its lobes (see IVY_VEINS)
+      uvs.push(...veinUv(IVY_VEINS, x, z, bearings));
       return { p: [x, y, z] };
     });
   }
   for (let i = 0; i < uvs.length; i++) sb.uv[i] = uvs[i]!;
   const geometry = sb.build();
   smoothSeams(geometry);
-  return { geometry, pale };
+  return { geometry, pale: [] };
 }
 
-/** The stalk: out along +Z from the stem, arched a little, to where the blade hangs from it. */
-function leafStalk(mg: Merge, length: number, lod: number): V3 {
+/** The stalk: out along +Z from the stem, arched a little, to where the blade hangs from it. `uvAt` is where it samples the texture. */
+function leafStalk(mg: Merge, length: number, lod: number, uvAt: readonly [number, number] = MIDRIB): V3 {
   const n = [4, 3, 2][lod]!;
   const points: V3[] = [];
   const radii: number[] = [];
@@ -355,7 +358,7 @@ function leafStalk(mg: Merge, length: number, lod: number): V3 {
     points.push(new V3(0, 0.07 * length * 4 * t * (1 - t) + 0.02 * t, length * t));
     radii.push(lerp(0.013, 0.009, t));
   }
-  mg.tube(points, radii, [6, 4, 3][lod]!, WHITE, WHITE, MIDRIB);
+  mg.tube(points, radii, [6, 4, 3][lod]!, WHITE, WHITE, uvAt);
   return points[n]!;
 }
 
@@ -364,15 +367,22 @@ function leafStalk(mg: Merge, length: number, lod: number): V3 {
  * `hang`, `roll` and `yaw` say. The stalk is as long as leaves one unit from
  * the stem to the farthest point of the blade, so that the length in the
  * render data is the reach of the leaf as it is held.
+ *
+ * A `held` blade (one whose leaf has a BladeHold, which the viewer turns in the
+ * world) is laid flat out from the end of the stalk instead, turned only by
+ * `roll` and `yaw`; the stalk is still as long as the hung blade would leave
+ * it, so that a leaf of a given length in the data is the same size of leaf.
  */
-function hangBlade(blade: Blade, scale: number, hang: number, roll: number, yaw: number, lod: number): THREE.BufferGeometry {
+function hangBlade(blade: Blade, scale: number, hang: number, roll: number, yaw: number, lod: number, held = false): THREE.BufferGeometry {
   const mg = new Merge(true);
-  const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(hang * DEG, yaw * DEG, roll * DEG, 'YXZ'));
+  const hung = new THREE.Quaternion().setFromEuler(new THREE.Euler(hang * DEG, yaw * DEG, roll * DEG, 'YXZ'));
+  const q = held ? new THREE.Quaternion().setFromEuler(new THREE.Euler(0, yaw * DEG, roll * DEG, 'YXZ')) : hung;
   const position = blade.geometry.getAttribute('position');
   const p = new V3();
   let forward = 0;
-  for (let i = 0; i < position.count; i++) forward = Math.max(forward, p.fromBufferAttribute(position, i).applyQuaternion(q).z * scale);
-  const from = leafStalk(mg, 1 - forward, lod);
+  for (let i = 0; i < position.count; i++) forward = Math.max(forward, p.fromBufferAttribute(position, i).applyQuaternion(hung).z * scale);
+  // a held blade carries the leaf's own texture, whose plain ground the stalk takes; the adult leaf, the shared one's midrib
+  const from = leafStalk(mg, 1 - forward, lod, held ? GROUND : MIDRIB);
   const first = mg.n;
   mg.add(blade.geometry, new THREE.Matrix4().compose(from, q, new V3(scale, scale, scale)), WHITE, from, 0);
   tintBlade(mg, first, blade.pale);
@@ -383,7 +393,7 @@ function hangBlade(blade: Blade, scale: number, hang: number, roll: number, yaw:
 
 function makeClimbingLeaf(variant: number, lod: number): THREE.BufferGeometry {
   const leaf = CLIMBING_LEAVES[variant]!;
-  return hangBlade(climbingBlade(leaf, BLADE_DETAIL[lod]!), CLIMBING_BLADE, leaf.hang, leaf.roll, leaf.yaw, lod);
+  return hangBlade(climbingBlade(leaf, BLADE_DETAIL[lod]!), CLIMBING_BLADE, UNIT_AT, leaf.roll, leaf.yaw, lod, true);
 }
 
 // ---------------------------------------------------------------------------
@@ -828,7 +838,7 @@ const climbingLeaf: LeafAsset = {
   variants: CLIMBING_LEAVES.length,
   lods: BLADE_DETAIL.length,
   make: makeClimbingLeaf,
-  budget: [2300, 340, 60],
+  budget: [800, 180, 60],
   // three lobes for most, as on the wall in the photographs; five for the rest
   pick: (_lengthM, r) => (r < 0.3 ? 0 : r < 0.55 ? 1 : r < 0.7 ? 2 : r < 0.87 ? 3 : 4),
   // dark, grey-green and shining, the veins a greyish pale green (greenB is what a vein is drawn towards); evergreen, so
@@ -840,6 +850,15 @@ const climbingLeaf: LeafAsset = {
   // leathery: little light comes through
   translucency: 0.2,
   detailReach: 0.75,
+  texture: palmateTexture(IVY_VEINS, 512, 0.8),
+  // on a wall the blades hang tip down and face out, overlapping like tiles, whichever way their shoot runs (habit-04,
+  // fruit-04; morphology.json leaf.juvenile.posture); a shoot out in the air holds its leaves flatter to the sky
+  hold: {
+    unitAt: UNIT_AT,
+    rise: characterRange(morphology, 'leaf.juvenile.faceRiseDeg'),
+    riseOpen: characterRange(morphology, 'leaf.juvenile.faceRiseOpenDeg'),
+    turn: characterNumber(morphology, 'leaf.juvenile.bladeTurnDeg'),
+  },
 };
 
 const adultLeaf: LeafAsset = {

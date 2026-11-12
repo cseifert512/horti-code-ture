@@ -27,7 +27,7 @@ import { frameSubject, frameWhole } from './specimen/framing.ts';
 import { SPECIMEN_VIEWS, SPECIMEN_YEARS, type SpecimenView, type Subject, describeSubject, findSubject, specimenPlan } from './specimen/specimen.ts';
 import { type BuiltStructure, buildStructure } from './structure/build.ts';
 import { toThree } from './structure/frames.ts';
-import { makeBarkTextures, makeLeafTexture } from './textures.ts';
+import { makeBarkTextures, makeLeafTexture, makeOwnLeafTexture } from './textures.ts';
 
 /** The two reference shells, or a design read from files. */
 type BowerKey = 'vault' | 'hemisphere' | 'design';
@@ -771,7 +771,7 @@ function showPlants(source: PlantSource, keepDay = false): void {
   }
 
   const data: RenderData = run ? run.data : makeTestPlant(bower).data;
-  plantMaterials ??= makePlantMaterials({ bark: (grain) => makeBarkTextures(grain), leafTex: makeLeafTexture() });
+  plantMaterials ??= makePlantMaterials({ bark: (grain) => makeBarkTextures(grain), leafTex: makeLeafTexture(), ownLeafTex: makeOwnLeafTexture });
   plant = new PlantView(data, plantMaterials);
   stage.scene.add(plant.group);
 

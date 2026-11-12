@@ -20,6 +20,7 @@ import {
   toRenderData,
 } from '@horti/core';
 import { growPlanting } from '../../src/plant/grow.ts';
+import { asMeasured } from '../../src/plant/hold.ts';
 import { triangles } from '../../src/plant/kit.ts';
 import { assetsOf, ceilingFor } from '../../src/plant/look.ts';
 import { loadLooks, lookFor } from '../../src/plant/registry.ts';
@@ -66,6 +67,30 @@ function pieces(g: THREE.BufferGeometry, keep: (i: number) => boolean = () => tr
   const out = new Map<number, number[]>();
   for (const i of parent.keys()) out.set(find(i), [...(out.get(find(i)) ?? []), i]);
   return [...out.values()];
+}
+
+/**
+ * The lobes of a blade lying flat in XZ (a held leaf), read off its outline: the points of the rim that stand farther
+ * from where the stalk joins than every other within 25 degrees either side of them, and more than half as far as the
+ * farthest. With each, the bearing at which its texture puts it, seen from the point where the veins meet.
+ */
+function lobesOf(g: THREE.BufferGeometry): { deg: number; uvDeg: number }[] {
+  const all = vertices(g);
+  const uv = g.getAttribute('uv');
+  const blade = all.map((v, i) => ({ ...v, i })).filter((v) => v.t >= 0);
+  const pivot = blade[0]!.pivot;
+  const polar = blade.map((v) => ({ deg: (Math.atan2(v.p.x - pivot.x, v.p.z - pivot.z) * 180) / Math.PI, r: Math.hypot(v.p.x - pivot.x, v.p.z - pivot.z), i: v.i }));
+  const far = Math.max(...polar.map((q) => q.r));
+  const origin = polar.reduce((a, b) => (b.r < a.r ? b : a));
+  const [u0, v0] = [uv.getX(origin.i), uv.getY(origin.i)];
+  const tips = polar.filter((q) => q.r > 0.5 * far && polar.every((o) => Math.abs(o.deg - q.deg) > 25 || o.r <= q.r + 1e-9));
+  // one tip to a lobe, though two vertices may stand at the same place
+  const out: { deg: number; uvDeg: number }[] = [];
+  for (const q of tips) {
+    if (out.some((o) => Math.abs(o.deg - q.deg) < 5)) continue;
+    out.push({ deg: q.deg, uvDeg: (Math.atan2(uv.getX(q.i) - u0, uv.getY(q.i) - v0) * 180) / Math.PI });
+  }
+  return out.sort((a, b) => a.deg - b.deg);
 }
 
 /** Groups unit directions that lie within `degrees` of one another, and says how many groups there are. */
@@ -141,12 +166,30 @@ describe('the climbing leaf', () => {
   const reach = param(model, 'organs.leafLengthM');
   const blades = Array.from({ length: leaf.variants }, (_, v) => bladeOf(leaf.make(v, 0)));
 
-  it('has three to five lobes, each with a pale main vein from the stalk to its tip', () => {
+  it('has three to five lobes, each with a pale main vein of its own texture from the stalk to its tip', () => {
     const [fewest, most] = characterRange(morphology, 'leaf.juvenile.lobeCount');
-    const lobes = blades.map((b) => b.veins);
-    expect(Math.min(...lobes)).toBe(fewest);
-    expect(Math.max(...lobes)).toBe(most);
-    for (const n of lobes) expect([fewest, most]).toContain(n);
+    const texture = leaf.texture!;
+    expect(texture).toBeDefined();
+    const mains = texture.lines!().filter((l) => l.kind === 'main');
+    // five main veins from the top of the stalk (morphology.json leaf.juvenile.mainVeins), every one starting where the others do
+    expect(mains).toHaveLength(characterNumber(morphology, 'leaf.juvenile.mainVeins'));
+    for (const m of mains) {
+      expect(m.points[0]![0]).toBeCloseTo(mains[0]!.points[0]![0], 6);
+      expect(m.points[0]![1]).toBeCloseTo(mains[0]!.points[0]![1], 6);
+    }
+    const veinDeg = mains.map((m) => {
+      const [a, b] = [m.points[0]!, m.points[m.points.length - 1]!];
+      return (Math.atan2(b[0] - a[0], b[1] - a[1]) * 180) / Math.PI;
+    });
+    const counts: number[] = [];
+    for (let v = 0; v < leaf.variants; v++) {
+      const lobes = lobesOf(leaf.make(v, 0));
+      counts.push(lobes.length);
+      // the texture is laid so that the tip of every lobe lies on the line of a main vein
+      for (const lobe of lobes) expect(Math.min(...veinDeg.map((d) => Math.abs(d - lobe.uvDeg))), `variant ${v}, the lobe at ${lobe.deg.toFixed(0)} degrees`).toBeLessThan(4);
+    }
+    expect(Math.min(...counts)).toBe(fewest);
+    expect(Math.max(...counts)).toBe(most);
     // the vein is drawn towards a colour paler than the blade
     const { greenA, greenB } = leaf.palette;
     expect(greenB[1]).toBeGreaterThan(greenA[1] * 3);
@@ -168,19 +211,25 @@ describe('the climbing leaf', () => {
     }
   });
 
-  it('hangs from the end of its stalk, its upper side turned outwards, and is one unit from the stem to its farthest point', () => {
+  it('is held by the viewer from the end of its stalk, and is one unit from the stem to its farthest point as it hangs', () => {
+    // morphology.json leaf.juvenile.posture and faceRise*: on a wall the face looks nearly straight out; in the open, flatter
+    const hold = leaf.hold!;
+    expect(hold.rise).toEqual(characterRange(morphology, 'leaf.juvenile.faceRiseDeg'));
+    expect(hold.riseOpen).toEqual(characterRange(morphology, 'leaf.juvenile.faceRiseOpenDeg'));
+    expect(hold.rise[1]).toBeLessThan(hold.riseOpen[1]);
     for (let v = 0; v < leaf.variants; v++) {
       const g = leaf.make(v, 0);
-      g.computeBoundingBox();
-      expect(g.boundingBox!.max.z).toBeCloseTo(1, 2);
       const blade = vertices(g).filter((x) => x.t >= 0);
       const pivot = blade[0]!.pivot;
+      // one blade, turned as one about where it joins the stalk
+      for (const x of blade) expect(x.pivot.distanceTo(pivot)).toBeLessThan(1e-9);
+      // authored lying flat out from the stalk's end, upper side up: the viewer turns it
       const tip = blade.reduce((far, x) => (x.p.distanceTo(pivot) > far.p.distanceTo(pivot) ? x : far)).p;
-      // the tip hangs well below where the stalk ends and only a little farther from the stem, the blade nearly square
-      // to its stalk, face out, as the leaves of a wall of ivy hang (the photographs are named in the module)
-      expect(tip.y).toBeLessThan(pivot.y - 0.45);
-      expect(tip.z).toBeGreaterThan(pivot.z + 0.05);
-      expect(tip.z).toBeLessThan(pivot.z + 0.4);
+      expect(Math.abs(tip.y - pivot.y)).toBeLessThan(0.1 * tip.distanceTo(pivot));
+      // measured hung from the stalk's end the way the photographs show it, it reaches one unit from the stem
+      const z = asMeasured(g, hold.unitAt).map((p) => p.z);
+      expect(Math.max(...z)).toBeGreaterThan(0.97);
+      expect(Math.max(...z)).toBeLessThan(1.03);
     }
   });
 });

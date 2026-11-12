@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { APPENDAGE_KIND } from '@horti/core';
+import { asMeasured } from '../src/plant/hold.ts';
 import { triangles } from '../src/plant/kit.ts';
 import { BUDGET_CEILING, type FlowerAsset, type LeafAsset, type OrganKind, type OrganModel, type TaxonLook, assetsOf, ceilingFor, formOf } from '../src/plant/look.ts';
 import { TAXON_IDS, loadLooks, lookFault, lookFor } from '../src/plant/registry.ts';
@@ -179,11 +180,11 @@ describe('the frame each organ is authored in', () => {
       if (look.taxonId === 'wisteria-sinensis') continue;
       for (const leaf of Object.values(look.leaves) as LeafAsset[]) {
         for (let v = 0; v < leaf.variants; v++) {
-          const g = leaf.make(v, 0);
-          g.computeBoundingBox();
-          expect(g.boundingBox!.max.z, leaf.key).toBeGreaterThan(0.9);
-          expect(g.boundingBox!.max.z, leaf.key).toBeLessThan(1.12);
-          expect(g.boundingBox!.min.z, leaf.key).toBeGreaterThan(-0.1);
+          // a leaf whose blade the viewer holds is measured with its blade turned down as its hold says (BladeHold.unitAt)
+          const z = (leaf.hold ? asMeasured(leaf.make(v, 0), leaf.hold.unitAt) : asMeasured(leaf.make(v, 0), 0)).map((p) => p.z);
+          expect(Math.max(...z), leaf.key).toBeGreaterThan(0.9);
+          expect(Math.max(...z), leaf.key).toBeLessThan(1.12);
+          expect(Math.min(...z), leaf.key).toBeGreaterThan(-0.1);
         }
       }
     }
