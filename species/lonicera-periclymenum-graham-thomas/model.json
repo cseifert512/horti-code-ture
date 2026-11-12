@@ -444,30 +444,30 @@
     },
     "fruit.swellDays": {
       "value": [
-        18,
-        30
+        12,
+        20
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "Days from the last flower of a head to full-sized green berries. No source read gives it. Flowers of June give ripe berries by mid to late August (BSBI account), which leaves three or four weeks for swelling."
+      "basis": "Days from the last flower of a head to full-sized green berries. No source read gives it. Flowers of June give ripe berries by mid to late August (BSBI account); two to three weeks is taken for swelling, and kept short so that the berries of the last heads are full grown inside the ripening window."
     },
     "fruit.ripenDoy": {
       "value": [
         227,
-        316
+        306
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Berries are \"ripe from mid- to late August onwards\" (BSBI account). The window runs from 15 August to 12 November so that the berries of the last heads still ripen in their own year: the engine holds fruit that is full grown after the window green until the next one. The real berry ripens some weeks after its own flower, which a window of dates cannot say."
+      "basis": "Berries are \"ripe from mid- to late August onwards\" (BSBI account). The window runs from 15 August to 2 November so that the berries of the last heads still ripen in their own year: the engine holds fruit that is full grown after the window green until the next one. The engine also spreads ripening to the end of the window, so most clusters here are red in October, later than the real plant; a real berry ripens some weeks after its own flower, which a window of dates cannot say."
     },
     "fruit.fallDoy": {
       "value": [
-        258,
-        340
+        250,
+        330
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Birds take the berries through the autumn and \"some fruit remains until October or early November\" (BSBI account). From 15 September to 6 December, the later end allowing for the berries of the last heads."
+      "basis": "Birds take the berries through the autumn and \"some fruit remains until October or early November\" (BSBI account). From 7 September to 26 November, the later end allowing for the berries of the last heads."
     },
     "appendages.tendrilNodePattern": {
       "value": [

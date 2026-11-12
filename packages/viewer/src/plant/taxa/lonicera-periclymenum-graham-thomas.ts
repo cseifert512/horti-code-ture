@@ -224,7 +224,7 @@ function lip(sb: Surf, [nu, nw]: Segs, side: 1 | -1, width: number, length: numb
   sb.surf(nu, nw, (u01, w01) => {
     const u = u01 * 2 - 1;
     // the end is cut into rounded lobes: a point between two lobes stops short
-    const scallop = lobes > 1 ? 1 - 0.1 * (1 - Math.pow(Math.abs(Math.sin((Math.PI * lobes * (u + 1)) / 2)), 0.45)) * w01 * w01 : 1 - 0.1 * u * u * w01;
+    const scallop = lobes > 1 ? 1 - 0.22 * (1 - Math.pow(Math.abs(Math.sin((Math.PI * lobes * (u + 1)) / 2)), 0.4)) * w01 * w01 : 1 - 0.1 * u * u * w01;
     const w = w01 * scallop;
     const c = at(w);
     // at the rim it is part of the tube's wall; a third of the way out it has opened flat
@@ -280,9 +280,9 @@ function makeFloret(lod: number): THREE.BufferGeometry {
     return { p: [Math.cos(th) * r, c.y + Math.sin(th) * r * Math.cos(slope), c.z - Math.sin(th) * r * Math.sin(slope)], c: mix(PAINT.tubeBase, PAINT.tube, smoothstep(0.05, 0.55, v)) };
   });
   // upper lip: broad, of four lobes, rolled right back over the tube
-  lip(sb, seg.upper, 1, UPPER_LIP_W, LIP_LENGTH, 1.45, 2.7, UPPER_LIP_LOBES, (w) => mix(PAINT.throat, PAINT.lip, smoothstep(0, 0.4, w)));
+  lip(sb, seg.upper, 1, UPPER_LIP_W, LIP_LENGTH, 1.45, 3.2, UPPER_LIP_LOBES, (w) => mix(PAINT.throat, PAINT.lip, smoothstep(0, 0.4, w)));
   // lower lip: one narrow strap, rolled down and under
-  lip(sb, seg.lower, -1, LOWER_LIP_W, LIP_LENGTH * 0.95, 0.75, 3.4, 1, (w) => mix(PAINT.throat, PAINT.lip, smoothstep(0, 0.4, w)));
+  lip(sb, seg.lower, -1, LOWER_LIP_W, LIP_LENGTH * 0.95, 0.75, 3.8, 1, (w) => mix(PAINT.throat, PAINT.lip, smoothstep(0, 0.4, w)));
   // stamens: borne on the mouth of the tube, standing well out, spread like the fingers of a hand; anthers set crosswise
   const out = STAMEN_LENGTH * 0.72;
   for (let i = 0; i < seg.stamens; i++) {
