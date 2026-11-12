@@ -423,8 +423,8 @@ describe('a specimen of common ivy, twelve years on the frame', () => {
     for (const l of data.leaves) expect(l.form, l.stemId).toBe(role.get(l.stemId) === 'side_shoot' ? 'adult' : undefined);
     expect(leavesOn(`${last}-07-15`, 'adult')).toBeGreaterThan(100);
     expect(leavesOn(`${last}-07-15`, 'default')).toBeGreaterThan(10 * leavesOn(`${last}-07-15`, 'adult'));
-    // none in the first six years: the plant is all juvenile growth
-    expect(leavesOn('2032-07-15', 'adult')).toBe(0);
+    // none in the first five years: no wood is yet as old as the model asks before it bears an adult shoot
+    expect(leavesOn('2031-07-15', 'adult')).toBe(0);
     const clear = param(model, 'organs.clearStemHeightM');
     for (const s of data.stems.filter((x) => x.role === 'side_shoot')) expect(s.contact[2]!).toBeGreaterThanOrEqual(clear);
   });
