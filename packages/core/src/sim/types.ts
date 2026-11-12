@@ -139,12 +139,22 @@ export interface LeafSite {
   firstYear: number;
   /** Last calendar year in leaf; null for a leaf position renewed every year (a spur). */
   lastYear: number | null;
-  /** True where the leaf is kept through winter. */
+  /**
+   * True where the leaf is kept through winter: every leaf of an evergreen
+   * plant, unless its model has it lose a share of them; and on any other
+   * plant the share its model says it keeps (`organs.winterLeafShare`).
+   */
   evergreen: boolean;
   bornDay: number;
   removedDay: number | null;
   /** Which of the taxon's leaf forms it is, where its growth model names one. */
   form?: string;
+  /**
+   * For a leaf that a plant which is not evergreen keeps through the winter
+   * after its last season: the day of the following spring on which it is to
+   * be shed, as the new leaves open. `lastYear` is the year of that spring.
+   */
+  shedPlannedDay?: number;
 }
 
 /**
@@ -225,6 +235,18 @@ export interface FloralBud {
   developDay: number;
   openPlannedDay: number;
   spentPlannedDay: number;
+  /**
+   * For a plant that flowers again where a flower has gone over: which
+   * flower of its place in its season this is. Absent for the first; 1 for
+   * the one that follows it, and so on.
+   */
+  flush?: number;
+  /** The flower that followed this one at the same place, where one did or is on its way. */
+  followedBy?: string;
+  /** The fruit this flower set, where it set one. */
+  fruitId?: string;
+  /** The gardener event that took its spent head off, where one did. */
+  deadheadedBy?: string;
 }
 
 export interface PendingLateral {
@@ -374,8 +396,9 @@ export interface EventRecord {
  * out, because the growth model leaves its numbers unknown. Kept apart from `not_modelled` because readers of
  * that kind take it to mean that the plant has no flowers in the run.
  * `side_shoots_broke`, `shed`: flowering side shoots started from established stems, or had lived out their time.
+ * `side_shoots_grew_on`: side shoots of earlier years set off again, for a taxon whose model says they do.
  */
-export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'side_shoots_broke' | 'shed' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'died' | 'replanted';
+export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'side_shoots_broke' | 'side_shoots_grew_on' | 'shed' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'died' | 'replanted';
 
 /** Why the plant did what it did: the trace asked for by PROJECT_CONTEXT.md section 7.6. */
 export interface Decision {

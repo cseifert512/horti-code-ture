@@ -4,6 +4,7 @@ import { summariseProvenance } from '../provenance.ts';
 import { RENDER_CONTRACT, type RenderAppendage, type RenderData, type RenderFlower, type RenderFruit, type RenderLeaf, type RenderSeason, type RenderStem, type Triple } from '../render/contract.ts';
 import type { Simulation } from './engine.ts';
 import { modelProvenance, param } from './model.ts';
+import { throughNewYear, windowFrom, windowTo } from './windows.ts';
 
 const triple = (v: Vec3): Triple => [v.x, v.y, v.z];
 // adding zero turns a rounded -0 into 0, which is what JSON would make of it anyway
@@ -50,19 +51,25 @@ export function toRenderData(sim: Simulation): RenderData {
 
     for (let year = plant.firstPlantedYear; year <= lastYear; year++) {
       const doy = (d: number) => cal.dayOfYearDay(year, d);
-      const pair = (k: 'phenology.leafFlushDoy' | 'phenology.autumnColourDoy' | 'phenology.leafFallDoy'): [number, number] => {
-        const [a, b] = param(model, k);
-        return [doy(a), doy(b)];
-      };
+      const flush = param(model, 'phenology.leafFlushDoy');
+      const colour = param(model, 'phenology.autumnColourDoy');
+      const fall = param(model, 'phenology.leafFallDoy');
       const season: RenderSeason = {
         plantId: plant.id,
         year,
         budburstDay: doy(param(model, 'phenology.budburstDoy')),
         growthEndDay: doy(param(model, 'phenology.growthEndDoy')),
-        leafFlush: pair('phenology.leafFlushDoy'),
-        autumnColour: pair('phenology.autumnColourDoy'),
-        leafFall: pair('phenology.leafFallDoy'),
+        // a flush that runs through the new year began the year before; a colouring or a fall that does ends the year after
+        leafFlush: windowTo(cal, flush, year),
+        autumnColour: windowFrom(cal, colour, year),
+        leafFall: windowFrom(cal, fall, year),
       };
+      // and what of last year's fall runs on into this year, or of next year's flush begins in it, is said in this year's entry
+      if (throughNewYear(fall)) {
+        season.autumnColourBefore = windowFrom(cal, colour, year - 1);
+        season.leafFallBefore = windowFrom(cal, fall, year - 1);
+      }
+      if (throughNewYear(flush)) season.leafFlushAfter = windowTo(cal, flush, year + 1);
       data.seasons.push(season);
     }
 
