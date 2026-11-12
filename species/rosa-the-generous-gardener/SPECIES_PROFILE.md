@@ -49,6 +49,7 @@ Perennial canes with seasonally produced flowering laterals; different flowering
 - Leaves stand alternately to left and right of a shoot, not in the spiral of a rose.
 - Autumn colour is not recorded for the cultivar; the slight yellowing drawn is a choice. In a mild winter some leaves hang on, which is not shown.
 - A flower has one pose: it does not go from cup to open saucer, and the bud of a flower about to open is the whole corolla drawn small. Prickles are equally dense on every stem, and their shape is that of another climbing rose.
+- The renderer does not pass light from petal to petal, so a cup of many petals would be drawn dark inside. The petals are painted lighter than they are, the more so the deeper in the flower, to stand for the light the cup holds. That is a matter of appearance, not a record of colour.
 
 ## Light, aspect and shelter
 

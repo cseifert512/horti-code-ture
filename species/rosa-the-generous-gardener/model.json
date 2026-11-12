@@ -260,7 +260,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Stem between one leaf and the next. On a measured garden rose of another cultivar ('Radrazz') the internodes of a flowering shoot were 1 to 63.5 mm, about 12 to 34 mm in mid shoot (https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2013.00418/full); the long canes of a climber are longer-jointed than that. One spacing serves both the canes and the flowering side shoots of this model, so it lies between the two. Not measured on this cultivar."
+      "basis": "Stem between one leaf and the next. On a measured garden rose of another cultivar ('Radrazz') the internodes of a flowering shoot were 1 to 63.5 mm, about 12 to 34 mm in mid shoot (https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2013.00418/full); the long canes of a climber are longer-jointed than that. One spacing serves both the canes and the flowering side shoots of this model; the flowering shoot's is taken, because those shoots carry nearly all the leaves, so a cane in its first year is leafier than it should be. The engine lays stem in 40 mm steps and sets a leaf no closer than that. Not measured on this cultivar."
     },
     "organs.leafLengthM": {
       "value": [
@@ -269,7 +269,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The whole leaf, stalk to the tip of the end leaflet. HelpMeFind and NC State call the foliage \"large\" (https://www.helpmefind.com/rose/l.php?l=2.37005, https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/); NC State puts the leaflets in its 1 to 3 inch class. A leaf of five or seven leaflets 4 to 6 cm long is 9 to 15 cm long. Not measured on this cultivar."
+      "basis": "The whole leaf, stalk to the tip of the end leaflet. HelpMeFind and NC State call the foliage \"large\" (https://www.helpmefind.com/rose/l.php?l=2.37005, https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/); NC State puts the leaflets in its 1 to 3 inch class. A leaf of five or seven leaflets 4 to 6 cm long is 11 to 17 cm long. Not measured on this cultivar."
     },
     "organs.leavesPerNode": {
       "value": 1,
@@ -307,7 +307,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The width of a spray: two to four flowers, each of the breeder's \"medium\" bloom size, which David Austin gives as about 2 to 3.5 inches (5 to 9 cm) (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose); HelpMeFind gives an average bloom diameter of 2.5 inches and \"in small clusters\" (https://www.helpmefind.com/rose/l.php?l=2.37005). Two flowers side by side and the gap between them. The width of a spray is not given by any source: it is worked out from the bloom size."
+      "basis": "The width of a spray across its flowers: up to three open flowers and a bud or two, each flower of the breeder's \"medium\" bloom size, 2 to 3.5 inches (5 to 9 cm) (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose); HelpMeFind gives an average bloom diameter of 2.5 inches and \"in small clusters\" (https://www.helpmefind.com/rose/l.php?l=2.37005). About two and a half flowers wide. The width of a spray is not given by any source: it is worked out from the bloom size."
     },
     "organs.whipShareOfNodes": {
       "value": 0,

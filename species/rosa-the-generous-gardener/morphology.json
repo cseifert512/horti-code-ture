@@ -162,7 +162,7 @@
       "value": [0.155, 0.225],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Worked out, not read: two flowers of the breeder's bloom size (5 to 9 cm) side by side and the gap between them. The same figure as organs.racemeLengthM in the growth model."
+      "basis": "Worked out, not read: up to three flowers of the breeder's bloom size (5 to 9 cm) and a bud or two on their own stalks, about two and a half flowers wide. The same figure as organs.racemeLengthM in the growth model."
     },
     "flower.diameterM": {
       "value": [0.05, 0.09],
