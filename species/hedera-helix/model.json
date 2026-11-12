@@ -62,12 +62,12 @@
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        244,
+        245,
         300
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Each inflorescence begins to open on a day between 1 September and 27 October, so that with phenology.flowerLastsDays flowers are open from the start of September to the end of November. RHS (ivy on buildings): \"from September to November\". Metcalfe 2005: flowering \"begins in late August and may continue into November in the UK\", \"typically flowering in September\". The spread of opening days within that envelope is chosen."
+      "basis": "Each inflorescence begins to open on a day between the start of September (day 245: the 2nd, or the 1st in a leap year) and 27 October, so that with phenology.flowerLastsDays flowers are open from the start of September to the end of November. RHS (ivy on buildings): \"from September to November\". Metcalfe 2005: flowering \"begins in late August and may continue into November in the UK\", \"typically flowering in September\". The spread of opening days within that envelope is chosen."
     },
     "phenology.petalFallDoy": {
       "value": [
@@ -88,21 +88,21 @@
       "basis": "How long one inflorescence, a panicle of umbels, is in flower. Derived, not observed: a single flower lives about a week (Konarska 2014, https://czasopisma.up.lublin.pl/asphc/article/view/2741), the flowers of an umbel open more or less together, and the 3 to 5 umbels of a panicle flower one after another from the top down (Metcalfe 2005). Three to five umbel-weeks, overlapping a little."
     },
     "extension.leaderMPerSeason": {
-      "value": 0.7,
+      "value": 0.8,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Chosen to fall inside what the RHS publishes, which are sizes and not rates: 8 to 12 m in 10 to 20 years (plant record); \"the height of a two-storey house in 15-20 years\" and \"several standard fence panels in a decade\" (ivy on buildings). 0.7 m a season after the establishment years gives 8 m in about 13 years and 12 m in about 19. In forest shade it is slower: 30 to 40 years to reach a canopy 15 to 20 m up (Schnitzler and Heuze 2006, cited by the US Forest Service review)."
+      "basis": "Chosen to fall inside what the RHS publishes, which are sizes and not rates: 8 to 12 m in 10 to 20 years (plant record); \"the height of a two-storey house in 15-20 years\" and \"several standard fence panels in a decade\" (ivy on buildings). 0.8 m a season after the establishment years gives 8 m in about 11 years and 12 m in about 16. In forest shade it is slower: 30 to 40 years to reach a canopy 15 to 20 m up (Schnitzler and Heuze 2006, cited by the US Forest Service review)."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
+        0.7,
         0.6,
         0.5,
-        0.4,
-        0.3
+        0.4
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate by the order of the branch. Not measured."
+      "basis": "A little below the leader rate, less with each order of branch: ivy spreads sideways over a fence nearly as fast as it climbs. Not measured."
     },
     "extension.whipMPerSeason": {
       "value": 0.6,
@@ -113,8 +113,8 @@
     "extension.establishmentFactorByYear": {
       "value": [
         0.3,
-        0.6,
-        0.85
+        0.65,
+        1
       ],
       "status": "provisional_design_assumption",
       "basis": "Ivy is slow to start and then quick: gardeners say it sleeps, creeps and then leaps. The three factors are chosen to give that shape; no source gives numbers."
@@ -178,9 +178,9 @@
       "basis": "Ivy spreads as a fan, forking wherever it meets another way to go; nearly every joint of the lattice passed by a main stem is taken to bear a branch, fewer on the finer orders. Chosen, not counted."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.35,
+      "value": 0.25,
       "status": "provisional_design_assumption",
-      "basis": "A third of branch buds are taken to wait before breaking, so that a lattice fills over several years and not at once. Chosen."
+      "basis": "A quarter of branch buds are taken to wait before breaking, so that a lattice fills over several years and not at once. Chosen."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
@@ -274,12 +274,12 @@
     },
     "organs.leafLengthM": {
       "value": [
-        0.045,
-        0.105
+        0.042,
+        0.1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "What the engine calls leaf length is drawn as the reach of the leaf from the stem to the tip of the blade as it is held, stalk and blade together. The blade is 4 to 10 cm long (Metcalfe 2005, leaves of climbing stems \"4-10(-25) cm\") and hangs at an angle from a stalk of 2 to 10 cm (VicFlora); as the viewer holds it the climbing leaf's blade is about 0.94 of the reach, so a reach of 4.5 to 10.5 cm gives blades of 4.2 to 9.9 cm on stalks of 2 to 7 cm. One range serves both leaf forms: adult blades are 6 to 10 cm (Metcalfe), so the smallest adult leaves are drawn too small."
+      "basis": "What the engine calls leaf length is drawn as the reach of the leaf from the stem to the farthest point of the blade as it is held, stalk and blade together. The blade is 4 to 10 cm long (Metcalfe 2005, leaves of climbing stems \"4-10(-25) cm\") and hangs at an angle from a stalk of 2 to 10 cm (VicFlora); as the viewer holds it the climbing leaf's blade is as long as the reach, so a reach of 4.2 to 10 cm gives blades of 4.1 to 10 cm on stalks of 2 to 7 cm. One range serves both leaf forms: adult blades are 6 to 10 cm (Metcalfe), so the smallest adult leaves are drawn too small."
     },
     "organs.leavesPerNode": {
       "value": 1,
@@ -294,12 +294,12 @@
     },
     "organs.spurLengthM": {
       "value": [
-        0.02,
-        0.05
+        0.005,
+        0.015
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of such a short leafy shoot. Chosen."
+      "basis": "Length of such a short leafy shoot: a centimetre or so, little more than a cluster of leaves on the stem. Chosen. The engine stands every such shoot 3 cm off its stem whatever its length and sets its leaves at its foot, so a bare peg shows where a real plant has none."
     },
     "organs.spurLeafCount": {
       "value": [

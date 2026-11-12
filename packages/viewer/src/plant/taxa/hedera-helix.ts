@@ -615,7 +615,7 @@ const FRUIT = {
   berryShade: lin('#4c7a34'),
   crown: lin('#6a7a3c'),
   style: lin('#8a8f50'),
-  stalk: lin('#86a455'),
+  stalk: lin('#7a9a4c'),
 };
 
 function berry(lod: number): THREE.BufferGeometry {
@@ -728,7 +728,7 @@ const climbingLeaf: LeafAsset = {
   variants: CLIMBING_LEAVES.length,
   lods: BLADE_DETAIL.length,
   make: makeClimbingLeaf,
-  budget: [1100, 340, 90],
+  budget: [1100, 340, 40],
   // five lobes for most; three, or shallow ones, for the rest
   pick: (_lengthM, r) => (r < 0.4 ? 0 : r < 0.65 ? 1 : r < 0.85 ? 2 : 3),
   // dark and shining, the veins pale (greenB is what a vein is drawn towards); evergreen, so it has no autumn colours of its own
@@ -784,7 +784,7 @@ const berries: FruitAsset = {
   centreAlong: 0.9,
   // dull blue-black; the stalks, painted a brighter green than the berries, ripen to a purplish brown and not to black
   ripe: lin('#5a4a52'),
-  ripeShade: [-0.36, 2.6],
+  ripeShade: [-0.5, 3.2],
   roughness: 0.55,
   swing: 0.1,
   detailAt: [0.8, 2.5],

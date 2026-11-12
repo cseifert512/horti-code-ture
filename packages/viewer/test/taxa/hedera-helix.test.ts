@@ -46,8 +46,8 @@ function vertices(g: THREE.BufferGeometry): { p: THREE.Vector3; pivot: THREE.Vec
   return Array.from({ length: position.count }, (_, i) => ({ p: new V3().fromBufferAttribute(position, i), pivot: new V3(part.getX(i), part.getY(i), part.getZ(i)), t: part.getW(i) }));
 }
 
-/** How many separate pieces of surface a set of vertices makes: vertices joined by a triangle are one piece. */
-function pieces(g: THREE.BufferGeometry, keep: (i: number) => boolean): number {
+/** The separate pieces of surface a set of vertices makes, each as the list of its vertices: vertices joined by a triangle are one piece. */
+function pieces(g: THREE.BufferGeometry, keep: (i: number) => boolean = () => true): number[][] {
   const index = g.index!;
   const parent = new Map<number, number>();
   const find = (a: number): number => {
@@ -63,7 +63,9 @@ function pieces(g: THREE.BufferGeometry, keep: (i: number) => boolean): number {
     parent.set(find(a), find(b));
     parent.set(find(c), find(b));
   }
-  return new Set([...parent.keys()].map(find)).size;
+  const out = new Map<number, number[]>();
+  for (const i of parent.keys()) out.set(find(i), [...(out.get(find(i)) ?? []), i]);
+  return [...out.values()];
 }
 
 /** Groups unit directions that lie within `degrees` of one another, and says how many groups there are. */
@@ -79,9 +81,9 @@ function bladeOf(g: THREE.BufferGeometry) {
   const pivot = blade[0]!.pivot;
   const tip = blade.reduce((far, v) => (v.p.distanceTo(pivot) > far.p.distanceTo(pivot) ? v : far)).p;
   const forward = tip.clone().sub(pivot).normalize();
-  // the main veins are the pale vertices: one bundle of them to each lobe
+  // the main veins are the pale vertices (the rest of the blade is 0): one bundle of them to each lobe
   const veins = bundles(
-    blade.filter((v) => v.t >= 0.5 && v.p.distanceTo(pivot) > 0.2).map((v) => v.p.clone().sub(pivot).normalize()),
+    blade.filter((v) => v.t >= 0.25 && v.p.distanceTo(pivot) > 0.2).map((v) => v.p.clone().sub(pivot).normalize()),
     12,
   );
   // across the blade: square to the end lobe, in the plane the blade lies in
@@ -263,7 +265,7 @@ describe('the panicle of umbels', () => {
     const first = flowersOf(g)[0]!;
     const same = (i: number) => part.getW(i) >= 0 && Math.abs(part.getX(i) - first.pivot.x) + Math.abs(part.getY(i) - first.pivot.y) + Math.abs(part.getZ(i) - first.pivot.z) < 1e-5;
     // each petal is one piece of surface; each stamen two, its filament and its anther
-    expect(pieces(g, same)).toBe(petals + 2 * stamens);
+    expect(pieces(g, same)).toHaveLength(petals + 2 * stamens);
     // what is tagged as axis is still there when every flower has fallen: more of the model than the stalks alone
     const axis = vertices(g).filter((v) => v.t < 0).length;
     expect(axis).toBeGreaterThan(vertices(g).length * 0.2);
@@ -359,21 +361,27 @@ describe('the berries', () => {
 describe('the rootlets', () => {
   const roots = look.appendages.aerial_roots!;
 
-  it('are a cluster of 38 unbranched roots lying on the surface the stem clings to, one unit long', () => {
+  it('are a cluster of 38 unbranched roots lying on the surface the stem clings to, none longer than one unit', () => {
     const count = characterNumber(morphology, 'stem.rootletsPerCluster');
     for (let v = 0; v < roots.variants; v++) {
       const g = roots.make(v, 0);
       const points = vertices(g).map((x) => x.p);
-      // every root is one tube: those on the surface, and a few that go into it
-      const lying = pieces(g, (i) => points[i]!.z < 0.01);
-      expect(lying).toBe(count);
-      expect(pieces(g, () => true)).toBeGreaterThan(count);
-      // on the surface: within a tenth of a root's length of it, and no farther from the stem than one length
-      const onSurface = points.filter((p) => p.z < 0.01);
-      expect(Math.min(...onSurface.map((p) => p.z))).toBeGreaterThan(-0.2);
-      const farthest = Math.max(...onSurface.map((p) => Math.hypot(p.x, p.y)));
-      expect(farthest).toBeGreaterThan(0.9);
-      expect(farthest).toBeLessThan(1.1);
+      // every root is one tube of its own (unbranched): those that lie on the surface, and a few that go into it
+      const tubes = pieces(g).map((piece) => piece.map((i) => points[i]!));
+      const lying = tubes.filter((tube) => Math.max(...tube.map((p) => p.z)) < 0.01);
+      expect(lying).toHaveLength(count);
+      expect(tubes.length).toBeGreaterThan(count);
+      const lengths = lying.map((tube) => {
+        let longest = 0;
+        for (const a of tube) for (const b of tube) longest = Math.max(longest, a.distanceTo(b));
+        return longest;
+      });
+      // of unequal length, the longest about one unit: the length the data gives is the longest a root is drawn
+      expect(Math.max(...lengths)).toBeGreaterThan(0.9);
+      expect(Math.max(...lengths)).toBeLessThan(1.1);
+      expect(Math.min(...lengths)).toBeLessThan(0.6);
+      // on the surface, which is the plane z = 0: never more than a fifth of a length off it
+      for (const tube of lying) expect(Math.min(...tube.map((p) => p.z))).toBeGreaterThan(-0.2);
     }
     expect(known(model, 'appendages.aerialRootLengthM')).toEqual(characterRange(morphology, 'stem.rootletLengthM'));
   });
