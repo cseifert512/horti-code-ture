@@ -225,6 +225,8 @@ export interface FreeShoot {
   /** Bending moment at the base when it was last solved: where the next balance is looked for. */
   baseMoment: number;
   posture: ShootPosture;
+  /** The stretches of route that were within its grasp where it set out, which are not ones it has found; null until asked. */
+  leftBehind: Set<string> | null;
 }
 
 /** The level direction a vector leans in, or `fallback` where it stands plumb. Kept on the same side as `fallback`. */
@@ -245,7 +247,7 @@ export function startFreeShoot(basePoint: number, dir: Vec3): FreeShoot {
   const d = normalize(dir);
   const plane = levelOf(d, v3(1, 0, 0));
   const incline = inclineOf(d, plane);
-  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting' };
+  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null };
 }
 
 /**
@@ -287,12 +289,25 @@ interface Capsule {
   r: number;
   /** The member or cable it is part of. */
   hostId: string;
-  /** The stretch of route it is part of; null for timber that carries no route. */
+  /** The stretch of route it is part of, and the way that route runs here; null for timber that carries no route. */
   edge: SupportEdge | null;
+  along: Vec3;
+  /** The last question this piece was looked at for, so that it is looked at once. */
+  asked: number;
 }
 
 /** Half the thickness a shoot has to keep clear of: the round bar of the same perimeter as the section. */
 const clearRadiusM = (section: Section): number => equivalentDiameterMm(section) / 2000;
+
+/** The distance from p to segment a-b. */
+function distanceToSegment(p: Vec3, a: Vec3, b: Vec3): number {
+  const abx = b.x - a.x;
+  const aby = b.y - a.y;
+  const abz = b.z - a.z;
+  const l2 = abx * abx + aby * aby + abz * abz;
+  const t = l2 > 0 ? Math.min(1, Math.max(0, ((p.x - a.x) * abx + (p.y - a.y) * aby + (p.z - a.z) * abz) / l2)) : 0;
+  return Math.hypot(p.x - a.x - abx * t, p.y - a.y - aby * t, p.z - a.z - abz * t);
+}
 
 /** The point of segment a-b nearest to p. */
 function nearestOnSegment(p: Vec3, a: Vec3, b: Vec3): Vec3 {
@@ -336,6 +351,9 @@ function segmentDistance(p1: Vec3, q1: Vec3, p2: Vec3, q2: Vec3): number {
 
 const CELL_M = 0.5;
 const PIECE_M = 0.25;
+/** A grid cell as one number. Good for a structure within 250 m of the origin, which is every Bower. */
+const cellKey = (x: number, y: number, z: number): number => (x + 512) * 1048576 + (y + 512) * 1024 + (z + 512);
+const NOTHING: readonly { edge: SupportEdge; gap: number; along: Vec3 }[] = [];
 
 /**
  * The timber and cables of a Bower, cut into short straight pieces and kept
@@ -347,8 +365,8 @@ const PIECE_M = 0.25;
  * the cheap part of the test, and what it misses is said where it is used.
  */
 export class Surroundings {
-  private readonly cells = new Map<string, Capsule[]>();
-  private readonly pieces: Capsule[] = [];
+  private readonly cells = new Map<number, Capsule[]>();
+  private question = 0;
 
   constructor(bower: Bower) {
     const routed = new Set<string>();
@@ -365,10 +383,12 @@ export class Surroundings {
     for (let i = 0; i + 1 < points.length; i++) {
       const a = points[i]!;
       const b = points[i + 1]!;
-      const n = Math.max(1, Math.ceil(length(sub(b, a)) / PIECE_M));
+      const span = sub(b, a);
+      if (length(span) < 1e-9) continue;
+      const along = normalize(span);
+      const n = Math.max(1, Math.ceil(length(span) / PIECE_M));
       for (let k = 0; k < n; k++) {
-        const piece: Capsule = { a: addScaled(a, sub(b, a), k / n), b: addScaled(a, sub(b, a), (k + 1) / n), r, hostId, edge };
-        this.pieces.push(piece);
+        const piece: Capsule = { a: addScaled(a, span, k / n), b: addScaled(a, span, (k + 1) / n), r, hostId, edge, along, asked: -1 };
         const pad = r + 1e-6;
         const x0 = Math.floor((Math.min(piece.a.x, piece.b.x) - pad) / CELL_M);
         const x1 = Math.floor((Math.max(piece.a.x, piece.b.x) + pad) / CELL_M);
@@ -379,7 +399,7 @@ export class Surroundings {
         for (let x = x0; x <= x1; x++) {
           for (let y = y0; y <= y1; y++) {
             for (let z = z0; z <= z1; z++) {
-              const key = `${x},${y},${z}`;
+              const key = cellKey(x, y, z);
               const cell = this.cells.get(key);
               if (cell) cell.push(piece);
               else this.cells.set(key, [piece]);
@@ -390,9 +410,9 @@ export class Surroundings {
     }
   }
 
-  /** Every piece that could come within `reach` of the box round p and q. */
-  private near(p: Vec3, q: Vec3, reach: number): Set<Capsule> {
-    const out = new Set<Capsule>();
+  /** Call `see` once with every piece whose surface could come within `reach` of the box round p and q. */
+  private near(p: Vec3, q: Vec3, reach: number, see: (piece: Capsule) => void): void {
+    const asked = ++this.question;
     const x0 = Math.floor((Math.min(p.x, q.x) - reach) / CELL_M);
     const x1 = Math.floor((Math.max(p.x, q.x) + reach) / CELL_M);
     const y0 = Math.floor((Math.min(p.y, q.y) - reach) / CELL_M);
@@ -402,17 +422,21 @@ export class Surroundings {
     for (let x = x0; x <= x1; x++) {
       for (let y = y0; y <= y1; y++) {
         for (let z = z0; z <= z1; z++) {
-          const cell = this.cells.get(`${x},${y},${z}`);
-          if (cell) for (const piece of cell) out.add(piece);
+          const cell = this.cells.get(cellKey(x, y, z));
+          if (!cell) continue;
+          for (const piece of cell) {
+            if (piece.asked === asked) continue;
+            piece.asked = asked;
+            see(piece);
+          }
         }
       }
     }
-    return out;
   }
 
   /**
    * Whether a length of stem laid from `from` to `to` would go into a member
-   * or cable, and if so the direction straight out of it at `to`.
+   * or cable, and if so which, and the direction straight out of it at `to`.
    *
    * It goes in when it comes nearer to the centre line of a piece than the
    * piece's radius and the stem's together, and ends nearer to it than it
@@ -421,51 +445,40 @@ export class Surroundings {
    */
   enters(from: Vec3, to: Vec3, stemRadiusM: number): { out: Vec3; hostId: string } | null {
     let worst: { out: Vec3; hostId: string } | null = null;
-    let deepest = 0;
-    for (const piece of this.near(from, to, 0.2)) {
+    let deepest = -Infinity;
+    this.near(from, to, stemRadiusM + 1e-3, (piece) => {
       const clear = piece.r + stemRadiusM;
-      if (segmentDistance(from, to, piece.a, piece.b) >= clear) continue;
+      if (segmentDistance(from, to, piece.a, piece.b) >= clear) return;
       const at = nearestOnSegment(to, piece.a, piece.b);
       const now = length(sub(to, at));
-      const before = length(sub(from, nearestOnSegment(from, piece.a, piece.b)));
-      if (now >= before - 1e-9) continue;
-      const depth = clear - now;
-      if (depth > deepest || !worst) {
-        deepest = depth;
-        const away = sub(to, at);
-        worst = { out: length(away) > 1e-9 ? normalize(away) : UP, hostId: piece.hostId };
-      }
-    }
+      if (now >= distanceToSegment(from, piece.a, piece.b) - 1e-9) return;
+      if (clear - now <= deepest) return;
+      deepest = clear - now;
+      const away = sub(to, at);
+      worst = { out: length(away) > 1e-9 ? normalize(away) : UP, hostId: piece.hostId };
+    });
     return worst;
   }
 
   /**
-   * Distance from a point to the surface of a stretch of route (less than
-   * zero inside it), and the direction the route runs in, from its `from`
-   * end to its `to` end, where it is nearest.
+   * The stretches of route whose surface is within `reach` of a point,
+   * nearest first: each with the gap to it (less than zero inside it) and the
+   * way the route runs, from its `from` end to its `to` end, where it is nearest.
    */
-  static toEdge(p: Vec3, edge: SupportEdge): { gap: number; along: Vec3 } {
-    const pts = edge.axis.points;
-    let best = Infinity;
-    let along = UP;
-    for (let i = 0; i + 1 < pts.length; i++) {
-      const d = length(sub(p, nearestOnSegment(p, pts[i]!, pts[i + 1]!)));
-      if (d < best) {
-        best = d;
-        along = normalize(sub(pts[i + 1]!, pts[i]!));
+  routesNear(p: Vec3, reach: number): readonly { edge: SupportEdge; gap: number; along: Vec3 }[] {
+    let found: Map<string, { edge: SupportEdge; gap: number; along: Vec3 }> | null = null;
+    this.near(p, p, reach, (piece) => {
+      if (!piece.edge) return;
+      const gap = distanceToSegment(p, piece.a, piece.b) - piece.r;
+      if (gap > reach) return;
+      const known = (found ??= new Map()).get(piece.edge.id);
+      if (!known) found.set(piece.edge.id, { edge: piece.edge, gap, along: piece.along });
+      else if (gap < known.gap) {
+        known.gap = gap;
+        known.along = piece.along;
       }
-    }
-    return { gap: best - clearRadiusM(edge.section), along };
-  }
-
-  /** The stretches of route whose surface is within `reach` of a point, nearest first. */
-  routesNear(p: Vec3, reach: number): { edge: SupportEdge; gap: number; along: Vec3 }[] {
-    const seen = new Map<string, { edge: SupportEdge; gap: number; along: Vec3 }>();
-    for (const piece of this.near(p, p, reach + 0.15)) {
-      if (!piece.edge || seen.has(piece.edge.id)) continue;
-      const { gap, along } = Surroundings.toEdge(p, piece.edge);
-      if (gap <= reach) seen.set(piece.edge.id, { edge: piece.edge, gap, along });
-    }
-    return [...seen.values()].sort((x, y) => x.gap - y.gap || (x.edge.id < y.edge.id ? -1 : 1));
+    });
+    if (!found) return NOTHING;
+    return [...(found as Map<string, { edge: SupportEdge; gap: number; along: Vec3 }>).values()].sort((x, y) => x.gap - y.gap || (x.edge.id < y.edge.id ? -1 : 1));
   }
 }

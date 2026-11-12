@@ -885,11 +885,13 @@ export class Simulation {
     // not through the timber: it turns aside along the member or cable, and stops where it cannot
     const hit = this.surroundings.enters(from, to, radiusM);
     if (hit) {
-      const aside = normalize(addScaled(dir, hit.out, -dot(dir, hit.out)));
-      const round = addScaled(from, aside, go);
-      if (length(aside) > 0.5 && !this.surroundings.enters(from, round, radiusM)) {
-        dir = aside;
-        to = round;
+      const aside = addScaled(dir, hit.out, -dot(dir, hit.out));
+      // a shoot that holds itself up can turn away from what it meets; one that hangs can only slide along it
+      const ways = shoot.posture === 'self_supporting' ? [aside, add(aside, hit.out), hit.out] : [aside];
+      const way = ways.map(normalize).find((d) => length(d) > 0.5 && !this.surroundings.enters(from, addScaled(from, d, go), radiusM));
+      if (way) {
+        dir = way;
+        to = addScaled(from, dir, go);
         if (shoot.posture !== 'plumb') {
           // the timber has turned it: the rod is where it was let go
           const turned = replane(dir, shoot.plane);
@@ -899,7 +901,7 @@ export class Simulation {
         }
       } else {
         laid = 0;
-        stop = `came up against ${hit.hostId} and could not pass it`;
+        stop = shoot.posture === 'self_supporting' ? `came up against ${hit.hostId} and could not pass it` : `came to rest on ${hit.hostId}`;
       }
     }
     // not below the ground: it stops where it touches down
@@ -939,9 +941,11 @@ export class Simulation {
     if (reach <= 0 || axis.contact.length - 1 === shoot.basePoint) return false;
     const mechanism = profile.attachment.mechanism;
     const limit = model.params['attachment.maxGraspDiameterMm'];
-    const base = axis.contact[shoot.basePoint]!;
-    for (const { edge, along } of this.surroundings.routesNear(tipAt, reach)) {
-      if (axis.used.has(edge.id) || Surroundings.toEdge(base, edge).gap <= reach) continue;
+    const near = this.surroundings.routesNear(tipAt, reach);
+    if (!near.length) return false;
+    const behind = (shoot.leftBehind ??= new Set(this.surroundings.routesNear(axis.contact[shoot.basePoint]!, reach).map((r) => r.edge.id)));
+    for (const { edge, along } of near) {
+      if (axis.used.has(edge.id) || behind.has(edge.id)) continue;
       const lane = this.occupancy.get(edge.id)?.length ?? 0;
       if (lane >= this.capacity(edge, model)) continue;
       if (assessAttachment(mechanism, edge, limit).outcome !== 'self') continue;

@@ -110,11 +110,11 @@ export const GENERIC_SHOOT = {
   },
   /** How sharply the growing end turns towards the direction it seeks, in radians for each metre grown, when it is at right angles to it. */
   'tropism.turnPerM': {
-    value: 4,
+    value: 1.5,
     unit: 'rad/m',
     status: 'provisional_design_assumption',
-    basis: 'Generic, not this taxon\'s. Chosen, not measured: a shoot lying across the direction it seeks turns through about a right angle in 0.4 m of growth.',
-    range: [1, 20],
+    basis: 'Generic, not this taxon\'s. Chosen, not measured: a shoot lying across the direction it seeks turns through about a right angle in a metre of growth. A weak pull on purpose: the searching shoots of climbers lean out and sweep round (Darwin 1875 saw a hop shoot bend to nearly level as it lengthened) and do not stand plumb as the leader of a tree does. A stiffly upright cane needs several times this.',
+    range: [0.5, 20],
   },
   /** How far the direction a shoot seeks leans from plumb towards the light: 0 is straight up, 1 is straight at the light. */
   'tropism.lightShare': {
