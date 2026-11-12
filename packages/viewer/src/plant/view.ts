@@ -15,7 +15,8 @@ import type { TexturePair } from '../textures.ts';
 import { clamp, hash2, lerp } from '../util.ts';
 import { RenderTimeline, agedShare } from './adapter.ts';
 import { LodPool, type LodRecord } from './lod.ts';
-import { type AppendageAsset, type FlowerAsset, type FruitAsset, type LeafAsset, type OrganModel, type Poise, type TaxonLook, type WoodLook, formOf } from './look.ts';
+import { bladeFrame, bladeTurn } from './hold.ts';
+import { type AppendageAsset, type FlowerAsset, type FruitAsset, type LeafAsset, type LeafTexture, type OrganModel, type Poise, type TaxonLook, type WoodLook, formOf } from './look.ts';
 import { lookFor } from './registry.ts';
 import { depthMaterial, patch } from './shaders.ts';
 import { buildWoodGeometry } from './wood.ts';
@@ -37,8 +38,12 @@ export interface PlantMaterials {
   appendage(asset: AppendageAsset): THREE.Material;
 }
 
-/** `bark` makes the bark texture for a grain (WoodLook.grain; undefined is the default fissured bark). */
-export function makePlantMaterials({ bark, leafTex }: { bark: (grain: WoodLook['grain']) => TexturePair; leafTex: THREE.Texture }): PlantMaterials {
+/**
+ * `bark` makes the bark texture for a grain (WoodLook.grain; undefined is the default fissured bark). `leafTex` is the
+ * shared leaf texture; `ownLeafTex` draws a leaf texture of a taxon's own (LeafAsset.texture), once for each asset that
+ * has one. A leaf with no texture of its own is drawn with the shared one, as before.
+ */
+export function makePlantMaterials({ bark, leafTex, ownLeafTex }: { bark: (grain: WoodLook['grain']) => TexturePair; leafTex: THREE.Texture; ownLeafTex?: (texture: LeafTexture) => TexturePair }): PlantMaterials {
   const barks = new Map<string, TexturePair>();
   const woods = new Map<string, { material: THREE.Material; depth: THREE.Material }>();
   const leaves = new Map<string, THREE.Material[]>();
@@ -61,8 +66,11 @@ export function makePlantMaterials({ bark, leafTex }: { bark: (grain: WoodLook['
       let m = leaves.get(asset.key);
       if (!m) {
         const options = { translucency: asset.translucency, palette: asset.palette };
-        const near = patch(new THREE.MeshStandardMaterial({ map: leafTex, bumpMap: leafTex, bumpScale: 1.2, roughness: asset.roughness, side: THREE.DoubleSide }), 'leaf', options);
-        const far = patch(new THREE.MeshStandardMaterial({ map: leafTex, roughness: Math.min(1, asset.roughness + 0.1), side: THREE.DoubleSide }), 'leaf', options);
+        // its own texture where the look gives one (still one material per level, as for every leaf), else the shared one
+        const own = asset.texture && ownLeafTex ? ownLeafTex(asset.texture) : null;
+        const map = own?.map ?? leafTex;
+        const near = patch(new THREE.MeshStandardMaterial({ map, bumpMap: own?.bump ?? leafTex, bumpScale: own ? asset.texture!.relief : 1.2, roughness: asset.roughness, side: THREE.DoubleSide }), 'leaf', options);
+        const far = patch(new THREE.MeshStandardMaterial({ map, roughness: Math.min(1, asset.roughness + 0.1), side: THREE.DoubleSide }), 'leaf', options);
         leaves.set(asset.key, (m = [near, near, far]));
       }
       return m;
@@ -74,7 +82,7 @@ export function makePlantMaterials({ bark, leafTex }: { bark: (grain: WoodLook['
     },
     fruit(asset) {
       let m = fruits.get(asset.key);
-      if (!m) fruits.set(asset.key, (m = patch(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: asset.roughness, side: THREE.DoubleSide }), 'fruit', { ripe: asset.ripe, ripeShade: asset.ripeShade })));
+      if (!m) fruits.set(asset.key, (m = patch(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: asset.roughness, side: THREE.DoubleSide }), 'fruit', { ripe: asset.ripe, ripeShade: asset.ripeShade, stalkKeeps: asset.stalkKeepsColour ?? false })));
       return m;
     },
     appendage(asset) {
@@ -228,10 +236,13 @@ export class PlantView {
     // organ on the stem's surface as the stem thickens and to sway it with that stem
     const stems = new Map(data.stems.map((s, index) => [s.id, { s, index }]));
     /** Fills a record's aHost (offset 4) and aSup (offset 8), and says where on its stem the organ stands. `Z` is the organ's direction, `p` its position. */
+    const out = new V3();
+    /** Also leaves `out` set to the bearing stem's way out from its support at that point (zero where it touches nothing, or there is no such stem). */
     const seat = (stemId: string, position: readonly [number, number, number], r1: number, a: Float32Array): Seat => {
       const host = stems.get(stemId);
       if (!host) {
         a.set([p.x, p.y, p.z, r1], 4);
+        out.set(0, 0, 0);
         return { stem: null, pointIndex: 0, outX: 0, outY: 0, outZ: 0 };
       }
       const { s, index } = host;
@@ -245,6 +256,8 @@ export class PlantView {
         }
       }
       const away = three([s.away[3 * best]!, s.away[3 * best + 1]!, s.away[3 * best + 2]!]);
+      out.copy(away);
+      if (out.lengthSq() > 1e-12) out.normalize();
       // aHost: base of the bearing stem (its centre at the end of the run), and its phase
       const base = three([s.contact[0]!, s.contact[1]!, s.contact[2]!]).addScaledVector(three([s.away[0]!, s.away[1]!, s.away[2]!]), s.radiusMm[0]! / 1000);
       a.set([base.x, base.y, base.z, hash2(index, 17)], 4);
@@ -304,8 +317,11 @@ export class PlantView {
       three(leaf.position, p);
       m4.setPosition(p);
       const tone = 0.88 + 0.24 * r1;
-      const a = new Float32Array(16);
+      const a = new Float32Array(20);
       const at = seat(leaf.stemId, leaf.position, r1, a);
+      // aBlade (offset 16): how the blade is held in the world, or as authored where the look gives no hold
+      if (asset.hold) a.set(bladeTurn(m4, bladeFrame(Z, out, asset.hold, hash2(n, 71), hash2(n, 73), hash2(n, 79)), q).toArray(), 16);
+      else a.set([0, 0, 0, 1], 16);
       collect(leafRecords, asset, { m: new Float32Array(m4.elements), c: [tone, tone, tone], a, x: p.x, y: p.y, z: p.z, variant: asset.pick(leaf.lengthM, r1), rank: hash2(n, 5), leaf, ...at });
     });
     for (const [asset, records] of leafRecords) {
@@ -317,6 +333,7 @@ export class PlantView {
           { name: 'aHost', size: 4 },
           { name: 'aSup', size: 4 },
           { name: 'aSeat', size: 4 },
+          { name: 'aBlade', size: 4 },
         ],
         records,
         depth: depthMaterial('leaf'),

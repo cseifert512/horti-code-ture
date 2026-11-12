@@ -318,10 +318,44 @@
       "source": "https://scholarworks.uni.edu/facpub/3594",
       "basis": "Gerrath, Posluszny and Dengler (2001), International Journal of Plant Sciences 162: 729-745: Vitis riparia stands for \"distichous phyllotaxy and a three-node modular pattern\" in the vine family. Of the genus; the growth model turns each leaf half way round the shoot from the last (organs.alternateDivergenceDeg 180)."
     },
+    "leaf.secondaryVeinAngleDeg": {
+      "value": 45,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Angle at which the secondary veins leave a main vein, forwards, running nearly straight out to the teeth: about 40 to 50 degrees on the upper surface in reference photographs 06-Vitis_coignetiae_leaf_jpg.jpg and 20-Vitis_coignetiae_feuille_jpg.jpg. Not measured in any source read."
+    },
+    "leaf.secondaryVeinSpacing": {
+      "value": 0.1,
+      "status": "provisional_design_assumption",
+      "basis": "Spacing of the secondary veins along a main vein, as a share of the midrib's length: eight to ten a side along the midrib in reference photograph 06-Vitis_coignetiae_leaf_jpg.jpg. Not measured in any source read."
+    },
+    "leaf.veinNetCell": {
+      "value": 0.022,
+      "status": "provisional_design_assumption",
+      "basis": "Size of one cell of the fine net of veins over the whole blade, into which the surface is puckered between them, as a share of the midrib's length: some forty to fifty cells along the midrib in reference photographs 06-Vitis_coignetiae_leaf_jpg.jpg and 13-Vitis_coignetiae_Flickr_peganum_1_jpg.jpg (leaf.surfaceAbove: \"dimpled\"). Not measured in any source read."
+    },
+    "leaf.faceRiseDeg": {
+      "value": [20, 50],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far above level the upper face of a blade looks where its stem lies against an upright surface: the blades slope down and out from the tops of their stalks and overlap like shingles, from nearly upright to half way to level, most looking out at the viewer of a wall or frame from the ground. Read from reference photographs 02-Patio_Vitis_coignetiae_Capel_Manor_College_Gardens.jpg (a wall) and 01-1294_Vitis_coignetiae_BZ_Brno_8_12_jpg.jpg (a frame); not measured."
+    },
+    "leaf.faceRiseOpenDeg": {
+      "value": [30, 60],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The same for a blade on a shoot that touches nothing, out under the open sky: held flatter, its face more to the sky, as on the shoots standing clear of the top of the frame in reference photograph 01-1294_Vitis_coignetiae_BZ_Brno_8_12_jpg.jpg and over the eaves in 02-Patio_Vitis_coignetiae_Capel_Manor_College_Gardens.jpg. Not measured."
+    },
+    "leaf.bladeTurnDeg": {
+      "value": 25,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far either way a blade is turned about its face from hanging tip straight down: in reference photographs 01 and 13 the tips of neighbouring leaves point anywhere within about this of plumb. Not measured."
+    },
     "leaf.posture": {
       "value": "blade nearly flat, sloping down and outwards from the top of the stalk, the leaves overlapping like shingles",
       "status": "provisional_design_assumption",
-      "basis": "Read from photographs, not from a description: Commons file \"Patio Vitis coignetiae Capel Manor College Gardens Enfield London England 01.jpg\" and Commons file \"1294-Vitis coignetiae-BZ Brno-8.12.jpg\" (plants on a wall and a frame in summer). The drawn blade leaves its stalk at 46 to 54 degrees below the line of the stalk and bends on through another 13 to 18 degrees to its tip."
+      "basis": "Read from photographs, not from a description: Commons file \"Patio Vitis coignetiae Capel Manor College Gardens Enfield London England 01.jpg\" and Commons file \"1294-Vitis coignetiae-BZ Brno-8.12.jpg\" (plants on a wall and a frame in summer). The viewer holds the blade so, whichever way the render data points the stalk (leaf.faceRiseDeg, leaf.faceRiseOpenDeg, leaf.bladeTurnDeg); the drawn blade curls on through 13 to 18 degrees to its tip, and the unit of the leaf is measured with the blade leaving its stalk at 46 to 54 degrees below the line of the stalk."
     },
     "leaf.sinus": {
       "value": "deep and open",

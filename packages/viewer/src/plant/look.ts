@@ -59,11 +59,65 @@ export interface LeafPalette {
 }
 
 /**
+ * A leaf texture of a taxon's own, drawn on a canvas when the leaf is first
+ * drawn (no image files). Its uv convention is not the shared texture's: uv is
+ * the blade laid flat and seen from its upper side, u = 0.5 + x / span and
+ * v = origin + z / span, x and z being the flat blade's own coordinates with
+ * the point where its main veins meet at x = z = 0 (see `veinUv` in the kit).
+ *
+ * What the colour canvas carries: its green is the brightness the palette is
+ * multiplied by, as in the shared texture; where its blue is lower than its
+ * green, that share of the way the colour is drawn to the palette's vein
+ * colour (`greenB`, or `autumnB` as the leaf colours), which is how a pale vein
+ * can be whitish on a dark blade. A grey texture (the shared one) is not tinted.
+ * The relief canvas is a height map: light is high.
+ */
+export interface LeafTexture {
+  /** Pixels on a side; both canvases are square. */
+  size: number;
+  /** Paints both canvases. Called once for the asset; it must paint the same thing every time. */
+  paint(colour: CanvasRenderingContext2D, relief: CanvasRenderingContext2D, size: number): void;
+  /** How strongly the relief shows (the material's bump scale; the shared texture's is 1.2). */
+  relief: number;
+  /** For checking, where the texture is drawn from lines (the kit's palmate veins): the lines, in uv. */
+  lines?: () => readonly { kind: string; points: readonly (readonly [number, number])[] }[];
+}
+
+/**
+ * How a blade is held in the world, whichever way its stalk leaves the stem.
+ * The stalk goes where the render data points it; the blade turns where it
+ * joins the stalk (the pivot of the parts tagged t >= 0, which a leaf with a
+ * hold must give its blade, see Merge in the kit): its upper face to the open
+ * side, as far above level as `rise` says, and its tip as low as it can go with
+ * its face turned so. The open side is away from what the bearing stem lies
+ * on; above level wherever the stem lies on top of its support, and up to
+ * `riseOpen` above level where the stem is on nothing. Angles are degrees, a
+ * range across which leaves differ.
+ *
+ * A leaf with a hold is authored with its blade lying as it is, flat out
+ * along +Z from where it joins the stalk, upper side +Y: the viewer turns it.
+ * Its one unit (see LeafAsset) is measured with the blade turned down by
+ * `unitAt` from the line of the stalk, so that the length in the data keeps
+ * the meaning the growth model gives it (a reach "as the leaf is held").
+ */
+export interface BladeHold {
+  /** Degrees below the line of the stalk at which the blade is turned (about +X, tip down) to measure the leaf's one unit. */
+  unitAt: number;
+  /** How far above level the upper face looks, the stem lying against an upright surface (a wall, a post, a trellis): 0 straight out, 90 straight up. */
+  rise: readonly [number, number];
+  /** The same where the bearing stem touches nothing: a shoot out under the open sky. */
+  riseOpen: readonly [number, number];
+  /** How far a blade is turned about its face from tip-straight-down, either way: leaves do not all hang alike. */
+  turn: number;
+}
+
+/**
  * A leaf. Frame: the origin is where the leaf joins the stem, +Z runs along
  * it, +Y is its upper side, and it is ONE UNIT LONG (stalk and blade
  * together), so that the length in the render data is the length drawn. The
  * geometry needs uv (the shared leaf texture: u across the blade, v base to
- * tip, pale midrib at u = 0.5) and aPart (see Merge in the kit).
+ * tip, pale midrib at u = 0.5; or the leaf's own `texture`, whose convention is
+ * LeafTexture's) and aPart (see Merge in the kit).
  */
 export interface LeafAsset extends OrganModel {
   /** Which variant a leaf gets: `r` is a fixed random number in [0, 1) for that leaf. */
@@ -75,6 +129,10 @@ export interface LeafAsset extends OrganModel {
   translucency: number;
   /** Level-of-detail distances relative to the wisteria leaf's: small leaves can simplify sooner. */
   detailReach: number;
+  /** The leaf's own texture. Left out: the shared, feather-veined one. */
+  texture?: LeafTexture;
+  /** How the blade is held in the world. Left out: the whole leaf is turned with its stalk, as authored. */
+  hold?: BladeHold;
 }
 
 /**
@@ -122,6 +180,12 @@ export interface FruitAsset extends OrganModel {
    */
   ripe: Triple;
   ripeShade: readonly [number, number];
+  /**
+   * True: the parts tagged as axis (aPart t < 0, see Merge in the kit: the stalks a Merge tube makes) keep their unripe
+   * colours as the fruit ripens, as a grape's bunch stalk stays green under black berries. Left out: the whole model
+   * ripens, as before. The geometry then needs aPart.
+   */
+  stalkKeepsColour?: boolean;
   roughness: number;
   /** How freely it swings in wind, 0 to 1. */
   swing: number;

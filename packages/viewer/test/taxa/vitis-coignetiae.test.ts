@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { Calendar, type RenderData, appendagePresent, characterList, characterNumber, characterRange, characterText, flowerState, fruitState, known, leafState, param, parseMorphology, readBower, seasonsOf, toRenderData } from '@horti/core';
 import { growPlanting } from '../../src/plant/grow.ts';
+import { asMeasured } from '../../src/plant/hold.ts';
 import { triangles } from '../../src/plant/kit.ts';
 import { assetsOf, ceilingFor } from '../../src/plant/look.ts';
 import { loadLooks } from '../../src/plant/registry.ts';
@@ -140,18 +141,23 @@ describe('the leaf agrees with what Bean records of it', () => {
     expect([few, many]).toEqual([3, 5]);
     expect(leaf.variants).toBeGreaterThanOrEqual(2);
     expect(triangles(leaf.make(0, 0))).toBeGreaterThan(4 * triangles(leaf.make(0, 1)));
-    // morphology.json leaf.posture (photographs): the blade slopes down and out from the top of its stalk, nearly
-    // flat; the tip is its lowest point, well below the stalk but not hanging plumb
+    // morphology.json leaf.posture (photographs): the blade is held by the viewer, sloping down and out; as drawn it
+    // leaves its stalk flat and curls on down towards its tip, which is its lowest point, but nowhere near plumb
     for (const pts of models) {
       const top = blade(pts)[0]!.pivot;
       const lowest = blade(pts).reduce((a, b) => (b.p.y < a.p.y ? b : a));
       expect(Math.abs(lowest.p.x)).toBeLessThan(0.12);
       const drop = top.y - lowest.p.y;
       const out = lowest.p.z - top.z;
-      // between about 40 and 82 degrees below the line of the stalk, measured from the top of the stalk to the tip
-      expect(Math.atan2(drop, out)).toBeGreaterThan((40 * Math.PI) / 180);
-      expect(Math.atan2(drop, out)).toBeLessThan((82 * Math.PI) / 180);
+      expect(Math.atan2(drop, out)).toBeGreaterThan((3 * Math.PI) / 180);
+      expect(Math.atan2(drop, out)).toBeLessThan((25 * Math.PI) / 180);
     }
+    const hold = leaf.hold!;
+    expect(hold.rise).toEqual(characterRange(morphology, 'leaf.faceRiseDeg'));
+    expect(hold.riseOpen).toEqual(characterRange(morphology, 'leaf.faceRiseOpenDeg'));
+    // measured at the slope the photographs show: between about 40 and 60 degrees below the line of the stalk
+    expect(hold.unitAt).toBeGreaterThan(40);
+    expect(hold.unitAt).toBeLessThan(60);
   });
 
   // TAXON_LOOKS.md section 2: a leaf is one unit long along +Z from where it joins the stem; for this plant the
@@ -159,8 +165,9 @@ describe('the leaf agrees with what Bean records of it', () => {
   // of the blade along the line of the stalk
   it('is one unit from the stem to its farthest point along the line of the stalk', () => {
     expect(characterRange(morphology, 'leaf.modelLengthM')).toEqual(param(model, 'organs.leafLengthM'));
-    for (const pts of models) {
-      const reach = Math.max(...pts.map((q) => q.p.z));
+    for (const [v, pts] of models.entries()) {
+      // measured with the blade as it is held (BladeHold.unitAt)
+      const reach = Math.max(...asMeasured(leaf.make(v, 0), leaf.hold!.unitAt).map((p) => p.z));
       expect(reach).toBeGreaterThan(0.97);
       expect(reach).toBeLessThan(1.03);
       // the midrib is longer than what is left of the unit past the stalk: the blade slopes down from the stalk

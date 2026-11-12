@@ -2,6 +2,7 @@
 // (Wisteria/src/textures.js). Everything is drawn on a canvas at start-up, so
 // the viewer ships no image files.
 import * as THREE from 'three';
+import type { LeafTexture } from './plant/look.ts';
 import { RNG } from './util.ts';
 
 function canvas(w: number, h: number): HTMLCanvasElement {
@@ -139,6 +140,17 @@ export function makeLeafTexture(): THREE.CanvasTexture {
   g.lineTo(W / 2, 0);
   g.stroke();
   return tex(c, { repeat: false });
+}
+
+/**
+ * A leaf texture of a taxon's own (LeafTexture in plant/look.ts): its colour and its relief, painted by the look on
+ * two square canvases. The colour is read as sRGB like the shared texture; the relief is data.
+ */
+export function makeOwnLeafTexture(texture: LeafTexture): TexturePair {
+  const map = canvas(texture.size, texture.size);
+  const bump = canvas(texture.size, texture.size);
+  texture.paint(ctx2d(map), ctx2d(bump), texture.size);
+  return { map: tex(map, { repeat: false }), bump: tex(bump, { srgb: false, repeat: false }) };
 }
 
 export function makeGroundTexture(): THREE.CanvasTexture {

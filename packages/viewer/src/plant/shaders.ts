@@ -154,7 +154,9 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       attribute vec4 aHost;   // base of the bearing stem, stem phase
       attribute vec4 aSup;    // the stem's direction away from its support, how freely it sways
       attribute vec4 aSeat;   // from the stem's contact line out to its surface, where the leaf stands
+      attribute vec4 aBlade;  // the turn of the blade about where it joins its stalk, in the leaf's own frame (a quaternion; identity: as authored)
       varying vec3 vLeaf;     // young, autumn, variation
+      vec3 hortiTurn( vec4 q, vec3 v ) { return v + 2.0 * cross( q.xyz, cross( q.xyz, v ) + q.w * v ); }
     `,
     begin: /* glsl */ `
       float grown = aState.x;
@@ -168,6 +170,8 @@ const PROGRAMS: Record<ProgramKind, Program> = {
       vec3 rel = transformed - aPart.xyz;
       rel.x *= mix( 0.25, 1.0, mix( 1.0, open, isBlade ) );
       rel.y -= isBlade * ( 1.0 - open ) * length( rel.xz ) * 0.9;
+      // the blade held in the world (BladeHold, hold.ts): turned where it joins its stalk; the stalk stays as authored
+      rel = mix( rel, hortiTurn( aBlade, rel ), isBlade );
       transformed = ( aPart.xyz + rel ) * lifeS;
       vLeaf = vec3( 1.0 - grown, aState.y, aPart.w );
     `,
@@ -182,11 +186,15 @@ const PROGRAMS: Record<ProgramKind, Program> = {
     fragColor: /* glsl */ `
       {
         float lum = diffuseColor.g;
+        // a leaf texture of a taxon's own draws its veins towards the palette's vein colour where its blue is below its
+        // green (LeafTexture in look.ts); in a grey texture the two are equal and nothing is tinted
+        float vein = clamp( ( diffuseColor.g - diffuseColor.b ) / max( diffuseColor.g, 0.001 ), 0.0, 1.0 );
         float v = clamp( vLeaf.z, 0.0, 1.0 );
         vec3 green = mix( uLeafGreenA, uLeafGreenB, v );
         vec3 autumn = mix( uLeafAutumnA, uLeafAutumnB, v * v );
         vec3 c = mix( green, uLeafYoung, vLeaf.x * 0.85 );
         c = mix( c, autumn, vLeaf.y );
+        c = mix( c, mix( uLeafGreenB, uLeafAutumnB, vLeaf.y ), vein );
         diffuseColor.rgb = c * lum * 1.45;
       }
     `,
@@ -229,11 +237,14 @@ const PROGRAMS: Record<ProgramKind, Program> = {
   fruit: {
     head: /* glsl */ `
       attribute vec4 aState;  // size, ripeness, how freely it swings, -
+      attribute vec4 aPart;   // where the model has one: t < 0 is axis (a stalk)
+      uniform float uFruitStalk;  // 1: the axis keeps its unripe colour (FruitAsset.stalkKeepsColour)
       varying float vRipe;
     `,
     begin: /* glsl */ `
       vec3 transformed = position * aState.x;
-      vRipe = aState.y;
+      // a model without aPart reads (0, 0, 0, 1): all of it ripens
+      vRipe = aState.y * ( 1.0 - uFruitStalk * step( aPart.w, -0.5 ) );
     `,
     world: /* glsl */ `
       vec3 wOff = pendulum( wp, instanceMatrix[3].xyz, 0.13 * aState.z );
@@ -316,6 +327,8 @@ export interface PatchOptions {
   /** For the fruit program: what the fruit ripens to (FruitAsset.ripe and ripeShade). */
   ripe?: Triple;
   ripeShade?: readonly [number, number];
+  /** For the fruit program: whether its stalks keep their unripe colour. */
+  stalkKeeps?: boolean;
   /** For the appendage program: what it turns to with age, or null if it keeps its colours. */
   aged?: Triple | null;
 }
@@ -384,6 +397,12 @@ const LEAF_GLOSS = /* glsl */ `
 }
 `;
 
+/** A leaf's normal, turned with its blade (aBlade) where the vertex is the blade's. */
+const LEAF_NORMAL = /* glsl */ `
+#include <beginnormal_vertex>
+if ( aPart.w >= 0.0 ) objectNormal = hortiTurn( aBlade, objectNormal );
+`;
+
 /** How much litter lies on the ground, shared by every litter material. */
 export const litter = { uLitter: { value: new THREE.Vector2(0, 0) } };
 
@@ -391,7 +410,7 @@ export const litter = { uLitter: { value: new THREE.Vector2(0, 0) } };
 export function patch<M extends THREE.Material>(
   material: M,
   kind: ProgramKind,
-  { translucency = 0, sheen = 0, palette = DEFAULT_PALETTE, budTint = DEFAULT_BUD_TINT, wood = DEFAULT_WOOD, ripe = [0.2, 0.145, 0.085], ripeShade = [0.6, 2], aged = null }: PatchOptions = {},
+  { translucency = 0, sheen = 0, palette = DEFAULT_PALETTE, budTint = DEFAULT_BUD_TINT, wood = DEFAULT_WOOD, ripe = [0.2, 0.145, 0.085], ripeShade = [0.6, 2], stalkKeeps = false, aged = null }: PatchOptions = {},
 ): M {
   const prog = PROGRAMS[kind];
   // one compiled program per kind; what is the taxon's is in uniforms, so each material keeps its own
@@ -418,7 +437,7 @@ export function patch<M extends THREE.Material>(
               uWoodOld: { value: new THREE.Vector3(...wood.old) },
             }
           : kind === 'fruit'
-            ? { uFruitRipe: { value: new THREE.Vector3(...ripe) }, uFruitShade: { value: new THREE.Vector2(...ripeShade) } }
+            ? { uFruitRipe: { value: new THREE.Vector3(...ripe) }, uFruitShade: { value: new THREE.Vector2(...ripeShade) }, uFruitStalk: { value: stalkKeeps ? 1 : 0 } }
             : kind === 'appendage'
               ? { uAged: { value: new THREE.Vector3(...(aged ?? [0, 0, 0])) }, uAges: { value: aged ? 1 : 0 } }
               : {};
@@ -435,6 +454,8 @@ export function patch<M extends THREE.Material>(
     let vs = shader.vertexShader
       .replace('#include <common>', '#include <common>\n' + COMMON + prog.head)
       .replace('#include <begin_vertex>', prog.begin)
+      // a leaf's blade turns with its hold: its normals with it
+      .replace('#include <beginnormal_vertex>', kind === 'leaf' ? LEAF_NORMAL : '#include <beginnormal_vertex>')
       .replace('#include <project_vertex>', PROJECT(prog.world))
       .replace('#include <worldpos_vertex>', WORLDPOS);
     // A leaf or a petal is lit from either side. three.js looks its shadow up a little way off the surface along the

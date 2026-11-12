@@ -19,6 +19,7 @@
 // +Y (see Poise in look.ts). TAXON_LOOKS.md says more.
 import * as THREE from 'three';
 import { RNG, hash2 } from '../util.ts';
+import type { LeafTexture } from './look.ts';
 
 const V3 = THREE.Vector3;
 type V3 = THREE.Vector3;
@@ -218,6 +219,8 @@ export type Segs = readonly [number, number];
 export const WHITE: RGB = [1, 1, 1];
 /** Where a leaf stalk samples the leaf texture: on its pale midrib. */
 export const MIDRIB: [number, number] = [0.5, 0.02];
+/** Where a leaf stalk samples a leaf texture of its own (LeafTexture): a corner of plain ground, clear of the veins. */
+export const GROUND: [number, number] = [0.02, 0.02];
 
 export interface BladeShape {
   /** Half the width at the widest point, as a share of the length. */
@@ -366,6 +369,292 @@ export function compoundLeaf(leaflet: THREE.BufferGeometry, layout: CompoundLayo
   g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.8);
   return g;
 }
+
+// ---------------------------------------------------------------------------
+// A leaf texture of a taxon's own: palmate veins (see LeafTexture in look.ts
+// for the uv convention and what the two canvases carry)
+// ---------------------------------------------------------------------------
+
+/** A main vein: its bearing from the leaf's tip (degrees, positive towards +x) and its length, in blade units. */
+export interface MainVein {
+  deg: number;
+  length: number;
+  /** A strong branch of another main vein rather than a vein from the stalk: which vein (index into `main`), and how far along it, as a share of its length. */
+  from?: { vein: number; at: number };
+}
+
+/**
+ * The veins of a palmately veined blade, in the units of the flat blade (see
+ * LeafTexture): what a taxon module gives `palmateVeins` and `palmateTexture`.
+ * Every number is the taxon's; plant numbers among them come from its
+ * morphology file.
+ */
+export interface PalmateVeins {
+  /** The uv plan: v of the point where the main veins meet (u is 0.5 there), and how many blade units the texture spans. */
+  origin: number;
+  span: number;
+  /** The main veins from the top of the stalk, and their strong branches. */
+  main: readonly MainVein[];
+  /**
+   * The secondary veins, on both sides of every main vein: the angle at which they leave it, forwards (degrees), how
+   * far apart along it and how far from its base the first, how long each may run (blade units), and how many degrees
+   * it bends on forwards by its end. A secondary stops where it would cross into the ground of the next main vein.
+   */
+  secondary: { angle: number; spacing: number; first: number; reach: number; curve: number };
+  /** The fine net between the veins: the size of one of its cells (blade units) and how irregular they are (0 a regular lattice, 1 fully random). Cell 0: no net. */
+  net: { cell: number; jitter: number };
+  /** Widths of the pale line at the base of a main vein, of a secondary, and of a line of the net, in blade units. */
+  width: { main: number; secondary: number; net: number };
+  /** The blade's own brightness (linear grey, the shared texture's is about 0.75), and how much brighter each kind of vein is drawn. */
+  ground: number;
+  pale: { main: number; secondary: number; net: number };
+  /** The share of the way each kind of vein is drawn to the palette's vein colour. */
+  tint: { main: number; secondary: number; net: number };
+  /** The relief: how deep the veins are sunk, and how far the blade swells between the lines of its net (puckered, rugose). 0 to 1 each. */
+  relief: { vein: number; pucker: number };
+  seed: number;
+}
+
+/** One line of a vein plan, in uv (v up the blade), with its width at each point in uv. */
+export interface VeinLine {
+  kind: 'main' | 'branch' | 'secondary';
+  points: readonly (readonly [number, number])[];
+  widths: readonly number[];
+}
+
+const DEG = Math.PI / 180;
+
+/**
+ * Where a point of the flat blade lies in a texture of its own. `bearings`, if
+ * given, are the leaf's own bearings of the veins in `spec.main` (degrees, in
+ * the same order): the blade is then turned bearing by bearing on to the
+ * texture's plan, so that one texture serves leaves whose lobes stand at
+ * slightly different angles, and each main vein lies on its lobe.
+ */
+export function veinUv(spec: PalmateVeins, x: number, z: number, bearings?: readonly number[]): [number, number] {
+  const r = Math.hypot(x, z);
+  let theta = Math.atan2(x, z) / DEG;
+  if (bearings && bearings.length === spec.main.length && r > 1e-9) {
+    const pairs = bearings.map((b, i) => [b, spec.main[i]!.deg] as const).sort((a, b) => a[0] - b[0]);
+    const first = pairs[0]!;
+    const last = pairs[pairs.length - 1]!;
+    if (theta <= first[0]) theta += first[1] - first[0];
+    else if (theta >= last[0]) theta += last[1] - last[0];
+    else {
+      for (let i = 0; i < pairs.length - 1; i++) {
+        const [b0, s0] = pairs[i]!;
+        const [b1, s1] = pairs[i + 1]!;
+        if (theta >= b0 && theta <= b1) {
+          theta = s0 + ((theta - b0) * (s1 - s0)) / Math.max(1e-9, b1 - b0);
+          break;
+        }
+      }
+    }
+  }
+  return [0.5 + (r * Math.sin(theta * DEG)) / spec.span, spec.origin + (r * Math.cos(theta * DEG)) / spec.span];
+}
+
+/**
+ * The veins of a palmate blade as lines in uv: the main veins and their
+ * branches, then the secondaries off them. The fine net is not lines but a
+ * field, drawn by `palmateTexture`. Pure: the same spec gives the same plan.
+ */
+export function palmateVeins(spec: PalmateVeins): VeinLine[] {
+  const rng = new RNG(spec.seed);
+  const k = 1 / spec.span;
+  const toUv = (x: number, z: number): [number, number] => [0.5 + x * k, spec.origin + z * k];
+  const lines: VeinLine[] = [];
+  // the bearings that bound each main vein's ground: half way to its neighbours
+  const order = spec.main.map((m, i) => ({ deg: m.deg, i })).sort((a, b) => a.deg - b.deg);
+  const bounds = new Map<number, [number, number]>();
+  order.forEach((o, j) => {
+    const lo = j > 0 ? (order[j - 1]!.deg + o.deg) / 2 : o.deg - 60;
+    const hi = j < order.length - 1 ? (order[j + 1]!.deg + o.deg) / 2 : o.deg + 60;
+    bounds.set(o.i, [lo, hi]);
+  });
+  // where each vein starts, in the flat blade
+  const starts = spec.main.map(() => [0, 0] as [number, number]);
+  spec.main.forEach((m, i) => {
+    if (!m.from) return;
+    const parent = spec.main[m.from.vein]!;
+    const at = m.from.at * parent.length;
+    starts[i] = [at * Math.sin(parent.deg * DEG), at * Math.cos(parent.deg * DEG)];
+  });
+  spec.main.forEach((m, i) => {
+    const [x0, z0] = starts[i]!;
+    const n = 12;
+    // a main vein runs nearly straight, waving a little
+    const wobble = rng.range(-1, 1) * 2.5;
+    const pts: [number, number][] = [];
+    const widths: number[] = [];
+    const base = (m.from ? 0.75 : 1) * spec.width.main;
+    for (let s = 0; s <= n; s++) {
+      const t = s / n;
+      const a = (m.deg + wobble * Math.sin(Math.PI * t)) * DEG;
+      pts.push(toUv(x0 + t * m.length * Math.sin(a), z0 + t * m.length * Math.cos(a)));
+      widths.push(base * (1 - 0.7 * t) * k);
+    }
+    lines.push({ kind: m.from ? 'branch' : 'main', points: pts, widths });
+  });
+  // secondaries off each main vein, on both sides, forwards, curving on towards the margin
+  const sec = spec.secondary;
+  spec.main.forEach((m, i) => {
+    const [x0, z0] = starts[i]!;
+    const [lo, hi] = bounds.get(i)!;
+    for (let next = sec.first; next < m.length * 0.92; next += sec.spacing * rng.range(0.82, 1.18)) {
+      for (const side of [-1, 1]) {
+        // alternate: one side half a spacing on from the other
+        const along = next + (side > 0 ? 0.5 * sec.spacing : 0);
+        if (along >= m.length * 0.92) continue;
+        const bx = x0 + along * Math.sin(m.deg * DEG);
+        const bz = z0 + along * Math.cos(m.deg * DEG);
+        const pts: [number, number][] = [toUv(bx, bz)];
+        const widths: number[] = [spec.width.secondary * k];
+        const length = Math.min(sec.reach, (m.length - along) * 1.4 + sec.spacing) * rng.range(0.8, 1.1);
+        const steps = 8;
+        let x = bx;
+        let z = bz;
+        for (let s = 1; s <= steps; s++) {
+          const t = s / steps;
+          // leaves the vein at `angle`, and bends on forwards (towards the vein's own direction) by `curve`
+          const a = (m.deg + side * (sec.angle - sec.curve * t)) * DEG;
+          x += (length / steps) * Math.sin(a);
+          z += (length / steps) * Math.cos(a);
+          const bearing = Math.atan2(x, z) / DEG;
+          if (bearing < lo || bearing > hi) break;
+          pts.push(toUv(x, z));
+          widths.push(spec.width.secondary * (1 - 0.6 * t) * k);
+        }
+        if (pts.length > 1) lines.push({ kind: 'secondary', points: pts, widths });
+      }
+    }
+  });
+  return lines;
+}
+
+/** A linear grey and a tint share as a canvas colour: green the brightness, blue lowered by the tint (see LeafTexture). */
+function veinColour(lum: number, tint: number): string {
+  const s = (c: number) => Math.round(255 * Math.min(1, Math.max(0, c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055)));
+  const g = s(lum);
+  return `rgb(${g},${g},${s(lum * (1 - tint))})`;
+}
+
+/**
+ * A leaf texture of a taxon's own with palmate veins: the fine net as a field
+ * of cells (its lines pale, the ground between them swelling where the blade
+ * is puckered), and the secondaries and main veins drawn over it as tapering
+ * pale lines sunk into the relief.
+ */
+export function palmateTexture(spec: PalmateVeins, size: number, relief: number): LeafTexture {
+  return {
+    size,
+    relief,
+    lines: () => palmateVeins(spec),
+    paint(colour, height, S) {
+      const plan = palmateVeins(spec);
+      // ---- the net and the ground: a cell field (distance to the nearest point and the next), per pixel
+      const cellPx = (spec.net.cell / spec.span) * S;
+      const img = colour.createImageData(S, S);
+      const rel = height.createImageData(S, S);
+      const rng = new RNG(spec.seed + 101);
+      const n = cellPx > 1 ? Math.max(1, Math.round(S / cellPx)) : 0;
+      const pts = new Float32Array(Math.max(1, n * n * 2));
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+        pts[2 * (j * n + i)] = (i + 0.5 + (rng.f() - 0.5) * spec.net.jitter) / n;
+        pts[2 * (j * n + i) + 1] = (j + 0.5 + (rng.f() - 0.5) * spec.net.jitter) / n;
+      }
+      const toSrgb = (c: number) => Math.round(255 * Math.min(1, Math.max(0, c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055)));
+      const lineHalf = (spec.width.net / spec.span) * S * 0.5;
+      for (let y = 0; y < S; y++) {
+        for (let x = 0; x < S; x++) {
+          let net = 0;
+          let dome = 0.5;
+          if (n > 0) {
+            const fx = (x + 0.5) / S;
+            const fy = (y + 0.5) / S;
+            const ci = Math.floor(fx * n);
+            const cj = Math.floor(fy * n);
+            let d1 = Infinity;
+            let d2 = Infinity;
+            for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
+              const ii = ci + di;
+              const jj = cj + dj;
+              if (ii < 0 || jj < 0 || ii >= n || jj >= n) continue;
+              const px = pts[2 * (jj * n + ii)]! - fx;
+              const py = pts[2 * (jj * n + ii) + 1]! - fy;
+              const d = px * px + py * py;
+              if (d < d1) {
+                d2 = d1;
+                d1 = d;
+              } else if (d < d2) d2 = d;
+            }
+            // distance to the edge between the two nearest cells, in pixels
+            const edge = d2 < Infinity ? ((Math.sqrt(d2) - Math.sqrt(d1)) * S) / 2 : cellPx;
+            net = 1 - smooth01((edge - lineHalf) / Math.max(0.75, lineHalf));
+            dome = smooth01(edge / (0.5 * cellPx));
+          }
+          // a little mottling, so that the ground is not flat paint
+          const mottle = 1 + 0.035 * (hash2(x >> 4, y >> 4) - 0.5) + 0.02 * (hash2(x >> 2, (y >> 2) + 977) - 0.5);
+          const lum = spec.ground * mottle + spec.pale.net * net;
+          const tint = spec.tint.net * net;
+          const o = 4 * (y * S + x);
+          const g = toSrgb(lum);
+          img.data[o] = g;
+          img.data[o + 1] = g;
+          img.data[o + 2] = toSrgb(lum * (1 - tint));
+          img.data[o + 3] = 255;
+          // the height map is data, not colour: no sRGB curve
+          const h = Math.round(255 * Math.min(1, Math.max(0, 0.5 + spec.relief.pucker * 0.45 * (dome - 0.5) * 2 - spec.relief.vein * 0.2 * net)));
+          rel.data[o] = rel.data[o + 1] = rel.data[o + 2] = h;
+          rel.data[o + 3] = 255;
+        }
+      }
+      colour.putImageData(img, 0, 0);
+      height.putImageData(rel, 0, 0);
+      // ---- the veins over it: secondaries first, main veins on top. Canvas y runs down; v runs up the blade
+      const at = (p: readonly [number, number]): [number, number] => [p[0] * S, (1 - p[1]) * S];
+      colour.lineCap = height.lineCap = 'round';
+      colour.lineJoin = height.lineJoin = 'round';
+      for (const kind of ['secondary', 'branch', 'main'] as const) {
+        const pale = kind === 'secondary' ? spec.pale.secondary : spec.pale.main;
+        const tint = kind === 'secondary' ? spec.tint.secondary : spec.tint.main;
+        for (const line of plan) {
+          if (line.kind !== kind) continue;
+          for (let i = 1; i < line.points.length; i++) {
+            const [ax, ay] = at(line.points[i - 1]!);
+            const [bx, by] = at(line.points[i]!);
+            const w = Math.max(0.8, line.widths[i - 1]! * S);
+            // the relief: a soft groove a little wider than the pale line
+            height.strokeStyle = `rgba(0,0,0,${(0.35 * spec.relief.vein).toFixed(3)})`;
+            height.lineWidth = w * 2.2;
+            height.beginPath();
+            height.moveTo(ax, ay);
+            height.lineTo(bx, by);
+            height.stroke();
+            height.strokeStyle = `rgba(0,0,0,${(0.5 * spec.relief.vein).toFixed(3)})`;
+            height.lineWidth = w;
+            height.stroke();
+            // the line itself, paler at its middle than at its edges
+            colour.strokeStyle = veinColour(spec.ground + 0.6 * pale, tint * 0.7);
+            colour.lineWidth = w;
+            colour.beginPath();
+            colour.moveTo(ax, ay);
+            colour.lineTo(bx, by);
+            colour.stroke();
+            colour.strokeStyle = veinColour(spec.ground + pale, tint);
+            colour.lineWidth = Math.max(0.6, w * 0.5);
+            colour.stroke();
+          }
+        }
+      }
+    },
+  };
+}
+
+const smooth01 = (x: number): number => {
+  const t = Math.min(1, Math.max(0, x));
+  return t * t * (3 - 2 * t);
+};
 
 // ---------------------------------------------------------------------------
 // Flowers and fruit

@@ -159,12 +159,40 @@
     "leaf.juvenile.secondaryVeinSpacing": {
       "value": 0.14,
       "status": "provisional_design_assumption",
-      "basis": "Spacing of the secondary veins along a main vein, as a share of the end lobe's length: some six or seven a side on the end lobe in Efeublatt 06.jpg (Commons). They join into a fine pale net, which is not drawn."
+      "basis": "Spacing of the secondary veins along a main vein, as a share of the end lobe's length: some six or seven a side on the end lobe in Efeublatt 06.jpg (Commons). They join into a fine pale net (leaf.juvenile.veinNetCell)."
+    },
+    "leaf.juvenile.mainVeins": {
+      "value": 5,
+      "status": "provisional_design_assumption",
+      "basis": "Main veins from the top of the stalk, counted on photographs of the upper surface: one to the end lobe, one to each side lobe and one to each basal lobe or, on a three-lobed leaf, to each rounded shoulder (reference photographs leaf-02.jpg and leaf-10-vein-net.jpg; Commons: Efeublatt 06.jpg). Metcalfe 2005 says only \"often with pale veins\"."
+    },
+    "leaf.juvenile.veinNetCell": {
+      "value": 0.038,
+      "status": "provisional_design_assumption",
+      "basis": "Size of one cell of the fine pale net between the secondary veins, as a share of the end lobe's length: some twenty-five cells along the end lobe in reference photographs leaf-10-vein-net.jpg and leaf-02.jpg. Not measured in any flora read."
+    },
+    "leaf.juvenile.faceRiseDeg": {
+      "value": [8, 32],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far above level the upper face of a climbing leaf looks where the stem clings to an upright surface: nearly straight out from the wall, tipped up a little, the blades hanging tip down and overlapping like tiles. Read from reference photographs habit-04-wall-march.jpg (a wall in March) and habit-03-house.jpg; not measured."
+    },
+    "leaf.juvenile.faceRiseOpenDeg": {
+      "value": [30, 60],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The same for a leaf on a shoot that touches nothing, out in the air: held flatter to the sky, as on the loose shoots along the top of the wall in reference photograph habit-04-wall-march.jpg and in fruit-04-adult-form.jpg. Not measured."
+    },
+    "leaf.juvenile.bladeTurnDeg": {
+      "value": 22,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far either way a blade is turned about its face from hanging tip straight down: the tips of neighbouring leaves on a wall point anywhere within about this of plumb (reference photograph habit-04-wall-march.jpg). Not measured."
     },
     "leaf.juvenile.posture": {
       "value": "blade hanging tip down from the end of a long stalk, upper side facing out, leaves overlapping like tiles on a wall",
       "status": "provisional_design_assumption",
-      "basis": "Read from photographs of ivy on a wall and on bark (Commons: 20150318-stare-drzewce-park-hedera-helix.jpg; Atlas roslin pl Bluszcz pospolity 3368 7113.jpg, where on a trunk the blades lie flat against the bark). The drawing hangs the blade 66 to 72 degrees from the line of its stalk; which way the stalk points is the render data's."
+      "basis": "Read from photographs of ivy on a wall and on bark (Commons: 20150318-stare-drzewce-park-hedera-helix.jpg; Atlas roslin pl Bluszcz pospolity 3368 7113.jpg, where on a trunk the blades lie flat against the bark; reference photographs habit-04-wall-march.jpg and fruit-04-adult-form.jpg). The viewer holds the blade so, whichever way the render data points the stalk: leaf.juvenile.faceRiseDeg, faceRiseOpenDeg and bladeTurnDeg. The stalk is drawn as long as a blade hung 66 to 72 degrees from its line would leave it."
     },
     "leaf.juvenile.bladeLengthM": {
       "value": [0.04, 0.1],

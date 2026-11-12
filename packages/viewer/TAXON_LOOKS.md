@@ -50,7 +50,7 @@ All models are in metres or in units that the render data scales, three.js axes.
 
 | Organ | Origin | Axes | Size |
 |---|---|---|---|
-| Leaf | where the leaf joins the stem | +Z along the leaf, +Y its upper side | **one unit long**, stalk and blade together. The viewer scales it by `RenderLeaf.lengthM` and turns +Z on to `direction`, +Y towards the sky |
+| Leaf | where the leaf joins the stem | +Z along the leaf, +Y its upper side | **one unit long**, stalk and blade together. The viewer scales it by `RenderLeaf.lengthM` and turns +Z on to `direction`, +Y towards the sky. A leaf with a `hold` has its blade turned by the viewer (section 5a), and its unit is measured with the blade turned down by `hold.unitAt` |
 | Flower, inflorescence | where it is attached | `poise: 'hangs'`: hanging along -Y. `poise: 'held'`: standing along +Y | `authoredSize` in the units of `RenderFlower.lengthM`; the viewer scales by `lengthM / authoredSize`. What `lengthM` measures is the taxon's (`flowerDisplay` in its growth model): the length of a raceme, the width of a single flower or of a flowerhead |
 | Fruit | where it is attached | as a flower | `authoredSize` in the units of `RenderFruit.lengthM`: the length of the fruit itself when full grown |
 | Appendage (tendril, coiled leaf stalk, rootlets, prickle) | where it leaves the stem | +Z the way it reaches, +Y towards the sky | **one unit long**, scaled by `RenderAppendage.lengthM` |
@@ -85,7 +85,8 @@ Geometry tools that belong to no taxon. If you need one more, add it to the kit 
 | `tendrilPath(shape, n)` | The centre line of a tendril or coiling stalk, one unit long: out along +Z, then wound round something lying across its way, or hooked where it found nothing (`turns: 0`) |
 | `rootlets(mg, count, row, splay, thickness, sides, colourFrom, colourTo, seed)` | A patch of clinging rootlets in a row along Y, each reaching along +Z |
 | `prickle(shape, segs, base, tip)` | A flattened, hooked prickle along +Z |
-| `WHITE`, `MIDRIB`, `Segs` | White; where a stalk samples the leaf texture; the type of a segment count |
+| `palmateVeins(spec)`, `palmateTexture(spec, size, relief)`, `veinUv(spec, x, z, bearings?)` | A leaf texture of the taxon's own with palmate veins (section 5a): the vein plan as lines, the `LeafTexture` that paints it, and where a point of the flat blade lies on it |
+| `WHITE`, `MIDRIB`, `GROUND`, `Segs` | White; where a stalk samples the shared leaf texture; where it samples a texture of the leaf's own; the type of a segment count |
 
 `util.ts` has `RNG` (seeded), `hash2(a, b)` (a fixed random number from two integers), `lerp`, `clamp`, `smoothstep`.
 
@@ -108,13 +109,27 @@ All dates are the engine's. Nothing in a taxon module may know a day, a month or
 
 | Organ | Where its colour comes from |
 |---|---|
-| **Leaf** | Not from vertex colours. The shader takes the asset's `palette` (`greenA` to `greenB` across leaflets, `young` while unfolding, `autumnA` to `autumnB` as the core's autumn state rises) and multiplies it by the shared leaf texture (pale midrib and side veins; `u` across the blade, `v` from base to tip, midrib at `u = 0.5`) and by a tone that varies a little from leaf to leaf. So a leaf needs `uv`: `Surf` gives it, `palmateBlade` lays it flat over the whole blade. An evergreen gives its greens again as its autumn colours. `roughness` is gloss (0.3 leathery and shiny, 0.65 soft and dull). `translucency` is how much light comes through from behind (`THIN_LEAF`, 0.45, for a thin leaf; less for a leathery one) |
+| **Leaf** | Not from vertex colours. The shader takes the asset's `palette` (`greenA` to `greenB` across leaflets, `young` while unfolding, `autumnA` to `autumnB` as the core's autumn state rises) and multiplies it by the shared leaf texture (pale midrib and side veins; `u` across the blade, `v` from base to tip, midrib at `u = 0.5`), or by its own (section 5a), and by a tone that varies a little from leaf to leaf. So a leaf needs `uv`: `Surf` gives it, `palmateBlade` lays it flat over the whole blade. An evergreen gives its greens again as its autumn colours. `roughness` is gloss (0.3 leathery and shiny, 0.65 soft and dull). `translucency` is how much light comes through from behind (`THIN_LEAF`, 0.45, for a thin leaf; less for a leathery one) |
 | **Flower** | Vertex colours, in linear RGB (`lin`). Unopened parts are multiplied by `budTint`. `translucency` lets backlight through the petals; `sheen` adds the soft rim light of a velvety surface. Each instance is tinted a little warmer or cooler by the viewer |
 | **Fruit** | Vertex colours are the unripe fruit. As the core's ripeness goes from 0 to 1 the colour turns to `ripe * (ripeShade[0] + ripeShade[1] * g)`, `g` being the green of the unripe vertex colour, so a pattern painted on the unripe fruit still shades the ripe one. `ripeShade: [1, 0]` gives a flat ripe colour |
 | **Appendage** | Vertex colours. With `aged` set, they turn to that colour over `agedDays` (age in days since it formed): a tendril going woody |
 | **Wood** | `WoodLook`, section 7 |
 
 Colours are judged in the picture, in the scene's light, not as numbers. Take a portrait and look.
+
+**A fruit's stalk.** `stalkKeepsColour: true` keeps the parts tagged as axis (t < 0: what `mg.tube` makes) in their unripe colours while the rest ripens, as a grape's bunch stalk stays green under black berries. Left out, the whole model ripens.
+
+## 5a. A leaf's own texture, and how its blade is held
+
+Two optional fields of `LeafAsset`. A leaf that has neither is drawn exactly as before.
+
+**`texture`: a texture of its own.** The shared texture is feather-veined (a pale midrib at u = 0.5 and side veins off it) and cannot be laid sensibly on a palmately veined blade. A `LeafTexture` is painted on two square canvases when the leaf is first drawn: colour and relief (a height map, light is high). It keeps the leaf shader's palette, translucency, wind and shadows: the shader still multiplies the palette by the colour's **green**; where the colour's **blue is below its green**, that share of the way it draws the colour to the palette's vein colour (`greenB`, or `autumnB` as the leaf colours), which is how a vein can be whitish on a dark blade. A grey texture is not tinted. Its relief is the material's bump map, `relief` its strength.
+
+The uv convention is not the shared texture's. uv is **the blade laid flat, seen from its upper side**: `u = 0.5 + x / span`, `v = origin + z / span`, x and z being the flat blade's own coordinates with the point where its main veins meet at (0, 0). Use `veinUv(spec, x, z, bearings)` at every vertex of the blade, with x and z before the blade is domed, curled or hung. `bearings` are this leaf's own bearings of the main veins: the texture is turned bearing by bearing on to them, so one texture serves variants whose lobes stand at slightly different angles, each vein on its lobe. A stalk samples `GROUND`.
+
+The kit's palmate vein generator draws one: `palmateTexture(spec, size, relief)` with a `PalmateVeins` spec, every number the taxon's (plant numbers from its morphology file): the main veins (bearing from the tip, length; `from` for a strong branch of another), the secondaries (angle forwards, spacing, first, reach, curve; they alternate and stop at the ground of the next main vein), the fine net (cell size, irregularity), the widths and paleness and tint of each kind, the blade's own grey, and the relief (veins sunk, blade puckered between the lines of the net). `palmateVeins(spec)` gives the lines alone, for tests. Size the canvas to the leaf: 512 for a small leaf, 1024 for one a hand across; each costs `4/3 * size^2 * 4` bytes twice (colour and relief, with mipmaps) and no extra material or draw call.
+
+**`hold`: how the blade is held in the world.** Without it the whole leaf is turned with its stalk, and a module can say how a blade hangs only relative to the stalk, so on an upright shoot or a level one the blade stands at whatever angle the stalk gives it. With a `BladeHold` the stalk still goes where the data points it and the viewer turns the **blade** where it joins the stalk (the pivot of the parts tagged t >= 0, which must all be the one blade): its upper face to the open side (away from what the bearing stem lies on), `rise` degrees above level against an upright surface, straight up where the stem lies on top of its support, `riseOpen` where the stem touches nothing; its tip as low as it can go with its face turned so; then turned about its face by up to `turn` either way. Author such a leaf with its blade lying flat out along +Z from the end of its stalk, upper side +Y, and state `unitAt`, the angle below the stalk's line at which its one unit is measured (the tests measure it so: `asMeasured` in `hold.ts`). The viewer may decide how an organ is held, never whether or where it is.
 
 ## 6. Levels of detail and triangle budgets
 
