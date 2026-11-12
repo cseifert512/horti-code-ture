@@ -4,7 +4,7 @@
 // species/wisteria-floribunda-macrobotrys/morphology.json:
 //
 //   raceme   a whole pendulous inflorescence of a metre: a slender stalk, bare at
-//            the top, then about 115 small pea flowers standing apart on long
+//            the top, then about 150 small pea flowers standing apart on long
 //            stalks of their own, each a pale violet standard with a yellow eye
 //            over darker violet-blue wings and keel; the last few at the tip stay
 //            in bud. It hangs along -Y from the origin, in metres, authored at the
@@ -58,11 +58,11 @@ const rad = THREE.MathUtils.degToRad;
 // the flower stalk and on along the keel; +Y to the standard.
 //
 // Against W. sinensis the flower is small and its standard smaller still for
-// the rest: 8 to 12 mm wide where that of W. sinensis is 20 to 30 (Compton and
+// the rest: 8 to 16 mm long where that of W. sinensis is 20 to 30 (Compton and
 // others 2019), over wings and a keel of 15 to 20 mm. The standard is pale; the
 // wings and keel carry the colour.
 // ---------------------------------------------------------------------------
-/** Wings "about 15 to 20 mm long": the unit the flower is drawn in, in metres. */
+/** Wings about 15 to 20 mm long (Japanese floras): the unit the flower is drawn in, in metres. */
 const WING_M = mid(characterRange(morphology, 'flower.wingLengthM'));
 /** The flower's own stalk, "1/2 to 1 in. long" (Bean), in wing lengths. */
 const STALK = mid(characterRange(morphology, 'flower.stalkLengthM')) / WING_M;
@@ -74,7 +74,7 @@ const WING_HALF_WIDTH = mid(characterRange(morphology, 'flower.wingWidthM')) / W
 const KEEL = mid(characterRange(morphology, 'flower.keelLengthM')) / WING_M;
 
 const C = {
-  // "standard pale violet with a yellow mark at the base" (Bean); "white flushed mauve ... small yellow eye" (Lane)
+  // the standard pale violet with a yellow mark at its base (Bean); white flushed mauve, "with a small yellow eye" (Lane)
   standard: lin('#d3c2ef'),
   standardEdge: lin('#b9a0e4'),
   white: lin('#f6f1fd'),
@@ -358,9 +358,9 @@ const LEAF_M = mid(characterRange(morphology, 'leaf.lengthM'));
 const LEAFLET_M = mid(characterRange(morphology, 'leaf.leafletLengthM'));
 /** The length of a full-sized leaflet as a share of the whole leaf. */
 const LEAFLET = LEAFLET_M / LEAF_M;
-/** Half the width of a leaflet, in leaflet lengths: "about 2 to 2.5 cm wide" to "4 to 10 cm long". */
+/** Half the width of a leaflet, in leaflet lengths: about 2 to 2.5 cm wide to 4 to 10 cm long (Japanese floras). */
 const LEAFLET_HALF_WIDTH = mid(characterRange(morphology, 'leaf.leafletWidthM')) / LEAFLET_M / 2;
-/** Leaflets to a leaf, one variant for each odd number the cultivar is recorded with: "11-17" gives 11, 13, 15 and 17. */
+/** Leaflets to a leaf, one variant for each odd number the cultivar is recorded with: 11 to 17 gives 11, 13, 15 and 17. */
 const LEAF_VARIANTS: readonly number[] = (() => {
   const [fewest, most] = characterRange(morphology, 'leaf.leafletCount');
   const counts: number[] = [];
