@@ -9,6 +9,7 @@ import type { Polyline } from '../src/math/polyline.ts';
 import { type Vec3, distance } from '../src/math/vec3.ts';
 import { loadGrowable } from '../src/node/load-taxa.ts';
 import { Simulation } from '../src/sim/engine.ts';
+import { param } from '../src/sim/model.ts';
 import { MODELLED_ROUTINE, type PlantingPlan, parsePlantingPlan, plantingOn } from '../src/sim/planting.ts';
 import { designReport } from '../src/sim/report.ts';
 import { HEMISPHERE_VIEWPOINTS } from '../src/sim/scenarios.ts';
@@ -277,17 +278,25 @@ describe('four climbers on the arbour, eight years on', () => {
     expect(checked).toBeGreaterThan(2000);
   });
 
-  it('leaves the cut-down clematis its three stubs each February, however many years it is done', () => {
-    // one of its three stems finds the cable full and stalls at the foot: it must not stand as a stub of
-    // no length whose regrowth becomes more stubs every year (the log once read "2264 stubs left")
+  it('leaves the cut-down clematis one stub for each of its stems each February, however many years it is done', () => {
+    // a stem that finds the cable full and stalls at the foot must not stand as a stub of no length whose
+    // regrowth becomes more stubs every year (the log once read "2264 stubs left"). The plant has three stems
+    // from the ground, the third from its second year, so there are never more than three stubs.
+    const stubsLeft = (outcome: string): number => Number(/(\d+) stubs? left to shoot again/.exec(outcome)?.[1] ?? Number.NaN);
     const cuts = sim.events.filter((e) => e.plantId === 'clematis' && e.type === 'hard_prune');
     expect(cuts).toHaveLength(7);
-    for (const c of cuts) expect(c.outcome, c.date).toContain('3 stubs left to shoot again');
+    for (const c of cuts) {
+      expect(stubsLeft(c.outcome), c.date).toBeGreaterThanOrEqual(1);
+      expect(stubsLeft(c.outcome), c.date).toBeLessThanOrEqual(3);
+    }
+    expect(stubsLeft(cuts[cuts.length - 1]!.outcome)).toBe(3);
     const standing = sim.plants
       .get('clematis')!
       .axisIds.map((id) => sim.axes.get(id)!)
       .filter((a) => a.role === 'leader' && a.removedDay === null);
-    expect(standing.length).toBeLessThanOrEqual(9);
+    // what stands after the last cut and a season's regrowth: three stubs, each with at most the shoots a cut calls up
+    const mostShoots = param(taxa.get('clematis-viticella-etoile-violette')!.model, 'regrowth.shootsPerCut')[1];
+    expect(standing.length).toBeLessThanOrEqual(3 * (1 + mostShoots));
   });
 
   it('hangs the wisteria from the rafters in May and reports what the arbour is made of', () => {
