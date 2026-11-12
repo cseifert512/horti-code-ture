@@ -137,7 +137,7 @@ const LEAF_PLANS: readonly LeafPlan[] = [
   // the lowest pair divided into three
   { pairs: [leaflet(0.27, MIDDLING, 0, true), leaflet(0.3, MIDDLING)], end: leaflet(0.37, MIDDLING, 1), seed: 41 },
   // a leaf of three, as near the flowers
-  { pairs: [leaflet(0.4, BROADISH)], end: leaflet(LEAFLET_MOST * 0.94, BROADISH), seed: 53 },
+  { pairs: [leaflet(0.38, BROADISH)], end: leaflet(LEAFLET_MOST * 0.87, BROADISH), seed: 53 },
 ];
 
 function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
@@ -153,7 +153,7 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   // Darwin: it "bends angularly downwards" where each pair arises, the end leaflet's stalk most of all.
   const n = plan.pairs.length;
   const stretch = n > 2 ? 0.15 : 0.2;
-  const endStalk = n === 1 ? 0.2 : n > 2 ? 0.11 : 0.13;
+  const endStalk = n === 1 ? 0.3 : n > 2 ? 0.11 : 0.13;
   const nodes: V3[] = [new V3(0, 0, 0)];
   let dip = 0.04;
   const heading = () => new V3(0, -Math.sin(dip), Math.cos(dip));
