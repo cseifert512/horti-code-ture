@@ -1,20 +1,24 @@
 {
   "schemaVersion": 1,
   "taxonId": "thunbergia-alata",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it began as a copy of. Sizes of leaf, flower and capsule, the length of stem made in a summer and the season of flowering are from published descriptions; how many stems a plant makes, how long a flower lasts, how much seed sets in Britain and every date are assumptions, and the rules by which a shoot chooses its way are still copied from wisteria. None has been measured on a plant. An annual here cannot branch or thicken in its one year, so its branches are entered as stems from the base. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "facing_out",
+    "fruitHeld": "facing_out",
+    "basis": "One leaf form, one flower form, one fruit form. The flower stands singly on a stalk 3 to 9.5 cm long from the leaf axil (Weeds of Australia) and faces out from the support and a little up; the capsule ripens on the same stalk inside the same two bracts, beak outwards."
+  },
   "params": {
     "phenology.budburstDoy": {
       "value": 135,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Not bud break: the day from which a plant set out in mid May is taken to grow. RHS: replant in late spring once the risk of frost has passed."
+      "basis": "Not bud break: the first day on which a plant in the ground is taken to grow, mid May. It is set out once the frosts are over (RHS Plants: \"plant out after all risk of frost has passed\"; Wisconsin Extension: when nights stay above 50 F). The day itself is a choice."
     },
     "phenology.growthEndDoy": {
       "value": 290,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Taken to grow on until the nights turn cold in mid October. No dated source."
+      "basis": "Taken to go on extending until the nights turn cold in mid October: a tropical African plant rated H2, \"tolerant of low temperatures, but not surviving being frozen\" (RHS). No dated source; in a real year it is the weather that decides."
     },
     "phenology.leafFlushDoy": {
       "value": [
@@ -23,7 +27,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Leaves open as the shoots extend. A placeholder."
+      "basis": "Not a flush: there is no old wood to leaf out. Every leaf stands on growth of the year and opens as that growth is made; the window only has to begin before the plant is set out."
     },
     "phenology.autumnColourDoy": {
       "value": [
@@ -32,7 +36,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Not autumn colour: the plant yellows as the cold takes it. A placeholder."
+      "basis": "Not autumn colour: the leaves yellow and dull as the cold takes the plant in late October. No dated source."
     },
     "phenology.leafFallDoy": {
       "value": [
@@ -41,7 +45,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Not leaf fall: the plant is killed by the cold, taken as the first week of November. It is hardy only to 5 degrees (RHS H1c); the date is a placeholder and in a real year is whenever the first frost comes."
+      "basis": "Not leaf fall: the plant is killed by the cold, taken as the first week of November, and its last day is the day it dies. RHS hardiness H2 (1 to 5 degC, \"not surviving being frozen\"). The date stands for the first hard frost, which in a real year comes when it comes."
     },
     "phenology.floralInitiationDoy": {
       "value": [
@@ -50,7 +54,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers on the growth of the year; buds are taken to form from mid June. No dated source."
+      "basis": "Day-neutral, and able to flower six weeks from seed (PanAmerican Seed, Susie series: \"Daylength: Day Neutral\", \"can pop into flower in as little as 6 weeks\"), so nothing but size holds a plant back: buds are taken to form from late June on a plant set out in mid May, and on every node made after that."
     },
     "phenology.flowerOpenDoy": {
       "value": [
@@ -59,7 +63,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers open in succession from summer to autumn (RHS): 1 July to 7 October."
+      "basis": "Flowers open one after another along the growing stems \"from summer to early autumn\" (RHS): taken as 1 July to 7 October. Seed houses give June or July to October; Wisconsin Extension \"from mid-summer until frost\"."
     },
     "phenology.petalFallDoy": {
       "value": [
@@ -68,23 +72,23 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of June to August (1 to 31 August)."
+      "basis": "Not used: each flower lasts its own few days (phenology.flowerLastsDays). Kept inside the flowering season because every model carries every parameter."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        4,
-        9
+        3,
+        6
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "How long one flower lasts. A placeholder."
+      "basis": "How long one corolla stays on before it drops whole. No source gives it; growers describe flowers that do not last long and are followed at once by more. Taken as three to six days. Unmeasured, and the number of flowers open at once follows from it directly."
     },
     "extension.leaderMPerSeason": {
-      "value": 2.2,
+      "value": 2.0,
       "unit": "m",
       "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details",
-      "basis": "RHS: 1.5 to 2.5 m, reached within the year or two. Grown as an annual it makes that in one summer; the figure within the band is a placeholder."
+      "source": "https://ballaustralia.com/wp-content/uploads/plant_list/cultural_notes/T/Thunbergia-Susie-CN.pdf",
+      "basis": "Stem made in one summer. The breeder gives the vine length of the Susie series as \"6 to 8 ft./1.8 to 2 m\" (PanAmerican Seed); RHS 1.5 to 2.5 m high; Wisconsin Extension up to 8 ft in a season under ideal conditions and usually 3 to 5 ft in the Midwest. Two metres is the top of the breeder's figure and the middle of the RHS band."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
@@ -94,41 +98,46 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate. Not measured."
+      "basis": "Never used for this plant as the engine stands: a branch breaks in the spring after its bud was laid down, and an annual has no second spring. Its branches are entered as further stems from the base instead (architecture.trunkStemStartYears)."
     },
     "extension.whipMPerSeason": {
       "value": 1,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+      "basis": "Never used: long shoots of the year are thrown by stems of earlier years, and this plant has none."
     },
     "extension.establishmentFactorByYear": {
       "value": [
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "No slow first year: its first year is its only year."
+      "basis": "No slow first year: its first summer is its only one, and a pot-grown plant set out in warm soil grows away at once."
     },
     "architecture.trunkStemStartYears": {
       "value": [
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Three stems from the base of a pot-grown plant. A placeholder."
+      "basis": "Eight twining stems from the base in the year it is planted: the seedling's own stem and the branches that break from its lowest leaf axils within weeks. Sources say only \"many twining stems\" and \"one or many stems\" (Botany Brisbane); eight is chosen so that one plant clothes the 0.5 to 1 m spread and 1.5 to 2.5 m height the RHS gives it. The engine cannot branch a stem in the year it is made, so every branch is entered here as a stem from the ground and all eight start on planting day, which real branches do not."
     },
     "architecture.nurseryCaneM": {
       "value": 0.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Set out as a small pot plant. Not measured."
+      "basis": "Set out as a small pot plant of eight to ten weeks (PanAmerican Seed: four to five weeks in the plug and four to five more to finish in a 10 cm pot). Its length then is not given; 0.2 m is a choice."
     },
     "architecture.maxBranchOrder": {
       "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Never reached: no bud of this plant lives to break into a branch (see extension.lateralMPerSeasonByOrder)."
     },
     "architecture.leaderLengthM": {
       "value": [
@@ -138,7 +147,7 @@
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/66108/thunbergia-alata/details",
-      "basis": "The RHS ultimate-size band used as a cap on stem length. A height band is not a route length."
+      "basis": "How long a stem may get: the RHS ultimate height of 1.5 to 2.5 m, which agrees with the breeder's vine length of 1.8 to 2 m and the 3 to 8 ft of the American extension services. A height band is not a route length; here it bounds stem length."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
@@ -148,7 +157,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader. Not measured."
+      "basis": "Never used for this plant: see extension.lateralMPerSeasonByOrder."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
@@ -179,9 +188,9 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
+      "value": 8,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "As many as the plant has. The stems are a millimetre or two thick and wind round one another as readily as round the support, so a plant given one string sends every stem up it as a single rope. Not a count from a source."
     },
     "architecture.maxStemsPerPrimaryMember": {
       "value": 3,
@@ -199,9 +208,9 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "routing.uphillBonusPerM": {
-      "value": 1.2,
+      "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A twining shoot climbs: its tip sweeps round until it meets something upright and winds up it. Set so that a rise of 0.4 m is worth as much as the largest chance element in the choice (routing.noise), which at the value copied from wisteria it was not. A weight in the engine's choice of route, not a measurement."
     },
     "routing.straightOnBonus": {
       "value": 0.6,
@@ -214,9 +223,9 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "routing.tierBonus": {
-      "value": 1.2,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No stem of this plant is set on running level: every one climbs. The engine marks all stems after the first for a lowest tier, which is a way of training wisteria; at 0 that mark does nothing here."
     },
     "routing.roleDropChance": {
       "value": 0.12,
@@ -237,13 +246,13 @@
       "value": 20,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. A thin herbaceous twiner, taken to hold canes, laths and cables and nothing as stout as the timber here."
+      "basis": "No measurement exists. Darwin grew a dozen plants on \"sticks of various thicknesses\" and on string and all twined them, without giving a thickness; growers give it canes, netting, wire and string. A slender herbaceous twiner, taken to hold anything up to a stout cane and nothing as thick as a 40 mm lath."
     },
     "attachment.minPitchM": {
-      "value": 0.3,
+      "value": 0.08,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How far the stem climbs in one turn round a thin support, taken as about one internode. No source gives the pitch of its coils; the internode is from organs.leafSpacingM."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
@@ -252,26 +261,28 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.05,
-        0.09
+        0.045,
+        0.13
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Stem between one pair of leaves and the next. The only figure found is \"four and a half to 13 centimeters\" between leaf stalks, in an encyclopedia article that names no flora for it and could not be traced to one; it is used as the best there is and labelled as unverified."
     },
     "organs.leafLengthM": {
       "value": [
-        0.04,
-        0.075
+        0.055,
+        0.11
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Of the order given in descriptions. Not checked against a source here."
+      "status": "published_plant_profile",
+      "source": "https://apps.lucidcentral.org/rainforest/text/entities/Thunbergia_alata.htm",
+      "basis": "Stalk and blade together, which is what the engine calls the length of a leaf. Blades \"about 3-8 x 3-7.5 cm\" on stalks \"about 2.5-3.5 cm long\" (Australian Tropical Rainforest Plants); the top of the blade range is taken as 7.5 cm, the \"up to 3 inches\" of Wisconsin Extension and North Carolina State, since plants of one summer in Britain do not make the largest leaves."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Honeysuckles bear their leaves in opposite pairs. A character of the family, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://keyserver.lucidcentral.org/weeds/data/media/Html/thunbergia_alata.htm",
+      "basis": "Leaves opposite, in pairs (Weeds of Australia; Wisconsin Extension; Darwin: \"the opposite leaves of Thunbergia alata\")."
     },
     "organs.spurChance": {
       "value": 0,
@@ -285,7 +296,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short leafy side shoots. A placeholder."
+      "basis": "Not used: no spurs are modelled for this plant."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -299,11 +310,12 @@
     "organs.racemeLengthM": {
       "value": [
         0.03,
-        0.045
+        0.04
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Width of a single flower. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://keyserver.lucidcentral.org/weeds/data/media/Html/thunbergia_alata.htm",
+      "basis": "Width of the one flower across its five spread lobes: \"3-4 cm wide\" (Weeds of Australia); \"about 1 1/2 inches wide\" (Wisconsin Extension). The flowers stand singly, so one flower is one record."
     },
     "organs.whipShareOfNodes": {
       "value": 0,
@@ -322,13 +334,13 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a year’s side shoot. A placeholder."
+      "basis": "Not used: see organs.whipsPerYearMax."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Evergreen where it is warm enough (RHS); outdoors in the UK its leaves last the one summer."
+      "basis": "Evergreen where it is warm enough (RHS); outdoors in the UK a leaf lasts from its unfolding until the cold kills the plant."
     },
     "organs.clearStemHeightM": {
       "value": 0,
@@ -339,8 +351,9 @@
     "flowering.competenceYears": {
       "value": 0,
       "unit": "growing seasons",
-      "status": "provisional_design_assumption",
-      "basis": "Flowers in the summer it is planted."
+      "status": "published_plant_profile",
+      "source": "https://ballaustralia.com/wp-content/uploads/plant_list/cultural_notes/T/Thunbergia-Susie-CN.pdf",
+      "basis": "Flowers in the summer it is planted: grown as an annual, and in flower six to ten weeks from seed (PanAmerican Seed)."
     },
     "flowering.maturityRamp": {
       "value": [
@@ -360,16 +373,16 @@
       "basis": "Not applicable to this plant; present because every model carries every parameter."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 8,
+      "value": 11.5,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flowers per metre of the growth of the year, over the whole season. A placeholder."
+      "basis": "Flowers stand singly in the leaf axils (Weeds of Australia: \"borne singly in the upper leaf forks\"), and a node has two axils. The engine can give a node one flower a year, so every node long enough made is given one: 11.5 a metre at the mean spacing of the leaf pairs. How many axils of a real plant flower is not recorded."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot shorter than this is taken not to flower. A placeholder."
+      "basis": "The first few nodes of a stem bear leaves only; taken as its first 0.2 m. Not from a source."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -378,7 +391,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant (RHS: \"no pruning is needed outdoors\"); present because every model carries every parameter."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -399,16 +412,16 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 0.64,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A stem 1.6 mm thick. Two unverified figures bracket it: \"one to one and a quarter millimeter thick\" in an encyclopedia article that names no flora, and \"slender (ca. 2 mm)\" in a guide text. As the engine stands this is the thickness of every stem for its whole life: stems are thickened at the year's end, and this plant is dead by then."
     },
     "thickening.radiusSquaredPerMetreMm2": {
       "value": 1,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Thin green stems. A placeholder."
+      "basis": "Never applied: thickening is worked out on 31 December for living plants, and the cold has killed this one in November. Were it applied, the foot of a 2 m stem would be about 3 mm thick, which is what the base of a plant looks to be by autumn; not measured."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -416,66 +429,114 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.2,
+      "status": "provisional_design_assumption",
+      "basis": "One flower in five is taken to set a capsule outdoors in Britain. Seed \"is often produced late in the season\" (Wisconsin Extension) and the plant seeds itself where it is warm; how much sets in a British summer is not recorded anywhere found."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.014,
+        0.025
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://keyserver.lucidcentral.org/weeds/data/media/Html/thunbergia_alata.htm",
+      "basis": "The capsule from its base to the end of its beak: a \"globular base 5-10 mm across and an elongated beak 9-15 mm long\" (Weeds of Australia); base about 8 mm and beak about 13 mm (Australian Tropical Rainforest Plants). The stalk and the two bracts round it are not counted."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        12,
+        21
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Days from the fall of the corolla to a full-sized green capsule. No source; taken as two to three weeks."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        213,
+        300
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The capsule \"ripens and dries to tan\" inside its bracts (Wisconsin Extension), \"often late in the season\". Taken as August to late October; no dated British record found."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        225,
+        311
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A ripe capsule splits down its beak and throws its seeds; what is left of it is taken to go at some time between then and the plant's death. No source for how long the empty husk stays. Whatever is left goes with the plant when the cold kills it."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "published_plant_profile",
+      "source": "https://hort.extension.wisc.edu/articles/black-eyed-susan-vine-thunbergia-alata/",
+      "basis": "No tendrils: \"it does not cling or use tendrils\" (Wisconsin Extension); it holds on by twining its stems."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://hort.extension.wisc.edu/articles/black-eyed-susan-vine-thunbergia-alata/",
+      "basis": "No tendrils (Wisconsin Extension)."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "The leaf stalks do not coil: every description has the stems twining and none the stalks. Darwin, who grew a dozen plants, lists it among stem twiners."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No coiled leaf stalks: see appendages.leafStalkCoilShare."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No clinging rootlets. Stems that trail on the ground root at the nodes (Botany Brisbane), which is not a hold on a support."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No clinging rootlets: see appendages.aerialRootPatchSpacingM."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: a soft, hairy herb. No description mentions prickles."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: see appendages.prickleSpacingM."
     },
     "sideShoots.bearingWoodAgeYears": {
       "value": null,
@@ -483,9 +544,10 @@
       "status": "unknown"
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 0,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "None. Its branches are long twining stems like the one that bears them, and its flowers stand in the leaf axils of all of them; it has no short shoot that ends in a flower."
     },
     "sideShoots.lengthM": {
       "value": null,
