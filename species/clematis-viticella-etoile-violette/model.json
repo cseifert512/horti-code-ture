@@ -187,9 +187,9 @@
       "basis": "Clematis stems are slender (Bean) and a gardener ties several along one lath or lets them share a wire; three are allowed before the next looks for another way. RHS: 'guide stems so they spread evenly'. Chosen, not counted."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 4,
+      "value": 8,
       "status": "provisional_design_assumption",
-      "basis": "A glulam member is wide enough to carry more of these slender stems side by side than a lath is: four. Chosen, not counted."
+      "basis": "A glulam member 150 mm wide or more carries eight of these slender stems side by side at the 22 mm the engine lays them apart. Chosen from that width, not counted on a plant."
     },
     "routing.occupancyCost": {
       "value": 3.3,
@@ -197,9 +197,9 @@
       "basis": "How much a shoot is put off a lath or wire by each stem already on it. Set high, so that the stems of a plant fan out over a lattice instead of bunching, as a gardener lays them (RHS: 'guide stems so they spread evenly, which improves flowering and avoids a tangled mass'), and so that the stems from the base start on different members. A tuning value, not a measurement."
     },
     "routing.downhillCostPerM": {
-      "value": 5,
+      "value": 12.5,
       "status": "provisional_design_assumption",
-      "basis": "A growing shoot is not led downhill. The engine's general value is kept; nothing about this plant bears on it. (A stem that outgrows its support bends over and trails, which the model does not show.)"
+      "basis": "A growing shoot is not led downhill: with routing.giveUpCost this stops a shoot at any way on that falls more than 0.84 m, the same limit the engine's general values give. (A stem that outgrows its support bends over and trails, which the model does not show.)"
     },
     "routing.uphillBonusPerM": {
       "value": 1,
@@ -232,9 +232,9 @@
       "basis": "Chance in the choice of the next member, so that no two stems take the same way for the same reason. The engine's general value; not a measurement."
     },
     "routing.giveUpCost": {
-      "value": 4.2,
+      "value": 10.5,
       "status": "provisional_design_assumption",
-      "basis": "Beyond this cost a shoot stops where it is. The engine's general value; not a measurement."
+      "basis": "Beyond this cost a shoot stops where it is. Set high enough that a stem whose only way on is a member that already carries others shares it, up to the number the member takes (architecture.maxStemsPerRoute), instead of stalling: these stems are slender and a gardener bunches them. A tuning value, not a measurement."
     },
     "attachment.maxGraspDiameterMm": {
       "value": 8,
