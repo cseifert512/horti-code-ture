@@ -36,6 +36,18 @@
         "--strictPort"
       ],
       "port": 5197
+    },
+    {
+      "name": "bower-viewer-light",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "node_modules/vite/bin/vite.js",
+        "packages/viewer",
+        "--port",
+        "5196",
+        "--strictPort"
+      ],
+      "port": 5196
     }
   ]
 }
