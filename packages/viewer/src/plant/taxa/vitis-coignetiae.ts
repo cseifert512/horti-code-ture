@@ -97,13 +97,25 @@ interface LeafShape {
   seed: number;
 }
 
-/** The usual leaf, a barely lobed one, a five-angled one, and one that hangs more. */
+/**
+ * The usual leaf, a barely lobed one, a five-angled one, and one held more steeply. In photographs of plants on
+ * walls and frames (Commons: Capel Manor patio, Brno botanic garden) the blades are nearly flat and lie like
+ * shingles, sloping down and outwards from the top of the stalk with their upper side to the light; they neither
+ * hang nor curl under. The tones put the upper side of one leaf a little nearer the palette's second colour than
+ * another's: the photographs show dark leaves beside yellower ones in summer, and crimson beside scarlet and orange
+ * in autumn on one plant on one day.
+ */
 const LEAF_SHAPES: readonly LeafShape[] = [
-  { lobes: FEW_LOBES, sinus: 0.1, shoulder: 0, tilt: 0.5, curl: 0.95, dome: 0.1, tipDroop: 0.06, swell: 0.034, wave: 0.02, tone: 0, seed: 11 },
-  { lobes: FEW_LOBES, sinus: 0.035, shoulder: 0, tilt: 0.42, curl: 0.85, dome: 0.09, tipDroop: 0.05, swell: 0.038, wave: 0.016, tone: 0.07, seed: 23 },
-  { lobes: MANY_LOBES, sinus: 0.085, shoulder: 0.07, tilt: 0.55, curl: 0.95, dome: 0.11, tipDroop: 0.06, swell: 0.032, wave: 0.024, tone: 0.03, seed: 37 },
-  { lobes: FEW_LOBES, sinus: 0.075, shoulder: 0.02, tilt: 0.62, curl: 1.0, dome: 0.13, tipDroop: 0.08, swell: 0.036, wave: 0.03, tone: 0.11, seed: 53 },
+  { lobes: FEW_LOBES, sinus: 0.03, shoulder: 0, tilt: 0.85, curl: 0.28, dome: 0.05, tipDroop: 0.035, swell: 0.026, wave: 0.014, tone: 0.02, seed: 11 },
+  { lobes: FEW_LOBES, sinus: 0.0, shoulder: 0, tilt: 0.9, curl: 0.22, dome: 0.045, tipDroop: 0.03, swell: 0.028, wave: 0.012, tone: 0.24, seed: 23 },
+  { lobes: MANY_LOBES, sinus: 0.05, shoulder: 0.03, tilt: 0.8, curl: 0.32, dome: 0.06, tipDroop: 0.04, swell: 0.025, wave: 0.016, tone: 0.13, seed: 37 },
+  { lobes: FEW_LOBES, sinus: 0.025, shoulder: 0.01, tilt: 0.94, curl: 0.3, dome: 0.065, tipDroop: 0.045, swell: 0.027, wave: 0.02, tone: 0.3, seed: 53 },
 ];
+/**
+ * Where the felted under side stands on the palette's ramp: most of the way to the felt in summer, and in autumn far
+ * enough along the autumn ramp to read warm and orange through the felt rather than the full amber of its far end.
+ */
+const UNDER_TONE = 0.78;
 
 /** Segments of a blade at each level of detail: cells across a main sector and a basal one, rings, and whether the teeth are cut. */
 const LEAF_GRID = [
@@ -127,24 +139,28 @@ function sectorsOf(shape: LeafShape): Sector[] {
   const rng = new RNG(shape.seed);
   const side = (): Sector[] => {
     // the two side veins of a five-veined leaf, and the branch that feeds the lobe beside the stalk
-    const a2 = (50 + rng.range(-3, 3)) * DEG;
-    const a3 = (97 + rng.range(-3, 3)) * DEG;
-    const a4 = (137 + rng.range(-2, 2)) * DEG;
-    const end = (161 + rng.range(-3, 2)) * DEG;
-    const r2 = 0.72 * rng.range(0.96, 1.04);
-    const r3 = 0.555 * rng.range(0.96, 1.04);
-    const r4 = 0.4 * rng.range(0.95, 1.05);
+    // "roundish in the main": the side veins end nearly as far out as the tip, and the margin bulges past the
+    // straight line from one vein's end to the next, so that the lobes are only angles with a short point
+    const a2 = (47 + rng.range(-3, 3)) * DEG;
+    const a3 = (91 + rng.range(-3, 3)) * DEG;
+    const a4 = (127 + rng.range(-2, 2)) * DEG;
+    // the notch at the stalk: deep, and open rather than closed (photographs: Commons "Vitis coignetiae (leaf)")
+    const end = (151 + rng.range(-3, 2)) * DEG;
+    const r2 = 0.87 * rng.range(0.97, 1.03);
+    const r3 = 0.77 * rng.range(0.96, 1.04);
+    const r4 = 0.6 * rng.range(0.95, 1.05);
     const b12 = a2 * 0.52;
     const b23 = (a2 + a3) / 2;
     const b34 = (a3 + a4) / 2 + 2 * DEG;
-    const r12 = chord(0, 1, a2, r2, b12) * (1 - shape.sinus);
-    const r23 = chord(a2, r2, a3, r3, b23) * (1.035 - shape.shoulder);
-    const r34 = chord(a3, r3, a4, r4, b34) * 1.07;
+    const r12 = chord(0, 1, a2, r2, b12) * (1.075 - shape.sinus);
+    const r23 = chord(a2, r2, a3, r3, b23) * (1.085 - shape.sinus - shape.shoulder);
+    const r34 = chord(a3, r3, a4, r4, b34) * 1.1;
+    const many = shape.lobes >= MANY_LOBES;
     return [
-      { vein: 0, from: 0, to: b12, tip: 1, rFrom: r12, rTo: r12, point: 1.6, basal: false },
-      { vein: a2, from: b12, to: b23, tip: r2, rFrom: r12, rTo: r23, point: 1.25, basal: false },
-      { vein: a3, from: b23, to: b34, tip: r3, rFrom: r23, rTo: r34, point: shape.lobes >= MANY_LOBES ? 1.15 : 0, basal: false },
-      { vein: a4, from: b34, to: end, tip: r4, rFrom: r34, rTo: 0.3, point: 0, basal: true },
+      { vein: 0, from: 0, to: b12, tip: 1, rFrom: r12, rTo: r12, point: 1.5, basal: false },
+      { vein: a2, from: b12, to: b23, tip: r2, rFrom: r12, rTo: r23, point: 1.3, basal: false },
+      { vein: a3, from: b23, to: b34, tip: r3, rFrom: r23, rTo: r34, point: many ? 1.2 : 0, basal: false },
+      { vein: a4, from: b34, to: end, tip: r4, rFrom: r34, rTo: 0.24, point: 0, basal: true },
     ];
   };
   const right = side();
@@ -246,10 +262,10 @@ function bladeSheet(shape: LeafShape, sectors: readonly Sector[], lod: number, d
     const [topY, topZ] = hang(shape, -drop, 0);
     pos.push(0, topY, topZ);
     uv.push(0.5, 0.03);
-    tones.push(under ? 1 : shape.tone + 0.1);
+    tones.push(under ? UNDER_TONE : shape.tone + 0.1);
     n++;
     // the texture has eleven pairs of side veins from end to end: a vein shows as many as its length earns
-    const veins = 0.62 * s.tip;
+    const veins = 0.45 * s.tip;
     for (let j = 1; j <= grid.rings; j++) {
       const v = Math.pow(j / grid.rings, 0.85);
       for (let k = 0; k <= cells; k++) {
@@ -258,7 +274,8 @@ function bladeSheet(shape: LeafShape, sectors: readonly Sector[], lod: number, d
         const phi = across(s, theta);
         // coarse teeth, each at the end of a side vein: every other point of the margin stands out
         // ("shallowly to coarsely toothed": no two alike)
-        const depth = 0.02 + 0.022 * (((k * 7 + si * 3 + shape.seed) % 5) / 4);
+        // small, sharp, irregular teeth all round (photographs), not saw-cuts
+        const depth = 0.009 + 0.012 * (((k * 7 + si * 3 + shape.seed) % 5) / 4);
         const tooth = grid.teeth && j === grid.rings ? (k % 2 === 1 ? depth : -0.8 * depth) : 0;
         const r = v * reachOf(s, theta) * (1 + tooth);
         const x = r * Math.sin(theta) * widen;
@@ -270,7 +287,7 @@ function bladeSheet(shape: LeafShape, sectors: readonly Sector[], lod: number, d
         const u = 0.5 + 0.5 * Math.sign(phi) * Math.pow(Math.abs(phi), lerp(1, 0.5, v));
         // the felt beneath hides the side veins: the under side takes the foot of the texture, where there are none
         uv.push(u, under ? 0.02 : 0.03 + veins * v);
-        tones.push(under ? 1 : shape.tone + 0.1 * Math.max(0, 1 - Math.abs(phi) / 0.25) * (1 - 0.6 * v));
+        tones.push(under ? UNDER_TONE : shape.tone + 0.1 * Math.max(0, 1 - Math.abs(phi) / 0.25) * (1 - 0.6 * v));
         n++;
       }
     }
@@ -332,12 +349,19 @@ function planBlade(shape: LeafShape): BladePlan {
 const BLADE_PLANS = LEAF_SHAPES.map(planBlade);
 const mean = (xs: readonly number[]): number => xs.reduce((a, b) => a + b, 0) / xs.length;
 /**
- * From the stem to the farthest point of the blade along the line of the
- * stalk: the unit every leaf is drawn to, so that all are the same size of
- * blade for the same length in the data. A blade that hangs more steeply
- * reaches less far and is given the longer stalk (they run from 2 to 6 in.).
+ * The stalk in lengths of the midrib: Bean's stalk of 2 to 6 in. to a blade ordinarily 4 to 8 in. wide, the blade
+ * as long for its width as his largest leaf, and the midrib the share of the blade's length the drawn outline gives
+ * it (the rest is the lobes beside the stalk).
  */
-const LEAF_REACH = STALK_TO_BLADE * mean(BLADE_PLANS.map((p) => p.length)) + mean(BLADE_PLANS.map((p) => p.reach));
+const STALK_TO_MIDRIB = STALK_TO_BLADE * mean(BLADE_PLANS.map((p) => p.length));
+/**
+ * The unit every leaf is drawn to (TAXON_LOOKS.md section 2: one unit along +Z), as the growth model measures a leaf
+ * of this plant: from the stem to the farthest point of the blade along the line of the stalk. The blade slopes down
+ * from the top of its stalk, so this is the stalk and about three fifths of the midrib. So that every variant is the
+ * same size of blade for the same length in the data, a blade held more steeply, which reaches less far, is given
+ * the longer stalk (they run from 2 to 6 in.).
+ */
+const LEAF_REACH = STALK_TO_MIDRIB + mean(BLADE_PLANS.map((p) => p.reach));
 
 function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const shape = LEAF_SHAPES[variant]!;
@@ -351,7 +375,7 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const stalk = path(stalkSegs, (t) => new V3(0, 0.04 * stalkLength * Math.sin(Math.PI * t), stalkLength * t));
   mg.tube(
     stalk,
-    stalk.map((_, i) => 0.0095 * (1 + 0.6 * Math.max(0, 1 - (i / stalkSegs) * 4)) * (1 - 0.2 * (i / stalkSegs))),
+    stalk.map((_, i) => 0.012 * (1 + 0.6 * Math.max(0, 1 - (i / stalkSegs) * 4)) * (1 - 0.2 * (i / stalkSegs))),
     stalkSides,
     WHITE,
     WHITE,
@@ -377,7 +401,7 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
     mg.part[i + 2]! *= k;
   }
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, -0.25, 0.6), 0.95);
+  g.boundingSphere = new THREE.Sphere(new V3(0, -0.2, 0.55), 0.8);
   return g;
 }
 
@@ -484,20 +508,22 @@ function layOutPanicle(variant: number): { spine: (f: number) => V3; branches: {
   const bend = rng.range(0.004, 0.011);
   // the stalk leaves the shoot sideways and turns down under its own weight
   const spine = (f: number) => new V3(Math.cos(lean) * (bend * Math.sin(f * 2.4) + 0.012 * Math.min(1, f * 5)), -f * L + 0.004 * Math.min(1, f * 5), Math.sin(lean) * (bend * Math.sin(f * 2.4) + 0.012 * Math.min(1, f * 5)));
-  const count = 11 + variant;
+  // A vine's panicle in flower is a narrow cone of short branches, each ending in tight knots of flowers
+  // (Commons: "Vitis vinifera inflorescence", of the common vine: no photograph of this species in flower was found).
+  const count = 13 + variant;
   const first = rng.range(0, TAU);
   const branches: { points: V3[]; radius: number }[] = [];
   const flowers: Placed[] = [];
-  const reach = (i: number) => L * (0.3 * Math.pow(1 - i / (count - 1), 0.8) + 0.04) * (i === 0 ? 1.2 : 1) * rng.range(0.85, 1.1);
+  const reach = (i: number) => L * (0.17 * Math.pow(1 - i / (count - 1), 0.8) + 0.035) * (i === 0 ? 1.25 : 1) * rng.range(0.85, 1.1);
   const lengths = Array.from({ length: count }, (_, i) => reach(i));
   const total = lengths.reduce((a, b) => a + b, 0);
   const down = new V3(0, -1, 0);
   const put = (from: V3, heading: V3, f: number) => {
     const axis = heading.clone().add(new V3(rng.range(-0.7, 0.7), rng.range(-0.5, 0.7), rng.range(-0.7, 0.7))).normalize();
-    flowers.push({ from, at: from.clone().addScaledVector(axis, FLOWER_WIDTH * rng.range(0.6, 1)), axis, size: FLOWER_WIDTH * rng.range(0.88, 1.1), t: Math.min(1, Math.max(0, 0.03 + (0.9 * (f - 0.27)) / 0.73 + rng.range(-0.1, 0.1))) });
+    flowers.push({ from, at: from.clone().addScaledVector(axis, FLOWER_WIDTH * rng.range(0.6, 1)), axis, size: FLOWER_WIDTH * rng.range(0.88, 1.1), t: Math.min(1, Math.max(0, 0.03 + (0.9 * (f - 0.2)) / 0.8 + rng.range(-0.1, 0.1))) });
   };
   for (let i = 0; i < count; i++) {
-    const f = lerp(0.27, 0.92, i / (count - 1));
+    const f = lerp(0.2, 0.95, i / (count - 1));
     const base = spine(f);
     const psi = first + i * GOLDEN + rng.range(-0.25, 0.25);
     const out = new V3(Math.cos(psi), 0, Math.sin(psi));
@@ -507,7 +533,12 @@ function layOutPanicle(variant: number): { spine: (f: number) => V3; branches: {
     const curve = (g: number) => base.clone().addScaledVector(heading, len * g).addScaledVector(down, len * 0.18 * g * g);
     branches.push({ points: [curve(0), curve(0.5), curve(1)], radius: 0.00055 });
     const n = Math.max(2, Math.round((FLOWERS * 0.92 * len) / total));
-    for (let k = 0; k < n; k++) put(curve(lerp(0.22, 1, (k + rng.f()) / n)), heading, f + (0.06 * k) / n);
+    // the flowers of a branch in two or three knots along its outer half, the last at its end
+    const knots = n > 8 ? 3 : 2;
+    for (let k = 0; k < n; k++) {
+      const knot = k % knots;
+      put(curve(lerp(0.5, 1, (knot + 1) / knots) - 0.04 * rng.f()), heading.clone().lerp(new V3(rng.range(-1, 1), rng.range(-1, 1), rng.range(-1, 1)).normalize(), 0.6).normalize(), f + (0.06 * knot) / knots);
+    }
   }
   // the end of the axis carries flowers of its own
   while (flowers.length < FLOWERS) put(spine(rng.range(0.9, 1)), down, 1);
@@ -548,8 +579,8 @@ function makePanicleGeometry(variant: number, lod: number): THREE.BufferGeometry
   } else {
     // from a distance: fewer, larger knots, so that the panicle keeps its mass and its pale green
     knotCache ??= makeKnot();
-    const every = lod === 2 ? 3 : 5;
-    const grow = lod === 2 ? 1.9 : 2.5;
+    const every = lod === 2 ? 4 : 7;
+    const grow = lod === 2 ? 2.1 : 2.9;
     layout.flowers.forEach((fl, i) => {
       if (i % every !== 0) return;
       q.setFromUnitVectors(up, fl.axis);
@@ -730,13 +761,14 @@ function makeTendrilGeometry(variant: number, lod: number): THREE.BufferGeometry
     const support = new V3(0, 0.9, 0.4).normalize();
     const centre = new V3(0, -0.01, coil * 0.62);
     tube([fork, ...coilPath(centre, support, fork, coil, turns, 0.0165, n(Math.round(turns * 11), 5))], 0.85, 0.3);
-    // the free arm: out and up in a long bow, its tip hooked over
-    const free = armPath(fork, new V3(0.06, 0.2, 1).normalize(), new V3(1, 0.25, 0).normalize(), 1, 0.36, n(14, 3));
+    // the free arm: out in a bow and curled over at its tip, still feeling for something. The model is one unit
+    // along +Z (TAXON_LOOKS.md section 2), so this arm carries the tendril's length.
+    const free = armPath(fork, new V3(0.15, 0.3, 1).normalize(), new V3(1, 0.25, 0).normalize(), 1, 0.7, n(16, 3));
     let far = 0;
     for (const p of free) far = Math.max(far, p.z);
-    const stretch = (0.99 - fork.z) / (far - fork.z);
+    const stretch = (0.88 - fork.z) / (far - fork.z);
     for (const p of free) p.sub(fork).multiplyScalar(stretch).add(fork);
-    tube(free, 0.8, 0.3);
+    tube(free, 0.75, 0.3);
   } else {
     const curled = variant === 3;
     const forkAt = curled ? 0.4 : 0.47;
@@ -769,19 +801,21 @@ const leaf: LeafAsset = {
   lods: LEAF_GRID.length,
   make: makeLeafGeometry,
   budget: [2300, 400, 110],
-  pick: (_lengthM, r) => (r < 0.36 ? 0 : r < 0.6 ? 1 : r < 0.8 ? 2 : 3),
+  pick: (_lengthM, r) => (r < 0.3 ? 0 : r < 0.55 ? 1 : r < 0.78 ? 2 : 3),
   palette: {
-    // "dark green and glabrous above"
-    greenA: lin('#42702b'),
-    // "covered beneath with a thick rusty brown felt": the under side, and a breath of it along the veins above
-    greenB: lin('#766e48'),
+    // "dark green and glabrous above" (Bean); a fresh mid green in the photographs
+    greenA: lin('#3b6a22'),
+    // the felt beneath, "rusty brown" or "more whitish-gray" (Bean): a tawny khaki. Along the veins above, and on
+    // the leaves the tones lift towards it, it reads as the paler, yellower green of the photographs
+    greenB: lin('#8c7c48'),
     // unfolding under its felt
-    young: lin('#a98a60'),
-    // "turning scarlet and crimson in autumn"; the under side pales to a ruddy rose
-    autumnA: lin('#b9191d'),
-    autumnB: lin('#b24a45'),
+    young: lin('#a3874e'),
+    // "scarlet and crimson" (RHS): a deep crimson, lifting through scarlet towards the orange and amber the
+    // photographs show beside it on the same plant (Commons, peganum 2009: crimson, scarlet, orange and yellow)
+    autumnA: lin('#a3142a'),
+    autumnB: lin('#ee861c'),
   },
-  roughness: 0.62,
+  roughness: 0.55,
   // "thick and large" (Kyoto), felted beneath: less light comes through than through a thin leaf
   translucency: 0.3,
   // a leaf a hand and a half across keeps its lobes and teeth at a distance a small leaf would not
@@ -793,7 +827,7 @@ const panicle: FlowerAsset = {
   variants: PANICLE_VARIANTS,
   lods: PANICLE_LODS,
   make: makePanicleGeometry,
-  budget: [16500, 3000, 800, 440],
+  budget: [21500, 3800, 1000, 440],
   pick: (r) => Math.min(PANICLE_VARIANTS - 1, Math.floor(r * PANICLE_VARIANTS)),
   authoredSize: PANICLE_LEN,
   poise: 'hangs',
@@ -818,9 +852,9 @@ const bunch: FruitAsset = {
   poise: 'hangs',
   centreAlong: 0.6,
   // "black with a purple bloom": nearly black in the shade of the berry, dusty blue-violet where the bloom is
-  ripe: [0.034, 0.029, 0.052],
+  ripe: [0.032, 0.03, 0.04],
   ripeShade: [0.75 - ((1.9 - 0.75) / (UNRIPE.high - UNRIPE.low)) * UNRIPE.low, (1.9 - 0.75) / (UNRIPE.high - UNRIPE.low)],
-  roughness: 0.5,
+  roughness: 0.62,
   swing: 0.45,
   detailAt: [1.6, 5],
   detailCaps: [24, 160],
@@ -845,11 +879,11 @@ const tendril: AppendageAsset = {
 
 const wood: WoodLook = {
   // "at first covered with a loose greyish floss": a fawn-grey over the green of the shoot
-  young: lin('#8d8b62'),
+  young: lin('#7a7a4e'),
   // the ripened cane: smooth, warm brown
   mature: lin('#70452b'),
   // old bark, dark and stringy
-  old: [0.6, 0.47, 0.37],
+  old: [0.52, 0.43, 0.36],
   // a shoot ripens to brown wood by its first autumn
   woodyDays: [80, 190],
   // and its bark begins to part in strips in its second or third year

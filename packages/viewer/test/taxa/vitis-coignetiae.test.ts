@@ -121,8 +121,10 @@ describe('the leaf agrees with what Bean records of it', () => {
   it('has an under side of its own, a hair below the upper, in the felt colour of the palette', () => {
     for (const pts of models) {
       expect(under(pts)).toHaveLength(upper(pts).length);
-      // every point of the under side lies beneath its fellow of the upper: nearer the ground when the blade is flat
-      expect(under(pts).every((q) => q.t === 1)).toBe(true);
+      // the whole under side stands at one place on the palette's ramp, most of the way to the felt
+      const t = under(pts)[0]!.t;
+      expect(t).toBeGreaterThan(0.7);
+      expect(under(pts).every((q) => q.t === t)).toBe(true);
     }
     const { greenA, greenB, autumnA } = leaf.palette;
     // the upper side is green; the felt is browner than it is green; autumn is red
@@ -138,20 +140,34 @@ describe('the leaf agrees with what Bean records of it', () => {
     expect([few, many]).toEqual([3, 5]);
     expect(leaf.variants).toBeGreaterThanOrEqual(2);
     expect(triangles(leaf.make(0, 0))).toBeGreaterThan(4 * triangles(leaf.make(0, 1)));
-    // the tip of the leaf is the lowest point of the blade: it hangs
+    // morphology.json leaf.posture (photographs): the blade slopes down and out from the top of its stalk, nearly
+    // flat; the tip is its lowest point, well below the stalk but not hanging plumb
     for (const pts of models) {
+      const top = blade(pts)[0]!.pivot;
       const lowest = blade(pts).reduce((a, b) => (b.p.y < a.p.y ? b : a));
       expect(Math.abs(lowest.p.x)).toBeLessThan(0.12);
-      expect(lowest.p.y).toBeLessThan(-0.5);
+      const drop = top.y - lowest.p.y;
+      const out = lowest.p.z - top.z;
+      // between about 40 and 82 degrees below the line of the stalk, measured from the top of the stalk to the tip
+      expect(Math.atan2(drop, out)).toBeGreaterThan((40 * Math.PI) / 180);
+      expect(Math.atan2(drop, out)).toBeLessThan((82 * Math.PI) / 180);
     }
   });
 
-  // TAXON_LOOKS.md section 2: a leaf is one unit long along +Z from where it joins the stem
+  // TAXON_LOOKS.md section 2: a leaf is one unit long along +Z from where it joins the stem; for this plant the
+  // unit is what organs.leafLengthM measures (morphology.json leaf.modelLengthM): from the stem to the farthest point
+  // of the blade along the line of the stalk
   it('is one unit from the stem to its farthest point along the line of the stalk', () => {
+    expect(characterRange(morphology, 'leaf.modelLengthM')).toEqual(param(model, 'organs.leafLengthM'));
     for (const pts of models) {
       const reach = Math.max(...pts.map((q) => q.p.z));
       expect(reach).toBeGreaterThan(0.97);
       expect(reach).toBeLessThan(1.03);
+      // the midrib is longer than what is left of the unit past the stalk: the blade slopes down from the stalk
+      const top = blade(pts)[0]!.pivot;
+      const midrib = blade(pts).filter((q) => q.t < 0.5 && Math.abs(q.p.x) < 1e-4 && q.p.z > top.z);
+      const tip = midrib.reduce((a, b) => (b.p.distanceTo(top) > a.p.distanceTo(top) ? b : a));
+      expect(tip.p.distanceTo(top)).toBeGreaterThan(1.3 * (1 - top.z));
     }
   });
 });
@@ -422,11 +438,16 @@ describe('a specimen of Vitis coignetiae grown by the engine', () => {
 // species/vitis-coignetiae/model.json: no bare numbers, and what is published says where
 describe('the growth model of Vitis coignetiae', () => {
   it('says of every number whether it is published or chosen, and no longer calls any a placeholder', () => {
-    const entries = Object.entries(model.params);
+    // what the file itself gives (the engine fills the optional parameters it leaves out as unknown)
+    const written = Object.keys((read(`species/${ID}/model.json`) as { params: Record<string, unknown> }).params);
+    const entries = Object.entries(model.params).filter(([k]) => written.includes(k));
     expect(entries.every(([, p]) => p.status !== 'unknown')).toBe(true);
     for (const [key, p] of entries) expect(p.basis ?? '', key).not.toMatch(/placeholder/i);
     const published = entries.filter(([, p]) => p.status === 'published_plant_profile' || p.status === 'peer_reviewed').map(([k]) => k);
-    expect(published.sort()).toEqual(['appendages.leafStalkLengthM', 'appendages.tendrilNodePattern', 'fruit.ripenDoy', 'organs.leafLengthM', 'organs.leafLifespanYears', 'organs.leavesPerNode', 'phenology.flowerLastsDays', 'phenology.flowerOpenDoy']);
+    expect(published.sort()).toEqual(['appendages.leafStalkLengthM', 'appendages.tendrilNodePattern', 'fruit.ripenDoy', 'organs.alternateDivergenceDeg', 'organs.leafLengthM', 'organs.leafLifespanYears', 'organs.leavesPerNode', 'phenology.flowerLastsDays', 'phenology.flowerOpenDoy']);
+    // measured on plants of this species: the internodes and the thickening of young plants in Gifu (2003)
+    const measured = entries.filter(([, p]) => p.status === 'measured' || p.status === 'calibrated').map(([k]) => k);
+    expect(measured.sort()).toEqual(['organs.leafSpacingM', 'organs.sideShootLeafSpacingM', 'thickening.radiusSquaredPerMetreMm2']);
     // what is still the wisteria model's is said to be, in the statement shown with every run
     expect(entries.some(([, p]) => (p.basis ?? '').startsWith('Copied from the Wisteria sinensis model'))).toBe(true);
     expect(model.statement).toContain('thinner than the wisteria model');
@@ -440,5 +461,26 @@ describe('the growth model of Vitis coignetiae', () => {
     expect(param(model, 'organs.leavesPerNode')).toBe(1);
     expect(characterText(morphology, 'leaf.arrangement')).toBe('alternate');
     expect(profile.leafHabit.value).toBe('deciduous');
+    // Gifu Prefecture (2003): internodes 9.0 to 13.7 cm; Gerrath and others (2001): distichous, two ranks
+    expect(characterRange(morphology, 'stem.internodeLengthM')).toEqual([0.09, 0.137]);
+    expect(param(model, 'organs.leafSpacingM')[0]).toBe(characterRange(morphology, 'stem.internodeLengthM')[0]);
+    expect(Math.abs(param(model, 'organs.leafSpacingM')[1] - characterRange(morphology, 'stem.internodeLengthM')[1])).toBeLessThan(0.005);
+    expect(characterText(morphology, 'leaf.phyllotaxis')).toBe('distichous');
+    expect(known(model, 'organs.alternateDivergenceDeg')).toBe(180);
+  });
+
+  // the addendum: a shoot in the air obeys its weight and the light, with this plant's own numbers where there are any
+  it('gives a shoot in the air numbers of its own, within what Hattermann and others (2022) measured of tendril climbers', () => {
+    for (const key of ['thickening.tipRadiusSquaredMm2', 'mechanics.woodModulusMPa', 'mechanics.greenShootModulusMPa', 'mechanics.woodSetDays', 'mechanics.stemFreshDensityKgM3', 'mechanics.leafFreshMassPerAreaKgM2', 'mechanics.inflorescenceFreshMassKg', 'mechanics.fruitFreshMassKg', 'mechanics.searcherReachM', 'tropism.turnPerM', 'tropism.lightShare', 'attachment.graspReachM'] as const) {
+      expect(model.params[key]!.status, key).not.toBe('unknown');
+    }
+    // tendril and root climbers: searchers 0.14 to 0.91 m from base to tip
+    const reach = known(model, 'mechanics.searcherReachM')!;
+    expect(reach).toBeGreaterThanOrEqual(0.14);
+    expect(reach).toBeLessThanOrEqual(0.91);
+    // a tendril catches what comes within about its own length
+    expect(known(model, 'attachment.graspReachM')!).toBeLessThanOrEqual(known(model, 'appendages.tendrilLengthM')![1]);
+    // the year's shoots from spurs are cut back to one or two buds in winter (Bean, of the genus): one season each
+    expect(known(model, 'sideShoots.lifespanYears')).toBe(1);
   });
 });

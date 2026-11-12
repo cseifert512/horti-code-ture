@@ -25,29 +25,31 @@ The species is dioecious: plants are male or female, and a female sets fruit onl
 
 ## Form: what the model draws
 
-Shape numbers are in [`morphology.json`](morphology.json), each with its source; growth numbers in [`model.json`](model.json). This section says in words what they add up to and where the model simplifies.
+Shape numbers are in [`morphology.json`](morphology.json), each with its source; growth numbers in [`model.json`](model.json). This section says in words what they add up to and where the model simplifies. The look was compared with photographs of the plant on Wikimedia Commons (listed under "Source / provenance"); where a character is read from a photograph, the morphology file names the file.
 
-**The plant.** A cane is planted and is slow for two years (Plants for a Future: "often slow to establish"). From then it makes long shoots, 2 to 5 m a year by one supplier's account, which the model lays along the timber and cables as a framework of canes, three to a lath. A tendril stands opposite the leaf at two nodes in three. In the model a tendril holds nothing stouter than a 12 mm cable, which is an assumption; on timber the canes are tied in. Canes that find nothing to climb are grown as long free shoots that arch out and hang.
+**The plant.** A cane is planted and is slow for two years (Plants for a Future: "often slow to establish"), though less so than that sentence alone would make it: rooted cuttings planted out in Gifu made a longest shoot of 3.24 m in their first year and 33.5 m of new shoot each in their second (Gifu Prefecture 2003). The model lays the long shoots along the timber and cables as a framework of canes, two to a lath. From the second year the buds of the framework break into the year's shoots, six to a metre of older cane, 0.4 to 1.8 m long by autumn; the longer ones lean out, arch and hang under their own weight. Leaves stand 9 to 14 cm apart (Gifu Prefecture 2003, measured), one to a node, in two ranks (distichous, as in the genus: Gerrath and others 2001). A tendril stands opposite the leaf at two nodes in three. In the model a tendril holds nothing stouter than a 12 mm cable, which is an assumption; on timber the canes are tied in. By its sixth summer on the specimen frame the trained plant carries some 1800 leaves and covers the trellis in overlapping leaves, as plants on walls and frames do in the photographs.
 
-**Leaf.** One to a node. A broad heart with three or five shallow pointed lobes, a deeply notched base and coarse uneven teeth, ordinarily 0.10 to 0.20 m wide (Bean) on a stalk of 0.05 to 0.15 m. Five main veins fan from the top of the stalk, each with its own side veins, and the blade swells a little between them ("dimpled", Gardeners' World). Dark green above; beneath, a rusty brown felt, which the model draws as a second sheet so that the under side is the felt's colour from below. The blade hangs from the end of its stalk and curls over towards its tip. Young leaves unfold fawn under their felt (an assumption). In autumn the upper side turns scarlet and crimson and the under side a ruddy rose.
+**Leaf.** One to a node. Roundish, with a deep, open notch at the stalk and three or five lobes that are no more than angles with a short point; small, sharp, uneven teeth all round. Ordinarily 0.10 to 0.20 m wide (Bean) on a stalk of 0.05 to 0.15 m; what the engine calls the leaf's length is its reach from the node along the line of the stalk, 0.105 to 0.225 m, about half of it stalk. Five main veins fan from the top of the stalk, each with its own side veins, and the blade swells a little between them ("dimpled", BBC Gardeners' World). The blade is nearly flat and slopes down and outwards from the top of its long stalk, so that the leaves of a shoot lie over one another like shingles (photographs). Dark to fresh green above, the younger and sunnier leaves yellower; beneath, a tawny felt, which the model draws as a second sheet. In autumn the leaves of one plant turn crimson, scarlet and orange side by side (RHS: "scarlet and crimson"; photographs from Kent in October show orange and yellow among them), the under side warm orange through the felt.
 
-**Through the year.** Bare from late November to mid April: brown canes on the frame, last year's short shoots standing off them, old tendrils. Leaves open from late April; by the end of May the plant is more than half clothed. Full leaf from late June. Colour builds from late September and is complete in the second half of October; the leaves are down by late November. None of these dates is from a UK source: they are choices, and the weather moves them.
+**Through the year.** Bare from late November to mid April: on the trained plant, the framework of canes on the frame with the stubs of last year's shoots, and old tendrils still wound round the cables. Leaves open from late April on the canes, then on the year's shoots as they lengthen; full leaf from late June. Colour builds from late September and is complete in the second half of October; the leaves are down by late November. None of these dates is from a UK source: they are choices, and the weather moves them.
 
-**Flower.** A branched panicle 0.07 to 0.12 m long (length assumed) of about 120 tiny greenish flowers, hanging. A vine's petals are shed as a cap as the flower opens, so the open flower is five stamens round a green ovary; the model opens and then drops the stamens and leaves the ovary. Mid June to early July, nine or ten days a panicle.
+**Flower.** A panicle 0.07 to 0.12 m long (length assumed) of some 160 tiny greenish flowers, drawn as a narrow cone of short branches each ending in tight knots of flowers, as the common vine's is in photographs (none of this species in flower was found). A vine's petals are shed as a cap as the flower opens, so the open flower is five spreading stamens with yellow anthers round a green ovary; the model opens and then drops the stamens and leaves the ovary. Mid June to early July, nine or ten days a panicle (Honma and others 2007).
 
-**Fruit.** About a third of the panicles (assumed) become a bunch of some forty berries a centimetre across, green through summer, blue-black with a bloom from September, gone by midwinter.
+**Fruit.** About a third of the panicles (assumed) become a narrow bunch of some forty berries a centimetre across on a slender stalk, green through summer, black with a bluish bloom from September, gone by midwinter.
 
-**Wood.** The young shoot is ribbed and covered in a greyish floss (Bean); the ripened cane is smooth and brown; old bark parts in long fibrous strips (Bean, of the genus).
+**Wood.** The young shoot is ribbed and covered in a greyish floss (Bean); the ripened cane is smooth and brown, about 9 mm through in the lower half of a one-year cane (Gifu Prefecture 2003); the trunk of a two-year plant is about 23 mm through (the same); old bark parts in long fibrous strips (Bean, of the genus).
 
 **Where the model simplifies.**
 
-- The panicle of a vine stands opposite a leaf at about the third to sixth node of a shoot, where a tendril would be, and the shoot grows on past it. The engine can put a flower at the end of a short shoot or at any node of a long one, not at a chosen node; the model takes the first. So every panicle and bunch is at the tip of a short shoot, which is wrong in a close view.
-- The year's ordinary shoots are grown as short stiff shoots 0.25 to 0.8 m long that live two years and are then shed. On the plant they are the same thing as the long canes, lengthen all summer, hang under their own weight, and persist until pruned.
-- A long free shoot is drawn rising in a tall arc before it falls. A real one stands about half a metre and then bends over and hangs.
-- A cane is in leaf only in the year it is made. On the plant it breaks into new shoots from most of its buds the next spring.
+- The panicle of a vine stands opposite a leaf at about the third to sixth node of a shoot, where a tendril would be, and the shoot grows on past it. The engine puts a flower at the end of a side shoot or at any node of a long one, not at a chosen node; the model takes the first. So every panicle and bunch is at the tip of one of the year's shoots, which is wrong in a close view.
+- A bunch's stalk ripens dark with its berries: the fruit's ripe colour is laid over every point of the model. On the plant it stays green.
+- A blade does not turn to face the light. On a shoot standing free, whose leaves stand to either side, a blade is seen edge on from the front where a real one would have turned its face out by bending its stalk.
+- The year's shoots that stand straight up above the frame stop where the engine's reach for an unsupported shoot is met (0.8 m) and do not fall over. A real one bends over and hangs once it is too long to hold itself up (Bean of the genus: shoots "allowed to hang loosely").
+- A side shoot lives one season: the gardener's winter cut is folded into its lifespan. On a plant left alone the year's shoots would stay and become canes.
 - Tendrils that catch nothing stay on the plant in the model. On the plant they wither and drop within the season (Darwin, of the family).
 - One leaf size range for the whole plant. On the plant the largest leaves, to 0.3 m, are on the strongest shoots.
-- The "leaf length" the engine carries is the reach of the leaf along the line of its stalk. The blade hangs from the stalk and is nearly as wide as that length, so the disc the coverage and light figures stand a leaf in for is about a third of the area of the blade: the shade this plant casts is understated in those figures.
+- One palette ramp serves the felt beneath and the variation from leaf to leaf above: the leaves whose upper side is drawn nearest orange in autumn are also the yellower ones in summer.
+- The "leaf length" the engine carries is the reach of the leaf along the line of its stalk. The blade slopes down from the stalk and is about as wide as that length, so the disc the coverage and light figures stand a leaf in for (0.56 of the length across) is about a third of the area of the blade: the shade this plant casts is understated in those figures.
 - The sex of the flower is not modelled. The fruit share is a guess.
 
 ## Light, aspect and shelter
@@ -68,19 +70,27 @@ For the light model: accepts full sun and partial shade; aspect and shelter are 
 
 Tendril-graspable fine cables or laths and a **bounded high-vigour route**; maintenance access for powerful growth.
 
-Gardeners' World says it "needs wire or netting to cling to"; Ashridge that it "needs sturdy support" and is "too heavy for a weak fence". How stout a lath a tendril of this plant can hold has not been measured and decides whether the timber sub-lattice needs ties: grown untended on the specimen frame, the model's plant climbs the one cable it can reach and stops.
+BBC Gardeners' World says to grow it "with wire or netting to cling to"; Ashridge that it "needs sturdy support" and is "too heavy for a weak fence". How stout a lath a tendril of this plant can hold has not been measured and decides whether the timber sub-lattice needs ties: grown untended on the specimen frame, the model's plant climbs the one cable it can reach (the stay) and stops at 6 m of framework.
 
 ## Global structure placement logic
 
 One limited visible sector; not mixed indiscriminately through a rose or small clematis framework.
 
-## Gardener intervention / pruning
+## Care: what the gardener does
 
-Winter and optional summer restriction pruning, tendril/route monitoring and thinning for light and structural inspection.
+| When | What | Source |
+|---|---|---|
+| Every year, December or January (while dormant) | Cut the year's shoots "hard back ... to one or two buds", leaving a framework of canes with short spurs. Later pruning makes the vine bleed. | Bean, of the genus: "The young shoots are shortened back once or twice during the summer, and then cut hard back in December or January to one or two buds (later pruning causes bleeding)"; "The same pruning should be given to plants grown on walls." Plants for a Future: prune in winter when dormant. |
+| Midsummer, once or twice (June to August) | Shorten the young shoots; tie in any that are needed to extend the framework. | Bean, of the genus (above). RHS plant record: pruning group 11, in midwinter, "and in midsummer, if restricted growth is required". |
+| As needed | Trim to fit the space, "removing as much from the longer shoots as necessary". On a large structure it may need no cutting back. | RHS pruning group 11 page; BBC Gardeners' World ("won't need cutting back" on a shed or garage). |
+| Establishing | Tie the canes to the timber: a tendril is assumed to hold a cable or wire but not a 40 mm lath, and the plant "needs wire or netting to cling to" (BBC Gardeners' World). | growth model, attachment.maxGraspDiameterMm |
 
-RHS pruning group 11, in midwinter, and in midsummer if growth must be restricted. Flowering wood is provisionally the current season's growth, inferred from grapevines, whose flowering side shoots are new shoots from spurs on older wood (RHS); nothing was found for this species. Bean, of the genus: young shoots shortened once or twice in summer and cut back hard in December or January to one or two buds; pruned later, a vine bleeds.
+**What the model would need to act on it.** Only the two wisterias' prunes, the Group 3 clematis's cut-down and the climbing rose's routine are modelled (`MODELLED_ROUTINE` in `packages/core/src/sim/planting.ts`). For this plant the model folds the winter cut into the lifespan of a side shoot (one season), which removes the year's shoots before spring but does not leave the spur's one or two buds as the next year's starting points, and does not touch the long canes (whips) that stand up from the top of the frame. To prune it as the sources say, the model would need two dated visits:
 
-The model has no pruning routine for this plant: a "trained" plant is tied in and nothing is cut.
+1. **Winter spur prune**, one day between 1 December and 31 January (bleeding begins as the sap rises): every side shoot and every free cane of the year that is not tied in as framework is cut back to its first one or two nodes (`pruning.winterBudsKept` [1, 2], already in the growth model); the buds left there are where the next year's side shoots break.
+2. **Summer shortening**, one or two days between mid June and mid August: every side shoot longer than its first five or six leaves is cut back to that leaf (`pruning.summerLeavesKept` [5, 6], already in the growth model; the counts are Bean's "shortened back" made specific, an assumption), and its removed length is lost with its leaves, tendrils and any bunch beyond the cut.
+
+Neither is run today: the trained plant is tied in and grows on.
 
 ## Interactions with the broader palette
 
@@ -94,7 +104,7 @@ Heavy visual shading; deciduous with little winter foliage; berries and other vi
 
 Tendril contact radius and nodal frequency; area and mass of large leaves; change in colour/senescence timing; annual extension.
 
-In order of what they would change: the largest support a tendril holds; the sex of the plant supplied and whether it fruits; internode length and cane diameter by age; panicle length and flower count; UK dates of budburst, colour and leaf fall; the number and length of free canes a plant throws in a year.
+In order of what they would change: the largest support a tendril holds; how many of the year's shoots a spur-pruned framework throws to the metre and how long they grow in a UK summer; the stiffness of a green shoot and how far one holds itself out before it bends over; the sex of the plant supplied and whether it fruits; panicle length and flower count; UK dates of budburst, colour and leaf fall. Internode length and the thickening of young plants are now measured (Gifu Prefecture 2003), but on plants in Japan.
 
 At minimum, bind all measured parameters to plant **age**, plant **part**, time step, site/climate, support properties and propagation/stock history. Keep missing values empty rather than extrapolating from species names or RHS maturity classes.
 
@@ -120,6 +130,11 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 - Ashridge Trees: https://ashridgetrees.co.uk/p/climbing-plants/crimson-glory-vine-vitis-coignetiae
 - Burncoose Nurseries: https://www.burncoose.co.uk/site/plants.cfm?pl_id=4301
 
+- Gifu Prefectural Research Institute for Agricultural Technology in Hilly and Mountainous Areas (2003), raising V. coignetiae from hardwood cuttings (internodes, shoot length, trunk girth and cane thickness of young plants, measured): https://www.k-agri.rd.pref.gifu.lg.jp/hukyu/15_hukyu/15-1hukyu.pdf
+- Gerrath, Posluszny and Dengler (2001), International Journal of Plant Sciences 162: 729-745 (distichous phyllotaxy in Vitis riparia): https://scholarworks.uni.edu/facpub/3594
+- Hattermann and others (2022), Frontiers in Forests and Global Change 5: 836247 (reach of searcher shoots, the common vine among the tendril climbers): https://doi.org/10.3389/ffgc.2022.836247
+- Photographs compared, all on Wikimedia Commons (looked at, not copied): "Patio Vitis coignetiae Capel Manor College Gardens Enfield London England 01.jpg", "1294-Vitis coignetiae-BZ Brno-8.12.jpg", "Vitis coignetiae (leaf).jpg", "Vitis coignetiae - Flickr - peganum.jpg" and "(1)" to "(4)", "Vitis coignetiae (fruits s1).jpg", "Vitis coignetiae cluster.jpeg", "Vitis coignetiae kz01.jpg" to "kz04.jpg"; of the common vine for want of this species: "Vitis vinifera inflorescence.jpg", "Vitis-vinifera-flowers vigne inflorescence détail 2015-06-13.JPG", "Vitis vinifera 'Boskoop Glory' Blauwe druif. 08-08-2025. (actm.) 01.jpg".
+
 Seen only as search-engine excerpts, and so entered nowhere as published values: fassadengruen.de (annual shoot growth 2 to 5 m; more sun, richer red), a Yamagata University bulletin and a USDA germplasm record (berries to a cluster), the Korea Forest Service leaflet (panicle opposite a leaf), the Kyoto Red Data Book (leaf five-angled).
 
-**Status:** morphology and growth model written from published descriptions; nothing measured on a plant; no photograph was compared. Site fit must be reviewed.
+**Status:** morphology and growth model written from published descriptions, with internodes and the thickening of young plants measured on the species in Japan (Gifu Prefecture 2003); the look compared with photographs of the plant on Commons (no photograph of it in flower was found). Nothing measured on a UK plant. Site fit must be reviewed.
