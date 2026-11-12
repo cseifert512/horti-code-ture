@@ -36,7 +36,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Not autumn colour: the leaves yellow and dull as the cold takes the plant in late October. No dated source."
+      "basis": "Not used. The plant is evergreen by habit (RHS), and the engine gives an evergreen leaf no autumn colour: its leaves are drawn green until the day the cold kills it. What the leaves of a British plant do in the last cold weeks is not recorded in any source read. The window is kept inside the plant's last fortnight because every model carries every parameter."
     },
     "phenology.leafFallDoy": {
       "value": [

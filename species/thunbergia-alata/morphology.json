@@ -150,9 +150,8 @@
       "basis": "Read from photographs of plants on walls and trellis (Commons: \"Climber at timber-framed house, Limburg.jpg\", \"Black-eyed Susan 2.JPG\", \"Thunbergia alata, Hungary.jpg\"): blades hang at 45 degrees and more from their stalks. The model cannot follow this beyond about 30 degrees (a leaf model must stay nine tenths of its length along its axis), and the engine sets leaves round the stem without regard to where the light is."
     },
     "leaf.coldColour": {
-      "value": "yellowing, then limp and brown",
-      "status": "provisional_design_assumption",
-      "basis": "It has no autumn colour: it is evergreen where it is warm. What a British plant does as the cold takes it is not described in any source read; the yellowing and browning drawn are how tender foliage generally goes, and a guess for this plant."
+      "value": null,
+      "status": "unknown"
     },
     "flower.arrangement": {
       "value": "solitary in the leaf axils, each on its own long stalk",

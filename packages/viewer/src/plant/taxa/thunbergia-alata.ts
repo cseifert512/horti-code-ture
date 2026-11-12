@@ -197,7 +197,7 @@ function makeBlade(form: LeafForm, lod: number): THREE.BufferGeometry {
       for (let i = 0; i < veins.length - 1; i++) {
         const a = veins[i]!;
         const b = veins[i + 1]!;
-        if (theta > a && theta < b) y += (lod === 0 ? 0.026 : 0.018) * Math.pow(Math.sin((Math.PI * (theta - a)) / (b - a)), 0.8) * rho * (1 - rho * rho * rho) * 1.6;
+        if (theta > a && theta < b) y += (lod === 0 ? 0.019 : 0.014) * Math.pow(Math.sin((Math.PI * (theta - a)) / (b - a)), 0.8) * rho * (1 - rho * rho * rho) * 1.6;
       }
     }
     // a wavy margin
@@ -348,7 +348,7 @@ function addStalk(mg: Merge, b: Bearing, radial: number): void {
 }
 
 /** How far a bract stands off the line it clasps, by how far along itself: swollen below, drawn in above, the very tip turned out. */
-const bractOff = (v: number): number => lerp(0.0013, 0.0052, smoothstep(0, 0.3, v)) * (1 - 0.14 * smoothstep(0.5, 1, v)) + 0.0006 * v * v * v * v;
+const bractOff = (v: number): number => lerp(0.0013, 0.0052, smoothstep(0, 0.3, v)) * (1 - 0.27 * smoothstep(0.45, 1, v));
 /** How much of the way round a bract reaches at each point of its length: broad from its heart-shaped base, drawn out to a point. */
 const bractSpan = (v: number): number => Math.pow(Math.min(1, v / 0.07), 0.5) * Math.pow(1 - Math.pow(v, 1.7), 1.05);
 
@@ -459,9 +459,9 @@ function makeFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry 
       const free = clamp((v - (1 - FREE)) / FREE, 0, 1);
       // joined, a lobe has its fifth of the circle; free, it is a little narrower than that, and a slit opens to the next.
       // All five are turned a little the same way, like the blades of a propeller
-      const theta = Math.PI / 2 + share + k * 2 * share + u * share * (1 - 0.2 * Math.pow(free, 1.3)) + 0.05 * v;
+      const theta = Math.PI / 2 + share + k * 2 * share + u * share * (1 - 0.13 * Math.pow(free, 1.3)) + 0.05 * v;
       // obovate, cut off square at the tip with the corners rounded and a shallow notch in the middle
-      const rim = (FLOWER_WIDTH / 2) * (1 - 0.03 * (1 - u * u) - 0.2 * Math.pow(Math.abs(u), 5) - 0.03 * Math.exp(-((u / 0.16) ** 2)));
+      const rim = (FLOWER_WIDTH / 2) * (1 - 0.03 * (1 - u * u) - 0.17 * Math.pow(Math.abs(u), 5) - 0.03 * Math.exp(-((u / 0.16) ** 2)));
       const r = lerp(THROAT * INNER, rim, v);
       // out of the mouth like the bell of a trumpet, then flat, the rim a little turned back; each free lobe tilted a little
       const h = -SUNK * (1 - v) ** 2 - 0.001 * v * v + 0.0006 * u * free;
@@ -527,7 +527,7 @@ function makeCapsuleGeometry(variant: number, lod: number): THREE.BufferGeometry
   const base = b.at(0).c;
   addStalk(mg, b, [5, 3, 3][lod]!);
   // the bracts stand apart, folded, either side of the capsule
-  addBracts(mg, b, ([[8, 8], [4, 3], [2, 2]] as const)[lod]!, lod === 0, 0.34, 1);
+  addBracts(mg, b, ([[8, 8], [4, 3], [2, 2]] as const)[lod]!, lod === 0, 0.34, 0.7);
   const sb = new Surf();
   const R = CAPSULE_WIDTH / 2;
   const H = CAPSULE_BASE;
@@ -564,8 +564,9 @@ const leaf: LeafAsset = {
   make: makeLeafGeometry,
   budget: [1900, 260, 36],
   pick: (_lengthM, r) => Math.min(LEAF_FORMS.length - 1, Math.floor(r * LEAF_FORMS.length)),
-  // a fresh mid green, dull; bright yellow green as it unfolds; yellowing, then brown, as the cold takes it
-  palette: { greenA: lin('#5c8c38'), greenB: lin('#74a646'), young: lin('#9cc45a'), autumnA: lin('#a9a148'), autumnB: lin('#6d5b31') },
+  // a fresh mid green, dull; bright yellow green as it unfolds. It is evergreen by habit and has no autumn colour:
+  // outdoors in Britain it is green until the day the cold kills it, so the greens are given again
+  palette: { greenA: lin('#5c8c38'), greenB: lin('#74a646'), young: lin('#9cc45a'), autumnA: lin('#5c8c38'), autumnB: lin('#74a646') },
   // soft and hairy: no gloss
   roughness: 0.8,
   translucency: THIN_LEAF,

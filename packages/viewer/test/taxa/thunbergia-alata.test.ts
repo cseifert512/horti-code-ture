@@ -90,8 +90,9 @@ function limbOf(g: THREE.BufferGeometry): { centre: THREE.Vector3; facing: THREE
     .filter((x) => x.r > 0.92 * reach)
     .map((x) => x.at)
     .sort((x, y) => x - y);
-  let lobes = 0;
-  for (let i = 0; i < tips.length; i++) if ((tips[(i + 1) % tips.length]! - tips[i]! + 360) % 360 > 20) lobes++;
+  // a gap between two lobes is much wider than the step from one point of a lobe's tip to the next
+  const gaps = tips.map((at, i) => (tips[(i + 1) % tips.length]! - at + 360) % 360);
+  const lobes = gaps.filter((gap) => gap > 0.6 * Math.max(...gaps)).length;
   return { centre, facing, reach, lobes, inner, base };
 }
 
