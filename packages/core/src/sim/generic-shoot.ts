@@ -136,3 +136,46 @@ export const GENERIC_SHOOT = {
 
 export type ShootParamKey = keyof typeof GENERIC_SHOOT;
 export const SHOOT_PARAM_KEYS = Object.keys(GENERIC_SHOOT) as ShootParamKey[];
+
+/**
+ * The generic flowering side shoot: how a side shoot leaves its bearing stem,
+ * where a taxon's model does not say. Used only by a plant that makes side
+ * shoots at all (`sideShoots.*`), and said once for each such plant (a
+ * `generic_shoot` decision, which the report lists among its alerts).
+ *
+ * No source was read for any of them: they are choices, labelled as such, so
+ * that side shoots along one stem do not all set out the same way. Each says
+ * what it rests on.
+ */
+export const GENERIC_SIDE_SHOOT = {
+  /** Angle between the bearing stem, as it runs from its base towards its tip, and a side shoot as it sets out. */
+  'sideShoots.branchAngleDeg': {
+    value: [35, 70] as [number, number],
+    unit: 'degrees',
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. A shoot from an axillary bud sets out leaning forward along the stem that bears it; no angle was found measured for any climber in the library. 35 to 70 degrees is a round range between a shoot that hugs its parent and one at right angles to it, chosen so that the shoots along one stem do not stand parallel.',
+  },
+  /** Days after bud burst over which the side shoots of a season break, each on its own day. */
+  'sideShoots.breakSpreadDays': {
+    value: [0, 28] as [number, number],
+    unit: 'days',
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. Buds along a stem do not all break on one day; how long the breaking of one year\'s side shoots takes was not found measured for any plant in the library. Four weeks is a round figure.',
+  },
+  /** Share, 0 to 1, by which a side shoot\'s first heading is turned from its place round the stem towards the way it seeks (up and the light). */
+  'sideShoots.startTowardsLight': {
+    value: 0.25,
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. Chosen, not measured: a bud on the shaded or lower side of a stem breaks into a shoot that soon turns up and out, which the tropism of a growing shoot then carries on (tropism.turnPerM). A quarter of the way at the start keeps the place round the stem visible in the shoot.',
+  },
+  /** Angle round the stem from one leaf node to the next, where leaves stand singly (organs.leavesPerNode 1). */
+  'organs.alternateDivergenceDeg': {
+    value: 137.5,
+    unit: 'degrees',
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. The golden angle, the divergence usually given for spiral phyllotaxis, taken from general botanical knowledge and not checked against a source here; a plant whose leaves stand in two ranks has 180 degrees, and one with a 2/5 spiral 144. No taxon in the library has had its own measured. Where leaves stand in opposite pairs the engine turns each pair a right angle from the last (decussate), which needs no number.',
+  },
+} satisfies Record<string, Sourced<number | [number, number]>>;
+
+export type SideShootParamKey = keyof typeof GENERIC_SIDE_SHOOT;
+export const SIDE_SHOOT_PARAM_KEYS = Object.keys(GENERIC_SIDE_SHOOT) as SideShootParamKey[];

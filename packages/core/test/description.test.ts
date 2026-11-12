@@ -231,7 +231,8 @@ describe('a planting plan', () => {
     const kinds = (id: string) => [...new Set(s.events.filter((e) => e.plantId === id).map((e) => e.type))].sort();
     expect(kinds('wisteria')).toEqual(['monitor', 'spur_prune']);
     expect(kinds('clematis')).toEqual(['hard_prune']);
-    expect(kinds('rose')).toEqual([]);
+    // RHS pruning group 17: winter shortening of flowered side shoots, and deadheading through the summer
+    expect(kinds('rose')).toEqual(['deadhead_or_select_flowers', 'shorten_side_shoots']);
     expect(kinds('honeysuckle')).toEqual([]);
     expect(Object.keys(MODELLED_ROUTINE).every((id) => taxa.has(id))).toBe(true);
     expect(plantingOn(arbour.bower, plan, { taxa, years: 3, care: 'untended' }).events).toEqual([]);

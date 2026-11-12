@@ -221,15 +221,23 @@ export class LightField {
   from(plant: Plant, at: Vec3, date: CalendarDate): Vec3 | null {
     if (!this.acts) return null;
     const g = this.geometry;
-    // the nearest place light is read at is looked for once for each quarter-metre cell a shoot asks from
-    const cell = (Math.floor(at.x * 4) + 2048) * 16777216 + (Math.floor(at.y * 4) + 2048) * 4096 + (Math.floor(at.z * 4) + 2048);
+    // the nearest place light is read at is looked for once for each quarter-metre cell a shoot asks from: nearest to
+    // the middle of the cell, so that the answer does not depend on which shoot happened to ask from the cell first
+    // (that made one shoot's light turn on when another grew, which an intervention must not do)
+    const ix = Math.floor(at.x * 4);
+    const iy = Math.floor(at.y * 4);
+    const iz = Math.floor(at.z * 4);
+    const cell = (ix + 2048) * 16777216 + (iy + 2048) * 4096 + (iz + 2048);
     let nearest = this.nearestReading.get(cell);
     if (nearest === undefined) {
       nearest = -1;
+      const cx = (ix + 0.5) / 4;
+      const cy = (iy + 0.5) / 4;
+      const cz = (iz + 0.5) / 4;
       let least = DIRECTION_REACH_M * DIRECTION_REACH_M;
       for (let i = 0; i < g.points.length; i++) {
         const p = g.points[i]!.position;
-        const d = (p.x - at.x) ** 2 + (p.y - at.y) ** 2 + (p.z - at.z) ** 2;
+        const d = (p.x - cx) ** 2 + (p.y - cy) ** 2 + (p.z - cz) ** 2;
         if (d < least) {
           least = d;
           nearest = i;

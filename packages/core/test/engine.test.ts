@@ -170,7 +170,9 @@ describe('pruning has consequences', () => {
       const a = summary(stripped, 'wisteria.0', y);
       const b = summary(trained, 'wisteria.0', y);
       expect(a.frameworkM, String(y)).toBe(b.frameworkM);
-      expect(a.runsSelf + a.runsTied, String(y)).toBe(b.runsSelf + b.runsTied);
+      // the framework's runs: a shoot of the year that took hold from the air is not framework (SIMULATION_KEY.md 4.3 f),
+      // and where it turns towards depends on the leaf of the other plant, which stripping spurs changes
+      expect(a.runsSelf + a.runsTied - a.runsFromAir, String(y)).toBe(b.runsSelf + b.runsTied - b.runsFromAir);
       expect(a.routeShare, String(y)).toBe(b.routeShare);
     }
     expect(summary(stripped, 'wisteria.0', 2033).spurs).toBeLessThan(summary(trained, 'wisteria.0', 2033).spurs);

@@ -416,11 +416,15 @@ describe('a specimen grown by the engine on the specimen frame', () => {
 
   // RHS rose guide: unpicked roses "form hips"; Provender Nurseries: "orange hips in the autumn"; a gardener picked
   // a vase of them in late December.
-  it('carries hips from summer through the winter, ripe by December, and none in spring', () => {
+  // The gardener deadheads until late August and cuts the flowered side shoots back on 8 January (RHS pruning group 17,
+  // the core's climbingRoseRoutine): hips stand from the last flushes of late summer until that cut.
+  it('carries hips from late summer into the winter, ripe by December, and none in spring', () => {
     expect(data.fruits.length).toBeGreaterThan(50);
-    for (const month of [8, 9, 10, 11, 12]) expect(fruit(on(month)), `month ${month}`).toBeGreaterThan(5);
+    for (const month of [9, 10, 11, 12]) expect(fruit(on(month)), `month ${month}`).toBeGreaterThan(5);
     expect(fruit(on(12), true)).toBeGreaterThan(fruit(on(12)) / 2);
-    expect(fruit(on(1, 15), true)).toBeGreaterThan(5);
+    expect(fruit(on(1, 1), true)).toBeGreaterThan(5);
+    // the winter cut takes the hips with the shoots that bore them
+    expect(fruit(on(1, 15))).toBe(0);
     expect(fruit(on(9), true)).toBeLessThan(fruit(on(12), true));
     for (const month of [4, 5]) expect(fruit(on(month)), `month ${month}`).toBe(0);
     expect(fruit(on(6, 10))).toBe(0);
