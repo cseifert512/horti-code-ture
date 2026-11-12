@@ -162,14 +162,14 @@ function makeBlade(form: LeafForm, posture: (typeof LEAF_POSTURES)[number], lod:
     const m = line(v);
     // height above the midline, square to it: a shallow keel, the margins turned down a little
     let h = posture.fold * Math.abs(x) - 0.55 * x * x;
-    if (lod < 2) h += 0.011 * Math.sin(v * 15 + wave + u * 1.2) * a * a * (1 - v * 0.5);
+    if (lod < 2) h += 0.007 * Math.sin(v * 15 + wave + u * 1.2) * a * a * (1 - v * 0.5);
     if (fine) {
       const ph = veinPhase(a, texV(v));
       const live = smoothstep(-0.6, -0.2, ph) * (1 - smoothstep(0.86, 1, v)) * Math.pow(Math.sin(Math.PI * Math.min(1, a)), 0.6);
       const f = ph - Math.round(ph);
       // the blade swells between the side veins, which lie in grooves, and the midrib in a deeper one
-      h += 0.006 * (0.5 - 0.5 * Math.cos(TAU * ph)) * live - 0.004 * Math.exp(-((f / 0.17) ** 2)) * live;
-      h -= 0.011 * Math.exp(-((a / 0.085) ** 2)) * (1 - 0.6 * v);
+      h += 0.0011 * (0.5 - 0.5 * Math.cos(TAU * ph)) * live - 0.0007 * Math.exp(-((f / 0.17) ** 2)) * live;
+      h -= 0.006 * Math.exp(-((a / 0.11) ** 2)) * (1 - 0.6 * v);
     }
     // a heart-shaped base runs back a little past the stalk on either side
     const back = 0.035 * form.cordate * a * a * Math.exp(-((v / 0.07) ** 2));
