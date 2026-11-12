@@ -529,6 +529,56 @@
       #overlay-panel select {
         width: 100%;
       }
+      /* ---- light on the structure ------------------------------------------------ */
+      #light-panel .rows {
+        display: grid;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      #light-panel select {
+        width: 100%;
+      }
+      /* the same ramp as LIGHT_RAMP in overlay/exposure.ts, least to most */
+      #light-panel .legend .bar {
+        background: linear-gradient(90deg, #210c4a, #6b186e 25%, #bb3754 50%, #f37819 75%, #fcffa4);
+      }
+      #light-panel .legend .ticks {
+        height: 16px;
+      }
+      #light-sides {
+        margin-top: 8px;
+      }
+      #light-sides th:first-child {
+        width: 30%;
+      }
+      #light-plants table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 12px;
+      }
+      #light-plants th {
+        text-align: left;
+        font-weight: 400;
+        color: var(--ink-2);
+        padding: 2px 6px 2px 0;
+      }
+      #light-plants td {
+        padding: 2px 6px 2px 0;
+        font-variant-numeric: tabular-nums;
+        vertical-align: top;
+      }
+      #light-plants td.flag {
+        color: #ffd7a8;
+      }
+      #light-plants caption {
+        text-align: left;
+        color: var(--ink-2);
+        padding-bottom: 3px;
+      }
+      #light-notes {
+        margin-top: 8px !important;
+      }
       .budget {
         margin-top: 10px;
       }
@@ -911,6 +961,7 @@
         <pre id="design-error" role="alert" hidden></pre>
       </div>
       <label class="switch"><input type="checkbox" id="overlay-toggle" /> Design overlay <kbd>O</kbd></label>
+      <label class="switch"><input type="checkbox" id="light-toggle" /> Light on the structure <kbd>L</kbd></label>
       <label class="field"
         ><span>Plants</span>
         <select id="plants">
@@ -933,6 +984,16 @@
         <summary>Scene</summary>
         <div class="rows">
           <label class="field"
+            ><span>Sun</span>
+            <select id="sun-mode">
+              <option value="real">From the site, the date and the hour</option>
+              <option value="hand">Set by hand</option>
+            </select></label
+          >
+          <label class="field"><span>Date</span><input type="date" id="sun-date" /></label>
+          <label class="field"><span>Hour <output id="sun-hour-out"></output></span><input type="range" id="sun-hour" min="0" max="24" step="0.25" /></label>
+          <p class="note" id="sun-readout"></p>
+          <label class="field"
             ><span>Sun height <output id="sun-elevation-out"></output></span><input type="range" id="sun-elevation" min="3" max="80" step="1"
           /></label>
           <label class="field"
@@ -942,8 +1003,22 @@
           <label class="switch"><input type="checkbox" id="orbit" /> Orbit</label>
           <div class="actions">
             <button type="button" id="reset-view">Reset view</button>
-            <button type="button" id="save-image">Save image</button>
           </div>
+          <label class="field"
+            ><span>Still image</span>
+            <select id="still-size">
+              <option value="3840x2160">4K, 3840 x 2160</option>
+              <option value="7680x4320">8K, 7680 x 4320</option>
+              <option value="5120x2880">5K, 5120 x 2880</option>
+              <option value="4096x4096">Square, 4096 x 4096</option>
+              <option value="window">The size of this window</option>
+            </select></label
+          >
+          <div class="actions">
+            <button type="button" id="save-image">Save this view</button>
+            <button type="button" id="save-viewpoints" disabled title="A still from each place the scenario's visitors stand, on the date shown">Every viewpoint</button>
+          </div>
+          <p class="note" id="still-note" hidden></p>
         </div>
       </details>
     </div>
@@ -1027,6 +1102,42 @@
         <span><i style="background: var(--steel)"></i><span id="mat-route-steel"></span></span>
       </div>
 
+    </div>
+
+    <div id="light-panel" class="card" hidden>
+      <h2>Light on the structure</h2>
+      <p class="note" id="light-site"></p>
+      <div class="rows">
+        <select id="light-measure" aria-label="What is shown">
+          <option value="hours">Hours of direct sun, on a clear day</option>
+          <option value="share">Light, as a share of an open site's</option>
+        </select>
+        <select id="light-month" aria-label="When">
+          <option value="date">In the month of the date shown</option>
+          <option value="year">The year round</option>
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="9">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+        <label class="switch"><input type="checkbox" id="light-stretch" /> Spread the colours over this structure's own range</label>
+      </div>
+      <div class="legend light-legend" aria-hidden="true">
+        <div class="bar"></div>
+        <div class="ticks"><span id="light-low"></span><span class="end" id="light-high"></span></div>
+      </div>
+      <p class="note" id="light-range"></p>
+      <table class="kv" id="light-sides"></table>
+      <div id="light-plants"></div>
+      <p class="note" id="light-notes"></p>
     </div>
 
     <div id="report" class="card" hidden></div>

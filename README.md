@@ -65,11 +65,14 @@ A structure does not have to be one of the two reference shells. Two small JSON 
 - **what is built** (`*.bower.json`): the centre line of every timber member as a list of points, with its section and whether it is primary glulam or sub-lattice; the line and diameter of every cable; where the root stations are; optionally headroom or exclusion zones and the places a visitor stands. Points are metres, x east, y north, z up, and the file has to say so.
 - **what is planted** (`*.planting.json`): which taxon goes in at which station.
 
+The first file may also say where the Bower stands, in an optional `site` section: latitude and longitude, the compass bearing its y axis points to if that is not north, and what stands near enough to cast shade (walls, buildings on a footprint, trees). Left out, southern England and an open site are assumed, and the report says so. [`examples/arbour-in-a-yard.bower.json`](examples/arbour-in-a-yard.bower.json) is the arbour with such a section.
+
 Nothing in the first file names a joint or a route. Elements are joined where their bodies touch, each is cut into stretches between its joints, and those stretches are the routes plants travel, so the file can be written straight out of a CAD model. Reading it reports what a designer should check: a cable fixed to nothing, or timber no plant can arrive at.
 
 ```bash
 npm run simulate -- design examples/arbour.bower.json examples/arbour.planting.json trained 8
 npm run simulate -- design examples/hemisphere-15m.bower.json examples/hemisphere-15m.planting.json
+npm run simulate -- design examples/arbour-in-a-yard.bower.json examples/arbour.planting.json   # the same arbour behind a wall: see LIGHT in its report
 npm run export-bower -- hemisphere examples/hemisphere-15m.bower.json   # how the second example was written
 ```
 

@@ -20,6 +20,7 @@
  * routes and loses a few centimetres of that offset.
  */
 import { z } from 'zod';
+import { type Site, describeSite, siteFrom, siteSchema } from '../light/site.ts';
 import { Polyline } from '../math/polyline.ts';
 import { type Vec3, distance, v3 } from '../math/vec3.ts';
 import { unknown } from '../provenance.ts';
@@ -81,12 +82,20 @@ export const bowerDescriptionSchema = z.strictObject({
   zones: z.array(z.strictObject({ id: z.string().min(1), kind: z.enum(ZONE_KIND), min: triple, max: triple, note: z.string().min(1).optional() })).optional(),
   /** Where a visitor stands, for the coverage figures of the design report. */
   viewpoints: z.array(z.strictObject({ id: z.string().min(1), label: z.string().min(1), eye: triple, target: triple, fovDeg: z.number().positive().max(170) })).optional(),
+  /**
+   * Where the Bower stands: its latitude and longitude, which way the drawing's
+   * y axis points on the ground, and what stands near enough to shade it (walls,
+   * buildings, trees). Left out, southern England and an open site are assumed.
+   */
+  site: siteSchema.optional(),
 });
 export type BowerDescription = z.infer<typeof bowerDescriptionSchema>;
 
 export interface ReadBower {
   bower: Bower;
   viewpoints: Viewpoint[];
+  /** The place the description declares, or the assumed baseline where it declares none. Also on `bower.site` when declared. */
+  site: Site;
   /** Things a designer should look at: they do not stop a run. */
   warnings: string[];
 }
@@ -402,7 +411,10 @@ export function readBower(input: unknown, source = 'bower description'): ReadBow
   }
 
   const viewpoints: Viewpoint[] = (d.viewpoints ?? []).map((v) => ({ id: v.id, label: v.label, eye: vec(v.eye), target: vec(v.target), fovDeg: v.fovDeg }));
-  const bower: Bower = { id: d.id, name: d.name, members, supports, graph, rootStations, zones, facts: {} };
+  const site = siteFrom(d.site, source);
+  for (const o of site.obstructions) once(o.id, 'obstruction');
+  if (d.site && site.assumed) warnings.push('the site section gives no latitude and longitude: southern England is assumed for the sun');
+  const bower: Bower = { id: d.id, name: d.name, members, supports, graph, rootStations, zones, facts: {}, ...(d.site ? { site } : {}) };
   const mat = materialSummary(bower);
   let top = 0;
   for (const node of graph.nodes.values()) top = Math.max(top, node.position.z);
@@ -423,6 +435,7 @@ export function readBower(input: unknown, source = 'bower description'): ReadBow
       },
     },
     viewpoints,
+    site,
     warnings,
   };
 }
@@ -442,5 +455,6 @@ export function describeBower(bower: Bower, viewpoints: readonly Viewpoint[] = [
     stations: bower.rootStations.map((s) => ({ id: s.id, position: point(s.position), ...(s.note ? { note: s.note } : {}) })),
     zones: bower.zones.map((z) => ({ id: z.id, kind: z.kind, min: point(z.min), max: point(z.max), ...(z.note ? { note: z.note } : {}) })),
     viewpoints: viewpoints.map((v) => ({ id: v.id, label: v.label, eye: point(v.eye), target: point(v.target), fovDeg: v.fovDeg })),
+    ...(bower.site && describeSite(bower.site) ? { site: describeSite(bower.site) } : {}),
   };
 }

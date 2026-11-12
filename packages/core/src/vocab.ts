@@ -162,6 +162,34 @@ export const FLOWERING_WOOD = [
 export type FloweringWood = (typeof FLOWERING_WOOD)[number];
 
 // ---------------------------------------------------------------------------
+// Light. The taxon profiles describe where a plant will grow in the RHS's
+// words, which the RHS defines by hours of direct sun a day at midsummer
+// (rhs.org.uk/garden-design/shade-gardening):
+//   full_sun        more than six
+//   partial_shade   three to six
+//   moderate_shade  two or three
+//   deep_shade      fewer than two
+// ---------------------------------------------------------------------------
+export const SUN_CLASS = ['full_sun', 'partial_shade', 'moderate_shade', 'deep_shade'] as const;
+export type SunClass = (typeof SUN_CLASS)[number];
+
+/** Every phrase the taxon profiles use for the light a plant accepts, mapped to the classes it means. */
+export const SUN_DOC_TERMS: Readonly<Record<string, readonly SunClass[]>> = {
+  'full sun': ['full_sun'],
+  sunny: ['full_sun'],
+  sun: ['full_sun'],
+  'partial shade': ['partial_shade'],
+  'part shade': ['partial_shade'],
+  'full shade': ['moderate_shade', 'deep_shade'],
+  'partial to full shade': ['partial_shade', 'moderate_shade', 'deep_shade'],
+  'shade to sun': ['full_sun', 'partial_shade', 'moderate_shade', 'deep_shade'],
+};
+
+/** The side of a structure a station or a stretch of route is on; `up` where it faces the sky and no side. */
+export const COMPASS_QUARTER = ['north', 'east', 'south', 'west'] as const;
+export type CompassQuarter = (typeof COMPASS_QUARTER)[number];
+
+// ---------------------------------------------------------------------------
 // Buds. The two documents list different single-word "bud states" that mix
 // three independent things. They are separated here:
 //   fate   what the bud will become

@@ -15,6 +15,7 @@
  */
 import type { Polyline } from '../math/polyline.ts';
 import type { Vec3 } from '../math/vec3.ts';
+import type { Site } from '../light/site.ts';
 import type { Sourced } from '../provenance.ts';
 import type { ContactPermission, MemberTier, RouteMaterial, SupportKind } from '../vocab.ts';
 import type { SupportGraph } from './support-graph.ts';
@@ -122,6 +123,8 @@ export interface Bower {
   zones: readonly Zone[];
   /** Geometry facts worth reporting alongside any run. */
   facts: Readonly<Record<string, number | string>>;
+  /** The place it was designed for, where its description declares one: latitude, bearing, and what shades it. */
+  site?: Site;
 }
 
 export function zoneContains(zone: Zone, p: Vec3): boolean {
