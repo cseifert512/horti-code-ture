@@ -40,17 +40,18 @@ const ABSENT: LeafState = { present: false, expansion: 0, autumn: 0 };
  */
 export function leafState(leaf: RenderLeaf, season: RenderSeason | undefined, day: number): LeafState {
   if (!season || day < leaf.bornDay || (leaf.removedDay >= 0 && day >= leaf.removedDay)) return ABSENT;
-  const j = jitter(leaf.position[0], leaf.position[1], leaf.position[2]);
   // last year's leaf fall, still going on: a leaf that was out last year hangs on until its own day in it
-  if (!leaf.evergreen && season.leafFallBefore && leaf.firstYear < season.year && (leaf.lastYear === null || leaf.lastYear >= season.year - 1)) {
+  if (season.leafFallBefore && !leaf.evergreen && leaf.firstYear < season.year && (leaf.lastYear === null || leaf.lastYear >= season.year - 1)) {
     const [fall0, fall1] = season.leafFallBefore;
-    if (day <= fall0 + j * (fall1 - fall0)) {
+    const own = jitter(leaf.position[0], leaf.position[1], leaf.position[2]);
+    if (day <= fall0 + own * (fall1 - fall0)) {
       const [turn0, turn1] = season.autumnColourBefore ?? [fall0, fall0];
-      return { present: true, expansion: 1, autumn: clamp01((day - turn0 - j * 10) / Math.max(1, turn1 - turn0)) };
+      return { present: true, expansion: 1, autumn: clamp01((day - turn0 - own * 10) / Math.max(1, turn1 - turn0)) };
     }
   }
   if (season.year < leaf.firstYear || (leaf.lastYear !== null && season.year > leaf.lastYear)) return ABSENT;
   const [flush0, flush1] = season.leafFlush;
+  const j = jitter(leaf.position[0], leaf.position[1], leaf.position[2]);
   // a leaf on wood that was already there opens with the flush; one on new growth opens as that growth is made
   const opensFrom = Math.max(flush0, leaf.bornDay);
   const opensOver = leaf.bornDay > flush0 ? 21 : Math.max(1, flush1 - flush0);

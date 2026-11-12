@@ -16,7 +16,7 @@ import { withFloweringWood } from './helpers.ts';
 
 // What a taxon may or may not do, each switched on by its growth model alone: a leaf of its own for a spur and a
 // flowering side shoot, leaves kept through winter, flowering again where a flower has gone over, dates that run
-// through the new year, and flowering side shoots that grow on from year to year. docs/ASSUMPTIONS_AUDIT.md section 8.
+// through the new year, and flowering side shoots that grow on from year to year. docs/ASSUMPTIONS_AUDIT.md section 9.
 
 const speciesDir = fileURLToPath(new URL('../../../species', import.meta.url));
 const library = loadGrowable(speciesDir);

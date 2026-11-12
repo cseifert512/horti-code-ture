@@ -366,10 +366,10 @@ Added on 11 November 2026 so that each taxon can be given a faithful likeness wi
 These are choices built into the mechanisms, as opposed to numbers in a model file. Each is a place where a measurement or a better rule would change what is drawn.
 
 - **Fruit set is a fixed share** of the inflorescences that go over on the plant. Pollination, weather and cultivar compatibility (`CONSTRAINTS` section 4) are not modelled. One fruit record stands for whatever one inflorescence sets: a pod, a bunch, a head of seeds.
-- **Ripening and falling are windows in the year**, like the flowering dates: a fruit starts to ripen on a day drawn evenly from the ripening window and is ripe by a later day in it, then falls on a day in the next fall window. A window cannot cross the new year (the first day must not be later than the last). Nothing eats fruit, and deadheading is still an event the engine records without acting on.
+- **Ripening and falling are windows in the year**, like the flowering dates: a fruit starts to ripen on a day drawn evenly from the ripening window and is ripe by a later day in it, then falls on a day in the next fall window. Nothing eats fruit. (When this was written a window could not cross the new year and deadheading was recorded without effect; both have changed, see section 9.)
 - **A tendril holds if, and only if, the shoot took hold of that stretch by itself.** On a stretch a gardener tied, and on a shoot in the air, every tendril is there and holds nothing. Not every tendril on a real vine finds the support.
 - **A leaf stalk coils** at a fixed share of the leaf nodes on stretches the plant holds itself, and nowhere else. **Rootlets** stand in patches at a spacing along such stretches. **Prickles** stand at a spacing on every stem, at any angle round it but the side against the support, hooked a little back towards the base.
-- **A flowering side shoot** breaks only from a leaf node of a leader or lateral, above the clear-stem height, one to a node at a time, with the same chance at every node old enough (the model's rate for a metre of stem times the mean leaf spacing). All of a year's shoots start on the day of bud break and reach their length by the day the first flowers of the year could open. One that lives more than a season neither lengthens nor branches afterwards; it comes into leaf again each year, and may flower again. It is shed on the day of bud break after its last year. Its leaves are spaced and sized by the same parameters as the plant's other leaves, whatever their form.
+- **A flowering side shoot** breaks only from a leaf node of a leader or lateral, above the clear-stem height, one to a node at a time, with the same chance at every node old enough (the model's rate for a metre of stem times the mean leaf spacing). All of a year's shoots start on the day of bud break and reach their length by the day the first flowers of the year could open. One that lives more than a season neither lengthens nor branches afterwards; it comes into leaf again each year, and may flower again. It is shed on the day of bud break after its last year. Its leaves are spaced and sized by the same parameters as the plant's other leaves, whatever their form. (Both are now the default and no longer the only way: a model may have its side shoots grow on, and give their leaf its own numbers, see section 9. They still do not branch.)
 - **Its flower bud** forms on the day the plant's other flower buds form, and opens in the next flowering window after that day: the same year for a plant that flowers later than its buds form, the next year for one that flowers earlier. Flowering wood class is not consulted beyond that; a plant whose flowering wood is unknown flowers nowhere.
 - **Directions** are built from the stem's own line and its direction away from the support with fixed weights (an upright flower leans a quarter off the support; a flower facing out is tipped a third upwards). They are drawing geometry, not measurements.
 - **Stem thickness is not known at an organ's place.** A leaf, flower, fruit or appendage is placed on the line where its stem touches its support, as leaves always were; a viewer that wants it on the surface of a thick stem has to find the stem.
@@ -410,3 +410,75 @@ Added later on 11 November 2026. Until then aspect changed nothing in a run. It 
 **Findings.** On an open lattice in an open site every station is in full sun by the RHS's definition: the 15 m hemisphere's north stations have about 14 hours of direct sun on a clear midsummer day. The north side has 85% of an open site's light over the summer half of the year and 79% in December; the south side 89% and 93%. The reference palette puts the climbing hydrangea on the north side for shade, and it is not in shade there: the report flags it. The difference aspect makes to growth is confined to the taxa whose profiles ask for sun, and is of the order of a tenth in the early years.
 
 **Not verified.** None of the light figures has been compared with a measurement on a structure. The shares assume a flat horizon and no cloud. Shade from foliage rests on leaf areas that are stand-ins. The response to light has not been compared with any plant.
+
+## 9. Leaf forms, leaves kept through winter, flowering again, dates through the new year, side shoots that grow on
+
+Added on 12 November 2026, while each taxon was being given its own numbers, for five things those numbers could not yet say. Each is general, is switched on by a taxon's `model.json` alone, and is off for every taxon on this date: no species file was changed. The tests are in `packages/core/test/habits.test.ts`.
+
+### 9.1 What was there already
+
+| Asked for | Found in the engine before anything was written |
+|---|---|
+| Leaf size, spacing and lifespan by leaf form | The three forms could be named apart (`names.leafForm`, `spurLeafForm`, `sideShootLeafForm`) and every leaf carried its name. All three shared `organs.leafLengthM`; a spur's leaf was that length times 0.9, a number of the prototype's written into the engine and into no model file. A spur had its own leaf count (`organs.spurLeafCount`). A side shoot's leaves were spaced, paired and sized as the plant's other leaves, and were in leaf every year the shoot lived whatever `organs.leafLifespanYears` said |
+| Semi-evergreen | In the vocabulary and in one profile (*Akebia quinata*). The engine asked only whether the habit was `evergreen`, so a semi-evergreen plant was deciduous, and nothing said so |
+| Repeat flowering | Nothing. A place flowered once a year. Growth made after the first buds formed went on forming buds, which gives a long season on a plant that keeps growing and is not the same thing. `deadhead_or_select_flowers` was in the vocabulary and was recorded without effect |
+| Windows across the new year | Refused by the model schema. One half of it was there: a petal fall whose first day is earlier in the year than the opening's first day was read as next year's, and a fruit ripened or fell in "the first window to end after" a day, which may be next year's. So a display could end after the new year and could not open after it |
+| Side shoots that grow on | Nothing: a side shoot made its length in its first season and kept it |
+
+**How *Clematis cirrhosa* 'Freckles' was made to flower in winter.** Its model gives an opening window of days 320 to 350 (16 November to 16 December), which stops short of the new year because it had to; no length of life for a flower (`phenology.flowerLastsDays` of 0); and a petal fall of days 45 to 80, which the engine reads as the following year's because it begins earlier in the year than the opening does. So nothing opens in January or February, and what opened in November stays open for about three months. The numbers were not changed, and the run is the same as it was (9.4). The honest form is now sayable: an opening window of `[320, 45]` with flowers that each last some weeks. A test grows the plant both ways.
+
+### 9.2 What was added
+
+| Mechanism | A model switches it on with | What the engine then does | Where |
+|---|---|---|---|
+| A spur's leaf | `organs.spurLeafLengthM` | Draws each spur leaf's length from it. Unknown: 0.9 of `organs.leafLengthM`, as before | `engine.ts` `spurLeaves` |
+| A flowering side shoot's leaf | any of `organs.sideShootLeafLengthM`, `organs.sideShootLeafSpacingM`, `organs.sideShootLeavesPerNode`, `organs.sideShootLeafLifespanYears` | Uses each in place of the ordinary leaf's number. With a lifespan, a leaf lasts that many seasons from the year its stretch of the shoot was made; without, the shoot is in leaf along its whole length every year it lives, as before | `sideShootLeaf`, `sideShootLeaves` |
+| Leaves kept through winter | `organs.winterLeafShare`, 0 to 1 | Decides for each new leaf whether it is kept. On a plant whose profile is not evergreen, a kept leaf is marked as one that stays on in winter, lasts into the spring after its season, and is shed on a day of its own in that spring's leaf flush. On an evergreen, a leaf that is not kept falls in the leaf fall of its first year | `winterFate`; shed in `step` |
+| Flowering again | `flowering.repeatMaxPerSeason`, `flowering.repeatIntervalDays`, `flowering.repeatShare`, all three | When a flower at a node of a shoot or at the end of a side shoot goes over, a share of them are followed by another at the same place after the interval, if it would still open inside the flowering window; and so on, up to the count | `flowerAgain` |
+| Deadheading | `flowering.repeatIntervalDeadheadedDays`, with the three above | A `deadhead_or_select_flowers` event takes the spent flowers of the season, with any unripe fruit behind them, and brings each next flower forward to that interval after the visit, or lets in one whose own wait would have run past the window. Without the number the event is recorded only, as before | `deadhead` |
+| Dates through the new year | a window whose first day is later than its last: `[320, 45]` | Reads it as running from the first day to the last day of the following year, wherever a window is read | `sim/windows.ts`, and every reader below |
+| Side shoots that grow on | `sideShoots.extensionMPerYear` and `sideShoots.maxLengthM`, both | At bud break each living side shoot of an earlier year sets off again along the line it ended on, by a length drawn from the first, up to the second | `sideShootSeason` |
+
+**Every place a window is read**, and what "through the new year" means there:
+
+| Read by | Window | Through the new year |
+|---|---|---|
+| `startSeason` (a spur's bud waking) | `flowerOpenDoy`, `petalFallDoy` | Opens in the window that begins in the flowering year. The petal fall follows by the same rule as elsewhere |
+| `budsAlongShoots`, `lateBud`, `budsOnSideShoots` | `flowerOpenDoy`, `petalFallDoy` | The window that begins in the year the buds form (or the next, where its first day has passed) is counted on past 31 December. A flower's year is the year its window began |
+| `flowerAgain`, `deadhead` | `flowerOpenDoy` | The end of the window the first flower's season opened in |
+| `setFruit` | `fruit.ripenDoy`, `fruit.fallDoy` | The first occurrence of the window to end after the day in question, which may be one already in progress |
+| `render-data.ts` seasons | `leafFlushDoy`, `autumnColourDoy`, `leafFallDoy` | A flush began the year before; a colouring and a fall end the year after. The season entry of a year carries the fall that ran into it and the flush that begins in it |
+| `presence.ts` `leafState` | the same, from the data | Last year's leaves go on dropping in January, each on its own day; a place that comes into leaf every year is opening in December |
+| `winterFate` | `leafFlushDoy` | A kept leaf is shed in the flush that ends in the spring after its season |
+| `light.ts` `canopy` | `leafFlushDoy`, `leafFallDoy` | Their middles, taken on the side the window runs over |
+| `dayForPlant` | last day of `leafFallDoy` and of `floralInitiationDoy` | A single day of the year, whichever year it falls in: nothing to change |
+
+The growing season, `phenology.budburstDoy` to `phenology.growthEndDoy`, is two single days and not a window, and cannot cross the new year: growth, wood age, leaf years and the yearly account are all counted by calendar year. A plant that grows through the winter cannot be said yet.
+
+### 9.3 What is assumed
+
+Choices built into the mechanisms, as opposed to numbers in a model file.
+
+- **A kept leaf is chosen by place and by nothing else**: not by height, exposure, age of wood or the winter in question, and the same leaf positions on a spur or a side shoot are kept every winter. The specification says leaf retention is climate-dependent (`CONSTRAINTS` section 5); there is no weather here, so the share is one number for a taxon in a scenario. To show *Lonicera henryi* in exposure, vary its model for that scenario.
+- **A kept leaf stays green and is counted as evergreen leaf** for as long as it is out, in the coverage figures and in the light other plants receive. The winter check's "as seen" reading therefore includes a semi-evergreen plant's kept leaves; its "as laid out" reading still counts only plants whose profile says evergreen.
+- **An evergreen that is given a share below one drops the rest in its first leaf fall**, turning as a deciduous leaf does by `phenology.autumnColourDoy`. Whether such leaves colour is the look's business.
+- **The next flower stands exactly where the last one did.** On a rose the next flush comes from a new shoot below the spent one; that shoot is not grown. A flower at the end of a side shoot is followed at the end of the same shoot.
+- **Whether a flower is followed is a fixed share**, the same in every flush and whether or not it set fruit or was deadheaded. Deadheading changes when the next flower comes, and saves one that would have come too late; it does not make a place flower that chance had left.
+- **A flower that follows lasts** as `phenology.flowerLastsDays` says or, where the model has the whole display fall together, as long as the one before it did.
+- **Deadheading takes every spent flower of the season at one visit**, and every unripe fruit behind one, whatever the plant's size or height. Fruit that has begun to ripen is left. Nothing is cut: no stem is shortened.
+- **A spur's flower is never followed**, nor one on a shoot cut back to short wood. An occasional second flush on wisteria is not modelled.
+- **A side shoot grows on in a straight continuation**, turning up a little as in its first year, by an amount that does not depend on its age, its light beyond the plant's own factor, or whether it flowered. It finishes by the day the first flowers of the year could open, as a new shoot does. It still does not branch. A flower at its end opens at the new end.
+- **Leaf spacing finer than the 4 cm between stored stem points** gives a leaf at every point: true of every leaf in the engine, and now reachable from a side shoot's own spacing.
+- **A leaf flush through the new year belongs to the year it ends in; a colouring, a leaf fall and a flower opening to the year they begin in.** These are the readings under which a calendar-year growing season still makes sense.
+
+### 9.4 What did not change
+
+With every mechanism off, which is every taxon on this date, ten runs were compared before and after against main at 59aa99c: wisteria on the vault trained and untended, the mixed planting both ways, the reference palette both ways and with ivy, the attachment trial both ways, and wisteria on the hemisphere, ten years each. Stems, leaves, flowers, fruit, appendages, seasons, events, yearly summaries, the decision trace and the design report are identical to the byte, with one exception: each taxon's tally of unknown parameters is higher by twelve, the twelve new ones, in the render data's `assumptions` and in the report's last section. *Wisteria sinensis*, whose model gave every parameter, now reads 12 unknown; two tests that required it to give every parameter now allow it to leave out what any model may.
+
+A semi-evergreen plant whose model gives no share now says so once in the trace (`part_not_modelled`). No reference scenario plants one.
+
+### 9.5 Not done, and not verified
+
+- No number for any taxon. Shares kept, intervals between flushes, lengths added a year and the leaf sizes of spurs and side shoots are for the taxon files, with their sources.
+- The 0.9 that sizes a spur's leaf where a model gives none is still in the engine. *Wisteria sinensis* could carry it as a labelled number; it was left alone so that its runs stay identical.
+- Nothing here has been compared with a plant. The viewer was not changed and no picture was made of any of the five: `presence.ts` answers for a kept leaf, a January leaf fall and a December flush through the function a viewer already calls, which the tests exercise, and that a look draws them well has not been looked at.
