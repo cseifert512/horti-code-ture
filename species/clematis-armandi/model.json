@@ -240,7 +240,7 @@
       "value": 12,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists for this plant. Extension advice for clematis in general is that a leaf stalk cannot clasp anything much stouter than a quarter to half an inch (https://extension.illinois.edu/sites/default/files/hkmw-_clematis.pdf: add twine where a support is over three quarters of an inch). Half an inch is taken, this plant having long leaf stalks (3.6 to 11 cm, Huang et al. 2024): a cable qualifies, a 40 mm lath does not, and on timber the plant has to be tied."
+      "basis": "No measurement exists for this plant. Extension advice for clematis in general: they \"do best with thin supports\", and \"If the support is greater than 3/4 inch in diameter add twine\" (University of Illinois Extension, https://extension.illinois.edu/sites/default/files/hkmw-_clematis.pdf); \"the twining petioles cannot grasp thick materials\" (University of Nebraska-Lincoln Extension, G1861). On this plant it is the stalks of the leaflets that coil, and they are 1/2 to 1 in. long (Bean), enough to go once round a support of about 6 mm; the main stalk, 3.6 to 11 cm (Huang et al. 2024), can hook round more. 12 mm is taken, between the two: a cable qualifies, a 40 mm lath does not, and on timber the plant has to be tied."
     },
     "attachment.minPitchM": {
       "value": 0.3,
@@ -312,12 +312,12 @@
     "organs.whipShareOfNodes": {
       "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "The share of older nodes on the main stems and branches that throw a long shoot in a year. Chosen with organs.whipsPerYearMax so that a plant six to ten years old carries the dense mass of foliage the sources describe (\"a large, vigorous evergreen climber\", RHS; used as a screen). Not counted on a plant."
+      "basis": "The share of older nodes on the main stems and branches that throw a long shoot in a year: nearly all of them, up to the cap in organs.whipsPerYearMax. On the plant the year's shoots come mostly from last year's shoots; in this model they can come only from the stems that follow the structure, so those stems are made to throw as many as the whole plant would. Chosen so that a plant six to ten years old carries the dense mass of foliage the sources describe (\"A large, vigorous evergreen climber\", RHS; grown as a screen). Not counted on a plant."
     },
     "organs.whipsPerYearMax": {
       "value": 170,
       "status": "provisional_design_assumption",
-      "basis": "A cap on the long shoots a plant throws in a year. Chosen with organs.whipShareOfNodes; not counted on a plant."
+      "basis": "A cap on the long shoots a plant throws in a year. With shoots of 0.6 to 1.8 m it gives an established plant some 200 m of new shoot a year and two to four thousand leaves, which clothes a frame of 6 square metres and what hangs from it. Chosen with organs.whipShareOfNodes; not counted on a plant."
     },
     "organs.whipLengthM": {
       "value": [

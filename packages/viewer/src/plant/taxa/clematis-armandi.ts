@@ -10,12 +10,14 @@
 //            leaf axils. Each cluster is two or three stalks rising from a cup
 //            of bud scales, each stalk with a pair of narrow bracts and mostly
 //            three flowers. A flower is a flat star of four to seven narrow
-//            white sepals round a boss of cream stamens. In metres; the size the
-//            data gives is the width across both clusters.
+//            white sepals round a boss of cream stamens; sepals and stamens come
+//            and go with the flower, and the tuft of styles in its middle stays.
+//            In metres; the size the data gives is the width across both
+//            clusters.
 //   fruit    the seed heads of one node: tufts of achenes with feathered tails,
 //            on the stalks the flowers stood on. In metres.
 //   hold     the stalk of a leaflet wound round a cable, drawn at the node
-//   wood     bronze-red young shoots, ribbed; brown stringy bark with age
+//   wood     bronze-red young shoots; grey-brown stringy bark with age
 //
 // Every count and size of the real plant is read from
 // species/clematis-armandi/morphology.json, where each has its source. What is
@@ -195,7 +197,7 @@ function leafletGeometry(form: LeafletForm, lod: number): THREE.BufferGeometry {
     let lift = form.fold * Math.abs(x) - 0.25 * form.half * Math.pow(Math.abs(s), 3) * rel;
     if (lod === 0) {
       // the main veins lie in channels, and the margin is a little waved
-      if (vein) lift -= (vein === 1 ? 0.0012 : 0.0008) * Math.sqrt(1 - v) * rel;
+      if (vein) lift -= (vein === 1 ? 0.0006 : 0.0004) * Math.sqrt(1 - v) * rel;
       lift += 0.006 * Math.sin(v * 11 + form.seed + s * 1.3) * s * s * rel;
     }
     const back = form.cord * Math.pow(Math.abs(s), 1.5) * (1 - smoothstep(0, 0.14, v));
