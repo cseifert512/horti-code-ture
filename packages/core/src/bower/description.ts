@@ -185,21 +185,40 @@ const apart = (a: Box, b: Box, gap: number): boolean =>
   a.min.x - gap > b.max.x || b.min.x - gap > a.max.x || a.min.y - gap > b.max.y || b.min.y - gap > a.max.y || a.min.z - gap > b.max.z || b.min.z - gap > a.max.z;
 
 /**
- * The stretch of a polyline between two distances along it, with its ends
- * moved on to the given points. Where an end has moved sideways, the points
- * nearest it are left out, so that the stretch runs in to the joint at a
- * slant and not round a corner.
+ * The stretch of an element between two distances along its centre line, as
+ * the two lines a route needs.
+ *
+ * `axis` is the element itself over that stretch, exactly as it is built: a
+ * stem that twines or lies on the stretch is laid on this.
+ *
+ * `route` runs from joint to joint. A joint sits on its stoutest member, so the
+ * end of a lighter element can be some way from it (a cable fixed to the face
+ * of a post is half the post's width from the post's centre line). The route
+ * leaves the joint at a slant, is on the element's own line within three
+ * times that distance, and follows it from there. It used to slant the whole
+ * way from joint to joint where the element had no points between, which put
+ * the route along a straight cable up to 75 mm beside the cable as drawn.
  */
-function between(curve: Polyline, s0: number, s1: number, from: Vec3, to: Vec3): Polyline {
-  const pts: Vec3[] = [from];
+function between(curve: Polyline, s0: number, s1: number, from: Vec3, to: Vec3): { route: Polyline; axis: Polyline } {
   const c = curve.cumulative;
-  const clear0 = Math.max(1e-3, 3 * distance(from, curve.pointAt(s0)));
-  const clear1 = Math.max(1e-3, 3 * distance(to, curve.pointAt(s1)));
-  for (let i = 0; i < curve.points.length; i++) {
-    if (c[i]! > s0 + clear0 && c[i]! < s1 - clear1) pts.push(curve.points[i]!);
-  }
+  const p0 = curve.pointAt(s0);
+  const p1 = curve.pointAt(s1);
+  const inner: Vec3[] = [];
+  for (let i = 0; i < curve.points.length; i++) if (c[i]! > s0 + 1e-6 && c[i]! < s1 - 1e-6) inner.push(curve.points[i]!);
+  const axis = new Polyline([p0, ...inner, p1]);
+
+  const span = s1 - s0;
+  const off0 = distance(from, p0);
+  const off1 = distance(to, p1);
+  // how far along the element the slant from each joint runs: none where the joint is on the element
+  const ramp0 = off0 > 1e-3 ? Math.min(3 * off0, span / 4) : 0;
+  const ramp1 = off1 > 1e-3 ? Math.min(3 * off1, span / 4) : 0;
+  const pts: Vec3[] = [from];
+  if (ramp0 > 0) pts.push(curve.pointAt(s0 + ramp0));
+  for (let i = 0; i < curve.points.length; i++) if (c[i]! > s0 + ramp0 + 1e-6 && c[i]! < s1 - ramp1 - 1e-6) pts.push(curve.points[i]!);
+  if (ramp1 > 0) pts.push(curve.pointAt(s1 - ramp1));
   pts.push(to);
-  return new Polyline(pts);
+  return { route: new Polyline(pts), axis };
 }
 
 /**
@@ -353,13 +372,13 @@ export function readBower(input: unknown, source = 'bower description'): ReadBow
     for (let k = 0; k + 1 < stops.length; k++) {
       const a = stops[k]!;
       const b = stops[k + 1]!;
-      const curve = between(E.curve, a.s, b.s, graph.nodes.get(a.node)!.position, graph.nodes.get(b.node)!.position);
+      const { route: curve, axis } = between(E.curve, a.s, b.s, graph.nodes.get(a.node)!.position, graph.nodes.get(b.node)!.position);
       graph.addEdge({
         id: `${E.id}:${made++}`,
         from: a.node,
         to: b.node,
         curve,
-        axis: curve,
+        axis,
         section: E.section,
         host: { type: E.kind === 'timber' ? 'member' : 'support', id: E.kind === 'timber' ? E.id : `cable.${E.id}` },
         kind: E.kind,

@@ -20,10 +20,11 @@ This is **not** a verified biological prediction model, a planting specification
 | Path | Contents |
 |---|---|
 | `PROJECT_CONTEXT.md` and the other root `.md` files | The specification. Read these before making global decisions. |
-| `species/<id>/` | One folder per taxon. Folder names are ASCII ids; botanical names, accepted names and synonyms are recorded inside. |
+| `species/<id>/` | One folder per taxon. Folder names are ASCII ids; botanical names, accepted names and synonyms are recorded inside: a profile in prose, validated data, the taxon's growth model and its morphology. |
 | `packages/core/` | `@horti/core` — TypeScript, no rendering dependencies. Vocabulary, provenance rules, the structure as timber and cables with its route graph, reference Bowers, attachment rules, the daily-step growth engine, and the render-data contract a viewer draws from. |
-| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Sixteen: every climber in the library. *Wisteria sinensis* is carried over from the prototype; the other fifteen are derived from it or from one another, mostly copies and placeholders and marked as such. The shrub has none, because it does not climb. |
-| `packages/viewer/` | `@horti/viewer` — three.js and Vite. Renders a Bower from the core at the prototype's visual quality, a design overlay (reach from a root station under a route budget, material summary), and the plants of any render data: the growth engine's scenarios, run in the browser, or a hand-made render test. Opens a designed Bower and its planting plan from two files, chosen or dropped on the window, and grows and reports on it. Holds no growth logic. |
+| `species/<id>/model.json` | The numbers the engine assumes for a taxon, each labelled with its evidence status. Sixteen: every climber in the library. *Wisteria sinensis* is carried over from the prototype; the other fifteen are derived from it or from one another, mostly copies and placeholders and marked as such. The shrub has none, because it does not climb. A model also says which parts the plant has (fruit, tendrils, coiled leaf stalks, clinging rootlets, prickles, flowering side shoots, more than one leaf form); a part whose numbers are unknown is left out of a run, and the run says so. |
+| `species/<id>/morphology.json` | The shape numbers a drawing of the taxon uses (leaflet and petal counts, proportions, colours as floras name them), each with its evidence status. Being filled in taxon by taxon. |
+| `packages/viewer/` | `@horti/viewer` — three.js and Vite. Renders a Bower from the core at the prototype's visual quality, a design overlay (reach from a root station under a route budget, material summary), and the plants of any render data: the growth engine's scenarios, run in the browser, or a hand-made render test. Opens a designed Bower and its planting plan from two files, chosen or dropped on the window, and grows and reports on it. Holds no growth logic. What a taxon looks like is one module of its own (`src/plant/taxa/<id>.ts`: leaf forms, flowers, fruit, holdfasts, bark), written from its morphology; `TAXON_LOOKS.md` says how. |
 | `Wisteria/` | The original three.js prototype of *W. sinensis* on a glulam vault. Self-contained (`npm install` inside it). |
 | `examples/` | A small arbour and the 15 m hemisphere as Bower descriptions, each with a planting plan: the two files a design is run from. |
 | `docs/ASSUMPTIONS_AUDIT.md` | What was tested on 11 November 2026, what held, what did not, and what was changed. |
@@ -56,6 +57,7 @@ npm run simulate -- palette trained 12  # the KEY.md reference palette, one plan
 npm run sensitivity -- palette trained 12  # the same run with leaf area and side shoots multiplied: which readings hold
 npm run viewer:dev   # the viewer on http://localhost:5193: both reference Bowers or a design read from files, the design overlay, plants through time
 npm run viewer:build # static build in packages/viewer/dist
+npm run portrait -- lonicera-henryi   # one plant of a taxon on a small standard frame: stills of the whole plant in four seasons and close on each organ, and a contact sheet, in out/portraits/
 ```
 
 ### Your own Bower
