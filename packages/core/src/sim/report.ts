@@ -14,6 +14,7 @@ import { flowerState, fruitState, leafState, seasonsOf } from '../render/presenc
 import { WINTER_EVERGREEN_COVER, WINTER_MONTH } from '../targets.ts';
 import type { EvidenceStatus, GardenerEventType } from '../vocab.ts';
 import type { Simulation } from './engine.ts';
+import { type LightReport, formatLight, lightReport } from './light-report.ts';
 import { modelProvenance } from './model.ts';
 import { toRenderData } from './render-data.ts';
 import { type ViewCoverage, type Viewpoint, viewCoverage } from './view.ts';
@@ -70,7 +71,24 @@ export interface GardeningYear {
  * `part_not_modelled`: some other part of it (fruit, tendrils, coiled leaf stalks, clinging rootlets, prickles)
  * is left out, because its growth model leaves the numbers unknown.
  */
-export type AlertKind = 'no_hold' | 'headroom' | 'thickening_watch' | 'joints_reached' | 'crown_not_reached' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'caveat' | 'not_replanted' | 'recorded_only';
+export type AlertKind =
+  | 'no_hold'
+  | 'headroom'
+  | 'thickening_watch'
+  | 'joints_reached'
+  | 'crown_not_reached'
+  | 'not_modelled'
+  | 'part_not_modelled'
+  | 'assumed'
+  | 'caveat'
+  | 'not_replanted'
+  | 'recorded_only'
+  // a plant placed against what its profile says of light and aspect: see light-report.ts
+  | 'less_sun_than_profile'
+  | 'more_sun_than_profile'
+  | 'aspect_against_profile'
+  | 'light_unread'
+  | 'shelter_not_modelled';
 
 /**
  * Winter evergreen cover, read against the design target.
@@ -135,6 +153,8 @@ export interface DesignReport {
   flowerlessMonths: number[];
   /** Null where the run has no viewpoints or does not reach the winter of the year reported. */
   winter: WinterCheck | null;
+  /** The light on the structure and on each plant in the year reported, and each plant's place against its profile. */
+  light: LightReport;
   /** Flowers that opened in the year, by plant and by height above the ground. */
   flowersByHeight: { plantId: string; zone: HeightZone; count: number }[];
   gardening: GardeningYear[];
@@ -348,6 +368,10 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     }
   }
 
+  // ---- light, and each plant's place against its profile ---------------------------
+  const lit = lightReport(sim, year);
+  alerts.push(...lit.alerts);
+
   // ---- what it all rests on -------------------------------------------------------
   const assumptions: Record<string, Record<EvidenceStatus, number>> = {};
   const variations: DesignReport['variations'] = [];
@@ -356,6 +380,7 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     assumptions[taxonId] = summariseProvenance(entries);
     for (const e of entries) if (e.basis?.startsWith('Varied for this scenario')) variations.push({ taxonId, parameter: e.path, value: e.value, basis: e.basis });
   }
+  assumptions['light model'] = lit.light.assumptions;
 
   return {
     scenario: sim.scenario.name,
@@ -371,6 +396,7 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     months,
     flowerlessMonths,
     winter,
+    light: lit.light,
     flowersByHeight,
     gardening: [...gardening.values()].sort((a, b) => a.year - b.year),
     gardeningHours: null,
@@ -457,6 +483,8 @@ export function formatDesignReport(r: DesignReport): string {
     }
     line();
   }
+  for (const l of formatLight(r.light, r.year, idW)) line(l);
+  line();
   if (r.flowersByHeight.length) {
     line(`FLOWERS that opened in ${r.year}, by height`);
     for (const p of r.plants) {
@@ -476,7 +504,7 @@ export function formatDesignReport(r: DesignReport): string {
   for (const a of r.alerts) line(`  ${a.plantId ?? 'all plants'}: ${a.text}`);
   line();
   line('WHAT THIS RESTS ON');
-  for (const [taxonId, c] of Object.entries(r.assumptions)) line(`  ${taxonId}: ${c.provisional_design_assumption} provisional assumptions, ${c.published_plant_profile} published values, ${c.measured + c.calibrated} measured${c.unknown ? `, ${c.unknown} left unknown (the parts they describe are not in the run)` : ''}`);
+  for (const [taxonId, c] of Object.entries(r.assumptions)) line(`  ${taxonId}: ${c.provisional_design_assumption} provisional assumptions, ${c.published_plant_profile + c.peer_reviewed} published values, ${c.measured + c.calibrated} measured${c.unknown ? `, ${c.unknown} left unknown (the parts they describe are not in the run)` : ''}`);
   for (const v of r.variations) line(`  varied: ${v.taxonId} ${v.parameter} = ${JSON.stringify(v.value)}. ${v.basis}`);
   line(`  ${r.proxyNote}`);
   return out.join('\n');
