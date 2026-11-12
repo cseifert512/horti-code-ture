@@ -79,7 +79,7 @@ const AO_FRAGMENT = /* glsl */ `
     float screenRadius = perMetre * reach;
     float phase = turn(gl_FragCoord.xy) * 6.2831853;
     float radius2 = reach * reach;
-    float bias = 0.03 * reach + 0.0008 * -P.z;
+    float bias = 0.06 * reach + 0.0008 * -P.z;
     float sum = 0.0;
     for (int i = 0; i < SAMPLES; i++) {
       float t = (float(i) + 0.5) / float(SAMPLES);
@@ -92,6 +92,11 @@ const AO_FRAGMENT = /* glsl */ `
       sum += f * f * f * max((vn - bias) / (vv + 0.0025 * radius2), 0.0);
     }
     float ao = max(0.0, 1.0 - sum * uIntensity * 5.0 / (float(SAMPLES) * radius2 * radius2 * radius2));
+    // Seen close, the reach is centimetres or less, and what it finds is the relief of a leaf between its veins and
+    // the leaf next to it: thin things that light passes through and round, which this shading knows nothing of. It
+    // showed there as rows of dark patches on every large leaf. So the shading is held back as its reach draws in:
+    // whole at a reach of 0.22 m and more, three tenths of itself where the reach is 2 cm.
+    ao = mix( 1.0, ao, 0.3 + 0.7 * smoothstep( 0.02, 0.22, reach ) );
     // far away a pixel is wider than the radius, and there is nothing to find
     ao = mix(ao, 1.0, smoothstep(0.5 * uFade, uFade, -P.z));
     outColor = vec4(ao, 0.0, 0.0, 1.0);
