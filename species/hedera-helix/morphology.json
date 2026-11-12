@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "hedera-helix",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "evergreen woody climber, clinging by rootlets, with a climbing juvenile phase and a bushy, flowering adult phase",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/43091/hedera-helix/details",
+      "basis": "RHS plant record: \"a vigorous, self-clinging evergreen climber\"; \"mature plants produce bushy, non-clinging branches\". Metcalfe 2005: \"Only the vertical stems bear reproductive shoots, which are physiologically adult\"."
+    },
+    "stem.maxLengthM": {
+      "value": 30,
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005 (Biological Flora of the British Isles): \"Climbing, sometimes reaching 30 m\". The RHS gives the same figure. Not a size a ten-year-old plant has."
+    },
+    "stem.maxDiameterM": {
+      "value": 0.25,
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Woody stems up to 25 cm diameter\". The thickest stems of very old plants."
+    },
+    "stem.youngShootColour": {
+      "value": "light green, turning light brown",
+      "status": "published_plant_profile",
+      "source": "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=464",
+      "basis": "Virginia Tech dendrology factsheet, twig: \"Slender, light green but later turning light brown with aerial rootlets\". An American description of the same species; no British flora read describes the colour of the shoot."
+    },
+    "stem.youngShootHairs": {
+      "value": "stellate to peltate hairs, grey-white on new shoot tips",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"young twigs pubescent with stellate to peltate hairs\"; \"Stellate trichomes on new shoot tips give a grey-white pubescent effect that diminishes as laminar growth separates them\"."
+    },
+    "stem.barkOld": {
+      "value": "light brown, slightly rough and finely scaly, with shallow ridges and furrows on old stems",
+      "status": "published_plant_profile",
+      "source": "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=464",
+      "basis": "Virginia Tech dendrology factsheet, bark: \"Light brown slightly rough and finely scaly with numerous rootlets at the nodes\". University of Connecticut plant database: on old plants light brown \"with shallow ridges and furrows\"."
+    },
+    "stem.rootletLengthM": {
+      "value": [0.001, 0.015],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2894893",
+      "basis": "Melzer et al. 2010, J. R. Soc. Interface 7: unbranched attachment roots \"1-15 mm long\". The growth model's appendages.aerialRootLengthM is the same range."
+    },
+    "stem.rootletsPerCluster": {
+      "value": 38,
+      "status": "peer_reviewed",
+      "source": "https://academic.oup.com/jxb/article/63/1/191/552796",
+      "basis": "Melzer et al. 2012, J. Exp. Bot. 63: a median of 38 roots to a root cluster (interquartile range 24, n = 191)."
+    },
+    "stem.rootletRows": {
+      "value": 2,
+      "status": "peer_reviewed",
+      "source": "https://academic.oup.com/jxb/article/63/1/191/552796",
+      "basis": "Melzer et al. 2012: shoots on mortar and on tree bark usually had two rows of attachment roots (up to five on cork)."
+    },
+    "stem.rootletPlace": {
+      "value": "unbranched, on the side of the shoot that faces what it climbs",
+      "status": "peer_reviewed",
+      "source": "https://academic.oup.com/jxb/article/63/1/191/552796",
+      "basis": "Melzer et al. 2012: \"unbranched adventitious roots at the substrate-facing side of its shoots\". Metcalfe 2005: it is the juvenile phase that produces them; adult shoots have none (Bean: bushy branches \"with no aerial roots\")."
+    },
+    "leaf.arrangementJuvenile": {
+      "value": "alternate",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Juvenile plants or parts of plants bear alternately arranged, palmately lobed shade-leaves\"."
+    },
+    "leaf.arrangementAdult": {
+      "value": "spiral",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: reproductive shoots \"bear large, spirally arranged, radially symmetrical ovate leaves\". Stein and Fosket 1969 (as tabulated by the US Forest Service review): a 2/5 spiral. The engine sets the leaves of a side shoot alternately to left and right, so this cannot be drawn."
+    },
+    "leaf.texture": {
+      "value": "leathery, hairless and shining",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: leaves \"coriaceous, glabrous, evergreen\"; \"Leaves shining, dark green above\"."
+    },
+    "leaf.colourAbove": {
+      "value": "dark green",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Leaves shining, dark green above, often with pale veins, paler green below\". Bean: \"very dark glossy green\"."
+    },
+    "leaf.veinColour": {
+      "value": "pale",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"often with pale veins\". RHS plant record: \"often with pale green veins\"."
+    },
+    "leaf.colourBeneath": {
+      "value": "paler green",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"paler green below\". The viewer draws both faces of a leaf in one colour, so this is recorded and not drawn."
+    },
+    "leaf.winterTint": {
+      "value": "purple",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"upper surface sometimes tinged with purple in winter\"; anthocyanins develop in autumn \"as leaves take on their red/purple tints, and decline in spring\". RHS: autumn leaves \"can take on reddish or bronze tones\". The engine gives an evergreen leaf no autumn or winter state, so this is recorded and not drawn."
+    },
+    "leaf.youngColour": {
+      "value": "lighter, yellower green",
+      "status": "provisional_design_assumption",
+      "basis": "The colour the drawing gives a leaf while it unfolds. New ivy leaves are a lighter green than old ones, as in any photograph of spring growth; no source read states it."
+    },
+    "leaf.lifespanYears": {
+      "value": [3, 4],
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005, section VII: \"Leaves are long-lived (3-4 years)\"."
+    },
+    "leaf.juvenile.lobeCount": {
+      "value": [3, 5],
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: leaves of climbing or creeping stems \"palmately lobed with 3-5 triangular, entire lobes\"."
+    },
+    "leaf.juvenile.lobeShape": {
+      "value": "triangular, entire",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"3-5 triangular, entire lobes\". Bean: \"three or five lobes, cut either deeply or shallowly\"."
+    },
+    "leaf.juvenile.bladeLengthM": {
+      "value": [0.04, 0.1],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: leaves of climbing or creeping stems \"4-10(-25) cm\". The usual range; the exceptional 25 cm is left out."
+    },
+    "leaf.juvenile.bladeWidthM": {
+      "value": [0.04, 0.07],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://vicflora.rbg.vic.gov.au/flora/taxon/c4a3febc-0516-4d68-83ff-3712dd984839",
+      "basis": "VicFlora (Flora of Victoria), leaves of non-flowering shoots: 4-12 cm long, 4-7 cm wide. Naturalised plants of the same species; no British flora read gives the width."
+    },
+    "leaf.juvenile.petioleLengthM": {
+      "value": [0.02, 0.1],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://vicflora.rbg.vic.gov.au/flora/taxon/c4a3febc-0516-4d68-83ff-3712dd984839",
+      "basis": "VicFlora, leaves of non-flowering shoots: petiole 2-10(-13) cm."
+    },
+    "leaf.adult.shape": {
+      "value": ["ovate", "rhombic"],
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"leaves of flowering stems 6-10 cm, entire, ovate or rhombic\". RHS: \"diamond-shaped leaves\"."
+    },
+    "leaf.adult.margin": {
+      "value": "entire, sometimes wavy",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hedera/hedera-helix/",
+      "basis": "Bean (Trees and Shrubs Online): leaves of flowering shoots never lobed, the margins wavy or entire, more narrowly ovate."
+    },
+    "leaf.adult.bladeLengthM": {
+      "value": [0.06, 0.1],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"leaves of flowering stems 6-10 cm\"."
+    },
+    "leaf.adult.bladeWidthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "leaf.adult.petioleLengthM": {
+      "value": [0.025, 0.11],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://vicflora.rbg.vic.gov.au/flora/taxon/c4a3febc-0516-4d68-83ff-3712dd984839",
+      "basis": "VicFlora, leaves of flowering shoots: petioles 2.5-11 cm long."
+    },
+    "inflorescence.type": {
+      "value": "terminal panicle of globose umbels",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: flowers \"c. 20 in terminal globose umbels, which may be arranged into panicles\". Bean: \"a terminal cluster of globose umbels\"."
+    },
+    "inflorescence.umbelsPerPanicle": {
+      "value": [3, 5],
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005, section VII: \"3-5 umbels in a panicle\". Elsewhere in the same account, \"panicles of 1-6 umbels\": the wider range is not drawn."
+    },
+    "inflorescence.flowersPerUmbel": {
+      "value": 20,
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"There are about 20 flowers in each umbel\"."
+    },
+    "inflorescence.flowersPerUmbelRange": {
+      "value": [8, 20],
+      "status": "published_plant_profile",
+      "source": "https://www.fs.usda.gov/database/feis/plants/vine/hedhel/all.html",
+      "basis": "US Forest Service review (Fire Effects Information System): each umbel has 8 (Vezza et al. 2006) to 20 (Metcalfe 2005) flowers. The lower umbels of a panicle are drawn with fewer flowers than the end one, within this range; which umbel has fewer is not stated by either."
+    },
+    "inflorescence.umbelDiameterM": {
+      "value": [0.03, 0.05],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://cretanflora.com/hedera_helix_helix_text.html",
+      "basis": "An online flora of Crete, for subsp. helix: flowers \"in 3-5 cm diam. umbels\". The only measurement of the umbel found; neither Metcalfe nor Bean gives one."
+    },
+    "inflorescence.extentM": {
+      "value": [0.07, 0.11],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The greatest extent of the whole panicle, which is what the growth model's organs.racemeLengthM measures and what the drawing is scaled to. Derived from 3 to 5 umbels of 3 to 5 cm, the end one above the others; no source read measures the panicle."
+    },
+    "inflorescence.pedicelLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "inflorescence.openingOrder": {
+      "value": "the end umbel first, then the others in turn back towards the leaves; the flowers of one umbel more or less together",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"the terminal umbel flowering first, followed by successive umbels back to the leafy growth\"; \"flowers in an umbel open more or less synchronously\"."
+    },
+    "inflorescence.indumentum": {
+      "value": "stalks and receptacle felted with stellate hairs",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Peduncle, pedicels and receptacle stellate-tomentose\". Drawn as a grey cast on the stalks."
+    },
+    "flower.petalCount": {
+      "value": 5,
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Petals 5(-6)\"."
+    },
+    "flower.petalLengthM": {
+      "value": [0.003, 0.004],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: petals \"3-4 mm\"."
+    },
+    "flower.petalColour": {
+      "value": "yellowish-green",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: petals \"yellowish-green\". Bean: flowers \"yellowish green\". RHS: \"greenish-yellow\"."
+    },
+    "flower.petalShape": {
+      "value": "triangular-ovate, hooded at the tip, free",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"triangular-ovate, somewhat hooded at apex; free\"."
+    },
+    "flower.petalPosture": {
+      "value": "spread flat, then bent back",
+      "status": "provisional_design_assumption",
+      "basis": "How the drawing holds the petals of an open flower. Not stated in the floras read; open ivy flowers show the petals turned back below the disc."
+    },
+    "flower.stamenCount": {
+      "value": 5,
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"stamens 5\"."
+    },
+    "flower.antherColour": {
+      "value": "bright yellow, turning brownish-yellow",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"The anthers are bright yellow, turning brownish-yellow and falling off quickly (1-3 days) after anthesis\"."
+    },
+    "flower.discColour": {
+      "value": ["green", "brown"],
+      "status": "peer_reviewed",
+      "source": "https://czasopisma.up.lublin.pl/asphc/article/view/2741",
+      "basis": "Konarska 2014, Acta Sci. Pol. Hortorum Cultus 13: the nectary disc on top of the ovary is green when it begins to secrete and gradually turns brown. Metcalfe 2005: \"a domed disk surrounding the styles\", which glistens with nectar. One colour between the two is drawn."
+    },
+    "flower.discDiameterM": {
+      "value": 0.0021,
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://czasopisma.up.lublin.pl/asphc/article/view/2741",
+      "basis": "Konarska 2014, table 1: \"Length of nectary (mm) 2.1 +/- 0.3\" (n = 10), read here as the width of the disc across the top of the ovary."
+    },
+    "flower.styleLengthM": {
+      "value": 0.0015,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://vicflora.rbg.vic.gov.au/flora/taxon/c4a3febc-0516-4d68-83ff-3712dd984839",
+      "basis": "VicFlora: style about 1.5 mm long, stout, united, persistent. Metcalfe 2005: \"styles joined into a column\"."
+    },
+    "flower.lifeDays": {
+      "value": 7,
+      "status": "peer_reviewed",
+      "source": "https://czasopisma.up.lublin.pl/asphc/article/view/2741",
+      "basis": "Konarska 2014: ivy flowers \"live for about a week\". Metcalfe 2005: the stamens fall about 7 days after anthesis."
+    },
+    "fruit.type": {
+      "value": "berry",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Fruit a berry\", globose."
+    },
+    "fruit.diameterM": {
+      "value": [0.006, 0.008],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"globose, 6-8 mm\"; measured fruits 5.5-7.5 x 5.5-8.7 mm. Bean: about 1/4 in. across."
+    },
+    "fruit.colourRipe": {
+      "value": "bluish-black to purple-black, dull",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"bluish- or greenish-black (rarely yellow or white)\"; \"a purple-black berry\". Bean: \"dull inky black\"."
+    },
+    "fruit.colourUnripe": {
+      "value": "green",
+      "status": "provisional_design_assumption",
+      "basis": "The colour the drawing gives a berry before it ripens. Unripe ivy berries are green, as in photographs of ivy in early winter; the descriptions read give only the ripe colour."
+    },
+    "fruit.seedCount": {
+      "value": [1, 5],
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"seeds 1-5\". Not drawn: the seeds are inside the berry."
+    },
+    "fruit.crown": {
+      "value": "the style persists as a short point in the middle of the flat top of the berry",
+      "status": "published_plant_profile",
+      "source": "https://vicflora.rbg.vic.gov.au/flora/taxon/c4a3febc-0516-4d68-83ff-3712dd984839",
+      "basis": "VicFlora: style about 1.5 mm long, stout, united, persistent. The disc round it stays as the flat top of the berry."
+    },
+    "fruit.umbelsFruitingPerPanicle": {
+      "value": 1,
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Typically only one umbel per panicle develops into fruit, normally the terminal one\". One fruit record is therefore one umbel of berries."
+    },
+    "fruit.berriesPerUmbel": {
+      "value": [10, 18],
+      "status": "provisional_design_assumption",
+      "basis": "How many berries the drawing gives a fruiting umbel: most of its 20 or so flowers. No count was found; fruiting heads in photographs are well filled."
+    },
+    "fruit.clusterWidthM": {
+      "value": [0.03, 0.04],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The width of the fruiting umbel, which is what the growth model's fruit.lengthM measures and what the drawing is scaled to. Derived from berries 6 to 8 mm across on the stalks of an umbel 3 to 5 cm across in flower; no source read measures the cluster."
+    }
+  }
+}
