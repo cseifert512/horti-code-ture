@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "clematis-viticella-etoile-violette",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: a large, vigorous deciduous climber. Bean, of C. viticella: 'a deciduous, partly woody climber' whose summer growth 'dies back in winter nearly to the older stem'."
+    },
+    "habit.heightM": {
+      "value": [2.5, 4],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: ultimate height 2.5-4 m. Clematis on the Web gives the same; the International Clematis Society 10 to 15 ft 'depending on local conditions'."
+    },
+    "habit.spreadM": {
+      "value": [1, 1.5],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: ultimate spread 1-1.5 m."
+    },
+    "habit.flowersWhere": {
+      "value": "mostly on the upper half of the new wood",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=522",
+      "basis": "International Clematis Society, Clematis of the Month, October 1997: it flowers by midsummer, mostly on the upper half of the new wood, and the flowers hide most of the foliage."
+    },
+    "stem.surface": {
+      "value": "slender, ribbed, slightly downy when young",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: 'stems slender, ribbed, and slightly downy when young'. No description of the cultivar's stems was found; it is taken to be like the species."
+    },
+    "stem.colour": {
+      "value": "reddish",
+      "status": "published_plant_profile",
+      "source": "https://hortflora.rbg.vic.gov.au/taxon/ad8ccfba-5340-11e7-b82b-005056b0018f",
+      "basis": "Royal Botanic Gardens Victoria, Horticultural Flora, of C. viticella: a semi-woody climber with reddish stems. Of the species, not of the cultivar."
+    },
+    "stem.twining": {
+      "value": "does not twine",
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin, The Movements and Habits of Climbing Plants (1875), of C. viticella var. venosa: 'the power of spirally twining is completely lost'; the young internodes still sweep small ellipses."
+    },
+    "stem.internodeLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "stem.diameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "stem.oldBark": {
+      "value": null,
+      "status": "unknown"
+    },
+    "leaf.arrangement": {
+      "value": "in opposite pairs",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/",
+      "basis": "Bean, of the genus: 'The leaves are always in pairs at each joint'."
+    },
+    "leaf.division": {
+      "value": "pinnate",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: 'mid-green leaves divided into 5 leaflets'. Bean, of C. viticella: pinnate, the primary divisions trifoliolate."
+    },
+    "leaf.leafletCount": {
+      "value": 5,
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record, of this cultivar: leaves 'divided into 5 leaflets'. The usual leaf; see leaf.leafletPairsMost for the fullest."
+    },
+    "leaf.leafletPairsMost": {
+      "value": 3,
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin (1875), of C. viticella var. venosa: 'three pairs of lateral leaflets and a terminal one, all supported on rather long sub-petioles'. Of a variety of the species, not of this cultivar: the largest leaf drawn."
+    },
+    "leaf.basalDivisionLeaflets": {
+      "value": 3,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: pinnate, 'the primary divisions trifoliolate'. Darwin: the stalk of each of the lowest pair of leaflets usually divides into three. Of the species; drawn on some leaves of the cultivar, on the lowest pair only."
+    },
+    "leaf.lengthM": {
+      "value": [0.102, 0.127],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: leaves '4 or 5 in. long', in metres. Flora Europaea gives 10-13 cm. No figure was found for the cultivar; the growth model's organs.leafLengthM takes it as the same."
+    },
+    "leaf.leafletLengthM": {
+      "value": [0.019, 0.064],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: leaflets '3/4 to 2 1/2 in. long', in metres. Of the species."
+    },
+    "leaf.leafletShape": {
+      "value": ["lance-shaped", "broadly ovate"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: leaflets lance-shaped to broadly ovate. Royal Botanic Gardens Victoria: 'ovate to lanceolate'."
+    },
+    "leaf.leafletMargin": {
+      "value": "untoothed, often two- or three-lobed",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: leaflets untoothed but often two- or three-lobed."
+    },
+    "leaf.leafletWidthToLength": {
+      "value": [0.4, 0.7],
+      "status": "provisional_design_assumption",
+      "basis": "No width is given anywhere read. Chosen to span Bean's 'lance-shaped' to 'broadly ovate': a leaflet four tenths to seven tenths as wide as it is long."
+    },
+    "leaf.leafletStalk": {
+      "value": "rather long",
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin (1875), of C. viticella var. venosa: the leaflets are 'all supported on rather long sub-petioles'. No length is given."
+    },
+    "leaf.axisPosture": {
+      "value": "bent downwards at each pair of leaflets, the end leaflet bent down most; the side leaflets angled a little upwards",
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin (1875), of C. viticella var. venosa: the main petiole bends angularly downwards where each pair of leaflets arises and the stalk of the end leaflet is bent down at a right angle, so that the whole leaf is a hook; a leaf that catches nothing 'ultimately grows straight'."
+    },
+    "leaf.stalkShare": {
+      "value": 0.27,
+      "status": "provisional_design_assumption",
+      "basis": "The length of the leaf stalk below the first pair of leaflets, as a share of the whole leaf. No measurement was found; chosen from the look of a pinnate clematis leaf."
+    },
+    "leaf.colour": {
+      "value": "mid-green",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: 'mid-green leaves'. International Clematis Society: the foliage is a fresh green that darkens through the season."
+    },
+    "leaf.autumnColour": {
+      "value": null,
+      "status": "unknown"
+    },
+    "inflorescence.type": {
+      "value": "flowers solitary or up to three together on a branched stalk from a leaf axil",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: flowers solitary on stalks 2 to 4 in. long, 'or several on a branched stalk'. The key of the Manual of the Alien Plants of Belgium, after Flora Europaea: flowers solitary or up to three. Royal Botanic Gardens Victoria: 'terminal or axillary'."
+    },
+    "inflorescence.flowerCount": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "What the model draws at each flowering node: one cyme of three, the end flower and two side flowers. The published range is one to three in an axil, and a node has two axils; the engine allows one flower record to a node. Three is chosen to stand for what a node of a well-grown plant carries; it is not a count."
+    },
+    "inflorescence.stalkLengthM": {
+      "value": [0.051, 0.102],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: flowers on stalks '2 to 4 in. long', in metres. Of the species, whose flowers are less than half as wide as the cultivar's."
+    },
+    "inflorescence.lengthM": {
+      "value": [0.13, 0.19],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The length of a cyme from the leaf axil to the face of its end flower. This is what the growth model's organs.racemeLengthM measures, what RenderFlower.lengthM carries, and what the flower model's authoredSize stands for. No such length is published; it is set so that a flower, drawn half as wide as the cyme is long, is 6.5 to 9.5 cm across (flower.widthM)."
+    },
+    "inflorescence.held": {
+      "value": "semi-nodding, facing outwards",
+      "status": "published_plant_profile",
+      "source": "https://helpmefind.com/gardening/l.php?l=2.50110",
+      "basis": "HelpMeFind record of the cultivar: bloom form single, semi-nodding. Royal Botanic Gardens Victoria, of C. viticella: flowers nodding. Bean, of the cultivar: 'opening flat'."
+    },
+    "flower.widthM": {
+      "value": [0.05, 0.1],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=26",
+      "basis": "Clematis on the Web: flower diameter 5-10 cm. RHS: 'to 10cm across'. Bean: 'about 4 in. wide'. HelpMeFind: about 3.5 in on average."
+    },
+    "flower.tepalCount": {
+      "value": [4, 6],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: 'four to six broad, velvety textured deep purple sepals'. Clematis on the Web: tepals 4-6."
+    },
+    "flower.tepalShape": {
+      "value": "broad, long-pointed, the tip and margin recurved",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=26",
+      "basis": "Clematis on the Web: tepals 'long-pointed, tip and margin recurved'. RHS: 'broad'. International Clematis Society: newly open 'a conspicuously neat circlet', the margins later 'irregularly tucked back'."
+    },
+    "flower.tepalWidthToLength": {
+      "value": [0.6, 0.72],
+      "status": "provisional_design_assumption",
+      "basis": "No tepal measurements were found. 'Broad' (RHS) is drawn as a tepal six to seven tenths as wide as long, the broadest where a flower has four."
+    },
+    "flower.tepalSurface": {
+      "value": "velvety",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: 'velvety textured' sepals."
+    },
+    "flower.colour": {
+      "value": "deep purple",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: 'deep purple'. Clematis on the Web: 'deep purple flowers'. Bean: 'deep purple'. International Clematis Society: 'brownish purple with a yellow eye' when newly open; red streaks or highlights on late flowers."
+    },
+    "flower.reverseColour": {
+      "value": null,
+      "status": "unknown"
+    },
+    "flower.stamenColour": {
+      "value": ["cream", "creamy yellow"],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/92936/clematis-etoile-violette-vt/details",
+      "basis": "RHS plant record: 'a small boss of cream stamens'. Bean: cream-coloured stamens. Clematis on the Web: stamens creamy-yellow. Filaments and anthers are not described apart."
+    },
+    "flower.bossWidthToFlower": {
+      "value": 0.24,
+      "status": "provisional_design_assumption",
+      "basis": "RHS: 'a small boss' of stamens. No measurement was found; drawn a quarter as wide as the flower."
+    },
+    "flower.stamenCount": {
+      "value": null,
+      "status": "unknown"
+    },
+    "flower.budShape": {
+      "value": "ovoid to conical, nodding",
+      "status": "provisional_design_assumption",
+      "basis": "Not described for this cultivar. The International Clematis Society describes the buds of 'Pagoda', another clematis of the Viticella Group, as 'ovoid to conical' and 'typically viticella in shape' (https://internationalclematissociety.org/?p=1019); taken as the same here."
+    },
+    "fruit.type": {
+      "value": "a head of achenes with very small tails that are not feathery",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-viticella/",
+      "basis": "Bean, of C. viticella: 'seed-vessels broad and short' with 'very small tails devoid of the feathery covering'. The Manual of the Alien Plants of Belgium tells the species by its glabrous styles. Of the species; nothing was found on the seed heads of the cultivar."
+    },
+    "fruit.headWidthM": {
+      "value": [0.015, 0.022],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "No measurement was found. A head of 'broad and short' achenes (Bean) is drawn 15 to 22 mm across, tails included."
+    },
+    "fruit.acheneCount": {
+      "value": null,
+      "status": "unknown"
+    },
+    "fruit.colourRipe": {
+      "value": null,
+      "status": "unknown"
+    },
+    "hold.organ": {
+      "value": "the leaf stalk and the stalks of the leaflets",
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin (1875), of C. viticella var. venosa: the main petiole, the sub-petioles and the branches of the lowest sub-petioles are all sensitive and clasp a stick; the under side of the bent end portion is the most sensitive. Bean, of the genus: they 'support themselves by means of the leaf-stalks, which curl round any slender support'."
+    },
+    "hold.afterClasping": {
+      "value": "the stalk thickens and hardens",
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Darwin (1875): a clasped petiole of C. calycina swells in two or three days to nearly twice the thickness of its fellow and becomes tough and rigid; the same happens in the other species 'in a less strongly marked manner'. Of C. vitalba: clasped petioles become stiff, hard and polished and outlast the leaf."
+    },
+    "hold.stalkLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    }
+  }
+}
