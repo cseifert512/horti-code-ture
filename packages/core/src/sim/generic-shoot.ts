@@ -193,4 +193,20 @@ export const GENERIC_SIDE_SHOOT = {
 } satisfies Record<string, Sourced<number | [number, number]>>;
 
 export type SideShootParamKey = keyof typeof GENERIC_SIDE_SHOOT;
+
+/**
+ * The generic leaf: how far a leaf stalk turns its blade away from the support and towards the open sky and the
+ * light, where a taxon's model does not say. Used by every plant, and said once for each plant that uses it.
+ */
+export const GENERIC_LEAF = {
+  /** Share, 0 to 1, by which a leaf's direction is turned from where its node sets it towards the open and the light. */
+  'organs.leafTurnToOpenShare': {
+    value: 0.5,
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. On a climber the leaf stalks turn the blades away from the support and towards the open sky and the light, whichever way the stem runs (the leaf mosaic of ivy on a wall is the familiar case); no measurement of how far was found for any plant here. Half way from the direction the node gives (to its side, a little up and forward) towards the open and the light is a choice: enough that leaves on a level lath and on a post both face out, while each leaf stays on its own side of the stem, so that two ranks stay two ranks and pairs stay pairs.',
+    range: [0, 1],
+  },
+} satisfies Record<string, Sourced<number>>;
+
+export type LeafParamKey = keyof typeof GENERIC_LEAF;
 export const SIDE_SHOOT_PARAM_KEYS = Object.keys(GENERIC_SIDE_SHOOT) as SideShootParamKey[];

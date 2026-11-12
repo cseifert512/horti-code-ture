@@ -45,7 +45,7 @@ import type { AppendageKind, GardenerEventType, MemberTier, OrganHeld } from '..
 import { FEEL_EVERY_M, type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, ROD_SEGMENT_M, SOLVE_EVERY_M, type Rod, Surroundings, directionAt, inclineOf, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
 import { type LightFrom, openSkyLight } from './light-from.ts';
 import { LightField } from './light.ts';
-import { type GrowthModel, type OptionalParamKey, genericShootKeys, genericSideShootKeys, known, listAt, param, shootParam, sideShootParam } from './model.ts';
+import { type GrowthModel, type OptionalParamKey, genericLeafKeys, genericShootKeys, genericSideShootKeys, known, leafParam, listAt, param, shootParam, sideShootParam } from './model.ts';
 import { Rng, placeRng } from './rng.ts';
 import { liePath, pathAt, pathLength, twinePath } from './stem-path.ts';
 import { nextWindow, unrolled, windowFrom, windowTo } from './windows.ts';
@@ -236,6 +236,7 @@ export class Simulation {
     this.noteMissingParts(plant);
     this.noteGenericShoot(plant);
     this.noteGenericSideShoot(plant);
+    this.noteGenericLeaf(plant);
     // the plant arrives as a cane already some way up
     const cane = this.newTrunkStem(plant, 0);
     if (cane) this.advance(plant, cane, param(model, 'architecture.nurseryCaneM'));
@@ -550,12 +551,36 @@ export class Simulation {
     // a deciduous leaf lasts its one season; an evergreen one stays for as many as the model gives it
     const seasons = Math.max(1, Math.round(param(model, 'organs.leafLifespanYears')));
     const form = model.names.leafForm;
-    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
+    this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), side), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
     // where leaves stand in opposite pairs, the second faces the other way
     if (param(model, 'organs.leavesPerNode') >= 2) {
-      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
+      this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(up, 0.6)), scale(t, 0.3))), side), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
     }
     this.atLeafNode(plant, axis, i, t, side);
+  }
+
+  /**
+   * A leaf's stalk turns its blade away from the support and towards the open sky and the light, whichever way the
+   * stem runs. `base` is the direction the node gives the leaf (to its side of the stem, a little up and forward); it
+   * is turned by `organs.leafTurnToOpenShare` of the way towards the open: straight out of the support the stem lies on,
+   * and the way the light comes from (the same answer a shoot in the air is given, `lightFor`), together. Where the
+   * leaves of a stem stand in ranks or pairs, `ranks` is the line across the stem they stand along, and the turn is
+   * made square to it, so that each leaf stays on its own side: two ranks stay two ranks and pairs stay pairs.
+   * Nothing is drawn from a random stream.
+   */
+  private turnLeaf(plant: Plant, axis: Axis, i: number, base: Vec3, ranks: Vec3 | null): Vec3 {
+    const k = leafParam(this.taxon(plant).model, 'organs.leafTurnToOpenShare');
+    if (k <= 0) return base;
+    const away = axis.away[i]!;
+    const at = axis.contact[i]!;
+    let open = add(length(away) > 0.5 ? away : ZERO, this.lightFor(plant, at));
+    if (ranks && length(ranks) > 1e-9) {
+      const r = normalize(ranks);
+      open = addScaled(open, r, -dot(open, r));
+    }
+    if (length(open) < 1e-6) return base;
+    const turned = normalize(add(scale(base, 1 - k), scale(normalize(open), k)));
+    return length(turned) > 0.5 ? turned : base;
   }
 
   private addLeaf(plant: Plant, axis: Axis, i: number, direction: Vec3, lengthM: number, firstYear: number, lastYear: number | null, form?: string): void {
@@ -854,6 +879,14 @@ export class Simulation {
     const generic = genericShootKeys(model);
     if (!generic.length) return;
     this.note('generic_shoot', plant, null, `the shoots of ${profile.names.label} that stand clear of the structure are drawn with the generic shoot of a woody climber, not its own: its growth model gives no value for ${generic.join(', ')}. How far they stand out, where they droop and what they reach are not findings about this plant`);
+  }
+
+  /** Say once, on planting day, that this plant's leaves are turned to the open by the generic leaf's share, for want of its own. */
+  private noteGenericLeaf(plant: Plant): void {
+    const { profile, model } = this.taxon(plant);
+    const generic = genericLeafKeys(model);
+    if (!generic.length) return;
+    this.note('generic_shoot', plant, null, `the leaves of ${profile.names.label} turn away from the support and towards the open and the light as the generic leaf does, not as its own: its growth model gives no value for ${generic.join(', ')}. How far each blade faces out is not a finding about this plant`);
   }
 
   /** Say once, on planting day, which numbers of how its side shoots set out this plant is drawn with for want of its own. */
@@ -1558,9 +1591,9 @@ export class Simulation {
     let side = cross(t, UP);
     side = length(side) > 1e-6 ? scale(normalize(side), axis.leafSide) : v3(axis.leafSide, 0, 0);
     const form = model.names.sideShootLeafForm ?? model.names.leafForm;
-    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...leaf.lengthM), year, lastYear, form);
+    this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(UP, 0.6)), scale(t, 0.3))), side), rng.range(...leaf.lengthM), year, lastYear, form);
     if (leaf.perNode >= 2) {
-      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...leaf.lengthM), year, lastYear, form);
+      this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(UP, 0.6)), scale(t, 0.3))), side), rng.range(...leaf.lengthM), year, lastYear, form);
     }
   }
 
@@ -1644,7 +1677,8 @@ export class Simulation {
     // a spur's leaf has a length of its own where the model gives one; either way it is one draw from the organ stream
     const own = known(model, 'organs.spurLeafLengthM');
     for (let k = 0; k < n; k++) {
-      const dir = normalize(v3(plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(0.45, 1)));
+      // a spur's leaves stand in a tuft at its end, in no ranks: each is turned to the open and the light from where it is drawn
+      const dir = this.turnLeaf(plant, spur, 0, normalize(v3(plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(0.45, 1))), null);
       this.addLeaf(plant, spur, 0, dir, own ? plant.rng.organ.range(...own) : plant.rng.organ.range(...param(model, 'organs.leafLengthM')) * SPUR_LEAF_OF_SHOOT_LEAF, fromYear, null, form);
     }
   }
