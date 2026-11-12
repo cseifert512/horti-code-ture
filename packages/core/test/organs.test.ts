@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { v3 } from '../src/math/vec3.ts';
 import { loadGrowable } from '../src/node/load-taxa.ts';
 import type { RenderData } from '../src/render/contract.ts';
@@ -72,9 +73,9 @@ describe('a growth model may leave the parts a plant may or may not have unknown
     }
   });
 
-  it('still refuses a missing parameter, a bare number, and a number with no stated basis', () => {
+  it('still refuses a missing required parameter, a bare number, and a number with no stated basis', () => {
     const missing = copy();
-    delete missing.params['fruit.setShare'];
+    delete missing.params['organs.leafLengthM'];
     expect(() => parseGrowthModel(missing)).toThrow();
     const bareNumber = copy();
     bareNumber.params['fruit.setShare'] = 0.2;
@@ -294,9 +295,16 @@ describe('fruit: Wisteria sinensis pods on the vault segment', () => {
       }
     });
 
-    it('does not touch the neighbouring plant’s fruit', () => {
+    // Each plant draws from its own random streams, so a cut on one cannot change another's fruit by chance. What does
+    // pass between them is light (sim/light.ts): the spurs cut off one plant carried leaves that shaded its neighbour,
+    // whose flowering answers to light. So the claim is tested with light told not to act.
+    it('does not touch the neighbouring plant’s fruit, light apart', () => {
       const mine = (s: Simulation) => s.fruits.filter((f) => f.plantId === 'wisteria.1').map((f) => [f.axisId, f.swell, f.ripen, f.removedDay]);
-      expect(mine(stripped)).toEqual(mine(sim));
+      const still = (s: Simulation) => run({ ...s.scenario, lightResponse: false }, END);
+      expect(mine(still(stripped))).toEqual(mine(still(sim)));
+      // with light acting the neighbour's fruit follows its flowers, and it never has less light for the cut
+      const light = (s: Simulation) => s.light.of(s.plants.get('wisteria.1')!, 2034).seasonShare;
+      expect(light(stripped)).toBeGreaterThanOrEqual(light(sim));
     });
   });
 
@@ -874,5 +882,26 @@ describe('flowering side shoots: a second kind of growth on an established stem'
     expect(alert.count).toBeLessThanOrEqual(r.plants[0]!.sideShoots);
     expect(designReport(sim).alerts.some((a) => a.kind === 'headroom')).toBe(false);
     expect(formatDesignReport(r)).toContain('flowering side shoots');
+  });
+});
+
+// GROWTH_PARAMS_OPTIONAL: a part the plant may or may not have is described by parameters a model may leave unknown.
+describe('an optional parameter that a model file leaves out', () => {
+  const file = JSON.parse(readFileSync(new URL('../../../species/lonicera-henryi/model.json', import.meta.url), 'utf8')) as { params: Record<string, unknown> };
+
+  it('is read as unknown, so the engine can gain one without every file being edited', () => {
+    const params = { ...file.params };
+    for (const key of GROWTH_PARAMS_OPTIONAL) delete params[key];
+    const model = parseGrowthModel({ ...file, params }, 'a file without the optional parameters');
+    for (const key of GROWTH_PARAMS_OPTIONAL) {
+      expect(model.params[key].status, key).toBe('unknown');
+      expect(model.params[key].value, key).toBeNull();
+    }
+  });
+
+  it('is still refused where the parameter is one every model must have', () => {
+    const params = { ...file.params };
+    delete params['organs.leafLengthM'];
+    expect(() => parseGrowthModel({ ...file, params }, 'a file without a leaf length')).toThrow(/organs\.leafLengthM/);
   });
 });
