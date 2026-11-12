@@ -8,6 +8,7 @@
  */
 import { makeHemisphereBower } from '../bower/hemisphere.ts';
 import { makeVaultBower } from '../bower/vault.ts';
+import type { Site } from '../light/site.ts';
 import { v3 } from '../math/vec3.ts';
 import type { TaxonProfile } from '../taxon.ts';
 import type { GrowthModel } from './model.ts';
@@ -30,7 +31,14 @@ export interface VaultScenarioOptions {
   care?: 'trained' | 'untended';
   /** Which wisteria to plant where a scenario plants wisteria: Chinese by default, or the long-racemed Japanese. */
   wisteria?: 'wisteria-sinensis' | 'wisteria-floribunda-macrobotrys';
+  /** Where the Bower stands. Left out, southern England and an open site are assumed. */
+  site?: Site;
+  /** False: light is reported but changes nothing in the run. */
+  lightResponse?: boolean;
 }
+
+/** The parts of a scenario that say where it stands and whether light acts, from its options. */
+const placed = (o: VaultScenarioOptions): { site?: Site; lightResponse?: boolean } => ({ ...(o.site ? { site: o.site } : {}), ...(o.lightResponse === undefined ? {} : { lightResponse: o.lightResponse }) });
 /** Kept for callers written against the first scenario. */
 export type WisteriaVaultOptions = VaultScenarioOptions;
 
@@ -81,7 +89,7 @@ export function wisteriaOnVault(options: VaultScenarioOptions): Scenario {
   const bower = makeVaultBower();
   const plantings: Planting[] = bower.rootStations.map((s, i) => ({ plantId: `wisteria.${i}`, taxonId: wisteria, stationId: s.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
   const events = care === 'trained' ? plantings.flatMap((p) => wisteriaRoutine(p.plantId, plantingYear, years)) : [];
-  return { name: `${taxa.get(wisteria)!.profile.names.label} on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
+  return { name: `${taxa.get(wisteria)!.profile.names.label} on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS, ...placed(options) };
 }
 
 /**
@@ -115,7 +123,7 @@ export function mixedOnVault(options: VaultScenarioOptions): Scenario {
     { plantId: 'winter-clematis', taxonId: 'clematis-cirrhosa-freckles', stationId: 'station.4', date, tieToTimber },
   ];
   const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('clematis', plantingYear, years)] : [];
-  return { name: `Wisteria, evergreen honeysuckle, summer clematis and winter clematis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS };
+  return { name: `Wisteria, evergreen honeysuckle, summer clematis and winter clematis on the vault segment, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: VAULT_VIEWPOINTS, ...placed(options) };
 }
 
 /** Three places a visitor to the 15 m hemisphere stands. Eye height 1.6 m. */
@@ -137,7 +145,7 @@ export function wisteriaOnHemisphere(options: VaultScenarioOptions): Scenario {
   const bower = makeHemisphereBower({ diameterM: 15 });
   const plantings: Planting[] = bower.rootStations.map((s, i) => ({ plantId: `wisteria.${i}`, taxonId: 'wisteria-sinensis', stationId: s.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
   const events = care === 'trained' ? plantings.flatMap((p) => wisteriaRoutine(p.plantId, plantingYear, years)) : [];
-  return { name: `Wisteria sinensis on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS };
+  return { name: `Wisteria sinensis on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS, ...placed(options) };
 }
 
 /** The six climbers of the attachment trial, in station order, with the mechanism each holds on by. */
@@ -175,7 +183,7 @@ export function plantsOnHemisphere(options: VaultScenarioOptions, plants: readon
   const annual = (taxonId: string) => taxa.get(taxonId)!.profile.ukCultivation === 'annual_replant';
   const plantings: Planting[] = plants.map((p, i) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[i]!.id, date: `${plantingYear}-${annual(p.taxonId) ? '05-20' : '03-12'}`, tieToTimber: care === 'trained' }));
   const events = care === 'trained' ? plants.filter((p) => annual(p.taxonId)).flatMap((p) => annualRoutine(p.plantId, plantingYear, years)) : [];
-  return { name: `${title} on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS };
+  return { name: `${title} on the 15 m hemisphere, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS, ...placed(options) };
 }
 
 /**
@@ -184,9 +192,10 @@ export function plantsOnHemisphere(options: VaultScenarioOptions, plants: readon
  * Meridian 0 faces east, 3 north, 6 west and 9 south.
  *
  * The aspects follow KEY.md section 7 (warmth and shelter for the tender
- * evergreens, shade for the hydrangea, long routes for the wisterias). The
- * model has no light, wind or temperature yet, so aspect changes nothing in a
- * run: the placing is recorded so that it can start to matter when they arrive.
+ * evergreens, shade for the hydrangea, long routes for the wisterias). Light
+ * now answers to the placing (`sim/light.ts`): how much, and for which plants,
+ * is in the light section of the design report. Wind and temperature are not
+ * modelled, so the warmth and shelter the placing is after change nothing yet.
  */
 export const REFERENCE_PALETTE = [
   { meridian: 0, aspect: 'east', plantId: 'rose', taxonId: 'rosa-the-generous-gardener', why: 'human-scale module by the morning side, tied in low' },
@@ -222,5 +231,5 @@ export function referencePalette(options: PaletteOptions): Scenario {
   const plantings: Planting[] = plan.map((p) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[p.meridian]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
   // only the routines the model acts on: the wisterias' two prunes a year and the summer clematis's cut-down
   const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('summer-clematis', plantingYear, years)] : [];
-  return { name: `The reference palette on the 15 m hemisphere${ivy ? ', with ivy' : ''}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS };
+  return { name: `The reference palette on the 15 m hemisphere${ivy ? ', with ivy' : ''}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS, ...placed(options) };
 }
