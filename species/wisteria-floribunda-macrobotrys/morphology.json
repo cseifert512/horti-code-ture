@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "wisteria-floribunda-macrobotrys",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous woody climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record of the accepted name: a large, vigorous, deciduous climber \"with twining stems\"."
+    },
+    "stem.twiningHandedness": {
+      "value": "left_handed",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "As in taxon.json. RHS: Japanese wisterias \"twine clockwise\", no viewpoint stated; Bean: \"its stems twining clockwise\"; Japanese floras, as compiled on ja.wikipedia, give the viewpoint: clockwise seen from above, an S-twist. That is a left-handed helix (vocab.ts HANDEDNESS), the opposite of W. sinensis. One source read says the reverse in words (US Forest Service FEIS, after Miller 2006: Japanese wisteria anticlockwise); it gives no viewpoint and stands alone."
+    },
+    "stem.youngSurface": {
+      "value": "green and downy",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019, PhytoKeys 125), description of the genus: stems round in section, green and downy when young. Japanese floras (ja.wikipedia) add short brown hairs on the young twig that are soon lost."
+    },
+    "stem.matureColour": {
+      "value": ["grey", "reddish brown"],
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: stems grey or reddish brown when mature."
+    },
+    "stem.oldBark": {
+      "value": "grey, smooth, dotted with lenticels; old trunks fluted and muscle-like",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/wisteria-floribunda",
+      "basis": "NC State Extension: bark dark grey with white dots, old trunks fluted and muscle-like. The Seattle Japanese Garden says the same of its plants: smooth and grey, becoming \"fluted and muscle-like\". Japanese floras: greyish brown with many lenticels."
+    },
+    "stem.oldDiameterM": {
+      "value": [0.1, 0.38],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.fs.usda.gov/database/feis/plants/vine/wisspp/all.html",
+      "basis": "The upper figure: US Forest Service FEIS (after Swearingen and others 2002), old plants of W. floribunda and W. sinensis to 15 in. through. The lower: Japanese floras (ja.wikipedia, after Hotta 1989), stems reaching about 10 cm. Not drawn from: the thickness of a stem is the growth model's."
+    },
+    "leaf.arrangement": {
+      "value": "alternate",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/wisteria-floribunda",
+      "basis": "NC State Extension: leaves alternate, compound. The growth model's organs.leavesPerNode says the same: one leaf to a node."
+    },
+    "leaf.division": {
+      "value": "odd-pinnate",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: leaves \"divided into leaflets\". University of Connecticut plant database: odd-pinnately compound, that is with an end leaflet."
+    },
+    "leaf.lengthM": {
+      "value": [0.254, 0.381],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean (Trees and Shrubs Online): \"Leaves 10 to 15 in. long\", the whole compound leaf, in metres. The growth model's organs.leafLengthM is the same figure."
+    },
+    "leaf.leafletCount": {
+      "value": [11, 17],
+      "status": "published_plant_profile",
+      "source": "https://hortflora.rbg.vic.gov.au/taxon/f659be88-5340-11e7-b82b-005056b0018f",
+      "basis": "Royal Botanic Gardens Victoria (HortFlora), of this cultivar: leaflets 11 to 17. Of the species Bean gives \"usually eleven to nineteen\", and the University of Connecticut 13 to 19."
+    },
+    "leaf.leafletShape": {
+      "value": ["ovate", "elliptic-lanceolate"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean: leaflets \"of ovate shape\". Kwantlen Polytechnic University plant database: mostly lanceolate-elliptic. Japanese floras: ovate-oblong to narrowly ovate."
+    },
+    "leaf.leafletLengthM": {
+      "value": [0.04, 0.1],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%B8_(%E6%A4%8D%E7%89%A9)",
+      "basis": "Japanese floras as compiled on ja.wikipedia (after Shinohara 2008): leaflets 4 to 10 cm long. The compilation was read, not the floras. Bean gives less, 1 1/2 to 2 1/2 in. (38 to 64 mm); Kwantlen 6 to 8 cm."
+    },
+    "leaf.leafletWidthM": {
+      "value": [0.02, 0.025],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%B8_(%E6%A4%8D%E7%89%A9)",
+      "basis": "Japanese floras as compiled on ja.wikipedia (after Tsujii 1995): leaflets about 2 to 2.5 cm wide. From the same compilation as the length, so that the two give a proportion: about three times as long as wide."
+    },
+    "leaf.leafletTip": {
+      "value": "acuminate",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: leaflet tip acute, acuminate or drawn out into a short tail. Japanese floras: the tip drawn out."
+    },
+    "leaf.leafletBase": {
+      "value": "rounded",
+      "status": "published_plant_profile",
+      "source": "https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%B8_(%E6%A4%8D%E7%89%A9)",
+      "basis": "Japanese floras as compiled on ja.wikipedia: the base of the leaflet nearly round. Compton and others (2019), of the genus: base obtuse or cuneate."
+    },
+    "leaf.leafletMargin": {
+      "value": "entire, wavy",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.kpu.ca/PlantPrint/wifl",
+      "basis": "Kwantlen Polytechnic University plant database: margin entire, the edges undulate. Compton and others (2019), of the genus: entire or gently wavy."
+    },
+    "leaf.surface": {
+      "value": "glossy above, downy when young and soon smooth",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean: leaflets \"downy when young\", soon nearly or quite smooth, and \"a glossy dark green\"."
+    },
+    "leaf.colour": {
+      "value": "dark green",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: \"dark green leaves\". Bean has them glossy and dark green."
+    },
+    "leaf.youngColour": {
+      "value": "pale bronze",
+      "status": "published_plant_profile",
+      "source": "https://hortflora.rbg.vic.gov.au/taxon/f659be88-5340-11e7-b82b-005056b0018f",
+      "basis": "Royal Botanic Gardens Victoria (HortFlora), of this cultivar: leaflets \"pale bronze when young\"."
+    },
+    "leaf.autumnColour": {
+      "value": "yellow",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: leaves \"that turn yellow in autumn\"."
+    },
+    "inflorescence.type": {
+      "value": "raceme",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: \"drooping racemes to 1m or more in length\"."
+    },
+    "inflorescence.held": {
+      "value": "drooping",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: \"drooping racemes\". The growth model's names section records the same thing as flowerHeld: hanging."
+    },
+    "inflorescence.position": {
+      "value": "at the end of short leafy shoots",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean: \"Racemes borne on short leafy shoots\". In the growth model these are the spurs, each with its few leaves and a raceme at its end."
+    },
+    "inflorescence.lengthM": {
+      "value": [0.5, 1],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://hortflora.rbg.vic.gov.au/taxon/f659be88-5340-11e7-b82b-005056b0018f",
+      "basis": "Royal Botanic Gardens Victoria (HortFlora), of this cultivar: flower clusters 0.5 to 1 m long, \"occasionally more\", the length varying with season and place. RHS record: to 1 m or more; RHS growing guide, of f. multijuga: up to 1.2 m. The growth model's organs.racemeLengthM (0.6 to 1.1 m) is chosen among these and says how."
+    },
+    "inflorescence.lengthSpeciesM": {
+      "value": [0.18, 1.2],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), key to the species of Wisteria: W. floribunda, inflorescence 18 to 120 cm long, against 12 to 20 cm in W. sinensis. Bean gives the wild plant 5 to 10 in."
+    },
+    "inflorescence.lengthMeasure": {
+      "value": "the whole raceme, from where it leaves the shoot to its tip",
+      "status": "provisional_design_assumption",
+      "basis": "What organs.racemeLengthM in the growth model, and so RenderFlower.lengthM, measures for this taxon: the length of the raceme, as the floras give it. The viewer's raceme is authored to that measure, at the middle of the growth model's range."
+    },
+    "inflorescence.widthM": {
+      "value": [0.07, 0.1],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.fs.usda.gov/database/feis/plants/vine/wisspp/all.html",
+      "basis": "US Forest Service FEIS, of W. floribunda and W. sinensis together and without a citation of its own: racemes 3 to 4 in. (7 to 10 cm) wide. Not drawn from directly: the width of the drawn raceme follows from the flower stalk and the flower."
+    },
+    "inflorescence.flowerCountSpecies": {
+      "value": 100,
+      "status": "published_plant_profile",
+      "source": "https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%B8_(%E6%A4%8D%E7%89%A9)",
+      "basis": "Japanese floras as compiled on ja.wikipedia (after Hirano 1997): one raceme of the species can carry over 100 flowers. Entered as that floor; the compilation was read, not the book."
+    },
+    "inflorescence.flowerCount": {
+      "value": 150,
+      "status": "provisional_design_assumption",
+      "basis": "No count of the flowers on a raceme of this cultivar was found. Chosen from what is recorded round it: the species carries over 100 on racemes mostly of 20 to 50 cm, a flower to 5 mm of stalk or less; this cultivar's flowers are \"widely spaced along the stem\" (Royal Botanic Gardens Victoria). 150 on a raceme of 0.85 m is one flower to rather under 6 mm, a little wider apart than the species. A count on a real raceme would settle it."
+    },
+    "inflorescence.flowerSpacing": {
+      "value": "widely spaced along the stem",
+      "status": "published_plant_profile",
+      "source": "https://hortflora.rbg.vic.gov.au/taxon/f659be88-5340-11e7-b82b-005056b0018f",
+      "basis": "Royal Botanic Gardens Victoria (HortFlora), of this cultivar: the individual flowers \"widely spaced along the stem\"."
+    },
+    "inflorescence.openingOrder": {
+      "value": "successively from the base to the tip",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean: \"the flowers opening successively from the base\". The base is the top of a hanging raceme, so a raceme in mid-flower is open above and in bud below. Ohio State University: over several days, where W. sinensis opens almost all at once."
+    },
+    "flower.shape": {
+      "value": "pea-flower shaped",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: \"fragrant, pea-like\" flowers. A standard, two wings and a keel of two joined petals."
+    },
+    "flower.colour": {
+      "value": ["lilac", "blue-purple"],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: \"lilac-tinged blue-purple flowers\"."
+    },
+    "flower.standardColour": {
+      "value": "pale violet, with a yellow mark at its base",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean, of 'Multijuga': standard pale violet with a yellow mark at the base. Royal Botanic Gardens Victoria, of 'Macrobotrys': pale violet with a yellow blotch. Chris Lane (The Garden, May 2019), of 'Kyushaku': white flushed mauve, with a small yellow eye."
+    },
+    "flower.wingAndKeelColour": {
+      "value": "violet-blue, darker than the standard",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean, of 'Multijuga': wings and keel violet-blue. Royal Botanic Gardens Victoria: wings and keel a darker tone than the standard. Chris Lane, of 'Kyushaku': mauvish violet."
+    },
+    "flower.standardWidthM": {
+      "value": [0.008, 0.019],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "The sources differ, and the span of the three is entered. Bean: \"standard petal 3/4 in. wide\" (19 mm), the widest. Compton and others (2019, key to the species): standard broadly ovate, 8 to 16 by 8 to 12 mm, against 20 to 30 mm each way in W. sinensis. Japanese floras (ja.wikipedia): nearly round, 10 to 13 mm across. The drawing takes the middle of the span, which makes the standard a little wider than long."
+    },
+    "flower.standardLengthM": {
+      "value": [0.008, 0.016],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), key to the species: standard 8 to 16 mm long. It is bent back near its base, so that it stands up from the flower."
+    },
+    "flower.wingLengthM": {
+      "value": [0.015, 0.02],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%B8_(%E6%A4%8D%E7%89%A9)",
+      "basis": "Japanese floras as compiled on ja.wikipedia (after Omiya 1997): wings and keel each about 15 to 20 mm long. Compton and others (2019), of the genus: wings 12 to 20 by 5 to 8 mm, keel 11 to 18 by 4 to 8 mm."
+    },
+    "flower.wingWidthM": {
+      "value": [0.005, 0.008],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: wing petals 12 to 20 by 5 to 8 mm, as long as the keel or a little longer."
+    },
+    "flower.keelLengthM": {
+      "value": [0.011, 0.018],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: keel petals 11 to 18 by 4 to 8 mm, joined into a blunt cup."
+    },
+    "flower.calyxWidthM": {
+      "value": [0.004, 0.006],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: calyx 4 to 10 by 4 to 6 mm."
+    },
+    "flower.stalkLengthM": {
+      "value": [0.013, 0.025],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean: each flower \"on a slightly downy stalk 1/2 to 1 in. long\", in metres. Japanese floras: 15 to 25 mm."
+    },
+    "flower.calyxLengthM": {
+      "value": [0.004, 0.01],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: calyx 4 to 10 by 4 to 6 mm, bell-shaped or tubular, five-toothed. Bean, of this species: \"calyx 1/3 in. long, bell-shaped, with triangular teeth\"."
+    },
+    "flower.stamenCount": {
+      "value": 10,
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: nine stamens joined and the tenth free. They lie inside the keel and are not drawn."
+    },
+    "flower.scent": {
+      "value": "fragrant",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details",
+      "basis": "RHS record: \"fragrant, pea-like\" flowers."
+    },
+    "flower.opensRelativeToLeaves": {
+      "value": "with the leaves",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "RHS growing guide: Japanese wisteria \"bears flowers and leaves at the same time\", where W. sinensis flowers before its leaves."
+    },
+    "fruit.type": {
+      "value": "pod",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details",
+      "basis": "RHS record: flowers \"often followed by bean-like velvety, blue-grey seed pods\"."
+    },
+    "fruit.lengthM": {
+      "value": [0.11, 0.2],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://hortflora.rbg.vic.gov.au/taxon/f659be88-5340-11e7-b82b-005056b0018f",
+      "basis": "Royal Botanic Gardens Victoria (HortFlora), of this cultivar: pods 11 to 20 cm long. The growth model's fruit.lengthM is the same figure. Bean gives the species 3 to 6 in."
+    },
+    "fruit.widthM": {
+      "value": [0.012, 0.03],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: pods 10 to 24 by 1.2 to 3 cm. Japanese floras, of this species: 2 to 2.5 cm wide, widest above the middle."
+    },
+    "fruit.shape": {
+      "value": "flattened, widest towards the end, a little narrowed between the seeds",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: pods flattened and slightly narrowed between the seeds. Japanese floras, of this species: narrowly obovate and flat."
+    },
+    "fruit.surface": {
+      "value": "velvety",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean: \"Pods 3 to 6 in. long, velvety\". Compton and others (2019): densely velvety."
+    },
+    "fruit.colourUnripe": {
+      "value": "blue-grey",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/99665/wisteria-floribunda-macrobotrys/details",
+      "basis": "RHS record: \"velvety, blue-grey seed pods\". Kwantlen Polytechnic University: green, maturing to brown."
+    },
+    "fruit.colourRipe": {
+      "value": "brown",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.uconn.edu/detail.php?pid=548",
+      "basis": "University of Connecticut plant database: brown pods, turning brown in October and staying on the plant. NC State Extension: brown to copper."
+    },
+    "fruit.seedCount": {
+      "value": [3, 6],
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.3897/phytokeys.125.34877",
+      "basis": "Compton and others (2019), of the genus: seeds usually 3 to 6 (1 to 8), lens-shaped, 8 to 12 mm across."
+    },
+    "fruit.held": {
+      "value": "pendant",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "RHS growing guide: established wisterias can form \"pendant, bean-like seedpods\"."
+    },
+    "fruit.podsPerRaceme": {
+      "value": null,
+      "status": "unknown"
+    }
+  }
+}
