@@ -691,8 +691,8 @@ describe('a specimen grown by the engine, cut down each February', () => {
       expect(f.lengthM).toBeGreaterThanOrEqual(short - 1e-6);
       expect(f.lengthM).toBeLessThanOrEqual(long + 1e-6);
       expect(Math.hypot(...f.direction!)).toBeCloseTo(1, 3);
-      // out, and never hanging
-      expect(f.direction![2]).toBeGreaterThan(0.2);
+      // out, and never hanging: level at the lowest, on the side of a cable
+      expect(f.direction![2]).toBeGreaterThan(0);
       expect(f.form).toBeUndefined();
     }
     for (const f of data.fruits) expect(Math.hypot(...f.direction!)).toBeCloseTo(1, 3);

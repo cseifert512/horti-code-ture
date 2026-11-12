@@ -60,7 +60,25 @@ describe('a Bower read from a description of what is built', () => {
       const host = e.host.type === 'member' ? arbour.bower.members.find((m) => m.id === e.host.id)!.curve : arbour.bower.supports.find((s) => s.id === e.host.id)!.curve;
       for (const p of e.curve.points) expect(off(host, p), e.id).toBeLessThan(0.12);
       expect(e.kind).toBe(e.host.type === 'member' ? 'timber' : 'cable');
-      expect(e.axis).toBe(e.curve);
+      // what a stem twines or lies on is the element itself, to the millimetre: the route only slants in to its joints
+      for (const p of e.axis.points) expect(off(host, p), e.id).toBeLessThan(1e-6);
+      expect(e.curve.length, e.id).toBeGreaterThanOrEqual(e.axis.length - 1e-9);
+    }
+  });
+
+  // A cable fixed to the face of a post is half the post's width from the post's centre line, where the joint is.
+  // The route along it must not run from joint to joint in a straight line beside the cable as drawn.
+  it('runs the route along a cable on the cable, away from its ends', () => {
+    for (const e of arbour.bower.graph.edges.values()) {
+      if (e.kind !== 'cable') continue;
+      const host = arbour.bower.supports.find((s) => s.id === e.host.id)!.curve;
+      const n = 40;
+      for (let i = 0; i <= n; i++) {
+        const d = (i / n) * e.curve.length;
+        // within a quarter of its length of either end the route may be slanting in to a joint
+        if (d < e.curve.length * 0.27 || d > e.curve.length * 0.73) continue;
+        expect(off(host, e.curve.pointAt(d)), `${e.id} at ${d.toFixed(2)} m`).toBeLessThan(1e-6);
+      }
     }
   });
 
