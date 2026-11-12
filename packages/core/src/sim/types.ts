@@ -11,6 +11,8 @@ import type { Site } from '../light/site.ts';
 import type { Vec3 } from '../math/vec3.ts';
 import type { TaxonProfile } from '../taxon.ts';
 import type { AppendageKind, AttachmentStatus, BudEnd, BudStage, GardenerEventType } from '../vocab.ts';
+import type { FreeShoot } from './free-shoot.ts';
+import type { LightFrom } from './light-from.ts';
 import type { GrowthModel } from './model.ts';
 import type { Rng } from './rng.ts';
 import type { StemPath } from './stem-path.ts';
@@ -45,7 +47,8 @@ export interface Run {
 export type Tip =
   | { state: 'at_node'; nodeId: string; came: string | null }
   | { state: 'on_route'; edgeId: string; toNode: string; path: StemPath; d: number; emitted: number; run: number }
-  | { state: 'free'; dir: Vec3; grownM: number; planM: number }
+  /** `rod` is the shoot as its mechanics see it, kept from its first free length on (`free-shoot.ts`). */
+  | { state: 'free'; dir: Vec3; grownM: number; planM: number; rod?: FreeShoot }
   /** `retry` is set where the shoot stopped for want of a hold: a gardener who starts tying in can set it going again. */
   | { state: 'stopped'; reason: string; retry?: { nodeId: string; came: string | null } };
 
@@ -325,6 +328,11 @@ export interface Scenario {
   /** ISO date of day 0. */
   start: string;
   seed: number;
+  /**
+   * Which way the light comes from, for the shoots that turn towards it. Left out, the light model is asked, and
+   * where it cannot say, the open sky of the site is taken (`light-from.ts`).
+   */
+  lightFrom?: LightFrom;
   bower: Bower;
   taxa: ReadonlyMap<string, { profile: TaxonProfile; model: GrowthModel }>;
   plantings: readonly Planting[];

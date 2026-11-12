@@ -439,29 +439,32 @@ export class Surroundings {
     return worst;
   }
 
-  /** Distance from a point to the surface of a stretch of route (less than zero inside it), and the nearest point of its centre line. */
-  static toEdge(p: Vec3, edge: SupportEdge): { gap: number; at: Vec3 } {
+  /**
+   * Distance from a point to the surface of a stretch of route (less than
+   * zero inside it), and the direction the route runs in, from its `from`
+   * end to its `to` end, where it is nearest.
+   */
+  static toEdge(p: Vec3, edge: SupportEdge): { gap: number; along: Vec3 } {
     const pts = edge.axis.points;
     let best = Infinity;
-    let at = pts[0]!;
+    let along = UP;
     for (let i = 0; i + 1 < pts.length; i++) {
-      const q = nearestOnSegment(p, pts[i]!, pts[i + 1]!);
-      const d = length(sub(p, q));
+      const d = length(sub(p, nearestOnSegment(p, pts[i]!, pts[i + 1]!)));
       if (d < best) {
         best = d;
-        at = q;
+        along = normalize(sub(pts[i + 1]!, pts[i]!));
       }
     }
-    return { gap: best - clearRadiusM(edge.section), at };
+    return { gap: best - clearRadiusM(edge.section), along };
   }
 
   /** The stretches of route whose surface is within `reach` of a point, nearest first. */
-  routesNear(p: Vec3, reach: number): { edge: SupportEdge; gap: number; at: Vec3 }[] {
-    const seen = new Map<string, { edge: SupportEdge; gap: number; at: Vec3 }>();
+  routesNear(p: Vec3, reach: number): { edge: SupportEdge; gap: number; along: Vec3 }[] {
+    const seen = new Map<string, { edge: SupportEdge; gap: number; along: Vec3 }>();
     for (const piece of this.near(p, p, reach + 0.15)) {
       if (!piece.edge || seen.has(piece.edge.id)) continue;
-      const { gap, at } = Surroundings.toEdge(p, piece.edge);
-      if (gap <= reach) seen.set(piece.edge.id, { edge: piece.edge, gap, at });
+      const { gap, along } = Surroundings.toEdge(p, piece.edge);
+      if (gap <= reach) seen.set(piece.edge.id, { edge: piece.edge, gap, along });
     }
     return [...seen.values()].sort((x, y) => x.gap - y.gap || (x.edge.id < y.edge.id ? -1 : 1));
   }
