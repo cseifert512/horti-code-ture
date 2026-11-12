@@ -17,6 +17,23 @@
 
 **Evidence discipline:** height classes and mature size times are qualitative UK horticultural descriptors, **not** yearly extension, support-path reach or physical force values. This file makes no claim to cultivar-calibrated numerical growth rates.
 
+## Light, aspect and shelter
+
+What the sources say, clause by clause. The light model reads only the sentence in `taxon.json` (`site.aspect`), which is unchanged; this section is the evidence behind it and what it leaves out.
+
+| Question | What is recorded | Source |
+|---|---|---|
+| Classes of light it accepts | **Full sun and partial shade.** Full shade is not listed. | RHS plant record: "Full sun, Partial shade". RHS growing guide: "a warm, sunny or lightly shaded spot". BBC Gardeners' World: "grows best in full sun but copes with partial shade". Useful Temperate Plants (after Huxley): "requires full sun or part day shade". |
+| Aspect | South, west or east facing; south or west "ideal". North is not listed. | RHS plant record: "South-facing or West-facing or East-facing". RHS growing guide: "A south- or west-facing wall or fence is ideal". |
+| What the aspect is asked for | **Warmth and shelter, not light.** The same sources that ask for a south or west wall accept partial shade; what they rule out is cold: "Avoid frost-prone or cold, exposed sites"; "shelter from cold, drying winds"; hardiness H4. An east wall is accepted by the RHS record although it is the coldest of the three in winter, and a plant in Belgrade kept on a north-east facing screen between tall buildings came through -15.5 degC (Ocokoljic et al. 2026), sheltered from the two prevailing cold winds. | RHS plant record and growing guide; Ocokoljic et al. 2026. |
+| Exposure | **Sheltered.** | RHS plant record: exposure "Sheltered"; "sheltered from cold winds". |
+| What shade does to growth | Not stated outright by any source read. In the wild it grows on "sunny edges of forests, brushwoods" (Flora of China), so it is a plant of the lit edge and not of the forest floor. Slow growth is given as a sign of cold or low light by growers' guides only. | Flora of China 16: 167. |
+| What shade does to flowering | Fewer flowers. "Best flowering occurs in a sheltered, sunny spot" (NC State Extension); it "grows best in full sun" (Gardeners' World). One uncited statement has it flowering "in full sun, partial shade, or total shade" (Wikipedia), and Useful Temperate Plants shows a photograph of it "climbing and flowering well in a shady" place; nobody gives a number. So: flowering falls with shade and does not stop in partial shade. | NC State Extension; BBC Gardeners' World; Useful Temperate Plants. |
+| Too much sun | Outdoors in Britain, none recorded: full sun is the first choice. Under glass, "keep it out of direct summer sun to avoid scorching the leaves" (RHS guide). In hot, dry places against a wall it draws scale insects and red spider mite (RHS guide). | RHS growing guide. |
+| Too much exposure | Cold, drying wind is the limit. "In cold snaps, leaves may turn red, develop spots, or fall. The plant should recover except in the severest winters" (RHS guide). Young plants are more tender than established ones (Bean; RHS guide: "established after two or three years and are hardier"). The winter reddening the RHS record describes as ornamental ("often turn deep bronze-red in winter") is the mild end of the same response. | RHS growing guide; Bean. |
+
+**For the light model:** accept full sun and partial shade; hold growth back below partial shade; tie flowering to sun (a clause the present sentence in `taxon.json` does not carry, so the model does not yet apply it to this plant). **Not light, and not modelled:** the south or west aspect and the shelter are about winter cold and wind. A bright but wind-swept crown fails this plant's requirement while passing the light test.
+
 ## Species-specific biological logic
 
 Evergreen leaf cohorts and woody extension with sensitivity to cold-wind exposure; separate survival from seasonal ornamental leaf appearance.

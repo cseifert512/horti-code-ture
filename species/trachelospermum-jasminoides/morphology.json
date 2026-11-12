@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "trachelospermum-jasminoides",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "evergreen woody climber with twining stems",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "basis": "RHS plant record: 'Vigorous, evergreen, woody climber about 9m in height, with twining stems'. Bean calls it an evergreen twiner. Flora of China: 'Lianas woody, to 10 m.'"
+    },
+    "stem.twiningHandedness": {
+      "value": null,
+      "status": "unknown"
+    },
+    "stem.youngSurface": {
+      "value": "pubescent, becoming glabrous",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China, volume 16 (efloras.org taxon 200018474, read from the copy at this address because efloras.org refused the request): 'young branchlets pubescent, glabrous when older'. NC State Extension: 'Stems and shoots pubescent when young, becoming glabrous'. Not drawn: the hairs are too fine to see."
+    },
+    "stem.colour": {
+      "value": "brownish, with lenticels",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: 'Stem brownish, lenticellate'. The Chinese flora (Flora Reipublicae Popularis Sinicae 63, as reproduced at maigoo.com/citiao/119613.html) has the stems red-brown and cylindrical, with lenticels."
+    },
+    "stem.youngColour": {
+      "value": [
+        "light green",
+        "bronze"
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Seen in photographs (Wikimedia Commons, Starr 090416-5994 and 'Trachelospermum jasminoides RHu 01'): the shoots of the year are pale yellowish green, some flushed bronze, and turn olive and then red-brown as they ripen. No flora read gives the colour of a young shoot."
+    },
+    "stem.youngDiameterM": {
+      "value": [
+        0.002,
+        0.003
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Read off photographs against leaves of known length: a young twining shoot is about a twentieth to a thirtieth of a leaf thick. Not measured; no flora gives it. The growth model's thickening.tipRadiusSquaredMm2 is the middle of this."
+    },
+    "stem.latex": {
+      "value": "white",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: 'latex milky'; bruised twigs and leaf stalks bleed it. Not drawn."
+    },
+    "stem.clingingRootlets": {
+      "value": "reported where a stem lies against a damp, rough surface",
+      "status": "provisional_design_assumption",
+      "basis": "Said without a citation by Wikipedia (stems that meet a damp surface put out aerial roots), by BBC Gardeners' World (which calls the plant self-clinging) and by Useful Temperate Plants at second hand ('Plants are self-clinging on walls according to other reports'); the Chinese name means a net on rock. Neither Flora of China, nor Bean, nor the RHS mentions them, and the RHS asks for wires or trellis. Recorded as a report, not drawn: see the species profile."
+    },
+    "leaf.arrangement": {
+      "value": "opposite",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension plant record: 'Opposite, simple, elliptic to oval-lanceolate, subacuminate, broadly cuneate to rotund, entire, glabrous'."
+    },
+    "leaf.shape": {
+      "value": [
+        "narrowly elliptic",
+        "elliptic",
+        "ovate"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China has the blade ovate to obovate or narrowly elliptic; NC State Extension, 'elliptic to oval-lanceolate'; the RHS, 'oval leaves'. The three outlines drawn; the obovate leaf of the Flora is not."
+    },
+    "leaf.margin": {
+      "value": "entire",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: leaf margin 'Entire'."
+    },
+    "leaf.lengthM": {
+      "value": [
+        0.042,
+        0.088
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://pakbs.org/pjbot/papers/1772748232.pdf",
+      "basis": "Ocokoljic et al. 2026, Pak. J. Bot. 58(7), doi 10.30848/PJB2026-7(6): 300 full-grown leaves of a ten-year-old plant on a pergola in Belgrade, 4.20 to 8.80 cm long. The same species grown outdoors in a harsher climate than Britain's. The growth model's organs.leafLengthM is the same figure. Flora of China gives the blade as 2 to 10 cm; the RHS record says 'oval leaves to 10cm in length'."
+    },
+    "leaf.widthM": {
+      "value": [
+        0.016,
+        0.034
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://pakbs.org/pjbot/papers/1772748232.pdf",
+      "basis": "The same 300 leaves: 1.60 to 3.40 cm wide, width rising with length. Flora of China gives 1 to 4.5 cm; Bean 1/2 to 1 in."
+    },
+    "leaf.stalkLengthM": {
+      "value": [
+        0.003,
+        0.012
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: petiole 3 to 12 mm. Bean has the stalk about 1/8 in. long; NC State Extension, 'petiole very short, pubescent'."
+    },
+    "leaf.lateralVeinPairs": {
+      "value": [
+        6,
+        12
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.maigoo.com/citiao/119613.html",
+      "basis": "The Chinese flora (Flora Reipublicae Popularis Sinicae 63, the text reproduced at this address): 6 to 12 lateral veins on each side of the midrib, flat or a little raised; the midrib sunk above and raised beneath."
+    },
+    "leaf.texture": {
+      "value": "leathery",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: leaf feel 'Leathery' and 'Smooth'. The Chinese flora has it leathery or nearly so. Flora of China's English text says papery; cultivated plants are plainly leathery."
+    },
+    "leaf.colourAbove": {
+      "value": "glossy dark green",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "basis": "RHS plant record: 'glossy dark green, oval leaves'. NC State Extension: 'becoming lustrous dark green'."
+    },
+    "leaf.colourBeneath": {
+      "value": "paler green",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: 'lustrous dark green, paler green below'. The drawing has one colour for both faces."
+    },
+    "leaf.colourYoung": {
+      "value": [
+        "light green",
+        "bronze-purplish"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: 'juvenile leaves bronze-purplish'. Clemson Extension has the new leaves a glossy light green. Both are seen: pale green in warmth, bronzed in cool weather. Drawn pale green while a leaf unfolds."
+    },
+    "leaf.colourWinter": {
+      "value": "deep bronze-red",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "basis": "RHS plant record: leaves 'often turning deep bronze-red in winter'. RHS growing guide: 'These may turn bronze or red in winter.' Many leaves, not all: in a photograph of a plant in winter (Wikimedia Commons, 'Trachelospermum jasminoides en hiver') the reddened leaves are on the thin outer shoots and most of the rest are green. Not drawn: the render data gives an evergreen leaf no change of colour."
+    },
+    "inflorescence.type": {
+      "value": "cyme",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: 'Cymes paniculate, terminal and axillary'. The Chinese flora: a twice-forking (dichasial) cyme."
+    },
+    "inflorescence.position": {
+      "value": [
+        "terminal",
+        "axillary"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: 'terminal and axillary'. Bean adds 'usually on short lateral twigs'."
+    },
+    "inflorescence.stalkLengthM": {
+      "value": [
+        0.02,
+        0.06
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: peduncle 2 to 6 cm."
+    },
+    "inflorescence.flowerCount": {
+      "value": [
+        2,
+        9
+      ],
+      "status": "peer_reviewed",
+      "source": "https://pakbs.org/pjbot/papers/1772748232.pdf",
+      "basis": "Ocokoljic et al. 2026: 'The number of flowers in the inflorescences ranged from 2 to 9', counted on fresh material of the Belgrade plant in three years."
+    },
+    "inflorescence.widthM": {
+      "value": [
+        0.04,
+        0.08
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The width of the cluster of flowers at the end of the cyme's stalk: what the growth model's organs.racemeLengthM measures and what the flower model is authored to. Two to nine flowers each 1.7 to 2.3 cm across, standing loosely on forks 1 to 2 cm long, make a cluster two to four flowers wide. No source measures the cluster itself."
+    },
+    "flower.lobeCount": {
+      "value": 5,
+      "status": "peer_reviewed",
+      "source": "https://pakbs.org/pjbot/papers/1772748232.pdf",
+      "basis": "Ocokoljic et al. 2026: every flower examined had a corolla of 5 lobes, 5 stamens and one pistil. NC State Extension: 'lobes 5'."
+    },
+    "flower.diameterM": {
+      "value": [
+        0.017,
+        0.023
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://pakbs.org/pjbot/papers/1772748232.pdf",
+      "basis": "Ocokoljic et al. 2026: the spread limb of 300 flowers was 1.70 to 2.30 cm across. RHS: 'white flowers 2.5cm in width'. Bean has it scarcely an inch across."
+    },
+    "flower.tubeLengthM": {
+      "value": [
+        0.005,
+        0.01
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: 'Corolla white, tube dilated at middle, 5-10 mm'. Bean has the tube about a quarter of an inch long."
+    },
+    "flower.lobeLengthM": {
+      "value": [
+        0.005,
+        0.01
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: lobes obovate, as long as the tube. The Chinese flora gives 5 to 10 mm outright."
+    },
+    "flower.lobeShape": {
+      "value": "obovate, oblique at the tip",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: lobes obovate. That the tip is cut off at a slant and a little crisped, and that one edge is rolled under, is from photographs (Wikimedia Commons, 'Trachelospermum jasminoides flowers')."
+    },
+    "flower.lobeTurn": {
+      "value": "counterclockwise",
+      "status": "peer_reviewed",
+      "source": "https://pakbs.org/pjbot/papers/1772748232.pdf",
+      "basis": "Ocokoljic et al. 2026, with Gilman and Middleton: the corolla 'ends with 5 obliquely positioned, curved lobes that resemble a spiral turning counterclockwise'. NC State Extension: lobes 'spreading, slightly twisted, overlapping to the right'. Drawn so: seen from the front, each lobe swings anticlockwise as it goes out and its longer corner is on its anticlockwise side."
+    },
+    "flower.sepalLengthM": {
+      "value": [
+        0.002,
+        0.005
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: sepals narrowly oblong, 2 to 5 mm, spreading or reflexed. Bean has the calyx lobes turned back at the tips."
+    },
+    "flower.colour": {
+      "value": "white",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "basis": "RHS plant record: 'very fragrant, white flowers'. Flora of China: 'Corolla white'. Bean has the corolla pure white."
+    },
+    "flower.colourAged": {
+      "value": "creamy white",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: 'Creamy-white with slight yellowish-tinge'. Flowers open pure white and cream with age; the drawing cannot age a flower, and shows them white."
+    },
+    "flower.throatColour": {
+      "value": "greenish yellow",
+      "status": "provisional_design_assumption",
+      "basis": "Seen in every photograph of an open flower looked at: a small yellow-green eye where the lobes meet, the stamens out of sight within the tube (Flora of China has them included). No flora read names the colour of the throat."
+    },
+    "flower.scent": {
+      "value": "very fragrant",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/18287/trachelospermum-jasminoides/details",
+      "basis": "RHS plant record: 'very fragrant, white flowers'. Not drawn."
+    },
+    "fruit.type": {
+      "value": "a pair of follicles",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: 'Fruit a pair of elongated follicles.' Flora of China has the follicles linear; the Chinese flora, paired and diverging."
+    },
+    "fruit.lengthM": {
+      "value": [
+        0.1,
+        0.25
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China, volume 16 (efloras.org taxon 200018474, read from the copy at this address because efloras.org refused the request): follicles linear, 10 to 25 cm long and 3 to 10 mm wide. The growth model's fruit.lengthM is the same figure."
+    },
+    "fruit.widthM": {
+      "value": [
+        0.003,
+        0.01
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: follicles 3 to 10 mm wide."
+    },
+    "fruit.held": {
+      "value": "hanging",
+      "status": "provisional_design_assumption",
+      "basis": "Seen in photographs of fruiting plants (Wikimedia Commons, 'Fruit du faux jasmin' and 'Fruits du faux jasmin'): the two follicles hang from one stalk, side by side or a little apart, some bowed so that their tips meet. Not stated in a flora."
+    },
+    "fruit.colourUnripe": {
+      "value": "light green",
+      "status": "provisional_design_assumption",
+      "basis": "Seen in the same photographs: smooth, pale yellowish green while full grown and unripe. Not stated in a flora."
+    },
+    "fruit.colourRipe": {
+      "value": "black",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: fruit colour 'Black'. Drawn as a very dark brown."
+    },
+    "seed.lengthM": {
+      "value": [
+        0.015,
+        0.02
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: seeds oblong, 1.5 to 2 cm. Not drawn: the model has no state for a follicle that has split."
+    },
+    "seed.comaLengthM": {
+      "value": [
+        0.015,
+        0.04
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China: coma 1.5 to 4 cm, a tuft of silky hairs on each seed. Not drawn."
+    }
+  }
+}

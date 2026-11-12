@@ -36,7 +36,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Not acted on: the engine gives an evergreen leaf no change of colour. Recorded as the weeks in which the leaves take their winter bronze and red with the first cold (RHS: 'often turn deep bronze-red in winter'), mid November to mid December, for when it can be shown."
+      "basis": "Not acted on: the engine gives an evergreen leaf no change of colour. Recorded as the weeks in which the leaves take their winter bronze and red with the first cold (RHS: 'often turning deep bronze-red in winter'), mid November to mid December, for when it can be shown."
     },
     "phenology.leafFallDoy": {
       "value": [
@@ -87,17 +87,18 @@
       "value": 0.7,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS guide: 'relatively slow growing but can reach 4m (14ft) or more in favourable conditions'; Bean: 10 or 12 ft high on walls in the south and west, 'slow-growing when young'. The RHS record's band of 8 to 12 m in 5 to 10 years would need more than a metre a year and is not what British growers report; a retailer's 10 to 20 cm a year is slower than plants that fill a fence panel in five years. 0.7 m takes a main stem to the top of a 3 m support in its fifth or sixth season. Not measured."
+      "basis": "RHS guide: 'It is relatively slow growing, but in favourable conditions can eventually reach 4m (14ft) or more.' Bean has it 10 or 12 ft high on walls in the south and west, and 'rather slow-growing when young'. The RHS record's band of 8 to 12 m in 5 to 10 years would need more than a metre a year and is not what British growers report; one retailer's 10 to 20 cm a year is slower than plants that fill a fence panel in five years. 0.7 m takes a main stem to the top of a 3 m support in its fifth or sixth season. Not measured."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
+        0.65,
         0.6,
         0.5,
         0.4
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Side branches a little slower than the main stems, each order slower again. Scaled from the leader rate; not measured."
+      "basis": "Side branches a little slower than the main stems, each order slower again. Scaled from the leader rate; not measured. With the branching above they clothe about 2 m by 2 m of lattice by the fifth or sixth season, which is what one grower reports of a plant in Gloucestershire (6.5 ft by 6 ft after five years, growsonyou.com question 27963): an anecdote, used as a check and not as a source."
     },
     "extension.whipMPerSeason": {
       "value": 0.9,
@@ -112,28 +113,31 @@
         0.85
       ],
       "status": "provisional_design_assumption",
-      "basis": "Slow to start: Bean, 'slow-growing when young'; RHS guide, established 'after two or three years'. Three seasons of reduced extension, the first at under a third. The factors themselves are not measured."
+      "basis": "Slow to start. Bean: 'It is rather slow-growing when young'. The RHS guide has plants established after two or three years, when they 'will be hardier than recently planted ones'; Useful Temperate Plants, citing Davis, warns that they 'may put on no new growth for the first 2 - 3 years after planting out'. Three seasons of reduced extension, the first at under a third. The factors themselves are not measured."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
         0,
-        1
+        0,
+        1,
+        1,
+        2
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "A nursery plant comes as several stems tied to canes (RHS guide: 'trained onto bamboo canes'): two from the first season and a third from the base in the second. The number is a choice."
+      "basis": "A nursery plant comes as several stems tied to canes (RHS guide: 'usually trained onto bamboo canes'), and an established one goes on sending shoots from the base: three stems from the first season, two more in the second and one in the third. The number is a choice."
     },
     "architecture.nurseryCaneM": {
       "value": 0.9,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS guide: nursery plants are 'usually 60cm to 1.8m tall'. A plant from the lower half of that range."
+      "basis": "RHS guide: nursery plants 'vary in height from about 60cm (2ft) to 1.8m (6ft) or more'. A plant from the lower half of that range."
     },
     "architecture.maxBranchOrder": {
-      "value": 3,
+      "value": 4,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Branches of branches of branches run along the lattice before the short flowering shoots take over: one order more than the wisteria model, for a plant that makes a mat of fine stems rather than a few thick ones. A choice."
     },
     "architecture.leaderLengthM": {
       "value": [
@@ -142,13 +146,14 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A cap on the length of a main stem: from the RHS guide's '4m (14ft) or more' to the RHS record's 'about 9 m tall'. A height is not a route length, so this is a stand-in."
+      "basis": "A cap on the length of a main stem: from the RHS guide's '4m (14ft) or more' to the RHS record's 'about 9m in height'. A height is not a route length, so this is a stand-in."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
         3,
-        2,
-        1.2
+        2.2,
+        1.6,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -161,6 +166,7 @@
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
+        0.95,
         0.9,
         0.8,
         0.6
@@ -169,9 +175,9 @@
       "basis": "It branches freely and 'will cover its support effectively on its own, twining and scrambling up and across' (RHS guide), so nearly every crossing of the lattice that a stem passes sends a branch along the other member. The chances are a choice."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.5,
+      "value": 0.2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Most buds left at a crossing of the lattice break the next spring: the plant branches freely and fills in behind its leading shoots ('will cover its support effectively on its own', RHS guide). One in five waits longer. A choice, not a count."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
@@ -193,9 +199,9 @@
       "basis": "One more than on a lath, as in the wisteria model, a glulam member being wide enough to lay more stems side by side."
     },
     "routing.occupancyCost": {
-      "value": 1.6,
+      "value": 0.8,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How much a shoot is put off a member that already carries stems. Half the wisteria model's 1.6: this plant's slender stems wind round one another readily and thicken on the ground they hold before they take new ground. A choice; nothing measured."
     },
     "routing.downhillCostPerM": {
       "value": 5,
@@ -241,7 +247,7 @@
       "value": 40,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. Taken as well below the timber lattice (76 mm round) and above a cable, so that this plant twines cables unaided and has to be tied to glulam. The whole difference between it and wisteria on the structure rests on this number. What is recorded: it is sold wound on bamboo canes and the RHS asks for 'wires or trellis'."
+      "basis": "No measurement exists. Taken as well below the timber lattice (76 mm round) and above a cable, so that this plant twines cables unaided and has to be tied to glulam. The whole difference between it and wisteria on the structure rests on this number. What is recorded: it is sold wound on bamboo canes, and the RHS guide asks for a support of wires or trellis and says 'Young plants may need some guiding and tying in until they're able to twine'."
     },
     "attachment.minPitchM": {
       "value": 0.14,
@@ -257,11 +263,11 @@
     "organs.leafSpacingM": {
       "value": [
         0.03,
-        0.08
+        0.04
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "No flora gives the length between leaf pairs. Read off photographs against the leaf lengths the floras give: half a leaf apart on the short flowering shoots, a leaf or more apart on long twining ones. One range has to serve both kinds of shoot."
+      "basis": "No flora gives the length between leaf pairs. Read off photographs against the leaf lengths the floras give: 2 to 4 cm on the short flowering shoots, which carry most of the foliage, and 5 to 10 cm on long twining shoots. One range has to serve both kinds of shoot, and the engine sets a leaf pair only at a stored point of a stem, 4 cm apart: a range that ends at 4 cm puts a pair at every point, which is right for the short shoots and too close for the long ones."
     },
     "organs.leafLengthM": {
       "value": [
@@ -304,12 +310,12 @@
     },
     "organs.racemeLengthM": {
       "value": [
-        0.05,
-        0.09
+        0.04,
+        0.08
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The length of a cyme from where its stalk leaves the shoot to its farthest flower. Flora of China: stalk 2 to 6 cm, to which the forks and the flowers add 2 to 3 cm; the Chinese flora (FRPS) says the cyme is as long as the leaf or longer. Bean's '1 1/2 to 2 in. long' is the short end. A range read from three descriptions that do not measure the same thing."
+      "basis": "The width of the cluster of flowers at the end of a cyme's stalk, which is what the flower model is authored to. Two to nine flowers (counted in Belgrade, Ocokoljic et al. 2026), each 1.7 to 2.3 cm across (measured there), standing loosely on forks 1 to 2 cm long, make a cluster two to four flowers wide. No source measures the cluster itself; Bean's cymes '1 1/2 to 2 in. long' and Flora of China's stalk of 2 to 6 cm are lengths, not widths."
     },
     "organs.whipShareOfNodes": {
       "value": 0.03,
@@ -317,7 +323,7 @@
       "basis": "The share of older leaf nodes that throw a long twining shoot in a year. Photographs of established plants in summer show such shoots standing out of the foliage every few hand-widths; the share is a choice."
     },
     "organs.whipsPerYearMax": {
-      "value": 36,
+      "value": 30,
       "status": "provisional_design_assumption",
       "basis": "A cap on new long shoots a year, so that a large plant does not bristle. A choice."
     },
@@ -334,7 +340,7 @@
       "value": 3,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Evergreen and leathery, but no source read says how long a leaf lives. Three seasons assumed; older leaves are seen yellowing and reddening before they fall, and cold may strip them sooner (RHS guide: in cold snaps leaves 'may turn red, develop spots, or fall')."
+      "basis": "Evergreen and leathery, but no source read says how long a leaf lives. Three seasons assumed; older leaves are seen yellowing and reddening before they fall, and cold may strip them sooner (RHS guide: in cold snaps 'the leaves may turn red, develop spots or even fall')."
     },
     "organs.clearStemHeightM": {
       "value": 0.2,
@@ -355,7 +361,7 @@
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Flowering builds up while the plant establishes (RHS guide: established 'after two or three years'). The steps are a choice."
+      "basis": "Flowering builds up while the plant establishes, which the RHS guide puts at two or three years. The steps are a choice."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
@@ -426,7 +432,7 @@
     "fruit.setShare": {
       "value": 0.02,
       "status": "provisional_design_assumption",
-      "basis": "RHS guide: 'fruits and seeds are rarely produced in UK gardens'; in Belgrade none set in three years (Ocokoljic et al. 2026). One cyme in fifty is this model's reading of 'rarely': a handful of pods on an established plant in a year, many plants having none."
+      "basis": "RHS guide: 'fruits (and seeds) are rarely produced in UK gardens'; in Belgrade none set in three years (Ocokoljic et al. 2026). One cyme in fifty is this model's reading of 'rarely': a handful of pods on an established plant in a year, a young plant often having none."
     },
     "fruit.lengthM": {
       "value": [
@@ -436,7 +442,7 @@
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
-      "basis": "Flora of China 16: 167 (efloras.org taxon 200018474, read from the copy at this address because efloras.org refused the request): 'Follicles linear, 10-25 cm x 3-10 mm'. One fruit here is the pair of follicles that follows one flower."
+      "basis": "Flora of China, volume 16 (efloras.org taxon 200018474, read from the copy at this address because efloras.org refused the request): follicles linear, 10 to 25 cm long and 3 to 10 mm wide. One fruit here is the pair of follicles that follows one flower."
     },
     "fruit.swellDays": {
       "value": [
@@ -454,7 +460,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flora of China gives fruit from June to December in China, where it flowers from March. In Britain it flowers three months later; the green pods are taken to turn brown in December. No British record of ripening was found."
+      "basis": "Flora of China: 'Fl. Mar-Aug, fr. Jun-Dec.', in China. In Britain it flowers three months later than it begins to there; the green pods are taken to turn brown in December. No British record of ripening was found."
     },
     "fruit.fallDoy": {
       "value": [
@@ -515,22 +521,22 @@
       "value": 1,
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "The flowering shoots break from wood made in earlier years: Huxley and Davis, as reported by Useful Temperate Plants, 'flowers are produced on short laterals that arise from old wood'; Bean, 'usually on short lateral twigs'. Last year's stems are old enough."
+      "basis": "The flowering shoots break from wood made in earlier years: Useful Temperate Plants, citing Huxley's RHS Dictionary of Gardening, 'Flowers are produced on short laterals that grow from old wood'; Bean, 'usually on short lateral twigs'; Clemson Extension has them on short side branches. Last year's stems are old enough."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 12,
+      "value": 28,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "How thickly the older stems are set with short flowering shoots. Chosen so that an established stem carries one at most of its leaf nodes, as photographs of plants in flower show, and a lattice it has covered reads as a screen (RHS lists it for 'hedging and screens'). Not counted on plants."
+      "basis": "How thickly the older stems are set with short flowering shoots. At the leaf spacing above this puts one at nearly every leaf node of a stem a year old or more that has none: photographs of established plants show the older stems hidden by leafy twigs, and a lattice it has covered reads as a screen (the RHS lists hedging and screens among its uses). Not counted on plants."
     },
     "sideShoots.lengthM": {
       "value": [
-        0.06,
+        0.04,
         0.22
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "'Short lateral twigs' (Bean): one to four pairs of leaves below the cyme in photographs, which at the leaf spacing above is a hand-width or so. Not measured."
+      "basis": "'Short lateral twigs' (Bean): one to five pairs of leaves below the cyme in photographs, two fingers' width to a hand-span. The range is kept wide so that the twigs along a stem are of unequal length, as they are on the plant. Not measured."
     },
     "sideShoots.lifespanYears": {
       "value": 4,
@@ -539,9 +545,9 @@
       "basis": "The short shoots are woody and stay: on the plant they branch again and flower from their own side shoots in later years, which this model shows as the same shoot flowering again. Four seasons is a choice, a little longer than a leaf is taken to last."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": 0.8,
+      "value": 0.5,
       "status": "provisional_design_assumption",
-      "basis": "Most short shoots of an established plant in sun end in a cyme: in photographs of plants in full flower few are without one. The share is a choice, and takes no account of shade, which the profiles say reduces flowering."
+      "basis": "Half the short shoots of an established plant end in a cyme in a year. In photographs of plants in full flower in Mediterranean gardens nearly every shoot has one; half is a cautious reading for Britain, where it flowers less freely, and gives a covered lattice some hundred and fifty cymes to the square metre. It takes no account of shade, which the profiles say reduces flowering. Not counted on plants."
     }
   }
 }
