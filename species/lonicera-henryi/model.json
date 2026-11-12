@@ -1,29 +1,33 @@
 {
   "schemaVersion": 1,
   "taxonId": "lonicera-henryi",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one. The sizes of its parts come from floras (Bean, Flora of China, Info Flora), the length of a year's shoot from one measured Swiss population (Weber 2005), and its dates are placed inside the months those sources give; how freely it branches, how many shoots it carries and how long a leaf lives are choices, each stated with its basis. Its route-choice weights and a few other numbers are still copied from the wisteria model, and in those it remains thinner than the wisteria model. None has been measured on a Bower. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "facing_out",
+    "fruitHeld": "facing_out",
+    "basis": "One leaf form, one flower form (the cluster of paired flowers at a shoot tip) and one fruit form (the berries that follow it). Held facing out: Bean has the flowers \"at the end of the shoot\", and the cluster carries on the line of the shoot that bears it, as the berries do after it (photographs, Wikimedia Commons \"Gardenology.org-IMG 1367 bbg09.jpg\" and \"Korina 2017-08-01 Lonicera henryi 3.jpg\")."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 95,
+      "value": 75,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No dated record of first growth in Britain was found. An evergreen honeysuckle is in growth early: the RHS honeysuckle guide has semi-evergreens shedding old leaves in late winter just before the new ones grow, and Info Flora says the evergreen leaf lengthens its growing season. Taken as mid-March (16 March)."
     },
     "phenology.growthEndDoy": {
-      "value": 270,
+      "value": 290,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No dated record. Taken as mid-October (17 October), later than the deciduous climbers, on Info Flora's remark that the evergreen leaf lengthens its growing season."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        100,
-        155
+        80,
+        130
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No dated record. Leaves on wood that is already there are taken to open between 21 March and 10 May, ahead of the first flowers in June."
     },
     "phenology.autumnColourDoy": {
       "value": [
@@ -32,7 +36,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used: the leaf is evergreen (RHS) and the engine never turns an evergreen leaf. The leaves it does shed go yellow first (NC State; Kwantlen), which the model cannot show. Present because every model carries every parameter."
     },
     "phenology.leafFallDoy": {
       "value": [
@@ -41,88 +45,91 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used for leaf fall: the leaf is evergreen (RHS), and each leaf goes at the end of its last year (organs.leafLifespanYears). Present because every model carries every parameter."
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        150,
-        165
+        120,
+        135
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers on the year’s own growth (itself an inference for this species), so buds are taken to form on that growth about a fortnight before flowering. No dated source."
+      "basis": "The day the engine forms the year's flower buds, which must come before the first flowers open. Buds stand at the shoot tips some weeks before they open (photograph of a plant in bud, Botanischer Garten Berlin-Dahlem, Wikimedia Commons \"Lonicera acuminata kz01.jpg\"). Taken as 15 May; no dated source."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        166,
-        196
+        158,
+        200
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of June to August (15 June to 15 July)."
+      "basis": "Clusters begin to open between 7 June and 19 July. Bean: flowers \"produced during June\"; RHS: summer; Info Flora: June to August; Kwantlen: June and July. The days are placed inside those months; no dated British record was found."
     },
     "phenology.petalFallDoy": {
       "value": [
-        213,
-        243
+        172,
+        221
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of June to August (1 to 31 August)."
+      "basis": "Not used while phenology.flowerLastsDays is set: each cluster goes over that many days after it opens, which puts the last petal fall at about 9 August. Stated so that the two agree."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        0,
-        0
+        14,
+        21
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A cluster opens its paired flowers in succession, so open flowers, buds and faded flowers stand together (photographs, Wikimedia Commons \"Lonicera acuminata kz05.jpg\" and \"Gardenology.org-IMG 1367 bbg09.jpg\"). No duration is published for the species. Its hybrid with L. japonica, 'Inov42', is recorded as in flower two to three weeks to the inflorescence (US PP21,819): that order of size is used."
     },
     "extension.leaderMPerSeason": {
-      "value": 1.6,
+      "value": 1.5,
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "RHS: reaches its 4 to 8 m size band in 2 to 5 years. A size band is not a growth rate; 1.6 m a season is a placeholder of that order."
+      "status": "peer_reviewed",
+      "source": "https://link.springer.com/article/10.1007/s00035-005-0710-2",
+      "basis": "Weber (2005), Botanica Helvetica 115: 77-81, abstract: \"Current-year shoots were 47-150 cm long\", measured at one forest site near Zurich. The leading stems are taken to make the top of that range. One shaded site, not a garden; the RHS band (4 to 8 m in 2 to 5 years) is consistent with it."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        1.3,
-        1,
-        0.8
+        1.5,
+        1.2,
+        0.9
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate as in the wisteria model. Not measured."
+      "basis": "Inside the 0.47 to 1.5 m that Weber (2005) measured for current-year shoots: the first branches as fast as the main stems, and less for each further order of branching. The fall with order is not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 1,
+      "value": 2.4,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+      "basis": "Not a length but a pace: set so that a long shoot starting as late as the engine allows (two fifths of the way through the season) still makes Weber's longest measured current-year shoot, 1.5 m, before growth stops."
     },
     "extension.establishmentFactorByYear": {
       "value": [
-        0.5,
-        0.8
+        0.6,
+        1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "RHS: reaches its ultimate height of 4 to 8 m in 2 to 5 years, so it is slow for no more than a season. Taken to make three fifths of its growth in the planting year and all of it from the next. Not measured."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
-        0
+        0,
+        1,
+        2
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Two stems from the base, both from the first season. A placeholder."
+      "basis": "A honeysuckle is many-stemmed from the base and throws new basal shoots readily (RHS honeysuckle guide: a congested plant cut to 60 cm shoots again). Two stems in the planting year, one more in each of the next two. The number is not recorded anywhere."
     },
     "architecture.nurseryCaneM": {
       "value": 0.6,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant on a short cane. Not measured."
+      "basis": "A typical nursery plant in a two or three litre pot on a short cane. Not measured."
     },
     "architecture.maxBranchOrder": {
       "value": 3,
@@ -132,21 +139,21 @@
     "architecture.leaderLengthM": {
       "value": [
         4,
-        8
+        10
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The RHS ultimate-size band used as a cap on stem length. A height band is not a route length, so this is a placeholder."
+      "basis": "Length each main stem is allowed to reach. Low end: the RHS ultimate height band (4 to 8 m), a height and not a route length. High end: Info Flora, shoots \"bis zu 10 m\" long; Bean records a plant about 30 ft into a laurel at Trewithen."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        2,
-        1.2,
-        0.7
+        2.5,
+        1.5,
+        0.9
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader as in the wisteria model. Not measured."
+      "basis": "Scaled down from the main stems by order of branching. Not measured."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
@@ -156,35 +163,35 @@
     "architecture.lateralChanceByParentOrder": {
       "value": [
         0.9,
-        0.75,
-        0.55
+        0.8,
+        0.6
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Branches freely: Info Flora describes a dense net of climbing branches that covers shrubs and trees. The chances themselves are not measured."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.5,
+      "value": 0.15,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Nearly all buds at a crossing are taken to break in the following spring, as befits a plant every source calls vigorous or fast (RHS; Info Flora; Kwantlen). Not measured."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
         1,
-        3
+        2
       ],
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Those that wait, wait a year or two. Not measured."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
+      "value": 4,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Slender stems twine up one support together and round one another: photographs of old plants show ropes of several stems (Wikimedia Commons \"Lonicera acuminata kz03.jpg\", \"Lonicera acuminata in Lyon BG (1).jpg\"), and Weber (2005) counted 128 to 366 shoots or stems to the square metre of a mat. Four to a lath or cable is a choice of that order."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 3,
+      "value": 5,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "As for a lath, and one more on a stout member. A choice."
     },
     "routing.occupancyCost": {
       "value": 1.6,
@@ -232,16 +239,16 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "attachment.maxGraspDiameterMm": {
-      "value": 40,
+      "value": 55,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. Taken as well below the timber lattice (76 mm round) and above a cable, so that this plant twines cables unaided and has to be tied to glulam. The whole difference between it and wisteria on the structure rests on this number."
+      "basis": "No measurement exists. The plant holds supports some centimetres through: it is photographed twining a steel fence post (Wikimedia Commons \"Korina 2017-08-01 Lonicera henryi 2.jpg\"), EPPO reports its climbing stems strangling young trees, and Darwin saw its relative L. periclymenum on a beech four and a half inches through. Taken as 55 mm: enough for a 40 mm lath (51 mm round), not for a 60 mm one (76 mm round) or for glulam, to which it has to be tied. Which members it takes unaided rests on this number."
     },
     "attachment.minPitchM": {
-      "value": 0.3,
+      "value": 0.22,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Read from the same photograph of a stem on a post: about one turn in two or three widths of the post, closer than the wisteria model's 0.3 m. One photograph, not a measurement."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
@@ -250,31 +257,33 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.05,
-        0.09
+        0.035,
+        0.08
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Leaves in opposite pairs on short internodes. Not measured."
+      "basis": "No flora gives the internode. Read from photographs of identified plants (Wikimedia Commons \"Lonicera acuminata kz01.jpg\", \"Korina 2017-08-01 Lonicera henryi.jpg\"): the pairs stand rather less than a leaf-length apart on flowering shoots and about a leaf-length apart on long ones. The one measured figure is for its hybrid 'Inov42' (US PP21,819), about 25 mm, which the patent calls more compact than L. henryi."
     },
     "organs.leafLengthM": {
       "value": [
-        0.05,
-        0.1
+        0.047,
+        0.115
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Of the order given in descriptions of the species. Not checked against a source here."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: leaves \"1 3/4 to 4 in. long\" on a stalk \"1/8 to 1/2 in.\" long: blade and stalk together, 47 to 115 mm. Info Flora gives 3 to 12 cm and the EPPO alert 4 to 12 cm for the blade."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Honeysuckles bear their leaves in opposite pairs. A character of the family, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "Info Flora: \"Blätter gegenständig\" (leaves opposite). Flora of China notes an occasional whorl of three, which is not modelled."
     },
     "organs.spurChance": {
-      "value": 0.5,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Stands for the short leafy side shoots that keep old stems clothed. A placeholder."
+      "basis": "None. The engine's spur is a stub with a tuft of leaves at one point, which is the wisteria's. This plant's short shoots are leafy, with their leaves in pairs along them, and end in the flowers: they are grown as flowering side shoots (sideShoots.*)."
     },
     "organs.spurLengthM": {
       "value": [
@@ -283,7 +292,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short leafy side shoots. A placeholder."
+      "basis": "Not used: organs.spurChance is 0. Present because every model carries every parameter."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -292,53 +301,55 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used: organs.spurChance is 0. Present because every model carries every parameter."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.03,
-        0.05
+        0.051,
+        0.076
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Size of a flower cluster. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "The width of the cluster of flowers at the end of a shoot, which is what this taxon's flower record measures. Bean: flowers \"at the end of the shoot in a cluster 2 or 3 in. across\"."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.08,
+      "value": 0.12,
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+      "basis": "Share of the older leaf nodes of the framework that throw a long shoot in a year. No source counts them. Chosen with organs.whipsPerYearMax and the short shoots (sideShoots.*) against the one count there is: Weber (2005) found 128 to 366 shoots or stems to the square metre of an established mat. A trained plant on the specimen frame comes to about 150 long and short shoots to the square metre of trellis at six years and about 290 from its eighth."
     },
     "organs.whipsPerYearMax": {
-      "value": 60,
+      "value": 110,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "A cap on new long shoots a year, reached from about the sixth year on the specimen frame. A choice: see organs.whipShareOfNodes."
     },
     "organs.whipLengthM": {
       "value": [
-        0.2,
-        0.5
+        0.47,
+        1.5
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Length of a year’s side shoot. A placeholder."
+      "status": "peer_reviewed",
+      "source": "https://link.springer.com/article/10.1007/s00035-005-0710-2",
+      "basis": "Weber (2005), abstract: \"Current-year shoots were 47-150 cm long\", at one forest site near Zurich. Used as it stands for the long shoots of the year."
     },
     "organs.leafLifespanYears": {
       "value": 2,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Evergreen (RHS), though British field accounts call it winter-green or semi-deciduous. Leaves are taken to last two seasons; on an exposed site they may not."
+      "basis": "No source gives the life of a leaf. RHS: evergreen; Bean: evergreen or semi-deciduous; Flora of China: semi-evergreen; BSBI: winter-green or semi-deciduous. A leaf is taken to last through the winter after it was made and the year that follows, the least the engine offers a leaf that is green in January. On an exposed site it may not last so long."
     },
     "organs.clearStemHeightM": {
       "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Clothed nearly to the ground. A placeholder."
+      "basis": "Old stems go bare at the foot. A German garden guide (gartenjournal.net) says the lower parts go bare, the more so in sun. The height is a choice."
     },
     "flowering.competenceYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its second season. A placeholder."
+      "basis": "Taken to flower from its second season, as nursery plants of flowering size do. No source."
     },
     "flowering.maturityRamp": {
       "value": [
@@ -346,7 +357,7 @@
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Half strength in its first flowering year. A placeholder."
+      "basis": "Half strength in its first flowering year. A choice."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
@@ -359,16 +370,16 @@
       "basis": "Not applicable to this plant; present because every model carries every parameter."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 5,
+      "value": 0,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flower clusters per metre of the year’s growth. A placeholder chosen to read as present but not profuse."
+      "basis": "None along the long shoots. The flowers are gathered at the ends of short leafy shoots (Bean: \"at the end of the shoot\"; Flora of China: \"paired, axillary at branchlet tips\"; Info Flora's photograph is captioned flowers in pairs at the end of the branch), so every flower of the model stands at the tip of a flowering side shoot (sideShoots.*). Those shoots are growth of the current season, as the taxon file assumes."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.15,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot shorter than this is taken not to flower. A placeholder."
+      "basis": "Not used while flowering.currentSeasonFlowersPerM is 0. Present because every model carries every parameter."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -398,16 +409,16 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 1.7,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A young shoot about 2.6 mm through. Slender in every photograph; the only measured figure is for its hybrid 'Inov42' (US PP21,819): new growth 2 mm in diameter. Not measured on this plant."
     },
     "thickening.radiusSquaredPerMetreMm2": {
       "value": 6,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Stems much more slender than wisteria’s. A placeholder."
+      "basis": "Gives a main stem 25 to 35 mm through under a plant ten years old. Old stems of that order are seen in photographs (Wikimedia Commons \"Lonicera acuminata kz03.jpg\"), and its hybrid 'Inov42' is recorded at about 25 mm at the base at five years (US PP21,819). Not measured on this plant."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -415,90 +426,149 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Sets freely: BSBI records it bird-sown and spreading from gardens in Britain, and a photograph of a garden plant in August shows a cluster of berries at most shoot tips, about twenty in a view some 0.7 m by 0.5 m, or near 60 to the square metre (Wikimedia Commons \"Korina 2017-08-01 Lonicera henryi 3.jpg\"). Three in five clusters is a choice that gives the specimen about 50 to the square metre at maturity. The share itself is not recorded."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.018,
+        0.03
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The width of a cluster of berries, which is what this taxon's fruit record measures. Derived: berries 6 to 7 mm through (Flora of China), four to ten of them in pairs at a shoot tip (counted on the photographs named above)."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        30,
+        45
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Berries are full size and still green on 1 August in a dated photograph of a plant that flowers in June and July (Wikimedia Commons \"Korina 2017-08-01 Lonicera henryi 2.jpg\"). Four to six weeks from petal fall is read from that; not measured."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        230,
+        290
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Berries blue-black on 28 August 2017 and 29 August 2018 in dated photographs from Germany (Wikimedia Commons, Korina); Flora of China gives fruit in October and November in China, Kwantlen August to November. Taken as 18 August to 17 October."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        305,
+        365
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "NC State: the berries ripen in autumn and persist into winter; birds eat them (BSBI: bird-sown). Taken to go between 1 November and the end of December. No record of how long they hang in Britain."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "None. Info Flora: it climbs by winding round a support, \"ohne Haftorgane oder Ranken\" (without clinging organs or tendrils)."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "None: see appendages.tendrilNodePattern."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "None. It holds by its twining stems alone (Info Flora: without clinging organs or tendrils); the leaf stalk is 3 to 13 mm long and does not clasp."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "None: see appendages.leafStalkCoilShare."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "None on a climbing stem. Info Flora: without clinging organs. (Trailing stems root at the nodes where they lie on soil, which is rooting, not clinging, and is not modelled.)"
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "None: see appendages.aerialRootPatchSpacingM."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed. No description mentions a prickle or thorn; the young shoots are bristly-hairy (Bean: \"strigose\"), which is hair and not armature."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: see appendages.prickleSpacingM."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Flowering shoots break from the stems of earlier years. Taken from the wood of the year before onwards; no source says how old the bearing wood must be."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 14,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "New short leafy shoots a year to each metre of older stem: at this plant's leaf spacing, four in five free nodes. No source counts them. A choice, made with their length and life so that a trained plant hides most of a trellis by its sixth year, as sources describe it (Rainyside: it smothers a structure until it is barely seen; Info Flora: a dense carpet), while the shoots to the square metre stay inside what Weber (2005) counted in a mat (see organs.whipShareOfNodes)."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.12,
+        0.4
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Short leafy shoots of three to eight pairs of leaves, each ending in the cluster of flowers. Read from photographs of flowering shoots (Wikimedia Commons \"Gardenology.org-IMG 1367 bbg09.jpg\", \"Lonicera acuminata kz01.jpg\"); not measured."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 3,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A short shoot is taken to stay in leaf for three seasons and then to be lost in the shade of what has grown over it; the inside of an old plant is a tangle of bare twigs (Wikimedia Commons \"Lonicera acuminata kz02.jpg\"). A choice. On the plant such a shoot does not flower again at its tip but branches below it, which the engine cannot do."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.4,
+      "status": "provisional_design_assumption",
+      "basis": "Share of the short shoots that end in flowers in a year. Flowers are small but abundant, \"filling the vine\" (Rainyside); Kwantlen calls it floriferous. Two in five is a choice: with the share that set (fruit.setShare) it gives the number of berry clusters to the square metre that a photograph of a garden plant shows. Fewer should be expected in shade (RHS honeysuckle guide), which the model does not know about."
     }
   }
 }
