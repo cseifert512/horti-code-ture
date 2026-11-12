@@ -1,47 +1,51 @@
 {
   "schemaVersion": 1,
   "taxonId": "hydrangea-anomala-subsp-petiolaris",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one. What the plant is made of rests on published descriptions: a clinging framework of extension shoots held by rootlets, short free-standing side shoots that carry the leaves and end in the flowerhead, flowers on wood made the year before, dry heads that stay through winter (Trees and Shrubs Online after the Flora of Japan; RHS). How fast it does it rests on nursery and garden figures (20 to 50 cm a year, slow for the first three to five years, three to five years to the first flowers), not on measurements. How many side shoots a metre of stem throws, how many of them flower, and every date are assumptions chosen to agree with those descriptions. The rules by which a shoot chooses its way over the structure are still copied from Wisteria sinensis, so in that respect the model is thinner than the wisteria model it is derived from. None of it has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "facing_out",
+    "fruitHeld": "facing_out",
+    "basis": "The flowerhead is a terminal corymb at the end of a side shoot (Trees and Shrubs Online, Hydrangea petiolaris: 'terminal corymbose cyme'), so it carries on the line of its shoot, out from the support and turned up towards the light. The dry head that follows is the same head on the same stalk."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 90,
+      "value": 85,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Leaves appear early in spring (clematis.com.pl); shoots emerge in April at a north German nursery (lve-baumschule.com). Taken as 26 March for lowland Britain, which is ahead of north Germany. No source read gives a date for Britain."
     },
     "phenology.growthEndDoy": {
-      "value": 280,
+      "value": 265,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Extension taken to stop in the third week of September, about a month before the leaves colour. No source read gives a date."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        100,
-        155
+        88,
+        128
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "From bud burst to the first week of May: the leaves come early (clematis.com.pl) and the flowerheads show with the young leaves, well before they open in June (Trees and Shrubs Online). The dates themselves are not from a source."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        283,
-        310
+        290,
+        314
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Leaves turn yellow in early November at a north German nursery (lve-baumschule.com) and persist late into autumn (University of Connecticut plant database). Taken as 17 October to 10 November. Trees and Shrubs Online: the colour is short-lived, and in a mild southern English autumn only a yellowish tint; the model always colours fully."
     },
     "phenology.leafFallDoy": {
       "value": [
-        310,
-        344
+        308,
+        336
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Leaf fall follows the colour closely, because the colour is short-lived (Trees and Shrubs Online): 4 November to 2 December. The dates are not from a source."
     },
     "phenology.floralInitiationDoy": {
       "value": [
@@ -49,88 +53,92 @@
         244
       ],
       "unit": "day of year",
-      "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/hydrangea/climbing",
-      "basis": "RHS: climbing hydrangeas flower on shoots made the previous year. Bud formation is taken as August; the dates are not from the source."
+      "status": "provisional_design_assumption",
+      "basis": "RHS (rhs.org.uk/plants/hydrangea/climbing): flowers are produced on last year's shoots, and pruning after flowering in summer leaves time for next year's flowering wood. Bud formation is therefore taken as August. The dates are not from the source."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        160,
+        155,
         180
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of early summer (9 to 29 June), on shoots made the summer before."
+      "basis": "Placed in the RHS envelope of early summer and running to the end of June (4 to 29 June); Trees and Shrubs Online gives June to July in Japan, a Polish nursery late June or early July. The dates are not from a source."
     },
     "phenology.petalFallDoy": {
       "value": [
-        190,
-        215
+        173,
+        206
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder (9 July to 3 August)."
+      "basis": "What flowerOpenDoy and flowerLastsDays imply (22 June to 25 July): each head goes over 18 to 26 days after it opens. Not used to time anything; kept so that the year the heads go over in is read correctly."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        0,
-        0
+        18,
+        26
       ],
       "unit": "days",
-      "status": "provisional_design_assumption",
-      "basis": "Not used: the flowerheads are taken to go over together."
+      "status": "published_plant_profile",
+      "source": "https://patents.google.com/patent/USPP13845P2/en",
+      "basis": "US plant patent PP13,845 (a sport of the subspecies, described from the plant): individual blooms last up to three weeks on the plant. Trees and Shrubs Online: the showy phase lasts a few weeks in early summer. Taken as about three weeks, a little more or less."
     },
     "extension.leaderMPerSeason": {
-      "value": 1,
+      "value": 0.8,
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "RHS: over 12 m in 10 to 20 years, and slow to start. A size band is not a growth rate; a placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.lve-baumschule.com/hydrangea-petiolaris/6353928",
+      "basis": "A nursery catalogue figure, not a measurement: annual growth 20 to 50 cm, occasionally 80 cm. A specialist climber nursery gives up to about 1 m a year once established (clematis.com.pl). The strongest stem is given the occasional figure. Consistent with the RHS size class of over 12 m in 10 to 20 years."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        0.8,
-        0.6,
-        0.4
+        0.5,
+        0.35,
+        0.25
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate. Not measured."
+      "status": "published_plant_profile",
+      "source": "https://www.lve-baumschule.com/hydrangea-petiolaris/6353928",
+      "basis": "The same catalogue range, 20 to 50 cm a year: its upper end for branches of the first order, less for each order after. The split between orders is a choice, not from the source."
     },
     "extension.whipMPerSeason": {
-      "value": 0.8,
+      "value": 0.5,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+      "basis": "Not used: this plant throws no free long shoots in the model (organs.whipShareOfNodes is 0). The shoots that stand off its support are its flowering side shoots, which have their own numbers."
     },
     "extension.establishmentFactorByYear": {
       "value": [
-        0.3,
+        0.15,
+        0.25,
         0.5,
         0.8
       ],
       "status": "provisional_design_assumption",
-      "basis": "RHS: slow to establish. The factors are placeholders."
+      "basis": "RHS: slow growing to start with, then vigorous. Minimal growth for the first two or three years while it roots (clematis.com.pl); very slow for the first three to five years (lve-baumschule.com, Morton Arboretum). The factors are chosen to say that; none is measured."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
         0,
-        0
+        1,
+        2
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Three stems from the base in the first season. A placeholder."
+      "basis": "Multi-stemmed from the base (NC State Extension), with basal shoots that run along the ground until they meet something to climb (US plant patent PP11,038; Trees and Shrubs Online). Two stems on the nursery plant and one more in each of the next two seasons; the number is a choice."
     },
     "architecture.nurseryCaneM": {
-      "value": 0.3,
+      "value": 0.4,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant. Not measured."
+      "basis": "RHS growing guide: sold in 2 to 3 litre pots. Such a plant is taken as 0.4 m of stem on its cane. Not measured."
     },
     "architecture.maxBranchOrder": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Stems are heavily branched (clematis.com.pl); main stems climb and side branches run level (University of Connecticut). Three orders of clinging framework, below the free side shoots. The number is a choice."
     },
     "architecture.leaderLengthM": {
       "value": [
@@ -139,17 +147,17 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: over 12 m. Used as a cap on stem length; a height is not a route length, so this is a placeholder."
+      "basis": "RHS: higher than 12 m. Trees and Shrubs Online: 15 m or more. Used as a cap on stem length; a height is not a route length, so this is an assumption."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        3,
-        1.5,
-        0.8
+        4,
+        2,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader. Not measured."
+      "basis": "RHS: ultimate spread 4 to 8 m, that is 2 to 4 m to each side of the main stems. The first order is given the larger figure and each order after half of the one before. Not measured."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
@@ -180,14 +188,14 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 3,
+      "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "Ivy stems are slender and lie side by side. A placeholder."
+      "basis": "A clinging stem lies flat on the timber and needs its own strip of it for its rootlets. Two stems side by side on a lath 40 mm wide; a third would hang over the edge. A choice from the width of the support, not an observation."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 3,
+      "value": 4,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "By the same reasoning, four stems abreast on the face of a glulam member 150 mm or more wide. A choice, not an observation."
     },
     "routing.occupancyCost": {
       "value": 1.6,
@@ -238,46 +246,48 @@
       "value": 1,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "Not used: ivy holds by aerial roots, not by passing round its support."
+      "basis": "Not used: this plant holds by rootlets that cling to a surface, not by passing round its support, so no thickness of support is too great for it."
     },
     "attachment.minPitchM": {
       "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which does not twine; present because every model carries every parameter."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which does not twine; present because every model carries every parameter."
     },
     "organs.leafSpacingM": {
       "value": [
-        0.07,
-        0.12
+        0.025,
+        0.04
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "No flora read gives the internode. Two US plant patents of sports of this plant, each measured on the plant, give about 2.5 cm on lateral branches (PP11,038) and 4 cm on average (PP13,845). Both are variegated and less vigorous than the plain plant, so the range is carried a little above them. One spacing serves every kind of shoot; the far-creeping extension shoots must in life be longer-jointed than the side shoots."
     },
     "organs.leafLengthM": {
       "value": [
-        0.07,
-        0.11
+        0.085,
+        0.18
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: blade 5.5 to 12 cm on a stalk of 3 to 9 cm. Blade and stalk together, which is what this length measures: 8.5 cm for the smallest of each, and 18 cm for a blade of 11 cm on a stalk of 7 cm; the longest blades do not always have the longest stalks."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Leaves in opposite pairs. A character of the genus, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: leaves opposite."
     },
     "organs.spurChance": {
       "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "No spurs: this plant flowers along shoots made the summer before, not on short spurs."
+      "basis": "No spurs: the flowerhead ends a leafy side shoot (Trees and Shrubs Online: terminal), and those shoots are modelled as flowering side shoots."
     },
     "organs.spurLengthM": {
       "value": [
@@ -286,7 +296,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short leafy side shoots. A placeholder."
+      "basis": "Not used: organs.spurChance is 0."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -295,27 +305,27 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used: organs.spurChance is 0."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.15,
+        0.12,
         0.2
       ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
-      "basis": "RHS: flowerheads to 20 cm across. The lower figure is a placeholder."
+      "basis": "The width of the flat flowerhead over its ring of sterile flowers. RHS: flowerheads to about 20 cm across. Trees and Shrubs Online, after the Flora of Japan: 10 to 17 cm across. Taken as 12 to 20 cm; American sources give up to 25 cm."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.06,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+      "basis": "No free long shoots. Trees and Shrubs Online describes two kinds of shoot only: far-creeping extension shoots that cling, which are the framework here, and shorter side shoots that do not root, which are the flowering side shoots (sideShoots.*)."
     },
     "organs.whipsPerYearMax": {
-      "value": 60,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "Not used: organs.whipShareOfNodes is 0."
     },
     "organs.whipLengthM": {
       "value": [
@@ -324,56 +334,60 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a side shoot of the year. A placeholder."
+      "basis": "Not used: organs.whipShareOfNodes is 0."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
-      "status": "provisional_design_assumption",
-      "basis": "Deciduous: a leaf lasts the season it grew in."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "RHS: deciduous. A leaf lasts the season it grew in."
     },
     "organs.clearStemHeightM": {
       "value": 0,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Clothed to the ground."
+      "basis": "Clothed to the ground: nothing read says the base goes bare, and the plant is also grown as ground cover."
     },
     "flowering.competenceYears": {
       "value": 4,
       "unit": "growing seasons",
-      "status": "provisional_design_assumption",
-      "basis": "Slow to reach flowering. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/hydrangea/climbing/growing-guide",
+      "basis": "RHS growing guide: young plants often take three to five years to flower. A Polish climber nursery: flowering may begin in the fifth or sixth year after planting. Four full seasons, so that the first heads open in the fifth summer."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.3,
-        0.6,
+        0.2,
+        0.45,
+        0.75,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "The first summers of flowering bring a few heads and later ones many (showy flowers 'form mainly on older plants', lve-baumschule.com). The steps are a choice."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which has no spurs; present because every model carries every parameter."
     },
     "flowering.unprunedFactor": {
       "value": 0.5,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which has no spurs; present because every model carries every parameter."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 1.5,
+      "value": 0,
       "unit": "per m",
-      "status": "provisional_design_assumption",
-      "basis": "Flowerheads per metre of the summer growth, opening the following June. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "None along the clinging stems: the inflorescence is terminal, and it is the shorter, non-rooting side shoots that carry most of the flowers (Trees and Shrubs Online). Every flowerhead in the model ends a side shoot."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.15,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used: flowering.currentSeasonFlowersPerM is 0."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -382,7 +396,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which is not spur pruned; present because every model carries every parameter."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -391,7 +405,7 @@
       ],
       "unit": "buds",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which is not spur pruned; present because every model carries every parameter."
     },
     "regrowth.shootsPerCut": {
       "value": [
@@ -400,19 +414,19 @@
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Buds stand in opposite pairs, so a cut stem breaks from the pair below the cut: one of them or both. RHS: established plants tolerate hard pruning in spring. The count is a choice."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 5,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A young shoot about 4.5 mm thick. The twigs are described as stout (Virginia Tech dendrology) and a leaf stalk alone is about 3 mm thick at its base (US plant patent PP11,038, given there in cm, which must be mm). Not measured on a shoot."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 8,
+      "value": 10,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Chosen so that a side branch 40 cm long is about 6 mm thick at its base and a plant carrying some 60 m of clinging stem has a trunk about 4 cm thick. The only figure found is a gardener's report of a trunk about 10 cm across on a plant more than 25 years old. Not measured."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -420,90 +434,144 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.85,
+      "status": "provisional_design_assumption",
+      "basis": "What the model calls fruit here is the dry head: the frame of the flowerhead with its small capsules and its papery sterile flowers. Dried flower clusters persist (University of Connecticut) and give winter interest (Morton Arboretum), whether or not seed sets. Most heads are taken to stay; the share is not measured."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.12,
+        0.2
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "The width of the dry head, which is the flowerhead itself: the same figures as organs.racemeLengthM (RHS to about 20 cm; Trees and Shrubs Online 10 to 17 cm). The capsule itself is about 3 mm across (morphology.json)."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        1,
+        2
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The head does not grow after flowering: it is full size on the day its flowers are over. One or two days, so that the dry head stands where the flowerhead stood."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        220,
+        290
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The heads 'quite quickly age to an insignificant brown' (Trees and Shrubs Online); fruit of Hydrangea anomala ripens in September and October (Flora of China, as given by Trees and Shrubs Online). Browning is taken to run from the second week of August to mid October. The dates are not from a source."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        60,
+        120
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The dry heads stay on the plant through winter (University of Connecticut; Morton Arboretum). They are taken to break off or be pushed off between 1 March and 30 April, before the next flowerheads show. No source read says when they go."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: every description read has it climb by aerial roots on its extension shoots (Trees and Shrubs Online, RHS); none describes a tendril."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.tendrilNodePattern."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it climbs by aerial roots; its long leaf stalks do not coil round a support."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.leafStalkCoilShare. The length of the stalk as part of the leaf is in morphology.json."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0.01,
+        0.02
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The rootlets stand in close rows along the side of an extension shoot that lies against the support, not in separate tufts. A patch every 1.5 to 3 cm, about twice the length of a rootlet, draws that as an unbroken fringe. Read from photographs; no source gives a spacing."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0.005,
+        0.012
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Short rootlets, a few millimetres to about a centimetre where they lie on the surface they hold; a photograph caption of a one-year stem standing off a wall gives roots about 2 cm long where they had a gap to cross. Read from photographs; not measured."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Taken to be unarmed: no description read (Trees and Shrubs Online, RHS, NC State Extension) mentions prickles or thorns."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.prickleSpacingM."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Trees and Shrubs Online: extension shoots run over the surface first, and 'in subsequent years' side branches grow out from it. Taken as the year after a stretch of stem was laid down."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 5,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Chosen so that old framework comes to carry a side branch about every 10 to 15 cm, which is what makes the plant 'almost shrub-like' (NC State Extension) and lets the side shoots carry 'most of the flowers and leaves' (Trees and Shrubs Online). Not counted on a plant."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.12,
+        0.6
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "In life a side branch adds a short leafy length each year (two or three pairs of leaves, Trees and Shrubs Online), forks, and can become well over 1 m long given time. The engine makes a side shoot its whole length in its first season and does not fork it, so each is given the reach of a branch a few years old: 12 to 50 cm out from the support."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 8,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The side branches are permanent wood. Ten seasons stands for that within a run of ten or twelve years; after it the node may bear another."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.2,
+      "status": "provisional_design_assumption",
+      "basis": "Not every side branch flowers in a year: a shaded wall 'flowered only moderately' and flowering is most abundant in sun (Trees and Shrubs Online). About three in ten, chosen to give a mature plant some tens of heads for each square metre of old framework or fewer. Not counted on a plant."
     }
   }
 }
