@@ -14,7 +14,7 @@
  */
 import { WINTER_MONTH } from '../targets.ts';
 import { Simulation } from './engine.ts';
-import { param, withParam } from './model.ts';
+import { known, param, withParam } from './model.ts';
 import { designReport } from './report.ts';
 import type { Growable } from './scenarios.ts';
 import type { Scenario } from './types.ts';
@@ -44,6 +44,9 @@ export function sideShoots(taxa: Growable, factor: number): Growable {
       const why = `sensitivity: ${factor} times as many side shoots a year`;
       let model = withParam(t.model, 'organs.whipShareOfNodes', param(t.model, 'organs.whipShareOfNodes') * factor, why);
       model = withParam(model, 'organs.whipsPerYearMax', Math.round(param(t.model, 'organs.whipsPerYearMax') * factor), why);
+      // a taxon that carries its leaves and flowers on short side shoots from established stems has those multiplied too
+      const rate = known(t.model, 'sideShoots.perMetrePerYear');
+      if (rate !== null && rate > 0) model = withParam(model, 'sideShoots.perMetrePerYear', rate * factor, why);
       return [id, { profile: t.profile, model }];
     }),
   );

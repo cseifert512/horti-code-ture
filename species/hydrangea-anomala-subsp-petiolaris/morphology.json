@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "hydrangea-anomala-subsp-petiolaris",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous self-clinging woody climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "RHS plant record: a large self-clinging, deciduous climber. Trees and Shrubs Online: a deciduous climbing shrub to 15 m or more."
+    },
+    "habit.shootKinds": {
+      "value": ["extension shoots that creep and cling", "side shoots that stand free and do not root"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online: far-creeping extension shoots attached by aerial roots colonise the surface; shorter, non-rooting side shoots then grow out from it and carry most of the flowers and leaves, and can become well over 1 m long given time."
+    },
+    "stem.internodeLengthM": {
+      "value": [0.025, 0.04],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "No flora read gives it. Measured on two variegated sports of this plant for their US plant patents: about 2.5 cm on lateral branches (PP11,038, 'Firefly') and 4 cm on average (PP13,845, 'Kasai'). A sport's figure, entered as an assumption for the plain plant."
+    },
+    "stem.youngShootColour": {
+      "value": "reddish brown",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: current-year branchlets reddish brown, with curled hairs. Virginia Tech dendrology: twigs green when new, turning red, then brown."
+    },
+    "stem.youngShootSurface": {
+      "value": "with curled hairs, without lenticels",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan."
+    },
+    "stem.barkOld": {
+      "value": "thin and loose, peeling in strips",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: bark thin and loose, peeling in strips when old. NC State Extension: shaggy, exfoliating."
+    },
+    "stem.barkColour": {
+      "value": ["cinnamon", "tan", "reddish brown"],
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.uconn.edu/detail.php?pid=209",
+      "basis": "University of Connecticut plant database: exfoliating, cinnamon to tan, very showy on larger stems. NC State Extension and Virginia Tech: reddish brown. Morton Arboretum: dark cinnamon-brown on mature stems."
+    },
+    "stem.barkPeelsFromAgeYears": {
+      "value": 4,
+      "unit": "years",
+      "status": "provisional_design_assumption",
+      "basis": "A nursery note, seen only as a search summary and not opened, says trunks older than four years peel markedly. Entered as an assumption until a source can be read."
+    },
+    "holdfast.kind": {
+      "value": "aerial roots",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online: climbs by aerial roots that cling to walls, tree trunks and rocks. RHS: forms aerial roots on its stems."
+    },
+    "holdfast.position": {
+      "value": "on extension shoots only, on the side that lies against the support",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online: only the extension shoots bear aerial roots; the side shoots are non-rooting. That they stand on the side against the support is read from photographs."
+    },
+    "holdfast.rootletLengthM": {
+      "value": [0.005, 0.012],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs: a few millimetres to about a centimetre where they lie on what they hold. Not measured in any source read. The same figures as the growth model's appendages.aerialRootLengthM."
+    },
+    "holdfast.colour": {
+      "value": ["pale and fleshy when new", "dry brown when hardened"],
+      "status": "published_plant_profile",
+      "source": "https://patents.google.com/patent/USPP11038P/en",
+      "basis": "US plant patent PP11,038, described from a sport of this plant: aerial roots emerge fleshy in spring, then harden off to dry brown, which helps them attach."
+    },
+    "leaf.arrangement": {
+      "value": "opposite",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: leaves opposite."
+    },
+    "leaf.pairsOnFloweringShoot": {
+      "value": [2, 3],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: leaves in 2 or 3 pairs on current-year branchlets."
+    },
+    "leaf.division": {
+      "value": "simple",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/hydrangea-petiolaris",
+      "basis": "NC State Extension: leaf type simple."
+    },
+    "leaf.bladeShape": {
+      "value": ["broadly ovate", "ovate-orbicular"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: blade broadly ovate to ovate-orbicular."
+    },
+    "leaf.bladeLengthM": {
+      "value": [0.055, 0.12],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: blade 5.5 to 12 cm long."
+    },
+    "leaf.bladeWidthM": {
+      "value": [0.03, 0.08],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://patents.google.com/patent/USPP13845P2/en",
+      "basis": "US plant patent PP13,845, of the plain-leaved plant its sport arose on: leaves 5 to 10 cm long and 3 to 8 cm wide. Trees and Shrubs Online gives no width."
+    },
+    "leaf.bladeWidthShareOfLength": {
+      "value": 0.73,
+      "status": "published_plant_profile",
+      "source": "https://patents.google.com/patent/USPP13845P2/en",
+      "basis": "From the same patent's figures for the plain-leaved plant, 5 to 10 cm long and 3 to 8 cm wide: the middle width over the middle length. 'Broadly ovate to ovate-orbicular' (Trees and Shrubs Online) says the same in words."
+    },
+    "leaf.stalkLengthM": {
+      "value": [0.03, 0.09],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: petiole 3 to 9 cm. The long stalk is what the name petiolaris refers to."
+    },
+    "leaf.base": {
+      "value": ["truncate", "shallowly cordate"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: base truncate to shallowly cordate."
+    },
+    "leaf.apex": {
+      "value": "acuminate",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: apex acuminate."
+    },
+    "leaf.margin": {
+      "value": "finely and acutely serrate",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: margin finely and acutely serrate."
+    },
+    "leaf.marginTeethPerSide": {
+      "value": 36,
+      "status": "provisional_design_assumption",
+      "basis": "No source read counts the teeth. 'Finely and acutely serrate' is drawn as a tooth about every 3 mm of margin on a blade of middle size, 36 to a side. Counted on nothing."
+    },
+    "leaf.secondaryVeinPairs": {
+      "value": [6, 8],
+      "status": "provisional_design_assumption",
+      "basis": "Flora of China, as given by Trees and Shrubs Online, for Hydrangea anomala: 6 to 8 secondary veins on each side of the midvein, prominent beneath. No count for the Japanese plant was found; the closely related mainland plant's is used."
+    },
+    "leaf.texture": {
+      "value": "papery",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: blade papery."
+    },
+    "leaf.surfaceAbove": {
+      "value": "glabrous, dark green and lustrous",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/hydrangea-petiolaris",
+      "basis": "NC State Extension: dark green and lustrous above, paler below. Trees and Shrubs Online: glabrous above."
+    },
+    "leaf.surfaceBeneath": {
+      "value": "paler, hairy along the veins, with tufts of short white hairs in the vein axils",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan. Not drawn: the model has one colour for both faces of a leaf."
+    },
+    "leaf.colourYoung": {
+      "value": "light green",
+      "status": "published_plant_profile",
+      "source": "https://www.lve-baumschule.com/hydrangea-petiolaris/6353928",
+      "basis": "A nursery catalogue: leaves light green, becoming medium green."
+    },
+    "leaf.autumnColour": {
+      "value": "yellow",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "RHS plant record: broadly oval leaves turning yellow in autumn. Trees and Shrubs Online: short-lived, a yellowish tint in a mild southern English autumn, rich yellow at best, pale cream after cold nights."
+    },
+    "inflorescence.type": {
+      "value": "terminal corymbose cyme",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: terminal corymbose cyme with opposite branches, bearing fertile and sterile flowers."
+    },
+    "inflorescence.shape": {
+      "value": "flat",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-anomala/",
+      "basis": "Trees and Shrubs Online, comparing the two: the flat heads of H. petiolaris. NC State Extension: flat corymb."
+    },
+    "inflorescence.widthM": {
+      "value": [0.1, 0.2],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Across the head, sterile flowers included. Trees and Shrubs Online, after the Flora of Japan: 10 to 17 cm across. RHS: flowerheads to about 20 cm across. The growth model's organs.racemeLengthM measures the same thing."
+    },
+    "inflorescence.stalkLengthM": {
+      "value": [0.025, 0.038],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/hydrangea-petiolaris",
+      "basis": "NC State Extension: a peduncle of 1 to 1.5 in., in metres."
+    },
+    "inflorescence.branchSurface": {
+      "value": "densely covered in curled hairs",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan. Drawn as a pale, greyish green on the branches of the head."
+    },
+    "inflorescence.sterileFlowerCount": {
+      "value": [10, 15],
+      "status": "published_plant_profile",
+      "source": "https://patents.google.com/patent/USPP11038P/en",
+      "basis": "US plant patent PP11,038, of a sport whose flowers it calls typical of the plant: about 10 to 15 white sterile outer flowers. Trees and Shrubs Online: the number varies considerably, from very few to many, so the model also draws a head with fewer."
+    },
+    "inflorescence.sterileFlowerPosition": {
+      "value": "round the edge of the head",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "RHS plant record: small fertile flowers surrounded by showy white sterile ones."
+    },
+    "inflorescence.fertileFlowerCount": {
+      "value": null,
+      "status": "unknown"
+    },
+    "inflorescence.fertileFlowersDrawn": {
+      "value": 170,
+      "status": "provisional_design_assumption",
+      "basis": "How many fertile flowers the finest model draws, set by what a flowerhead may cost to draw. Sources say only 'numerous'; a head in life very likely has more."
+    },
+    "inflorescence.openingOrder": {
+      "value": "from the edge of the head inwards",
+      "status": "provisional_design_assumption",
+      "basis": "Not stated in any source read. In a corymbose cyme the outer branches are the lower and older ones, and photographs show heads with the outer flowers open round a middle still in bud."
+    },
+    "inflorescence.appears": {
+      "value": "with the young leaves, well before the flowers open",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online."
+    },
+    "inflorescence.afterFlowering": {
+      "value": "ages to brown and stays on the plant through winter",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online: the inflorescences quite quickly age to an insignificant brown. University of Connecticut: dried flower clusters persist. Morton Arboretum: the dried remains of the flower heads provide winter interest."
+    },
+    "sterileFlower.widthM": {
+      "value": [0.02, 0.045],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: sterile flowers 2 to 4.5 cm across."
+    },
+    "sterileFlower.sepalCount": {
+      "value": 4,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: mostly of about 4 white, petaloid sepals. University of Arkansas: the sterile flowers average 4 sepals. Three and five occur; the model draws four."
+    },
+    "sterileFlower.sepalShape": {
+      "value": ["obovate", "broadly ovate"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: sepals obovate to broadly ovate."
+    },
+    "sterileFlower.sepalMargin": {
+      "value": "entire or slightly scalloped",
+      "status": "published_plant_profile",
+      "source": "https://patents.google.com/patent/USPP13845P2/en",
+      "basis": "US plant patent PP13,845, of a sport of this plant: sepal margin slightly crenate, occasionally entire; apex obtuse."
+    },
+    "sterileFlower.stalkLengthM": {
+      "value": [0.01, 0.03],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: on pedicels 1 to 3 cm long."
+    },
+    "sterileFlower.colour": {
+      "value": "white",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97624/hydrangea-anomala-subsp-petiolaris/details",
+      "basis": "RHS plant record: showy white sterile flowers. Trees and Shrubs Online: white, petaloid sepals."
+    },
+    "sterileFlower.colourAged": {
+      "value": "brown",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online: the inflorescences age to brown. What they pass through on the way (the model draws a greenish cream) is read from photographs and is not from a source."
+    },
+    "fertileFlower.colour": {
+      "value": "creamy white",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/hydrangea-petiolaris",
+      "basis": "NC State Extension: creamy white fertile flowers. US plant patent PP11,038: off-white. A Polish climber nursery: greenish white."
+    },
+    "fertileFlower.calyxTubeLengthM": {
+      "value": [0.0015, 0.002],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: calyx tube obconical, 1.5 to 2 mm long, with 5 broadly triangular lobes about 0.5 mm long. The ovary is inferior, so this is the body of the flower."
+    },
+    "fertileFlower.petals": {
+      "value": "five, joined at the tip into a cap that falls as the flower opens",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online: the unfolding stamens push the petals away and the fused corolla falls off as a single unit, so the open flower is dominated by its stamens."
+    },
+    "fertileFlower.stamenCount": {
+      "value": [15, 20],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: stamens 15 to 20. More than 15 is what tells it from Hydrangea anomala, which usually has fewer."
+    },
+    "fertileFlower.stamenLengthM": {
+      "value": [0.003, 0.005],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: the longer stamens 3 to 5 mm."
+    },
+    "fertileFlower.styleCount": {
+      "value": 2,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: 2 ascending styles about 1 mm long, which stay on the capsule."
+    },
+    "fertileFlower.scent": {
+      "value": "sweetly fragrant",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/hydrangea-petiolaris",
+      "basis": "NC State Extension: numerous small, fertile, sweetly fragrant flowers. Morton Arboretum and the University of Connecticut also call the flowers fragrant; US plant patent PP13,845: slightly fragrant. The RHS record says nothing of scent, and taxon.json records the plant as unscented."
+    },
+    "fruit.type": {
+      "value": "capsule",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: a globose capsule with persistent calyx lobes and styles, splitting at the top between the styles."
+    },
+    "fruit.widthM": {
+      "value": 0.003,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: capsule about 3 mm across."
+    },
+    "fruit.colourRipe": {
+      "value": "brown",
+      "status": "published_plant_profile",
+      "source": "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=284",
+      "basis": "Virginia Tech dendrology: a small brown capsule, not showy."
+    },
+    "fruit.seedLengthM": {
+      "value": 0.0015,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/hydrangea/hydrangea-petiolaris/",
+      "basis": "Trees and Shrubs Online, after the Flora of Japan: seeds pale brown, about 1.5 mm long, winged all round. Not drawn."
+    },
+    "fruit.setInBritain": {
+      "value": null,
+      "status": "unknown"
+    }
+  }
+}

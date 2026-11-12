@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { v3 } from '../src/math/vec3.ts';
 import { loadGrowable } from '../src/node/load-taxa.ts';
 import type { RenderData } from '../src/render/contract.ts';
@@ -15,7 +15,19 @@ import { APPENDAGE_KIND, ORGAN_HELD } from '../src/vocab.ts';
 import { withFloweringWood } from './helpers.ts';
 
 const speciesDir = fileURLToPath(new URL('../../../species', import.meta.url));
-const library = loadGrowable(speciesDir);
+/**
+ * These tests are about the engine's mechanisms, not about any plant. Apart from Wisteria sinensis, whose pods are
+ * tested as the real thing, they grow test plants from the growth models as they stood when the mechanisms were
+ * written (`fixtures/models`, taken at commit 2fa217b). Researching a species rightly changes how it grows, and that
+ * must not move a test of the engine.
+ */
+const fixtures = fileURLToPath(new URL('./fixtures/models', import.meta.url));
+const library: Growable = new Map(
+  [...loadGrowable(speciesDir)].map(([id, t]) => {
+    const file = `${fixtures}/${id}.json`;
+    return [id, id !== 'wisteria-sinensis' && existsSync(file) ? { profile: t.profile, model: parseGrowthModel(JSON.parse(readFileSync(file, 'utf8')), `the frozen test model of ${id}`) } : t];
+  }),
+);
 const run = (s: Scenario, until: string) => new Simulation(s).runUntil(until);
 
 type Values = { [K in GrowthParamKey]?: NonNullable<GrowthModel['params'][K]['value']> };
