@@ -15,8 +15,7 @@
 // The page keeps a dark curtain over the picture until its frame is final, and a still that shows the curtain is
 // reported as failed, so a picture taken too soon is never mistaken for the plant.
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { inflateSync } from 'node:zlib';
 import { type Growable, parseGrowthModel, parseTaxon, readBower, toRenderData } from '@horti/core';
@@ -233,9 +232,46 @@ function inspect(file: string): { curtain: number; flat: boolean; width: number;
 
 // ---- taking a still -------------------------------------------------------------------------------
 /** One start of the headless browser, one picture. Returns why it failed, or null. */
+/**
+ * Each start of the browser needs a profile folder of its own, of about 17 MB. They are kept in this checkout's own
+ * `out/` and not in the machine's temp folder, where a run that was cut short used to leave them for good: two
+ * hundred of them filled a disk.
+ */
+const PROFILES = resolve(ROOT, 'out/.portrait-profiles');
+let shots = 0;
+const leftBehind: string[] = [];
+
+/** Remove a browser profile once the browser has let go of it. True if it is gone. */
+async function discard(profile: string, tries: number): Promise<boolean> {
+  for (let i = 0; i < tries; i++) {
+    try {
+      rmSync(profile, { recursive: true, force: true });
+    } catch {
+      // still held by the browser
+    }
+    if (!existsSync(profile)) return true;
+    await sleep(250);
+  }
+  return false;
+}
+
+/** Profiles that an earlier run in this checkout could not remove: the browsers that held them are long gone. */
+function discardStale(): void {
+  if (!existsSync(PROFILES)) return;
+  for (const name of readdirSync(PROFILES)) {
+    const profile = join(PROFILES, name);
+    try {
+      if (Date.now() - statSync(profile).mtimeMs > 15 * 60_000) rmSync(profile, { recursive: true, force: true });
+    } catch {
+      // in use, or already gone
+    }
+  }
+}
+
 async function shoot(browser: string, url: string, file: string, budget: number): Promise<string | null> {
   rmSync(file, { force: true });
-  const profile = mkdtempSync(join(tmpdir(), 'portrait-'));
+  mkdirSync(PROFILES, { recursive: true });
+  const profile = join(PROFILES, `${process.pid}-${shots++}`);
   const child = spawn(
     browser,
     ['--headless=new', `--screenshot=${file}`, `--window-size=${width},${height}`, '--force-device-scale-factor=1', '--hide-scrollbars', `--virtual-time-budget=${budget}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions', `--user-data-dir=${profile}`, url],
@@ -252,15 +288,8 @@ async function shoot(browser: string, url: string, file: string, budget: number)
     size = now;
   }
   if (child.exitCode === null) child.unref();
-  // the browser lets go of its profile a moment after the picture is written
-  for (let i = 0; i < 20; i++) {
-    try {
-      rmSync(profile, { recursive: true, force: true });
-      break;
-    } catch {
-      await sleep(250);
-    }
-  }
+  // the browser lets go of its profile a moment after the picture is written; one it still holds is tried again at the end
+  if (!(await discard(profile, 20))) leftBehind.push(profile);
   if (steady < 3) return 'the browser wrote no picture';
   const seen = inspect(file);
   if (seen.curtain > 0.5) return 'the viewer had not reached a final frame, or refused: the picture shows its curtain, with the reason if it gave one';
@@ -314,6 +343,7 @@ const browser = [process.env['PORTRAIT_BROWSER'], ...BROWSERS].find((path): path
 if (!browser) throw new Error(`no browser found to take the stills with. Looked for:\n  ${BROWSERS.join('\n  ')}\nSet PORTRAIT_BROWSER to the path of Edge or Chrome.`);
 await ensureViewer();
 
+discardStale();
 const dir = join(out, taxonId);
 mkdirSync(dir, { recursive: true });
 // stills of these views from an earlier portrait go: their dates may no longer be the days of this run
@@ -365,6 +395,8 @@ const order = (s: Still) => (s.view === 'whole' ? SEASONS.indexOf(s.season ?? 'w
 const manifest: Manifest = { taxonId, label, years, care, taken: new Date().toISOString().slice(0, 16).replace('T', ' '), stills: [...kept, ...wanted].sort((a, b) => order(a) - order(b)) };
 writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
 console.log(`contact sheet: ${writeIndex()}`);
+// profiles the browsers were still holding when their pictures were taken
+for (const profile of leftBehind) await discard(profile, 40);
 if (failed) {
   console.error(`${failed} still${failed === 1 ? '' : 's'} could not be taken`);
   process.exit(1);
