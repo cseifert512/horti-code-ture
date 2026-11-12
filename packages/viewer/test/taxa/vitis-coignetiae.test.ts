@@ -249,8 +249,8 @@ describe('the bunch agrees with the morphology file and the growth model', () =>
       low = Math.min(low, shade);
       high = Math.max(high, shade);
     }
-    // no point ripens to less than nothing, and the bloom is at least twice as light as the shade of the berry
-    expect(low).toBeGreaterThan(0.2);
+    // no point ripens to less than nothing (the stalk ripens darkest), and the bloom is far lighter than the shade
+    expect(low).toBeGreaterThan(0.1);
     expect(high / low).toBeGreaterThan(2);
     // dark, and more blue than red or green
     expect(bunch.ripe[2]).toBeGreaterThan(bunch.ripe[0]);

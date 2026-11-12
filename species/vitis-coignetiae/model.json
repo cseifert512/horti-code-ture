@@ -86,26 +86,26 @@
       "basis": "Honma, Shishido and Taira (2007), plants in Yamagata, Japan: flowering lasted 10 days on female plants and 9 on male. Taken as the time one panicle is in flower."
     },
     "extension.leaderMPerSeason": {
-      "value": 3.5,
+      "value": 2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The middle of the \"2 - 5 metres\" of annual shoot growth that a wall-greening supplier gives for this species (fassadengruen.de, wild vines and creepers: read as a search-engine excerpt only, the page would not open). Bean: \"very vigorous\"; RHS: over 12 m in 10 to 20 years. Not measured."
+      "basis": "Two published figures pull apart and this is set between them. A wall-greening supplier gives \"an annual shoot growth of 2 - 5 metres\" (fassadengruen.de, read as a search-engine excerpt only); the RHS gives 10 to 20 years to pass 12 m, which is about 1 m a year. A cane loses its unripened end each winter and the engine has no such loss, so the low end of the shoot figure is taken: with the slow start below, the leading cane has made 12 m in its eighth year. Not measured."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        3,
-        2.2,
-        1.5
+        1.8,
+        1.4,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader by branch order, within the same 2 to 5 m of annual shoot growth. Not measured."
+      "basis": "Scaled down from the leader by branch order. Not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 4,
+      "value": 3.5,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A cane that finds no hold still makes its year's length: towards the upper end of the 2 to 5 m of annual shoot growth (see extension.leaderMPerSeason). Not measured."
+      "basis": "A cane that finds no hold makes its length within the season: the pace at which a free cane reaches the length organs.whipLengthM gives it. Not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -184,12 +184,12 @@
       "basis": "A bud that waits breaks within two more years. A choice."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 3,
+      "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "Three canes along one lath or cable before the next looks elsewhere: the canes of a vine run bundled along a wire. A choice."
+      "basis": "Two canes along one lath or cable before the next looks elsewhere. A choice: it sets how fast an unpruned plant takes a structure over, for which no figure was found."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 4,
+      "value": 3,
       "status": "provisional_design_assumption",
       "basis": "One more on a glulam member, which has the room. A choice."
     },
@@ -242,7 +242,7 @@
       "value": 12,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists for this species or, in any source read, for the genus. A tendril is taken to coil round nothing stouter than this: a cable or a wire qualifies, a 40 mm lath does not, and the plant has to be tied to timber. Darwin describes the forked tendril of the common vine clasping a support and then contracting into a spring but gives no size of support; a review of tendrils (Sousa-Baena and others 2018) says only that climbing by tendrils gets harder as the support thickens. The largest lath or pole a tendril of this plant holds needs measuring: it decides whether the timber sub-lattice needs ties."
+      "basis": "No measurement exists for this species or, in any source read, for the genus. A tendril is taken to coil round nothing stouter than this: a cable or a wire qualifies, a 40 mm lath does not, and the plant has to be tied to timber. It fits the advice that it \"needs wire or netting to cling to\" (BBC Gardeners' World) but is not drawn from it. Darwin describes the forked tendril of the common vine clasping a support and then contracting into a spring, with no size of support; a review of tendrils (Sousa-Baena and others 2018) says only that climbing by tendrils gets harder as the support thickens. The largest lath or pole a tendril of this plant holds needs measuring: it decides whether the timber sub-lattice needs ties."
     },
     "attachment.minPitchM": {
       "value": 0.3,
@@ -325,7 +325,7 @@
     "organs.whipLengthM": {
       "value": [
         1.5,
-        4
+        3.5
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -544,10 +544,10 @@
       "basis": "Buds on wood made last year, and on older wood, break into the year's shoots. RHS, of grapevines: the flower-carrying side shoots are new shoots of the season from the permanent stems."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 2.5,
+      "value": 3,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "About one new short shoot to every third or fourth node of older stem each year. A choice, set so that an established plant covers its support in leaf, as every description of it says it does (RHS: \"vigorous\"; hazards: \"heavy shade from large leaves\")."
+      "basis": "About one new short shoot to every third node of older stem each year. A choice, set so that an established plant covers its support in leaf, as every description of it says it does (RHS: \"vigorous\"; hazards: \"heavy shade from large leaves\")."
     },
     "sideShoots.lengthM": {
       "value": [

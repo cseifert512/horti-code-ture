@@ -581,7 +581,7 @@ const BUNCH_LODS = 3;
  * painted lighter and ripens to a dusty blue; the under side and the scar of
  * the style ripen nearly black.
  */
-const UNRIPE = { low: 0.3, high: 0.42, stalk: 0.27 };
+const UNRIPE = { low: 0.3, high: 0.42, stalk: 0.24 };
 const berryGreen = (g: number): RGB => [g * 0.6, g, g * 0.21];
 const BUNCH_STALK: RGB = [UNRIPE.stalk * 0.85, UNRIPE.stalk, UNRIPE.stalk * 0.3];
 
