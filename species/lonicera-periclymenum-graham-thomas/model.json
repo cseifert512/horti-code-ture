@@ -265,7 +265,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Stem between one pair of leaves and the next. No flora read gives an internode length. Chosen so that a flowering side shoot 0.1 to 0.35 m long carries two to six pairs; the long shoots of the real plant have longer internodes than its side shoots, which one figure cannot show. The engine lays a stem down in steps of 40 mm, so pairs stand 40 or 80 mm apart."
+      "basis": "Stem between one pair of leaves and the next. No flora read gives an internode length. Chosen so that a flowering side shoot 0.12 to 0.45 m long carries two to eight pairs; the long shoots of the real plant have longer internodes than its side shoots, which one figure cannot show. The engine lays a stem down in steps of 40 mm, so pairs stand 40 or 80 mm apart."
     },
     "organs.leafLengthM": {
       "value": [
@@ -551,19 +551,19 @@
       "basis": "RHS honeysuckle guide: honeysuckles of this pruning group flower \"on short sideshoots on the previous season’s growth\". Wood a year old or more bears them."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 12,
+      "value": 15,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "New side shoots a year on each metre of stem old enough to bear them. Buds stand in pairs at every node, so a metre of stem with some fourteen nodes could throw twice that; the engine lets a node bear one shoot at a time, and this rate gives six free nodes in ten a shoot each year. A choice, set so that a plant six to ten years old clothes its frame, as the RHS describes an established plant (\"congested\", \"overgrown thickets\" if left); no count was found."
+      "basis": "New side shoots a year on each metre of stem old enough to bear them. Buds stand in pairs at every node, so a metre of stem with some fourteen nodes could throw twice that; the engine lets a node bear one shoot at a time, and this rate gives three free nodes in four a shoot each year. A choice, set so that a plant six to ten years old clothes its frame, as the RHS describes an established plant (\"congested\", \"overgrown thickets\" if left); no count was found."
     },
     "sideShoots.lengthM": {
       "value": [
-        0.1,
-        0.35
+        0.12,
+        0.45
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The RHS calls them short. Taken to be a hand to a forearm long; no flora read gives a figure. A choice."
+      "basis": "The RHS calls them short. Taken to be a hand to a forearm long, which is short beside a long shoot of one or two metres; no flora read gives a figure. A choice."
     },
     "sideShoots.lifespanYears": {
       "value": 5,
