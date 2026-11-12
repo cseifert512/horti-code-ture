@@ -68,10 +68,11 @@ describe('fruit', () => {
   });
 
   it('is left out, and said to be, where the taxon has no fruit model', () => {
-    const data = plantOf('lonicera-henryi');
+    // a taxon the viewer has no module for is drawn with the stand-in, which has no fruit
+    const data = plantOf('a-taxon-without-a-look');
     data.fruits.push(fruit());
     const view = new PlantView(data, materials());
-    expect(view.withoutFruit).toEqual(['A lonicera-henryi']);
+    expect(view.withoutFruit).toEqual(['A a-taxon-without-a-look']);
     view.update(camera, 300, 1);
     expect(view.stats().fruit).toBe(0);
     view.dispose();
