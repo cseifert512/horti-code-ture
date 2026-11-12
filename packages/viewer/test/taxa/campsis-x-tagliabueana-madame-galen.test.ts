@@ -181,6 +181,52 @@ describe('the truss', () => {
     }
   });
 
+  // TAXON_LOOKS.md section 4: "Before it opens a part is drawn at 30% of its size ... A part that has dropped is gone."
+  // The organ program draws a point of a part at  pivot + s * (place - pivot),  s = 0.3 unopened, 1 open, 0 dropped.
+  it('draws a flower that has not opened as a closed club standing out of its calyx, and one that has dropped as nothing', () => {
+    for (let lod = 0; lod < truss.lods - 1; lod++) {
+      const g = truss.make(1, lod);
+      const all = vertices(g);
+      const first = Math.min(...all.filter((v) => v.t >= 0).map((v) => v.t));
+      const mine = new Map<number, (typeof all)[number]>();
+      all.forEach((v, i) => {
+        if (v.t === first) mine.set(i, v);
+      });
+      const base = [...mine.values()][0]!.pivot;
+      const axis = [...mine.values()].reduce((s, v) => s.add(v.p.clone().sub(base)), new THREE.Vector3()).normalize();
+      const at = (v: (typeof all)[number], s: number) => v.pivot.clone().addScaledVector(v.p.clone().sub(v.pivot), s);
+      const off = (p: THREE.Vector3) => {
+        const d = p.clone().sub(base);
+        return { along: d.dot(axis), out: d.addScaledVector(axis, -d.dot(axis)).length() };
+      };
+      // in bud: nowhere wider than the throat of the open flower, and closed to a point at its top
+      const bud = [...mine.values()].map((v) => off(at(v, 0.3)));
+      expect(Math.max(...bud.map((b) => b.out)), `level ${lod}`).toBeLessThan(num('flower.throatWidthM') / 2);
+      expect(Math.max(...bud.map((b) => b.out)), `level ${lod}`).toBeGreaterThan(0.004);
+      const top = bud.reduce((a, b) => (b.along > a.along ? b : a));
+      // (the line the flower faces along is worked out from its points, so a few millimetres is "at the middle")
+      expect(top.out, `level ${lod}`).toBeLessThan(0.0035);
+      // longer than the calyx it stands in, shorter than the open flower
+      expect(top.along).toBeGreaterThan(num('flower.calyxLengthM') * 1.5);
+      expect(top.along).toBeLessThan(num('flower.tubeLengthM'));
+      // open, it has the area of a trumpet; dropped, none: every triangle has closed to a line
+      const index = g.index!;
+      const area = (s: number) => {
+        let sum = 0;
+        for (let k = 0; k < index.count; k += 3) {
+          const [a, b, c] = [mine.get(index.getX(k)), mine.get(index.getX(k + 1)), mine.get(index.getX(k + 2))];
+          if (!a || !b || !c) continue;
+          const pa = at(a, s);
+          sum += at(b, s).sub(pa).cross(at(c, s).sub(pa)).length() / 2;
+        }
+        return sum;
+      };
+      expect(area(1), `level ${lod}`).toBeGreaterThan(0.003);
+      // nothing but the rounding of the stored numbers: a hundredth of a square millimetre at most
+      expect(area(0), `level ${lod}`).toBeLessThan(1e-8);
+    }
+  });
+
   // TAXON_LOOKS.md section 4: "whatever outlasts the petals must be axis"
   it('leaves a calyx where each corolla has dropped: the calyx is axis and the corolla a part, joined at one place', () => {
     const all = vertices(truss.make(1, 0));

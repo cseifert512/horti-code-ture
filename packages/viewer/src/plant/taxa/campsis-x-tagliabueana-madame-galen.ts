@@ -177,7 +177,7 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   for (let i = 0; i <= NS; i++) {
     pts.push(axis((axisEnd * i) / NS));
     // stout where it joins the stem, slender at the end
-    radii.push(0.0105 * (1 - 0.55 * (i / NS)) + (i === 0 ? 0.006 : 0));
+    radii.push(0.0068 * (1 - 0.5 * (i / NS)) + (i === 0 ? 0.004 : 0));
   }
   mg.tube(pts, radii, [6, 4, 3][lod]!, WHITE, WHITE, MIDRIB);
 
@@ -312,9 +312,10 @@ const limbProfile = (() => {
 // The flower in bud. The organ program draws a part that has not opened at three tenths of its size
 // about the point it is tagged with, and a part that has dropped at none. The corolla is therefore
 // tagged point by point: each point of the tube with a place on the axis, each point of a lobe with a
-// place on a line of that lobe's own. At three tenths the tube is then a slender neck, the five lobes
-// are folded over one another into a dome, and the whole is a club standing out of the calyx; as the
-// flower opens it swells and spreads into the trumpet; and when it drops, every sheet closes to a line.
+// place on a straight line of that lobe's own, from the axis out to its far side. At three tenths the
+// tube is then a slender neck, the five lobes are folded over one another into a dome, and the whole is
+// a club standing out of the calyx; as the flower opens it swells and spreads into the trumpet; and
+// when it drops, every sheet closes to a straight line, which has no width and is not drawn.
 /** How far up the closed corolla the throat stands, and where its top is. */
 const BUD_THROAT = 0.04;
 const BUD_TOP = 0.052;
@@ -322,15 +323,25 @@ const BUD_TOP = 0.052;
 const UNOPENED = 0.3;
 /** How far the lobes of one flower reach out beyond the throat along their middle: the larger lower ones, the smaller upper ones. */
 const lobeReach = (upper: boolean): number => LOBE_LENGTH * (upper ? 0.9 : 1);
-/** The bud above its throat, for a share `q` of the way out along a lobe: how far from the axis the closed lobes stand, and how high. */
-const budDome = (q: number, upper: boolean): { radius: number; z: number } => {
-  const open = THROAT_RADIUS + q * lobeReach(upper) * limbProfile.whole;
-  // it swells a little above the throat, then closes to a point
-  const closed = (UNOPENED * THROAT_RADIUS + 0.008 * q) * (1 - Math.pow(q, 2.5));
-  return { radius: Math.min(UNOPENED * open, closed), z: BUD_THROAT + (BUD_TOP - BUD_THROAT) * (1 - Math.pow(1 - q, 1.8)) };
-};
 /** Height on the axis that a point of the tube, a share `s` of the way up it, closes to. */
 const tubePivot = (s: number): number => (s * (BUD_THROAT - UNOPENED * TUBE)) / (1 - UNOPENED);
+/**
+ * The bud above its throat, for a share `q` of the way out along a lobe: how far
+ * from the axis the closed lobe stands there and how high; and the point of the
+ * lobe's line that this part of it closes to, as a distance across the axis and
+ * a height. Both of those run in step, so that the line is straight.
+ */
+const budDome = (q: number, upper: boolean): { radius: number; z: number; across: number; pivotZ: number } => {
+  const reach = lobeReach(upper) * limbProfile.whole;
+  const open = THROAT_RADIUS + q * reach;
+  // it swells a little above the throat, then closes to a point
+  const radius = Math.min(UNOPENED * open, (UNOPENED * THROAT_RADIUS + 0.008 * q) * (1 - Math.pow(q, 2.5)));
+  const across = (UNOPENED * open - radius) / (1 - UNOPENED);
+  const acrossMost = (UNOPENED * (THROAT_RADIUS + reach)) / (1 - UNOPENED);
+  const forward = (share: number) => TUBE + lobeReach(upper) * limbProfile.at(limbProfile.alongAt(share)).forward;
+  const pivotZ = lerp(tubePivot(1), (BUD_TOP - UNOPENED * forward(1)) / (1 - UNOPENED), across / acrossMost);
+  return { radius, z: UNOPENED * forward(q) + (1 - UNOPENED) * pivotZ, across, pivotZ };
+};
 
 interface Corolla {
   geometry: THREE.BufferGeometry;
@@ -379,11 +390,9 @@ function makeCorolla(lod: number): Corolla {
       if (lod === 0 && i % 2 === 1) c = mix(c, C.vein, 0.42 * (1 - smoothstep(0.25, 0.7, w)));
       // how far out this point is, as a share of the lobe's whole way out along its middle
       const q = (reach * p.out) / (lobeReach(upper) * limbProfile.whole);
-      const dome = budDome(q, upper);
       // towards the far side of the axis, so that the lobes close over one another
-      const shift = (UNOPENED * (THROAT_RADIUS + q * lobeReach(upper) * limbProfile.whole) - dome.radius) / (1 - UNOPENED);
-      const zOpen = TUBE + lobeReach(upper) * limbProfile.at(limbProfile.alongAt(q)).forward;
-      pivots.push(-shift * Math.cos(middle), -shift * Math.sin(middle), (dome.z - UNOPENED * zOpen) / (1 - UNOPENED));
+      const dome = budDome(q, upper);
+      pivots.push(-dome.across * Math.cos(middle), -dome.across * Math.sin(middle), dome.pivotZ);
     }
     return { p: [Math.cos(th) * r, Math.sin(th) * r + tubeLift(z), z], c };
   };
@@ -454,22 +463,27 @@ function makeCalyx(segs: Segs): THREE.BufferGeometry {
 function makeClub(segs: Segs): THREE.BufferGeometry {
   const sb = new Surf();
   const [around, along] = segs;
+  // the neck takes the lower rows and the dome of folded lobes the rest
+  const neckRows = Math.max(1, Math.round(along * 0.45));
   sb.surf(around, along, (u, v) => {
     const th = u * TAU;
-    const z = BUD_TOP * v;
+    const j = Math.round(v * along);
     let r: number;
+    let z: number;
     let c: RGB;
-    if (z <= BUD_THROAT) {
-      const s = z / BUD_THROAT;
+    if (j <= neckRows) {
+      const s = j / neckRows;
       r = UNOPENED * tubeRadius(s);
+      z = BUD_THROAT * s;
       c = mix(mix(C.tubeBase, C.tube, smoothstep(0.1, 0.55, s)), C.throat, 0.5 * smoothstep(0.75, 1, s));
     } else {
-      const q = 1 - Math.pow(1 - (z - BUD_THROAT) / (BUD_TOP - BUD_THROAT), 1 / 1.8);
-      r = budDome(q, false).radius;
+      const q = (j - neckRows) / (along - neckRows);
+      const dome = budDome(q, false);
+      // five-sided where the lobes are folded
+      r = dome.radius * (1 + 0.06 * Math.cos(LOBES * th));
+      z = dome.z;
       c = mix(C.throat, C.limb, smoothstep(0, 0.3, q));
     }
-    // five-sided where the lobes are folded
-    r *= 1 + 0.06 * Math.cos(LOBES * th) * smoothstep(0.6, 1, v);
     return { p: [Math.cos(th) * r, Math.sin(th) * r, z], c };
   });
   return sb.build();
@@ -702,9 +716,9 @@ function makeRootletsGeometry(variant: number, lod: number): THREE.BufferGeometr
     for (let k = 0; k < each; k++) {
       const f = each > 1 ? k / (each - 1) - 0.5 : 0;
       // the row runs along the stem; its rootlets fan out from it
-      const fan = f * 2.3 + rng.range(-0.12, 0.12);
+      const fan = f * 1.3 + rng.range(-0.14, 0.14);
       const out = new V3(side * Math.cos(fan), Math.sin(fan), 0);
-      const from = new V3(side * 0.12, f * 1.3 + rng.range(-0.06, 0.06), -0.07);
+      const from = new V3(side * 0.12, f * 2 + rng.range(-0.08, 0.08), -0.07);
       const reach = rng.range(0.78, 1.08);
       const pts = [from, from.clone().addScaledVector(out, 0.5 * reach).setZ(-0.1), from.clone().addScaledVector(out, reach).setZ(-0.03), from.clone().addScaledVector(out, reach + 0.1).setZ(0.9)];
       if (lod === 0) mg.tube(pts, [0.09, 0.075, 0.055, 0.02], 3, ROOTLET.base, ROOTLET.tip);
