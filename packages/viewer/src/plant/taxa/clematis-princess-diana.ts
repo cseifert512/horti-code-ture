@@ -64,24 +64,26 @@ const leafLengthM = (leaflets: number): number => LEAF_STALK_M + ((leaflets - 1)
 const LEAF_LODS = 3;
 /** Segments round a leaflet and out from its stalk. Even numbers round, so that the tip and the notch are both on the outline. */
 const LEAFLET_SEGS: [number, number][] = [
-  [28, 5],
-  [8, 2],
+  [32, 5],
+  [12, 2],
   [6, 1],
 ];
 
 /**
- * The outline of a leaflet: broadly ovate, drawn out to a short point, shallowly
- * heart-shaped where the stalk joins. `lobe` adds one basal lobe on that side:
- * a mitten. The surface is given afterwards (leafletBlade).
+ * The outline of a leaflet: a heart. Broadest close above where the stalk
+ * joins, with a rounded lobe to either side of a shallow notch there, its
+ * sides running nearly straight to a blunt end with a short point on it.
+ * `lobe` adds one basal lobe on that side: a mitten. The surface is given
+ * afterwards (leafletBlade).
  */
 const leafletShape = (lobe: -1 | 0 | 1) => ({
-  body: 0.37,
+  body: 0.4,
   lobes: [
-    { angle: 0, reach: 0.58, width: 0.78 },
-    { angle: 0, reach: 0.1, width: 0.22 },
-    ...(lobe === 0 ? [] : [{ angle: lobe * 1.7, reach: 0.2, width: 0.26 }]),
+    { angle: 0, reach: 0.6, width: 0.5 },
+    { angle: 0, reach: 0.09, width: 0.17 },
+    ...(lobe === 0 ? [] : [{ angle: lobe * 1.25, reach: 0.17, width: 0.2 }]),
   ],
-  sinus: { depth: 0.6, width: 0.42 },
+  sinus: { depth: 0.95, width: 1.2 },
   fold: 0,
   arch: 0,
 });
@@ -103,12 +105,16 @@ function leafletBlade(lod: number, lobe: -1 | 0 | 1): THREE.BufferGeometry {
     // The surface: nearly flat, the two halves lifted a little from a sunken midrib, the tip turned down, the margin
     // gently waved; close to, the three main veins that leave the base together are pressed into it.
     const pos = g.getAttribute('position');
+    const uv = g.getAttribute('uv');
     const half = LEAFLET_ASPECT / 2;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const z = pos.getZ(i);
       const across = x / half;
-      let y = 0.07 * Math.abs(x) - 0.13 * Math.max(0, z) ** 2.4 - 0.05 * across * across * Math.max(0, z) ** 2;
+      // The shared leaf texture has many side veins set square to the midrib of a narrow leaflet. On this broad one
+      // they are laid to rise steeply from the midrib and curve in towards the tip, and fewer of them are used.
+      uv.setXY(i, 0.5 + 0.5 * clamp(across, -1, 1), clamp(0.07 + 0.42 * (z - 0.85 * Math.abs(x) - 0.5 * x * x), 0.01, 0.99));
+      let y = 0.03 * Math.abs(x) + 0.035 * (1 - across * across) * Math.sin(Math.PI * clamp(z, 0, 1)) - 0.13 * Math.max(0, z) ** 2.4 - 0.05 * across * across * Math.max(0, z) ** 2;
       if (lod === 0) {
         const out = Math.hypot(x, z);
         const theta = Math.atan2(x, z + 0.04);
@@ -299,9 +305,9 @@ const STAMEN_IN_FLOWERS = STAMEN_M / FLOWER_M;
 
 const PINK = {
   // within: luminous deep pink, slightly mauve, with a deep pink bar; brighter at the margin, pale in the throat
-  inner: lin('#e53a7c'),
-  innerEdge: lin('#f37aaa'),
-  bar: lin('#cd1f5a'),
+  inner: lin('#ee4f8c'),
+  innerEdge: lin('#f78cb8'),
+  bar: lin('#d92d6a'),
   throat: lin('#f3c4cf'),
   // without: pinkish red along three ribs, a pale margin, green where it joins the stalk
   rib: lin('#b61d50'),
@@ -318,10 +324,10 @@ interface Bloom extends Stance {
   flare: number;
 }
 const BLOOMS: readonly Bloom[] = [
-  { flare: 0.12, lean: 0.22, azimuth: 0.35, seed: 11 },
-  { flare: 0.45, lean: 0.6, azimuth: -0.5, seed: 23 },
-  { flare: 0.78, lean: 0.95, azimuth: 0.15, seed: 37 },
-  { flare: 1, lean: 0.42, azimuth: -0.25, seed: 51 },
+  { flare: 0.12, lean: 0.3, azimuth: 0.35, seed: 11 },
+  { flare: 0.45, lean: 0.8, azimuth: -0.5, seed: 23 },
+  { flare: 0.78, lean: 1.25, azimuth: 0.15, seed: 37 },
+  { flare: 1, lean: 0.95, azimuth: -0.3, seed: 51 },
 ];
 const FLOWER_LODS = 3;
 // TEMPORARY, for looking at one variant at a time while the model is made: ?pdv=<n>. To be removed.
@@ -568,7 +574,7 @@ const HEADS: readonly Head[] = [
 ];
 const HEAD_LODS = 3;
 /** Hairs drawn to a tail close to: enough to read as a feather, far fewer than the tail has. */
-const HAIRS_TO_A_TAIL = 34;
+const HAIRS_TO_A_TAIL = 64;
 const HAIR_IN_HEADS = mid(characterRange(morphology, 'fruit.tailHairLengthM')) / HEAD_M;
 
 /** Slivers, each a triangle of its own: three points and three colours for each. */
@@ -585,7 +591,7 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
   const head = HEADS[variant]!;
   const mg = new Merge(false);
   // the stalk that carried the flower, its bracts shrunk and withering; from far off the bracts are not drawn
-  const { top: centre, axis } = addStalk(mg, head, STALK_IN_HEADS, lod === 2 ? 0 : BRACT_IN_HEADS * 0.6, 0.013, lod, [0.9, 0.82, 0.7], [1.5, 1.45, 1.2]);
+  const { top: centre, axis } = addStalk(mg, head, STALK_IN_HEADS, lod === 2 ? 0 : BRACT_IN_HEADS * 0.42, 0.013, lod, [0.9, 0.82, 0.7], [1.5, 1.45, 1.2]);
   const right = new V3().crossVectors(axis, AZ).normalize();
   const fore = new V3().crossVectors(right, axis).normalize();
   // nearer than far off, fewer achenes are drawn, each standing for two; from far off none singly
@@ -608,16 +614,16 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
     const from = centre.clone().addScaledVector(d, 0.035);
     const tip = from.clone().addScaledVector(d, ACHENE_IN_HEADS);
     // the tail: on from the achene, never straight, curling over to one side or the other
-    const curl = lerp(1.7, 3.1, hash2(head.seed + 1, i)) * (hash2(head.seed + 2, i) < 0.5 ? -1 : 1);
+    const curl = lerp(1.5, 2.7, hash2(head.seed + 1, i)) * (hash2(head.seed + 2, i) < 0.5 ? -1 : 1);
     const twist = (hash2(head.seed + 3, i) - 0.5) * 1.6;
-    const steps = [7, 3, 1][lod]!;
+    const steps = [6, 3, 1][lod]!;
     const tail: V3[] = [tip.clone()];
     const heading = d.clone();
     const turnAbout = flat.clone().applyAxisAngle(d, twist);
     const p = tip.clone();
     const reach = TAIL_IN_HEADS * lerp(0.85, 1.12, hash2(head.seed + 4, i));
     for (let s = 1; s <= steps; s++) {
-      heading.applyAxisAngle(turnAbout, (curl / steps) * (0.5 + s / steps));
+      heading.applyAxisAngle(turnAbout, (curl / steps) * (0.75 + (0.5 * s) / steps));
       p.addScaledVector(heading, reach / steps);
       tail.push(p.clone());
     }
@@ -629,18 +635,18 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
     };
     if (lod === 0) {
       // the achene: a flattened seed, broadest below the middle
-      sb.surf(5, 3, (u, v) => {
+      sb.surf(4, 3, (u, v) => {
         const th = u * TAU;
-        const w = Math.pow(Math.sin(Math.PI * Math.pow(v, 0.8)), 0.7);
+        const w = Math.pow(Math.sin(Math.PI * Math.pow(v, 0.7)), 0.55);
         const q = from
           .clone()
           .addScaledVector(d, ACHENE_IN_HEADS * v)
           .addScaledVector(flat, 0.045 * w * Math.cos(th))
-          .addScaledVector(thin, 0.018 * w * Math.sin(th));
+          .addScaledVector(thin, 0.02 * w * Math.sin(th));
         return { p: [q.x, q.y, q.z], c: mix(SEED.achene, SEED.acheneTip, v) };
       });
       // the tail's own thread
-      mg.tube(tail, tail.map((_, s) => lerp(0.008, 0.003, s / steps)), 3, SEED.tail, SEED.tail);
+      mg.tube(tail, tail.map((_, s) => lerp(0.007, 0.0025, s / steps)), 3, SEED.tail, SEED.tail);
       // and its feathering: fine hairs all round it and all the way along, each standing forward as it leaves the thread
       const points: number[] = [];
       const colours: number[] = [];
@@ -651,12 +657,12 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
         if (outFrom.lengthSq() < 0.05) outFrom.copy(flat);
         const hair = outFrom
           .normalize()
-          .applyAxisAngle(run, j * 2.39996 + hash2(head.seed + 5, i * 61 + j) * 0.9)
-          .multiplyScalar(0.62)
-          .addScaledVector(run, 0.8)
+          .applyAxisAngle(run, j * 2.39996 + hash2(head.seed + 5, i * 97 + j) * 0.9)
+          .multiplyScalar(0.7)
+          .addScaledVector(run, 0.72)
           .normalize();
-        const long = HAIR_IN_HEADS * lerp(0.8, 1.35, hash2(head.seed + 6, i * 61 + j)) * (1 - 0.45 * f * f);
-        const foot = run.clone().multiplyScalar(0.007);
+        const long = HAIR_IN_HEADS * lerp(0.85, 1.45, hash2(head.seed + 6, i * 97 + j)) * (1 - 0.4 * f * f);
+        const foot = run.clone().multiplyScalar(0.0045);
         const tipOf = on.clone().addScaledVector(hair, long);
         for (const q of [on.clone().sub(foot), on.clone().add(foot), tipOf]) points.push(q.x, q.y, q.z);
         colours.push(...SEED.tail, ...SEED.tail, ...SEED.hair);
@@ -668,7 +674,7 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
         sb.surf(1, steps, (u, v) => {
           const on = v === 0 ? from.clone() : along(v).on;
           const q = on.addScaledVector(across, (u - 0.5) * 0.12 * (1 - 0.7 * v) * (v === 0 ? 0.4 : 1));
-          return { p: [q.x, q.y, q.z], c: v === 0 ? SEED.achene : mix(SEED.tail, SEED.hair, 0.3 + 0.7 * Math.abs(u - 0.5) * 2) };
+          return { p: [q.x, q.y, q.z], c: v === 0 ? SEED.achene : mix(SEED.tail, SEED.hair, 0.5 * Math.abs(u - 0.5) * 2) };
         });
       }
     }
@@ -687,7 +693,7 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
         .addScaledVector(axis, 0.08 + r * Math.cos(polar))
         .addScaledVector(right, r * Math.sin(polar) * Math.cos(th))
         .addScaledVector(fore, r * Math.sin(polar) * Math.sin(th));
-      return { p: [q.x, q.y, q.z], c: mix(SEED.tail, SEED.hair, 0.5 + 0.5 * Math.sin(polar)) };
+      return { p: [q.x, q.y, q.z], c: mix(SEED.achene, SEED.tail, 0.55 + 0.45 * Math.sin(polar)) };
     });
     mg.add(sb.build(), IDENTITY, WHITE, centre, 0);
   }
@@ -758,11 +764,11 @@ const leaf: LeafAsset = {
   variants: LEAF_PLANS.length,
   lods: LEAF_LODS,
   make: makeLeaf,
-  budget: [1800, 290, 90],
+  budget: [2000, 360, 90],
   pick: (lengthM, r) => (lengthM < THREE_OR_FIVE_M ? 0 : 2) + (r < 0.7 ? 0 : 1),
   // light to mid green with a faint grey cast; fresh yellow-green when young; yellowing, then brown, as the top growth dies back
-  palette: { greenA: lin('#55863f'), greenB: lin('#6a9a4c'), young: lin('#93b653'), autumnA: lin('#b79f3c'), autumnB: lin('#7d5a2c') },
-  roughness: 0.56,
+  palette: { greenA: lin('#467c3a'), greenB: lin('#5b9148'), young: lin('#93b653'), autumnA: lin('#b79f3c'), autumnB: lin('#7d5a2c') },
+  roughness: 0.5,
   translucency: THIN_LEAF,
   detailReach: 0.8,
 };
@@ -779,9 +785,10 @@ const flower: FlowerAsset = {
   poise: 'held',
   centreAlong: STALK_IN_FLOWERS * 0.9 + 0.5,
   // the bud: pale faces turned salmon, ribs a dull rose
-  budTint: [0.72, 0.98, 0.6],
+  budTint: [0.6, 1.05, 0.45],
   swing: 0.35,
-  translucency: 0.22,
+  // "luminous": a good deal of light comes through the tepals, thick as they are
+  translucency: 0.5,
   sheen: 0.14,
   detailAt: [1.3, 4],
   detailCaps: [50, 400],
@@ -792,7 +799,7 @@ const seedHead: FruitAsset = {
   variants: HEADS.length,
   lods: HEAD_LODS,
   make: makeSeedHead,
-  budget: [3600, 420, 80],
+  budget: [4000, 420, 80],
   pick: (r) => Math.min(HEADS.length - 1, Math.floor(r * HEADS.length)),
   authoredSize: HEAD_UNIT,
   poise: 'held',

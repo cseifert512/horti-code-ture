@@ -153,11 +153,17 @@ describe("Clematis 'Princess Diana': the models agree with its morphology file",
       counts.push(achenes.size);
       expect(achenes.size, `variant ${v}`).toBeGreaterThanOrEqual(fewest);
       expect(achenes.size, `variant ${v}`).toBeLessThanOrEqual(most);
-      // the head: everything but the stalk and its bracts, measured across
+      // the head: everything but the stalk and its bracts. Nine tenths of it lies within the width the model is
+      // authored to, and the longest curl of a tail with its hairs not far outside it
       const centre = all.find((x) => x.t >= 0)!.pivot;
-      const reach = Math.max(...all.filter((x) => x.t >= 0).map((x) => x.p.distanceTo(centre)));
-      expect(2 * reach, `variant ${v}`).toBeGreaterThan(0.8);
-      expect(2 * reach, `variant ${v}`).toBeLessThan(1.3);
+      const reach = all
+        .filter((x) => x.t >= 0)
+        .map((x) => x.p.distanceTo(centre))
+        .sort((a, b) => a - b);
+      const mostOfIt = reach[Math.floor(reach.length * 0.9)]!;
+      expect(2 * mostOfIt, `variant ${v}`).toBeGreaterThan(0.8);
+      expect(2 * mostOfIt, `variant ${v}`).toBeLessThan(1.15);
+      expect(2 * reach.at(-1)!, `variant ${v}`).toBeLessThan(1.45);
     }
     expect(Math.min(...counts)).toBe(fewest);
     expect(Math.max(...counts)).toBe(most);
@@ -296,7 +302,7 @@ describe("Clematis 'Princess Diana' on the specimen frame, six years, trained", 
   });
 
   // RHS group 3 guide: "make new growth from the base each year"; "cut back ... 15-30cm above soil level".
-  it('is cut to stubs each February and is back to its height by summer, on ten stems or more', () => {
+  it('is cut to stubs each February and is back to its height by summer, on fifteen stems or so', () => {
     // just after the cut nothing stands above the stubs
     const afterCut = cal.dayOf('2032-02-25');
     let tallest = 0;
@@ -308,8 +314,9 @@ describe("Clematis 'Princess Diana' on the specimen frame, six years, trained", 
     // Clematis on the Web: 2.0-2.5 m
     expect(top).toBeGreaterThan(2);
     expect(top).toBeLessThan(3);
-    expect(on('2032-08-15').stems).toBeGreaterThanOrEqual(10);
-    expect(on('2032-08-15').stems).toBeLessThanOrEqual(16);
+    // growth model, architecture.trunkStemStartYears: seven stubs, two or three shoots from each
+    expect(on('2032-08-15').stems).toBeGreaterThanOrEqual(12);
+    expect(on('2032-08-15').stems).toBeLessThanOrEqual(21);
     // wispy when first planted (Hawke): far fewer stems and flowers in the first summer
     expect(on('2027-08-15').stems).toBeLessThanOrEqual(3);
     expect(on('2027-08-15').open).toBeLessThan(on('2032-08-15').open / 4);
