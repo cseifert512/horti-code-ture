@@ -200,12 +200,21 @@ const SEPALS = characterNumber(morphology, 'flower.sepalCount');
 /** Buds to a spray, at most. */
 const SPRAY_FLOWERS = characterRange(morphology, 'inflorescence.flowerCount');
 
+/**
+ * A cup of many thin petals holds light: what comes through one petal lights the next, and the heart of the flower
+ * glows. The renderer lights each petal as if it stood alone in the shadow of the rest, so a petal is given back the
+ * light the cup would hold, the more of it the deeper in the flower it stands.
+ */
+const held = (hex: string, gain: number): RGB => {
+  const c = lin(hex);
+  return [c[0] * gain, c[1] * gain, c[2] * gain];
+};
 const ROSE = {
-  outer: lin('#fad3d1'),
-  middle: lin('#f6b9bf'),
-  heart: lin('#ee98a8'),
-  claw: lin('#f6c99a'),
-  rim: lin('#fde3df'),
+  outer: held('#ffd3c6', 1.4),
+  middle: held('#fbb9b2', 1.6),
+  heart: held('#f5999c', 1.85),
+  claw: held('#f8c890', 1.6),
+  rim: held('#ffe2d8', 1.3),
   bud: lin('#f3a6b6'),
   budTip: lin('#e97f98'),
   anther: lin('#d99a1e'),
@@ -729,8 +738,9 @@ const spray: FlowerAsset = {
   // a bud is a deeper pink than the open flower
   budTint: [1, 0.74, 0.78],
   swing: 0.3,
-  translucency: 0.16,
-  sheen: 0.03,
+  // a rose petal is thin and lets a great deal of light through: a flower seen from behind glows
+  translucency: 0.6,
+  sheen: 0.12,
   detailAt: [1.1, 2.6, 5.5],
   detailCaps: [14, 60, 260],
 };
