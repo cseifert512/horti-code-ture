@@ -130,6 +130,42 @@
       "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
       "basis": "Metcalfe 2005: \"3-5 triangular, entire lobes\". Bean: \"three or five lobes, cut either deeply or shallowly\"."
     },
+    "leaf.juvenile.outlineSideLobeReach": {
+      "value": [0.72, 0.84],
+      "status": "provisional_design_assumption",
+      "basis": "Distance from where the stalk joins to the tip of a side lobe, as a share of the same distance to the tip of the end lobe, measured off photographs of single leaves: 0.73-0.75 (Commons: Hedera helix 2.jpg), 0.83-0.85 (Klimopblad Hedera helix.jpg), about 0.84 (Blad van klimop (Hedera helix) 02.JPG). The end lobe is the largest. No flora gives the ratio."
+    },
+    "leaf.juvenile.outlineSideLobeBearingDeg": {
+      "value": [58, 76],
+      "status": "provisional_design_assumption",
+      "basis": "Angle between the main vein of the end lobe and that of a side lobe, at the stalk, measured off the same photographs: 69-76 degrees (Hedera helix 2.jpg), 58-67 (Klimopblad Hedera helix.jpg), about 58 (Blad van klimop (Hedera helix) 02.JPG)."
+    },
+    "leaf.juvenile.outlineSinusDepth": {
+      "value": [0.49, 0.7],
+      "status": "provisional_design_assumption",
+      "basis": "Distance from the stalk to the sinus between end and side lobe, as a share of the end lobe: 0.49 (Hedera helix 2.jpg), 0.55-0.58 (Klimopblad Hedera helix.jpg), about 0.68 (Blad van klimop (Hedera helix) 02.JPG): the lobes are cut a half to a third of the way in."
+    },
+    "leaf.juvenile.outlineBasalLobes": {
+      "value": "small, about 0.44-0.5 of the end lobe, or merged into a rounded shoulder; a heart-shaped notch at the stalk",
+      "status": "provisional_design_assumption",
+      "basis": "Read from the photographed leaves: the two single leaves are three-lobed, their lower margin a rounded shoulder reaching 0.46-0.53 of the end lobe behind the stalk (Hedera helix 2.jpg; Klimopblad Hedera helix.jpg); leaves on a wall include five-lobed ones whose basal lobes are small (20150318-stare-drzewce-park-hedera-helix.jpg). Metcalfe 2005: 3-5 lobes. Three of the five drawn leaves have three lobes."
+    },
+    "leaf.juvenile.secondaryVeinAngleDeg": {
+      "value": 45,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Angle at which the pale secondary veins leave a lobe's main vein, forwards: about 40 to 50 degrees in photographs of the upper surface (Commons: Efeublatt 06.jpg; Ivy leaf (50844400051).jpg; Hedera helix 2.jpg). Not measured in any flora read."
+    },
+    "leaf.juvenile.secondaryVeinSpacing": {
+      "value": 0.14,
+      "status": "provisional_design_assumption",
+      "basis": "Spacing of the secondary veins along a main vein, as a share of the end lobe's length: some six or seven a side on the end lobe in Efeublatt 06.jpg (Commons). They join into a fine pale net, which is not drawn."
+    },
+    "leaf.juvenile.posture": {
+      "value": "blade hanging tip down from the end of a long stalk, upper side facing out, leaves overlapping like tiles on a wall",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs of ivy on a wall and on bark (Commons: 20150318-stare-drzewce-park-hedera-helix.jpg; Atlas roslin pl Bluszcz pospolity 3368 7113.jpg, where on a trunk the blades lie flat against the bark). The drawing hangs the blade 66 to 72 degrees from the line of its stalk; which way the stalk points is the render data's."
+    },
     "leaf.juvenile.bladeLengthM": {
       "value": [0.04, 0.1],
       "unit": "m",

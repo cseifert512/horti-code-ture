@@ -1,12 +1,13 @@
 // Hedera helix (common ivy): an evergreen that clings by rootlets, in both of
 // its phases.
 //
-//   climbing leaf  the leaf of the juvenile, climbing shoots: leathery and dark,
-//                  with three or five triangular lobes and a pale vein from the
-//                  stalk to the tip of each. The blade hangs from the end of its
-//                  stalk and faces outwards. Built lobe by lobe as a fan from
-//                  the stalk, so that the leaf texture's midrib runs up every
-//                  lobe and its side veins branch from that
+//   climbing leaf  the leaf of the juvenile, climbing shoots: leathery, dark
+//                  grey-green, the end lobe the largest and two or four broad
+//                  shallow lobes beside it, the edge a smooth curve, a pale vein
+//                  from the stalk towards the tip of each lobe and thin pale
+//                  secondaries off it. The blade hangs tip down from the end of
+//                  its stalk and faces outwards. Built lobe by lobe as a fan
+//                  from the stalk; its proportions were measured off photographs
 //   adult leaf     the leaf of the flowering shoots: unlobed, ovate to
 //                  diamond-shaped, with a wavy edge
 //   panicle        the whole inflorescence at the end of an adult shoot: a
@@ -25,12 +26,14 @@
 //
 // Counts and sizes are read from species/hedera-helix/morphology.json, where
 // each has its source (Metcalfe 2005, Biological Flora of the British Isles,
-// for most). Made from descriptions and measurements, not from specimens.
+// for most). Made from descriptions and measurements; outlines, postures and
+// colours checked against photographs, named where they are used.
 //
 // What cannot be drawn here: the paler underside of the leaf (both faces are
 // drawn alike), the purple flush of leaves in cold weather (an evergreen leaf
-// is given no winter state), and the spiral of leaves round an adult shoot
-// (the render data sets them to left and right).
+// is given no winter state), the spiral of leaves round an adult shoot (the
+// render data sets them to left and right), and the fine pale net between the
+// secondary veins (see SECONDARY).
 import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/hedera-helix/morphology.json';
@@ -77,23 +80,39 @@ interface ClimbingLeaf {
 }
 
 /**
- * Four leaves: the ordinary one of five broad triangular lobes, one with a
- * longer end lobe, one of three lobes, and one so shallowly lobed that it is
- * nearly a five-cornered shield. Proportions are appearance, held to the
- * measurements: a blade about as wide as long (4-10 cm by 4-7 cm), its base
- * heart-shaped.
+ * Five leaves, their outlines measured off photographs as ratios to the end
+ * lobe, from where the stalk joins to its tip (morphology.json,
+ * leaf.juvenile.outline*): the end lobe much the largest; the side lobes broad
+ * and shallow, their tips 0.72 to 0.84 of it at 58 to 76 degrees from it; the
+ * sinus between them half to seven tenths of the way out; the basal pair small
+ * or merged into a rounded shoulder; a heart-shaped notch at the stalk. Three
+ * have three lobes and two have five, the basal pair small. The knots are only
+ * where the outline turns: the edge between them is a smooth curve through
+ * them (see `outlinePoint`), never a straight line.
+ *   0  three lobes, sinuses deepish (Commons: Hedera helix 2.jpg)
+ *   1  three lobes, broad side lobes (Klimopblad Hedera helix.jpg)
+ *   2  five lobes, the basal pair small (20150318-stare-drzewce-park-hedera-helix.jpg, the wall)
+ *   3  three lobes, shallow (Blad van klimop (Hedera helix) 02.JPG)
+ *   4  five lobes, shallow (20150318-stare-drzewce-park-hedera-helix.jpg)
+ * All are held tip down from the end of a long stalk, face outwards, as the
+ * leaves of a wall of ivy are (habit-04, fruit-04): how far round that is
+ * turned depends on the direction the data gives the leaf.
  */
 const CLIMBING_LEAVES: readonly ClimbingLeaf[] = [
-  { half: [tip(0, 1), sinus(27, 0.62), tip(50, 0.74), sinus(82, 0.52), tip(112, 0.52), edge(150, 0.27), edge(180, 0.08)], hang: 52, roll: 8, yaw: 5, tipsDown: [0.03, 0.04, 0.02], seed: 11 },
-  { half: [tip(0, 1), sinus(28, 0.52), tip(54, 0.64), sinus(86, 0.44), tip(114, 0.45), edge(152, 0.24), edge(180, 0.07)], hang: 60, roll: -12, yaw: -7, tipsDown: [0.05, 0.03, 0.01], seed: 23 },
-  { half: [tip(0, 1), sinus(30, 0.62), tip(56, 0.74), edge(100, 0.5), edge(142, 0.3), edge(180, 0.1)], hang: 46, roll: 15, yaw: -4, tipsDown: [0.03, 0.05, 0], seed: 37 },
-  { half: [tip(0, 1), sinus(26, 0.74), tip(48, 0.8), sinus(80, 0.6), tip(108, 0.58), edge(148, 0.3), edge(180, 0.1)], hang: 56, roll: -6, yaw: 9, tipsDown: [0.04, 0.04, 0.02], seed: 41 },
+  { half: [tip(0, 1), sinus(44, 0.5), tip(72, 0.74), edge(128, 0.52), edge(155, 0.34), edge(180, 0.05)], hang: 70, roll: 4, yaw: 3, tipsDown: [0.04, 0.03, 0.02], seed: 11 },
+  { half: [tip(0, 1), sinus(37, 0.57), tip(62, 0.8), edge(124, 0.46), edge(160, 0.18), edge(180, 0.04)], hang: 66, roll: -5, yaw: -4, tipsDown: [0.05, 0.03, 0.01], seed: 23 },
+  { half: [tip(0, 1), sinus(36, 0.55), tip(64, 0.72), sinus(98, 0.42), tip(122, 0.44), edge(158, 0.2), edge(180, 0.05)], hang: 72, roll: 6, yaw: -2, tipsDown: [0.03, 0.04, 0.02], seed: 37 },
+  { half: [tip(0, 1), sinus(36, 0.7), tip(60, 0.8), edge(100, 0.6), edge(145, 0.32), edge(180, 0.05)], hang: 68, roll: -3, yaw: 5, tipsDown: [0.04, 0.03, 0.02], seed: 41 },
+  { half: [tip(0, 1), sinus(32, 0.66), tip(60, 0.75), sinus(92, 0.5), tip(118, 0.5), edge(152, 0.28), edge(180, 0.05)], hang: 70, roll: 2, yaw: -6, tipsDown: [0.04, 0.04, 0.02], seed: 47 },
 ];
 const LOBES = CLIMBING_LEAVES.map((leaf) => 2 * leaf.half.filter((k) => k.kind === 'tip').length - 1);
 if (Math.min(...LOBES) !== FEWEST_LOBES || Math.max(...LOBES) !== MOST_LOBES) throw new Error(`hedera-helix: the climbing leaves are drawn with ${LOBES.join(', ')} lobes, and its morphology gives ${FEWEST_LOBES} to ${MOST_LOBES}`);
 
-/** The blade from where the stalk joins to the tip of its end lobe, as a share of the reach of the whole leaf. */
-const CLIMBING_BLADE = 0.8;
+/**
+ * The blade from where the stalk joins to the tip of its end lobe, as a share of the reach of the whole leaf. The
+ * rounded shoulders behind the stalk add a third again, so the whole blade is about as long as the reach.
+ */
+const CLIMBING_BLADE = 0.7;
 /** How pale a main vein is drawn: its share of the way from the green of the blade to the palette's vein colour. */
 const VEIN = 0.55;
 /** Half the width of the pale band along a main vein where it leaves the stalk, the end lobe being 1. */
@@ -108,13 +127,31 @@ interface BladeDetail {
   pale: number;
   /** Fine relief: the wave of the edge. */
   fine: boolean;
+  /** Whether the pale secondary veins are drawn (see `SECONDARY`): only where the mesh is fine enough to carry them. */
+  net: boolean;
 }
 const BLADE_DETAIL: readonly BladeDetail[] = [
-  { pieces: 4, rings: 8, veins: true, pale: VEIN, fine: true },
-  { pieces: 2, rings: 4, veins: true, pale: VEIN, fine: false },
-  // from far off: a flat fan of triangles to the corners of the outline
-  { pieces: 1, rings: 1, veins: false, pale: 0.1, fine: false },
+  { pieces: 6, rings: 12, veins: true, pale: VEIN, fine: true, net: true },
+  { pieces: 2, rings: 4, veins: true, pale: VEIN, fine: false, net: false },
+  // from far off: a flat fan of triangles to the curved outline
+  { pieces: 2, rings: 1, veins: false, pale: 0.1, fine: false, net: false },
 ];
+
+/**
+ * The pale secondary veins. The shared leaf texture's pinnate side veins are drawn white with a dark line beside each,
+ * and on a lobed blade they read as dark grooves; its midrib, a crisp pale line at u = 0.5, is the only pale line it
+ * has. So u is set at each vertex from a field that crosses 0.5 along the secondary veins: the texture then draws its
+ * midrib wherever the interpolated u passes 0.5, as a sharp pale line, and v keeps to the strip below the first side
+ * vein. In each lobe's frame the veins leave the main vein forwards at `angle` degrees, `spacing` apart along it (of
+ * the end lobe's length), as on the photographed leaves (Commons: Efeublatt 06.jpg, Ivy leaf (50844400051).jpg,
+ * Hedera helix 2.jpg; morphology.json leaf.juvenile.secondaryVein*). The field is squared, so that u lingers near 0.5 across a band
+ * either side of a vein and runs out towards the darker edge of the texture between veins: `gain` sets how far.
+ */
+const SECONDARY = {
+  angle: characterNumber(morphology, 'leaf.juvenile.secondaryVeinAngleDeg'),
+  spacing: characterNumber(morphology, 'leaf.juvenile.secondaryVeinSpacing'),
+  gain: 0.4,
+};
 
 /**
  * Gives vertices that stand at the same place the same normal. A lobed blade
@@ -153,6 +190,47 @@ function tintBlade(mg: Merge, from: number, pale: readonly number[]): void {
   for (let i = 0; i < pale.length; i++) mg.part[4 * (from + i) + 3] = pale[i]!;
 }
 
+const knotAt = (k: Knot): [number, number] => [k.r * Math.sin(k.deg * DEG), k.r * Math.cos(k.deg * DEG)];
+
+/**
+ * A point on the outline between knot `i` and knot `i + 1` of the whole ring, `f` of the way along: a cardinal spline
+ * through the knots, so that the edge curves gently between them as an ivy leaf's does. A lobe's tip is kept nearly
+ * pointed (its tangent shortened); a sinus and a shoulder are rounded.
+ */
+function outlinePoint(ring: readonly Knot[], i: number, f: number): [number, number] {
+  const p = (j: number): [number, number] => {
+    if (j < 0) {
+      // beyond the ends of the ring: mirror the neighbour through the end knot
+      const [ax, az] = knotAt(ring[0]!);
+      const [bx, bz] = knotAt(ring[1]!);
+      return [2 * ax - bx, 2 * az - bz];
+    }
+    if (j >= ring.length) {
+      const [ax, az] = knotAt(ring[ring.length - 1]!);
+      const [bx, bz] = knotAt(ring[ring.length - 2]!);
+      return [2 * ax - bx, 2 * az - bz];
+    }
+    return knotAt(ring[j]!);
+  };
+  const tangent = (j: number): [number, number] => {
+    const [ax, az] = p(j - 1);
+    const [bx, bz] = p(j + 1);
+    const keep = ring[j]?.kind === 'tip' ? 0.35 : 1;
+    return [0.5 * keep * (bx - ax), 0.5 * keep * (bz - az)];
+  };
+  const [x0, z0] = p(i);
+  const [x1, z1] = p(i + 1);
+  const [m0x, m0z] = tangent(i);
+  const [m1x, m1z] = tangent(i + 1);
+  const f2 = f * f;
+  const f3 = f2 * f;
+  const h00 = 2 * f3 - 3 * f2 + 1;
+  const h10 = f3 - 2 * f2 + f;
+  const h01 = -2 * f3 + 3 * f2;
+  const h11 = f3 - f2;
+  return [h00 * x0 + h10 * m0x + h01 * x1 + h11 * m1x, h00 * z0 + h10 * m0z + h01 * z1 + h11 * m1z];
+}
+
 /**
  * A lobed blade lying in the XZ plane, upper side +Y, the stalk joining at the
  * origin and the tip of the end lobe at z = 1. One sheet to each lobe, fanned
@@ -178,12 +256,13 @@ function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
   for (let end = 1; end < ring.length; end++) {
     if (ring[end]!.kind !== 'sinus' && end !== ring.length - 1) continue;
     const knots = ring.slice(start, end + 1);
+    const from = start;
     start = end;
     // 0 the end lobe, 1 the side lobes, 2 the basal ones
     const rank = Math.abs(lobe - (tips - 1) / 2);
     lobe++;
 
-    // the rim of this lobe: each stretch between knots cut into pieces and bowed outwards a little, as a lobe's sides are
+    // the rim of this lobe: each stretch between knots cut into pieces along the smooth curve of the outline
     interface Column {
       x: number;
       z: number;
@@ -193,20 +272,9 @@ function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
     }
     const rim: Column[] = [];
     for (let k = 0; k < knots.length - 1; k++) {
-      const [ax, az] = at(knots[k]!);
-      const [bx, bz] = at(knots[k + 1]!);
-      // outwards: square to the stretch, on the side away from the stalk
-      let nx = bz - az;
-      let nz = -(bx - ax);
-      if (nx * (ax + bx) + nz * (az + bz) < 0) {
-        nx = -nx;
-        nz = -nz;
-      }
       for (let s = 0; s < detail.pieces; s++) {
-        const f = s / detail.pieces;
-        // (nx, nz) is as long as the stretch, so the bow is a share of its length
-        const bow = 0.055 * Math.sin(Math.PI * f);
-        rim.push({ x: lerp(ax, bx, f) + nx * bow, z: lerp(az, bz, f) + nz * bow, vein: s === 0 && knots[k]!.kind === 'tip' ? 1 : 0, beside: 0 });
+        const [x, z] = outlinePoint(ring, from + k, s / detail.pieces);
+        rim.push({ x, z, vein: s === 0 && knots[k]!.kind === 'tip' ? 1 : 0, beside: 0 });
       }
     }
     const last = knots[knots.length - 1]!;
@@ -233,6 +301,9 @@ function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
     const vein = columns[veinColumn]!;
     const reach = Math.hypot(vein.x, vein.z);
     const down = leaf.tipsDown[Math.min(2, Math.round(rank))]!;
+    // the lobe's own frame, along and across its main vein, in which its secondary veins are laid
+    const axisX = vein.x / reach;
+    const axisZ = vein.z / reach;
 
     const nu = columns.length - 1;
     sb.surf(nu, detail.rings, (u01, v01) => {
@@ -257,11 +328,13 @@ function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
       // Nothing here differs between two lobes along the sinus line they share, or the blade would gape there
       let y = -0.05 * r * r + 0.009 * Math.sin(Math.PI * Math.min(1, across)) * Math.pow(rho, 0.6) * (1 - 0.35 * rho) - down * rho * rho * reach * (1 - Math.min(1, across));
       if (detail.fine) y += 0.008 * Math.sin(Math.atan2(x, z) * 4.3 + phase) * rho * rho * rho;
-      // the texture: its midrib up the vein and nothing more. Only the strip of the shared texture below its first side
-      // vein is used: its pinnate side veins, laid round a fan of lobes, drew concentric arcs across every blade, which
-      // no ivy leaf has (Commons: Blad van klimop (Hedera helix) 01.JPG and 02.JPG show a palmate vein to each lobe and
-      // a fine pale net). The palmate veins are this model's own, pale where they leave the stalk and fading outwards
-      uvs.push(c.vein === 2 ? (i < veinColumn ? 0.455 : 0.545) : us[i]!, 0.002 + 0.01 * (reach / longest) * rho);
+      // the texture (see SECONDARY): a field that is zero along each secondary vein, running forward and out from the
+      // lobe's main vein, so that the texture's pale midrib is drawn along it. The palmate main veins are `pale` below
+      const sideways = x * axisZ - z * axisX;
+      const ahead = x * axisX + z * axisZ;
+      const lean = 1 / Math.tan(SECONDARY.angle * DEG);
+      const field = detail.net ? Math.sin((Math.PI * (ahead - lean * Math.abs(sideways))) / (SECONDARY.spacing * longest) + lobe) : 0.85;
+      uvs.push(0.5 + SECONDARY.gain * Math.sign(field) * field * field, 0.006);
       pale.push(c.vein === 1 && v01 > 0 ? detail.pale * (1 - 0.55 * v01) : 0);
       return { p: [x, y, z] };
     });
@@ -375,12 +448,14 @@ function adultBlade(leaf: AdultLeaf, lod: number): Blade {
     pale.push(i === (nu >> 1) && v > 0 ? detail.pale * (1 - 0.4 * v) : 0);
     return { p: [x, y, v] };
   });
-  // the texture across the blade as it is drawn (the columns are not evenly spaced), and half of it along: five or six side veins a side
+  // the texture across the blade as it is drawn (the columns are not evenly spaced), and only its strip below the first side
+  // vein along it: its side veins read as dark grooves, while the adult leaf shows little but a pale midrib (Commons: Hedera
+  // helix-Lierre-Bourgeon de Fleur-20200730.jpg; Hedera helix 002.JPG)
   for (let j = 0; j <= detail.along; j++) {
     for (let i = 0; i <= nu; i++) {
       const at = 2 * (j * (nu + 1) + i);
       sb.uv[at] = detail.across[i]!;
-      sb.uv[at + 1] = 0.03 + 0.52 * (j / detail.along);
+      sb.uv[at + 1] = 0.006;
     }
   }
   return { geometry: sb.build(), pale };
@@ -753,13 +828,14 @@ const climbingLeaf: LeafAsset = {
   variants: CLIMBING_LEAVES.length,
   lods: BLADE_DETAIL.length,
   make: makeClimbingLeaf,
-  budget: [1100, 340, 40],
-  // five lobes for most; three, or shallow ones, for the rest
-  pick: (_lengthM, r) => (r < 0.4 ? 0 : r < 0.65 ? 1 : r < 0.85 ? 2 : 3),
-  // dark and shining, the veins pale green rather than white (greenB is what a vein is drawn towards); evergreen, so it
-  // has no autumn colours of its own. Darker and a little bluer than the first pass, as on a wall in shade (Commons:
-  // 20150318-stare-drzewce-park-hedera-helix.jpg), and shinier
-  palette: { greenA: lin('#24431a'), greenB: lin('#a3b480'), young: lin('#8aa43a'), autumnA: lin('#24431a'), autumnB: lin('#a3b480') },
+  budget: [2300, 340, 60],
+  // three lobes for most, as on the wall in the photographs; five for the rest
+  pick: (_lengthM, r) => (r < 0.3 ? 0 : r < 0.55 ? 1 : r < 0.7 ? 2 : r < 0.87 ? 3 : 4),
+  // dark, grey-green and shining, the veins a greyish pale green (greenB is what a vein is drawn towards); evergreen, so
+  // it has no autumn colours of its own. Less saturated and greyer than before, as mature leaves are in shade and in sun
+  // (Commons: 20150318-stare-drzewce-park-hedera-helix.jpg; 2026-04-11 Hedera helix im NSG Jockgrimer Tongruben;
+  // Hedera helix 2.jpg)
+  palette: { greenA: lin('#283d26'), greenB: lin('#aab59a'), young: lin('#8aa43a'), autumnA: lin('#283d26'), autumnB: lin('#aab59a') },
   roughness: 0.2,
   // leathery: little light comes through
   translucency: 0.2,
