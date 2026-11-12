@@ -42,7 +42,7 @@ import type { SupportEdge } from '../bower/types.ts';
 import { Calendar, type CalendarDate } from '../calendar.ts';
 import { type Vec3, UP, ZERO, add, addScaled, anyPerpendicular, cross, distance, dot, length, lerp, normalize, scale, smoothstep, sub, v3 } from '../math/vec3.ts';
 import type { AppendageKind, GardenerEventType, MemberTier, OrganHeld } from '../vocab.ts';
-import { FEEL_EVERY_M, type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, ROD_SEGMENT_M, SOLVE_EVERY_M, type Rod, Surroundings, directionAt, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
+import { FEEL_EVERY_M, type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, ROD_SEGMENT_M, SOLVE_EVERY_M, type Rod, Surroundings, directionAt, inclineOf, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
 import { type LightFrom, openSkyLight } from './light-from.ts';
 import { LightField } from './light.ts';
 import { type GrowthModel, type OptionalParamKey, genericShootKeys, genericSideShootKeys, known, listAt, param, shootParam, sideShootParam } from './model.ts';
@@ -60,7 +60,7 @@ const LANE_M = 0.022;
 const mid = (r: readonly [number, number]) => (r[0] + r[1]) / 2;
 
 /** What tells one decision made at a place from another made at the same place. */
-const SALT = { fruit: 101, tendril: 211, leafStalk: 307, rootlets: 401, prickle: 503, sideShoot: 601, sideShootGrowth: 701, sideShootLeaf: 809, sideShootBud: 907, held: 1009, shorten: 1409, sideShootStart: 1511 } as const;
+const SALT = { fruit: 101, tendril: 211, leafStalk: 307, rootlets: 401, prickle: 503, sideShoot: 601, sideShootGrowth: 701, sideShootLeaf: 809, sideShootBud: 907, held: 1009, shorten: 1409, sideShootStart: 1511, lean: 1613, whipStart: 1709 } as const;
 /**
  * The least a side shoot's place round its stem leans out from the face of the support, as the cosine of its angle
  * from straight out: a bud pressed against the timber grows round to the open side, and one at the flank sets out a
@@ -859,10 +859,14 @@ export class Simulation {
   /** Say once, on planting day, which numbers of how its side shoots set out this plant is drawn with for want of its own. */
   private noteGenericSideShoot(plant: Plant): void {
     const { profile, model } = this.taxon(plant);
-    if (!this.sideShootRule(model)) return;
-    const generic = genericSideShootKeys(model);
+    const sides = !!this.sideShootRule(model);
+    const whips = param(model, 'organs.whipShareOfNodes') > 0 && param(model, 'organs.whipsPerYearMax') > 0;
+    if (!sides && !whips) return;
+    // a whip leaves its stem as a side shoot does, so it uses the angles; when buds break, and the first turn to the light, are the side shoots' alone
+    const generic = genericSideShootKeys(model).filter((k) => sides || (k !== 'sideShoots.breakSpreadDays' && k !== 'sideShoots.startTowardsLight'));
     if (!generic.length) return;
-    this.note('generic_shoot', plant, null, `the flowering side shoots of ${profile.names.label} set out from their stems as the generic side shoot does, not as its own: its growth model gives no value for ${generic.join(', ')}. The angles they leave at and the days they break on are not findings about this plant`);
+    const what = sides && whips ? 'flowering side shoots and long shoots' : sides ? 'flowering side shoots' : 'long shoots';
+    this.note('generic_shoot', plant, null, `the ${what} of ${profile.names.label} set out from their stems as the generic side shoot does, not as its own: its growth model gives no value for ${generic.join(', ')}. The angles they leave at${sides ? ' and the days they break on' : ''} are not findings about this plant`);
   }
 
   /**
@@ -933,7 +937,16 @@ export class Simulation {
       if (k >= 0 && k < m) load[into[k]!]! += kg * GRAVITY;
     };
     const leafKgM2 = shootParam(model, 'mechanics.leafFreshMassPerAreaKgM2');
-    for (const leaf of this.leavesByAxis.get(axis.id) ?? []) if (leaf.removedDay === null) hang(leaf.pointIndex, leafSilhouetteAreaM2(leaf.lengthM) * leafKgM2);
+    // a leaf hangs its weight off the stem, on the side it is turned to: a moment at the joint it stands at
+    const couple = new Array<number>(lengthM.length).fill(0);
+    const offset = shootParam(model, 'mechanics.leafWeightOffsetShare');
+    for (const leaf of this.leavesByAxis.get(axis.id) ?? []) {
+      if (leaf.removedDay !== null) continue;
+      const kg = leafSilhouetteAreaM2(leaf.lengthM) * leafKgM2;
+      hang(leaf.pointIndex, kg);
+      const k = leaf.pointIndex - shoot.basePoint - 1;
+      if (offset > 0 && k >= 0 && k < m) couple[into[k]!]! += kg * GRAVITY * offset * leaf.lengthM * dot(leaf.direction, shoot.plane);
+    }
     const flowerKg = shootParam(model, 'mechanics.inflorescenceFreshMassKg');
     for (const bud of this.budsByAxis.get(axis.id) ?? []) {
       if (bud.end !== null || bud.stage === 'spent') continue;
@@ -945,7 +958,7 @@ export class Simulation {
       if (fruit.removedDay !== null) continue;
       hang(fruit.pointIndex, fruitKg * Math.min(1, Math.max(0, (this.day - fruit.swell[0]) / Math.max(1, fruit.swell[1] - fruit.swell[0]))));
     }
-    return { baseIncline: shoot.baseIncline, lengthM, turn, compliance, load };
+    return { baseIncline: shoot.baseIncline, lengthM, turn, compliance, load, couple };
   }
 
   /**
@@ -958,10 +971,17 @@ export class Simulation {
    * that leaves out.
    */
   private growFree(plant: Plant, axis: Axis, tip: Extract<Tip, { state: 'free' }>, go: number): number {
-    const { profile, model } = this.taxon(plant);
+    const { model } = this.taxon(plant);
     const n = axis.contact.length;
     const last = axis.contact[n - 1]!;
-    const shoot = (tip.rod ??= startFreeShoot(n - 1, tip.dir));
+    if (!tip.rod) {
+      // no shoot sets out exactly plumb: one that would leans a little, to a side drawn from where it stands
+      const lean = (shootParam(model, 'mechanics.leanDeg') * Math.PI) / 180;
+      const azimuth = this.at(plant, last, SALT.lean).range(0, 2 * Math.PI);
+      tip.rod = startFreeShoot(n - 1, tip.dir, lean, v3(Math.cos(azimuth), Math.sin(azimuth), 0));
+      if (Math.abs(tip.rod.baseIncline - inclineOf(normalize(tip.dir), tip.rod.plane)) > 1e-12) tip.dir = directionAt(tip.rod.baseIncline, tip.rod.plane);
+    }
+    const shoot = tip.rod;
     const radiusM = axis.radiusMm[n - 1]! / 1000;
     // a flowering side shoot stands free by nature; every other shoot in the air is looking for a support
     const searcher = axis.role !== 'side_shoot';
@@ -978,14 +998,20 @@ export class Simulation {
     let dir: Vec3;
     if (shoot.posture === 'plumb') dir = normalize(v3(wander.x, wander.y, -1));
     else {
-      // while it holds itself up, its growing end steers towards up and the light
+      // while it holds itself up, and has not come as far as its kind hold themselves out, its growing end steers
+      // towards up and the light
       let heading = tip.dir;
-      if (shoot.posture === 'self_supporting') {
+      if (shoot.posture === 'self_supporting' && !shoot.pastReach) {
         if (!shoot.light || tip.grownM - shoot.lightAskedAtM >= LIGHT_EVERY_M) {
           shoot.light = this.lightFor(plant, last);
           shoot.lightAskedAtM = tip.grownM;
         }
         heading = steer(heading, seekDirection(shoot.light, shootParam(model, 'tropism.lightShare')), shootParam(model, 'tropism.turnPerM'), go);
+      } else if (shoot.posture === 'self_supporting') {
+        // past its reach a searcher that has found nothing no longer holds its growing end up: it nods over towards
+        // level and down, at the rate it turned up before, on the side it leans to (Hattermann et al. 2022: such
+        // shoots flop and hang; Darwin 1875 saw a hop shoot bend to nearly level as it lengthened)
+        heading = steer(heading, v3(0, 0, -1), shootParam(model, 'tropism.turnPerM'), go);
       }
       const turned = replane(normalize(add(heading, wander)), shoot.plane);
       shoot.plane = turned.plane;
@@ -1051,9 +1077,9 @@ export class Simulation {
       this.appendPoint(plant, axis, to, ZERO);
     } else laid = 0;
 
-    // held out as far as shoots of its kind are known to hold themselves: it grows no further
-    const reach = shootParam(model, 'mechanics.searcherReachM');
-    if (!stop && shoot.posture === 'self_supporting' && distance(to, axis.contact[shoot.basePoint]!) >= reach) stop = `held itself out ${reach.toFixed(2)} m from where it left its support, which is as far as the growth model lets a shoot of ${profile.names.label} hold itself`;
+    // held out as far as shoots of its kind are known to hold themselves (Hattermann et al. 2022: beyond that, searchers
+    // that find nothing flop and hang): it no longer steers upwards, and grows on as its weight and stiffness let it
+    if (!stop && !shoot.pastReach && shoot.posture === 'self_supporting' && distance(to, axis.contact[shoot.basePoint]!) >= shootParam(model, 'mechanics.searcherReachM')) shoot.pastReach = true;
     if (stop) {
       axis.tip = { state: 'stopped', reason: stop };
       this.note('stopped', plant, axis, `a shoot in the air ${stop}, ${this.lengthOf(axis).toFixed(2)} m long`);
@@ -1462,7 +1488,7 @@ export class Simulation {
    * up and to the light. Everything is drawn from `rng`, a stream of the
    * place, so that nothing else on the plant moves.
    */
-  private sideShootHeading(plant: Plant, bearer: Axis, at: number, n: Plant['leafNodes'][number], rng: Rng): Vec3 {
+  private sideShootHeading(plant: Plant, bearer: Axis, at: number, n: Plant['leafNodes'][number], rng: Rng, towardsLight = true): Vec3 {
     const { model } = this.taxon(plant);
     const t = bearer.alive > 1 ? this.tangent(bearer, at) : UP;
     const away = bearer.away[at]!;
@@ -1488,7 +1514,7 @@ export class Simulation {
     let dir = normalize(add(scale(t, Math.cos(theta)), scale(radial, Math.sin(theta))));
     // part of the way towards up and the light
     const k = sideShootParam(model, 'sideShoots.startTowardsLight');
-    if (k > 0) dir = normalize(add(scale(dir, 1 - k), scale(seekDirection(this.lightFor(plant, bearer.contact[at]!), shootParam(model, 'tropism.lightShare')), k)));
+    if (towardsLight && k > 0) dir = normalize(add(scale(dir, 1 - k), scale(seekDirection(this.lightFor(plant, bearer.contact[at]!), shootParam(model, 'tropism.lightShare')), k)));
     // and never into the timber
     if (supported && dot(dir, away) < CLEAR_OF_SUPPORT) dir = normalize(addScaled(dir, away, CLEAR_OF_SUPPORT - dot(dir, away)));
     return dir;
@@ -1628,12 +1654,18 @@ export class Simulation {
     if (host.removedDay !== null || i >= host.alive) return;
     const { model } = this.taxon(plant);
     const whip = this.newAxis(plant, 'whip', host.order + 1, { axisId: host.id, pointIndex: i }, planM, param(model, 'extension.whipMPerSeason'));
-    const t = this.tangent(host, i);
-    const up = length(host.away[i]!) > 0.5 ? host.away[i]! : UP;
-    let side = cross(t, up);
-    side = length(side) > 1e-6 ? normalize(side) : v3(1, 0, 0);
+    // Three draws from the organ stream, as there always were, so that the rest of the plant's organs stay as they
+    // were. They no longer set the heading: that was out from the support with an extra pull upwards, which off the top
+    // of a level member pointed every whip nearly straight up. A whip now leaves its stem from the axil of the leaf at
+    // its node, as a side shoot does (sideShootHeading), drawn from where it stands.
     const r = plant.rng.organ;
-    const dir = normalize(add(add(add(scale(up, r.range(0.6, 1)), scale(t, r.range(-0.6, 0.6))), scale(side, r.range(-0.6, 0.6))), scale(UP, 0.5)));
+    r.range(0.6, 1);
+    r.range(-0.6, 0.6);
+    r.range(-0.6, 0.6);
+    const base = host.contact[i]!;
+    const node = plant.leafNodes.find((ln) => ln.axisId === host.id && ln.pointIndex === i) ?? { axisId: host.id, pointIndex: i, year: 0, side: 1 as const, taken: true, sideShootId: null, ordinal: 0 };
+    // (not turned towards up and the light at the start, as a flowering side shoot is: a searcher's own tropism does that as it grows)
+    const dir = this.sideShootHeading(plant, host, i, node, this.at(plant, base, SALT.whipStart + this.calendar.dateOf(this.day).year), false);
     this.appendPoint(plant, whip, host.contact[i]!, host.away[i]!);
     whip.tip = { state: 'free', dir, grownM: 0, planM };
   }
@@ -1965,8 +1997,11 @@ export class Simulation {
     if (held === 'upright') return normalize(add(UP, scale(supported ? away : ZERO, 0.25)));
     // facing out: at the end of a shoot it carries on the shoot's own line
     if (pointIndex === null) return t;
-    // at a node, away from the support; on a shoot in the air, square off it on one side or the other
-    const out = supported ? away : scale(anyPerpendicular(t), this.at(plant, bearer.contact[i]!, SALT.held).sign());
+    // at a node, away from the support; on a shoot in the air, square off it to one side or the other, level, so that a
+    // shoot that arches over does not turn its flowers to the ground
+    const level = cross(t, UP);
+    const square = length(level) > 1e-6 ? normalize(level) : anyPerpendicular(t);
+    const out = supported ? away : scale(square, this.at(plant, bearer.contact[i]!, SALT.held).sign());
     return normalize(add(out, scale(UP, 0.35)));
   }
 

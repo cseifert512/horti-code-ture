@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { loadGrowable, loadTaxa } from '../src/node/load-taxa.ts';
 import { RENDER_CONTRACT } from '../src/render/contract.ts';
 import { Simulation } from '../src/sim/engine.ts';
-import { GROWTH_PARAMS, GROWTH_PARAMS_OPTIONAL, type GrowthModel, parseGrowthModel } from '../src/sim/model.ts';
+import { GROWTH_PARAMS, GROWTH_PARAMS_OPTIONAL, type GrowthModel, modelProvenance, parseGrowthModel } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
 import { wisteriaOnVault } from '../src/sim/scenarios.ts';
 import { type StemPath, turnsOf } from '../src/sim/stem-path.ts';
@@ -162,7 +162,9 @@ describe('pruning has consequences', () => {
     }
     // its flowering answers to light (its profile: "full sun matters for profuse flowering"), and it has no less of it for the cut
     const light = (sim: Simulation, y: number) => sim.light.of(sim.plants.get('wisteria.1')!, y).seasonShare;
-    for (let y = 2033; y <= 2035; y++) expect(light(stripped, y)).toBeGreaterThanOrEqual(light(trained, y));
+    // (its light is read over the route it holds, which includes laths its shoots of the year took hold of from the air;
+    // those move with the light, so the places read differ a little between the two runs: a part in five hundred is allowed)
+    for (let y = 2033; y <= 2035; y++) expect(light(stripped, y)).toBeGreaterThanOrEqual(light(trained, y) - 0.002);
   });
 
   it('changes the flowers and nothing else: the framework the plant builds is the same', () => {
@@ -463,7 +465,11 @@ describe('render data', () => {
     expect(data.assumptions.calibrated).toBe(0);
     expect(data.assumptions.provisional_design_assumption).toBeGreaterThan(45);
     // every parameter is accounted for: labelled or, where a model may leave it out (GROWTH_PARAMS_OPTIONAL), unknown and so not in the run
-    const left = leftUnknown(taxa.get('wisteria-sinensis')!.model);
+    // (a parameter the model leaves out but the run fills with a generic value, a shoot's lean or a long shoot's angle off
+    // its stem, is counted as the provisional assumption it is, not as unknown)
+    const model = taxa.get('wisteria-sinensis')!.model;
+    const generic = new Set(modelProvenance(model).filter((e) => e.owner.includes('generic')).map((e) => e.path));
+    const left = leftUnknown(model).filter((k) => !generic.has(k));
     expect(data.assumptions.unknown).toBe(left.length);
     expect(data.assumptions.provisional_design_assumption + data.assumptions.published_plant_profile).toBe(Object.keys(GROWTH_PARAMS).length - left.length);
   });

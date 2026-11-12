@@ -213,6 +213,13 @@ export const GROWTH_PARAMS = {
    * tip: what has been measured of searcher shoots. A shoot that still holds itself up at that distance grows no further.
    */
   'mechanics.searcherReachM': 'number',
+  /**
+   * The least an unsupported shoot leans from plumb where it sets out, degrees: no stem is exactly upright, and one that
+   * is carries no bending load. Unknown: the generic value.
+   */
+  'mechanics.leanDeg': 'number',
+  /** Where along a leaf its weight hangs off the stem, as a share of the leaf's length from the node. Unknown: the generic value. */
+  'mechanics.leafWeightOffsetShare': 'number',
   /** Radians the growing end turns towards the direction it seeks for each metre grown, when at right angles to it. */
   'tropism.turnPerM': 'number',
   /** How far the direction a shoot seeks leans from plumb towards the light: 0 straight up, 1 straight at the light. */
@@ -328,6 +335,8 @@ export const GROWTH_PARAMS_OPTIONAL = [
   'mechanics.inflorescenceFreshMassKg',
   'mechanics.fruitFreshMassKg',
   'mechanics.searcherReachM',
+  'mechanics.leanDeg',
+  'mechanics.leafWeightOffsetShare',
   'tropism.turnPerM',
   'tropism.lightShare',
   'attachment.graspReachM',
@@ -399,6 +408,8 @@ const optionalShapes: { [K in OptionalParamKey]: z.ZodType } = {
   'mechanics.inflorescenceFreshMassKg': z.number().nonnegative(),
   'mechanics.fruitFreshMassKg': z.number().nonnegative(),
   'mechanics.searcherReachM': z.number().nonnegative(),
+  'mechanics.leanDeg': z.number().min(0).max(90),
+  'mechanics.leafWeightOffsetShare': share,
   'tropism.turnPerM': z.number().nonnegative(),
   'tropism.lightShare': share,
   'attachment.graspReachM': z.number().nonnegative(),
@@ -582,8 +593,10 @@ export function modelProvenance(model: GrowthModel): ProvenanceEntry[] {
       const g: Sourced<number> = GENERIC_SHOOT[k as ShootParamKey];
       return { owner: `${model.taxonId} growth model (generic shoot)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
     }
-    // the same for how a side shoot sets out, on a plant that makes side shoots
-    if (p.value === null && k in GENERIC_SIDE_SHOOT && model.params['sideShoots.perMetrePerYear'].value) {
+    // the same for how a side shoot sets out, on a plant that makes side shoots, or long shoots, which set out the same way
+    const sides = !!model.params['sideShoots.perMetrePerYear'].value;
+    const whips = (model.params['organs.whipShareOfNodes'].value ?? 0) > 0 && (model.params['organs.whipsPerYearMax'].value ?? 0) > 0;
+    if (p.value === null && k in GENERIC_SIDE_SHOOT && (sides || (whips && k !== 'sideShoots.breakSpreadDays' && k !== 'sideShoots.startTowardsLight'))) {
       const g: Sourced<number | [number, number]> = GENERIC_SIDE_SHOOT[k as SideShootParamKey];
       return { owner: `${model.taxonId} growth model (generic side shoot)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
     }
