@@ -3,12 +3,10 @@
   "taxonId": "lonicera-periclymenum-graham-thomas",
   "statement": "A running model, not a calibrated one. Its leaf season, leaf size, the wood that flowers, the thickest support it has been seen to twine and the size of flower and berry behind its head and cluster come from published descriptions of the species or of this cultivar. Its rates, counts and chances are this project’s choices, set so that a plant ten years old on the specimen frame reads as the plant those descriptions describe; none has been measured on a plant. It is still thinner than the wisteria model in one respect: how a shoot chooses its way at a junction is copied from it. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
   "names": {
-    "leafForm": "long_shoot_leaf",
     "sideShootLeafForm": "flowering_shoot_leaf",
-    "flowerForm": "head",
     "flowerHeld": "facing_out",
     "fruitHeld": "facing_out",
-    "basis": "Two leaf forms, after Bean: \"lower pairs of leaves stalked, uppermost ones almost or quite stalkless\". The stalked leaf is given to the climbing and long shoots and the stalkless one to the flowering side shoots. The head is terminal and stalked (Bean: \"at the end of the shoot, forming a terminal stalked inflorescence\"), so it carries on the line of its shoot: facing out. The berries sit stalkless in the place of the flowers (BSBI account of the species), so the cluster is held as the head was."
+    "basis": "Two leaf forms, after Bean: \"lower pairs of leaves stalked, uppermost ones almost or quite stalkless\". The stalked leaf is the ordinary one, of the climbing and long shoots, and needs no name; the stalkless one is named for the flowering side shoots. The head is terminal and stalked (Bean: \"at the end of the shoot, forming a terminal stalked inflorescence\"), so it carries on the line of its shoot: facing out. The berries sit stalkless in the place of the flowers (BSBI account of the species), so the cluster is held as the head was."
   },
   "params": {
     "phenology.budburstDoy": {
@@ -250,10 +248,10 @@
       "basis": "Of the species. Darwin, The Movements and Habits of Climbing Plants (1875): \"Our English twiners, as far as I have seen, never twine round trees, excepting the honeysuckle (Lonicera periclymenum), which I have observed twining up a young beech-tree nearly 4 1/2 inches in diameter\". One observation of a support the plant did hold, used here as its limit: the true limit is not known and may be greater. The taxon profile leaves the limit unknown."
     },
     "attachment.minPitchM": {
-      "value": 0.14,
+      "value": 0.24,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The rise of one turn of the coil on a slender support. This species coils closely enough to distort the young stems it climbs (BSBI account). No measurement was found; 0.14 m is a choice."
+      "basis": "The rise of one turn of the coil on a slender support. This species coils closely enough to distort the young stems it climbs (BSBI account), and no measurement of its coil was found. 0.24 m is a choice, and a loose one: the engine stores a stem as points 40 mm apart, so a closer coil would be drawn as a zigzag."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.2,
@@ -262,12 +260,12 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.04,
-        0.09
+        0.03,
+        0.07
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Stem between one pair of leaves and the next. No flora read gives an internode length. Chosen so that a flowering side shoot 0.1 to 0.3 m long carries two to five pairs; the long shoots of the real plant have longer internodes than its side shoots, which one figure cannot show."
+      "basis": "Stem between one pair of leaves and the next. No flora read gives an internode length. Chosen so that a flowering side shoot 0.1 to 0.35 m long carries two to six pairs; the long shoots of the real plant have longer internodes than its side shoots, which one figure cannot show. The engine lays a stem down in steps of 40 mm, so pairs stand 40 or 80 mm apart."
     },
     "organs.leafLengthM": {
       "value": [
@@ -277,7 +275,7 @@
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
-      "basis": "Of the species. Bean (Trees and Shrubs Online): leaves \"1 1/2 to 2 1/2 in. long\", in metres. Stace and the Flora of the Burren give 3 to 7 cm, the Flora of New Zealand 3 to 9 cm. No measurement of this cultivar was found."
+      "basis": "Of the species. Bean (Trees and Shrubs Online): leaves \"1 1/2 to 2 1/2 in. long\", in metres. The Flora of the Burren gives 3 to 7 cm, the Flora of New Zealand 3 to 9 cm. No measurement of this cultivar was found."
     },
     "organs.leavesPerNode": {
       "value": 2,
@@ -315,7 +313,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The width of a flower head, tip of one flower to tip of the one opposite. The flowers are 40 to 50 mm long (Stace, as given in the BSBI account; Bean: 1 1/2 to 2 in.) and stand out all round the end of the stalk, so a head is about twice that across. The US plant patent of the most similar cultivar, ‘Scentsation’ (PP16,240), gives 100 to 120 mm. Worked out from the flower, not measured on this cultivar."
+      "basis": "The width of a flower head, tip of one flower to tip of the one opposite. The flowers are 40 to 50 mm long (BSBI account, after Sell and Murrell; Bean: 1 1/2 to 2 in.) and stand out all round the end of the stalk, so a head is about twice that across. The US plant patent of the most similar cultivar, ‘Scentsation’ (PP16,240), gives 100 to 120 mm. Worked out from the flower, not measured on this cultivar."
     },
     "organs.whipShareOfNodes": {
       "value": 0.03,
@@ -323,7 +321,7 @@
       "basis": "The share of older leaf nodes that throw a long shoot in a year. A choice. Kept low because the engine neither sheds a long shoot nor lets it bear side shoots in later years, so each stays as a bare stem."
     },
     "organs.whipsPerYearMax": {
-      "value": 14,
+      "value": 10,
       "status": "provisional_design_assumption",
       "basis": "A cap on new long shoots a year. A choice: see organs.whipShareOfNodes."
     },
@@ -353,7 +351,7 @@
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its second season, as nursery plants of this cultivar do. No source read states an age."
+      "basis": "Taken to flower from its second season. No source read states an age."
     },
     "flowering.maturityRamp": {
       "value": [
@@ -437,12 +435,12 @@
     },
     "fruit.lengthM": {
       "value": [
-        0.018,
-        0.028
+        0.021,
+        0.026
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The width of a cluster of berries. A berry is 8 mm across and the berries sit stalkless \"in tight clusters\" (BSBI account); a head of 6 to 20 flowers is taken to leave a cluster two or three berries across. Worked out from the berry, not measured."
+      "basis": "The width of a cluster of berries. A berry is 8 mm across and the berries sit stalkless \"in tight clusters\" (BSBI account); a head of 6 to 20 flowers is taken to leave a cluster about three berries across. Worked out from the berry, not measured. The range is kept narrow because the cluster is drawn to this size whatever its number of berries, and a berry should stay near 8 mm."
     },
     "fruit.swellDays": {
       "value": [
@@ -553,28 +551,28 @@
       "basis": "RHS honeysuckle guide: honeysuckles of this pruning group flower \"on short sideshoots on the previous season’s growth\". Wood a year old or more bears them."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 7,
+      "value": 12,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "New side shoots a year on each metre of stem old enough to bear them. Buds stand in pairs at every node and the engine lets a node bear one shoot, so this is about one node in two. A choice, set so that a plant ten years old clothes the frame; no count was found."
+      "basis": "New side shoots a year on each metre of stem old enough to bear them. Buds stand in pairs at every node, so a metre of stem with some fourteen nodes could throw twice that; the engine lets a node bear one shoot at a time, and this rate gives six free nodes in ten a shoot each year. A choice, set so that a plant six to ten years old clothes its frame, as the RHS describes an established plant (\"congested\", \"overgrown thickets\" if left); no count was found."
     },
     "sideShoots.lengthM": {
       "value": [
         0.1,
-        0.32
+        0.35
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The RHS calls them short. A flowering shoot of the wild plant is a hand to a forearm long; no flora read gives a figure. A choice."
+      "basis": "The RHS calls them short. Taken to be a hand to a forearm long; no flora read gives a figure. A choice."
     },
     "sideShoots.lifespanYears": {
-      "value": 3,
+      "value": 5,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "A side shoot is taken to leaf and flower for three seasons before it is shaded out or replaced. On the real plant it branches and becomes part of the tangle; the engine keeps it as it was in its first year. A choice."
+      "basis": "A side shoot is taken to leaf and flower for five seasons before it is shaded out or replaced. On the real plant it branches and becomes part of the tangle; the engine keeps it as it was in its first year. A choice: the longer it lives, the more of the plant is already in leaf when the leaves open in spring, which is when this species is at its most forward."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": 0.7,
+      "value": 0.45,
       "status": "provisional_design_assumption",
       "basis": "The share of side shoots that end in a flower head in a year. The inflorescence is terminal (Bean: \"at the end of the shoot, forming a terminal stalked inflorescence\") and UConn says this cultivar \"reliably produces ample quantities\" of flowers; the share is a choice."
     }
