@@ -1014,8 +1014,11 @@ export class Simulation {
     let laid = go;
     let stop: string | null = null;
 
-    // not through the timber: it turns aside along the member or cable, and stops where it cannot
-    const hit = this.surroundings.enters(from, to, radiusM);
+    // not through the timber: it turns aside along the member or cable, and stops where it cannot. Not asked of the
+    // first length of a side shoot: it sets out from the face of what bears it, away from that face (sideShootHeading),
+    // and where it stands at a crossing the round bar each member is taken as for this test can hold its foot inside
+    // the next member, which turned it back across its own support
+    const hit = axis.role === 'side_shoot' && n === 1 ? null : this.surroundings.enters(from, to, radiusM);
     if (hit) {
       const aside = addScaled(dir, hit.out, -dot(dir, hit.out));
       // a shoot that holds itself up can turn away from what it meets; one that hangs can only slide along it
@@ -2208,6 +2211,8 @@ export class Simulation {
   private shortenSideShoots(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }>, date: CalendarDate, fx: EventRecord['effects']): string {
     let cut = 0;
     let unflowered = 0;
+    let backToFirst = 0;
+    const longest = known(this.taxon(plant).model, 'sideShoots.lengthM')?.[1] ?? Infinity;
     for (const id of [...plant.axisIds]) {
       const a = this.axes.get(id)!;
       // a stub cut in an earlier winter is not cut again: the gardener shortens the shoot it bore
@@ -2217,9 +2222,26 @@ export class Simulation {
         continue;
       }
       const keep = this.at(plant, a.contact[0]!, SALT.shorten + date.year).range(...e.keepShare) * this.lengthOf(a);
-      this.cutAt(a, keep, e.id, fx);
       // the season the cut prepares for: a cut in December is for the next year's growth
-      a.shortenedYear = date.month >= 7 ? date.year + 1 : date.year;
+      const season = date.month >= 7 ? date.year + 1 : date.year;
+      // a shoot that stands on the stubs of earlier winters: where what would be left reaches further from the stem
+      // than the longest side shoot the plant makes, it is cut back to the first stub instead, which bears again
+      let first: Axis = a;
+      let chainM = keep;
+      for (let s = a.parent ? this.axes.get(a.parent.axisId) : undefined; s && s.role === 'side_shoot'; s = s.parent ? this.axes.get(s.parent.axisId) : undefined) {
+        chainM += this.lengthOf(s);
+        first = s;
+      }
+      if (first !== a && chainM > longest) {
+        for (const c of [...first.children]) this.removeAxis(this.axes.get(c)!, e.id, fx);
+        first.shortenedYear = season;
+        for (const n of plant.leafNodes) if (n.sideShootId === a.id) n.sideShootId = first.id;
+        backToFirst++;
+        cut++;
+        continue;
+      }
+      this.cutAt(a, keep, e.id, fx);
+      a.shortenedYear = season;
       if (a.tip.state !== 'stopped') a.tip = { state: 'stopped', reason: 'shortened by the gardener' };
       cut++;
     }
@@ -2228,6 +2250,7 @@ export class Simulation {
     let said = cut
       ? `winter pruning: ${cut} flowered side shoot${cut === 1 ? '' : 's'} cut back, each keeping ${share(e.keepShare[0])} to ${share(e.keepShare[1])} of its length; ${fx.stemRemovedM.toFixed(1)} m of shoot and ${hips} hip${hips === 1 ? '' : 's'} went with the cuts`
       : 'winter pruning: no flowered side shoots to cut back';
+    if (backToFirst) said += ` (${backToFirst} of them, standing on the stubs of earlier winters further out than a side shoot grows, cut back to the first stub)`;
     if (unflowered) said += `; ${unflowered} side shoot${unflowered === 1 ? '' : 's'} that had not flowered left as ${unflowered === 1 ? 'it was' : 'they were'}`;
     if (e.renewCanes) {
       const { keep, stubM } = e.renewCanes;

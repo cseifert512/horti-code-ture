@@ -554,3 +554,43 @@ The short shoots of the honeysuckle and the rose (0.2 to 0.5 m in their models, 
 - *Wind* is not a load, nor rain, nor snow.
 
 **Not verified.** No shape drawn here has been compared with a shoot on a plant. None of the eleven numbers is this library's taxa's own. The published reaches and stiffnesses were read from the papers' text and abstracts as fetched; the per-species tables of Hattermann et al. were not reached, so no taxon here has been given the figure of its nearest relative in that study. Putz 1984 (Ecology 65:1713-1724), which later papers cite for reaches of up to 3 m in tropical lianas, could not be read.
+
+## 11. How a side shoot leaves its stem, and a climbing rose's routine of care
+
+Added 12 November 2026, after the owner looked at the top of the vault in winter: "Would this happen in real-life?? I'm inclined to think not tbh." Along the timbers stood a comb of thin, dead-straight, near-vertical side shoots of *Rosa* 'The Generous Gardener', evenly spaced and alike, several ending in one hip. The climbing hydrangea showed the same comb.
+
+**Why it was drawn so.** Every side shoot set out straight away from what its stem lay on, with a little random spread: on a level member, straight up for all of them. All broke on the day of bud burst, at lengths from one range. The rose's spray and hips weighed the generic 10 g, and the rose had no routine of care: a trained rose was tied in and never pruned or deadheaded, so in January every shoot of the summer still stood with its hip.
+
+**What a side shoot now does** (`sideShootHeading` and `sideShootSeason` in `sim/engine.ts`, for every taxon with side shoots). Its place round the bearing stem follows the turn of the leaves from node to node: a right angle from pair to pair where leaves are opposite, the taxon's divergence (or the generic 137.5 degrees) where they stand singly. A place on the side pressed against the support is folded round to the open side. It leans forward along the bearing stem at an angle drawn from a range, and is turned a quarter of the way towards the direction a shoot of the plant seeks (up and the light). It never starts into the support. Its bud breaks on a day of its own in the four weeks after bud burst, and it grows so as to have its length when the first flowers open. As it is laid it is as thick as the length it is still to make: 6 mm at the foot of the rose's longest, tapering to the tip. From there the mechanics of section 10 lay it, so it arches towards the light and bows where it carries a spray or hips. Everything is drawn from a stream of the place (`placeRng`), so nothing else on the plant moves.
+
+**New numbers**, all optional (`GROWTH_PARAMS_OPTIONAL`); where a model gives none the generic side shoot in `sim/generic-shoot.ts` is used and the run says so once for the plant (a `generic_shoot` decision). None has a source; each is a labelled choice.
+
+| Parameter | Generic value | What it decides |
+|---|---|---|
+| `sideShoots.branchAngleDeg` | 35 to 70 degrees | How far a shoot leans out from its stem |
+| `sideShoots.breakSpreadDays` | 0 to 28 days after bud burst | When each bud breaks |
+| `sideShoots.startTowardsLight` | 0.25 | How far the first heading is turned towards up and the light |
+| `organs.alternateDivergenceDeg` | 137.5 degrees | Where round the stem successive single nodes stand |
+| `sideShoots.baseDiameterMm` | none: the plant's own pipe model on the length to come | How sturdy the foot of a side shoot is |
+| `flowering.firstFlushDays` | none: the whole flowering window | When the first flowers at the ends of side shoots open, for a plant that flowers in flushes |
+
+**The rose's numbers**, each in `species/rosa-the-generous-gardener/model.json` with its basis: a spray 12 g and a cluster of hips 12 g, worked out from whole flowers of small diploid roses (Rawandoozi and others 2023) and dog-rose hips (Sindrak and others 2012), not weighed; a side shoot 6 mm thick at its foot, not measured; repeat flowering at last switched on, a June flush (`firstFlushDays` 0 to 24), up to three more (`repeatMaxPerSeason`), half the places each time (`repeatShare` 0.5), two to four weeks after a deadheading and four to six after a spray left on the plant, from a nursery's "five to six weeks between flushes" read as opening to opening. No stiffness, density or leaf weight of a rose was found, so those stay generic.
+
+**A new gardener event, `shorten_side_shoots`** (in `vocab.ts`, mapped to the RHS's pruning of climbing roses). Each side shoot that has flowered is cut back to a share of its length drawn for it from its place; what stood beyond the cut goes with it (leaves, spent spray, hips, prickles, any shoot it bore). The stub is not shed in spring: that node's next side shoot breaks from its top, and where the stubs of earlier winters would carry it further out than the plant's longest side shoot, the cut goes back to the first stub. With `renewCanes`, where more canes rise from the base than are kept, the oldest are cut down low and shoot again. The rose's routine (`climbingRoseRoutine`, in `MODELLED_ROUTINE` and the reference palette): 8 January, keep a third to a half (RHS: "back by two thirds"; the breeder: "by around half"), at most six canes; deadheading on 28 June, 12 and 26 July, 9 and 23 August, then left so the last flush sets hips (the breeder: "Do not deadhead roses renowned for their autumn fruit after the second flush"). Sources and quotations are in the rose's `SPECIES_PROFILE.md`, "Care: what the gardener does".
+
+**What one year of the log says** (the rose on the specimen frame, 2031, as the viewer grows it): 8 January, "winter pruning: 105 flowered side shoots cut back, each keeping 33% to 50% of its length; 25.2 m of shoot and 24 hips went with the cuts; 21 side shoots that had not flowered left as they were; 5 canes from the base, no more than the 6 kept: none taken out"; 28 June, 13 spent flowers taken off; 12 July, 63; 26 July, 67; 9 August, 3; 23 August, 20, each with the places that will flower again sooner for it. In 2032 the plant opened 409 sprays (241 the year before, when the plant was younger), 92 in flower on 15 June, 177 on 1 July, then 40 to 80 at a time through August and 20 to 32 into October.
+
+**A fault found on the way and mended.** The light a shoot reads (`LightField.from`) took the nearest reading point for a quarter-metre cell from wherever the first shoot to ask from that cell stood, and kept it. So the light a shoot turned to depended on which shoot had asked first, and side shoots breaking on other days moved a whip's line by a few hundredths of a millimetre, against CLAUDE.md's rule that an intervention changes only what it touches. The reading is now taken nearest the middle of the cell. Two existing tests moved with it: the number of wisteria pods a cut of spurs takes (two to one), and the count of runs held in a stripped wisteria, which also counts shoots of the year that took hold from the air and now compares the framework's runs only.
+
+**Pictures, before and after.** The vault top in January after the cut: no comb and no hips; a few side shoots that did not flower stand at varied angles, and stubs along the canes. On 5 January, before the cut: shoots at varied angles, far fewer hips than before (deadheading took most), some bowed. On the specimen frame the summer rose's side shoots fan round the canes and over the top beam where they stood as parallel rods. The hydrangea's comb on the top beam is now a fan; it has no routine, so its side shoots stand straight-ish for their three years.
+
+**What is still wrong, or not done.**
+
+- *A later flower opens at the end of the same shoot.* In life it is borne on a shorter shoot that breaks from a node below the spent spray. That fork is not modelled.
+- *Unflowered side shoots stand all winter* at full length, thin and bare, as the RHS's wording leaves them; a gardener might shorten them too.
+- *Shoots on a cane that runs downhill set out downhill* (forward along the cane) before the tropism turns them; a few start well below the level.
+- *No cane is renewed.* The model makes six canes and the routine keeps six.
+- *The first length of a side shoot is not tested against the timber*, because the round bar that stands in for each member could hold a shoot's foot inside the member crossing its own; the heading keeps it outward from its own support.
+- *Every new number is a choice.* No branching angle, break date, divergence or shoot thickness has been measured on any plant in the library, nor a rose spray or hip weighed.
+
+Tests: `packages/core/test/side-shoots.test.ts`.

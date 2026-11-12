@@ -16,6 +16,7 @@ The purpose is neither to automate gardeners away nor pretend perfect natural se
 | `untie_or_reposition` | existing tie | Removes/replaces connection; tests support continuity | old/new contact, stem diameter |
 | `spur_prune` | selected lateral shoots and buds | Removes descendants/flower buds; changes next flowering probability | cut position, retained buds, date |
 | `hard_prune` | whole axis / plant | Removes live architecture except retained base/canes | severity, regrowth response assumptions |
+| `shorten_side_shoots` | flowered side shoots; old canes where congested | Cuts each flowered side shoot back to a share of its length, removing what stood beyond the cut (leaves, flowers, fruit, prickles, descendants); the stub bears next season's side shoot. Optionally cuts the oldest canes beyond a number down low to shoot again (climbing rose, RHS pruning group 17) | share kept, canes kept, date |
 | `thin_canopy` | leaf/stem sectors | Changes light penetration, visual coverage and biomass | sector, removed volume, rationale |
 | `deadhead_or_select_flowers` | inflorescences | Removes spent or excess flowers/fruit, affects visual output | target species, event date |
 | `water` | root station(s) | Changes water resource state | amount, dates, soil response |
@@ -31,7 +32,7 @@ Pruning should remove descendants in the plant graph and any associated organ/at
 
 **Winter (December–February):** wisteria maintenance and spur pruning (January–February); late-winter Group 3 clematis pruning; structural/tie inspections, easiest from December once deciduous stems are bare; manage evergreen competition. Wisteria is typically pruned a second time in summer.
 
-Also in late winter: *Campsis* is spur-pruned to two or three buds (RHS pruning group 12).
+Also in late winter: *Campsis* is spur-pruned to two or three buds (RHS pruning group 12). Climbing roses (RHS pruning group 17), December to February: flowered side shoots cut back by two thirds, and really old canes taken out at the base where the plant is congested; through the summer they are deadheaded, until the last flush where hips are wanted (`shorten_side_shoots`, `deadhead_or_select_flowers`; the routine in the core is `climbingRoseRoutine`).
 
 **Spring (March–May):** inspect winter survival; position and tie spring extension; prune Group 1 clematis (*C. cirrhosa*, *C. armandi*) immediately after flowering in mid to late spring, and only if needed, because they flower on the previous summer's shoots; replant *Thunbergia alata* after frost risk in late spring; monitor wisteria flower performance; manage roots and irrigation.
 
