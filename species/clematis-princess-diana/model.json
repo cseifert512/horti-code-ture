@@ -119,11 +119,13 @@
         0,
         1,
         1,
+        1,
+        1,
         1
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Shoots that rise from the crown itself: two on a young plant and one more in each of the next three seasons. RHS has the crown planted 5-8 cm deep \"to encourage new shoots to grow from below ground level\", and the plant is \"wispy\" at first and \"more robust with age\" (Hawke). With the two or three shoots each cut stub gives, an established plant has ten to fifteen stems, which stand in the model for the stems and their side branches together, because a stem here cannot branch in the season it is made. The numbers are assumed."
+      "basis": "Shoots that rise from the crown itself: two on a newly planted clematis and five more in its second season, seven stubs in all once it is established. RHS has the crown planted 5-8 cm deep \"to encourage new shoots to grow from below ground level\", and the plant is \"wispy\" at first and \"more robust with age\" (Hawke). With the two or three shoots each cut stub gives, an established plant has fifteen to eighteen stems and makes 32 to 38 m of stem a year: enough leaf to cover the RHS's spread of 0.5-1 m to a height of 2.5 m about two leaves deep. These stems stand in the model for the plant's stems and their side branches together, because a stem here cannot branch in the season it is made. No source counts the stems of a plant; the numbers are assumed."
     },
     "architecture.nurseryCaneM": {
       "value": 0.3,
@@ -187,12 +189,12 @@
     "architecture.maxStemsPerRoute": {
       "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "The stems are thin (new growth of the parent C. texensis is at most 3.5 mm through: Gibson, Vascular Plants of Williamson County) and their leaf stalks clasp a neighbouring stem as readily as a support, so several run up one lath or cable; the RHS has the gardener space them evenly. Three is assumed."
+      "basis": "The RHS has the gardener tie in the new growth \"spacing stems evenly on the support\": two to a lath or a cable is taken. Left to itself the plant would crowd more than two on to a single wire, each stem clasping the last (the stems are thin: at most 3.5 mm through on new growth of the parent C. texensis, Gibson); the engine has one number for both cases. Assumed."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 4,
+      "value": 7,
       "status": "provisional_design_assumption",
-      "basis": "As for a lath, with one more for the width of a glulam member. Assumed."
+      "basis": "As many thin stems as can be tied side by side across the face of a 150 mm glulam member at the engine's spacing of 22 mm. Assumed."
     },
     "routing.occupancyCost": {
       "value": 0.6,
@@ -207,7 +209,7 @@
     "routing.uphillBonusPerM": {
       "value": 2.5,
       "status": "provisional_design_assumption",
-      "basis": "Every stem of the year climbs: none is kept as a level arm. The weight is assumed, and is set high enough that a stem takes the upright at a crossing unless it is already full."
+      "basis": "Every stem of the year climbs: none is kept as a level arm. The weight is assumed, and is set high enough that a stem takes the upright at a crossing unless that upright is already full."
     },
     "routing.straightOnBonus": {
       "value": 0.3,
@@ -316,7 +318,7 @@
     "organs.whipShareOfNodes": {
       "value": 0.5,
       "status": "provisional_design_assumption",
-      "basis": "Share of the leaf joints on kept stems that throw a new shoot in a year. Only a plant left unpruned has kept stems (RHS: it will \"continue growing from where the growth ended the previous season\"). The share is assumed."
+      "basis": "Share of the leaf joints on kept stems, above the bare base, that throw a new shoot in a year. Only a plant left unpruned has kept stems (RHS: it will \"continue growing from where the growth ended the previous season\"). The share is assumed."
     },
     "organs.whipsPerYearMax": {
       "value": 12,
@@ -374,7 +376,7 @@
       "value": 8,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flowering stalks to a metre of the year's stem: one at about two leaf joints in three. No count is published; RHS says only \"profuse flowers once established\". On the plant the flowers stand in the upper part of a stem, each joint there carrying a stalk of one to three; the engine spreads one flower to a joint along the whole stem instead."
+      "basis": "Flowering stalks to a metre of the year's stem: one at nearly every leaf joint. No count is published; RHS says only \"profuse flowers once established\". On the plant the lower third of a stem carries none and each joint above carries two stalks of one to several flowers (Gibson, of the parent C. texensis: \"cyme ... 1-several-flowered ... 2 cymes per node\"), which comes to more than one flower to a joint over the whole stem; the engine places one flower at a joint and no more, anywhere along the stem."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.4,

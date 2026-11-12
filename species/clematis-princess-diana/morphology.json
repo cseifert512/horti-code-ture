@@ -266,6 +266,12 @@
       "status": "provisional_design_assumption",
       "basis": "Not published for the cultivar. Of the parent C. texensis: beak \"27-34 mm long\", \"curved to twisted (never straight)\" (Gibson); a feathery style \"about 1 1/2 in. long\" (Bean)."
     },
+    "fruit.tailHairLengthM": {
+      "value": [0.002, 0.004],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: the beak \"densely pilose with ascending to spreading, golden, straight hairs 2-3+ mm long\"."
+    },
     "fruit.colourRipe": {
       "value": "silvery, the tails with golden hairs, the achenes brown",
       "status": "provisional_design_assumption",
