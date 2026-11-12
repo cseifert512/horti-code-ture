@@ -576,7 +576,8 @@ function makePanicle(variant: number, lod: number): THREE.BufferGeometry {
       q.setFromUnitVectors(UP, head.axis);
       m.compose(head.centre, q, one);
       mg.add(ball(head.radius * 0.72, 5, 2, (u) => mix(FLOWER.ovary, FLOWER.disc, 0.3 + 0.3 * hash2(h, Math.round(u * 5)))), m, WHITE, head.centre, -1);
-      mg.add(ball(head.radius, 6, 3, (u, v) => mix(FLOWER.petal, FLOWER.anther, 0.2 + 0.45 * hash2(h + 9, Math.round(u * 6) + 7 * Math.round(v * 3)))), m, WHITE, head.centre, head.order);
+      // mostly the green of the stalks and ovaries seen between the flowers, with the yellow-green of the petals and a little of the anthers' yellow
+      mg.add(ball(head.radius, 6, 3, (u, v) => mix(mix(FLOWER.stalk, FLOWER.petal, 0.55), FLOWER.anther, 0.25 * hash2(h + 9, Math.round(u * 6) + 7 * Math.round(v * 3)))), m, WHITE, head.centre, head.order);
       return;
     }
     // globose: stalks in every direction but back down the stalk of the umbel
@@ -733,7 +734,7 @@ const climbingLeaf: LeafAsset = {
   pick: (_lengthM, r) => (r < 0.4 ? 0 : r < 0.65 ? 1 : r < 0.85 ? 2 : 3),
   // dark and shining, the veins pale (greenB is what a vein is drawn towards); evergreen, so it has no autumn colours of its own
   palette: { greenA: lin('#2c4a17'), greenB: lin('#b4c090'), young: lin('#8aa43a'), autumnA: lin('#2c4a17'), autumnB: lin('#b4c090') },
-  roughness: 0.36,
+  roughness: 0.3,
   // leathery: little light comes through
   translucency: 0.2,
   detailReach: 0.75,
@@ -748,7 +749,7 @@ const adultLeaf: LeafAsset = {
   pick: (_lengthM, r) => (r < 0.45 ? 0 : r < 0.8 ? 1 : 2),
   // a little lighter and plainer than the climbing leaf, its veins less marked
   palette: { greenA: lin('#33531a'), greenB: lin('#9bad72'), young: lin('#8fa83e'), autumnA: lin('#33531a'), autumnB: lin('#9bad72') },
-  roughness: 0.38,
+  roughness: 0.34,
   translucency: 0.2,
   detailReach: 0.75,
 };

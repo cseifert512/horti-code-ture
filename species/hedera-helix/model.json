@@ -290,7 +290,7 @@
     "organs.spurChance": {
       "value": 0.7,
       "status": "provisional_design_assumption",
-      "basis": "Stands for the short leafy side shoots that keep an ivy stem clothed after its first leaves have gone: seven nodes in ten of last year's stem are taken to carry one. Ivy has no spurs in the fruit-grower's sense. The share is chosen, with organs.spurLeafCount, so that a lath carrying three stems bears some 250 leaves a metre, a close cover and not a garland: the RHS calls an ivy's covering \"dense\" (https://www.rhs.org.uk/prevention-protection/ivy-on-buildings). No count of leaves on a stem was found."
+      "basis": "Stands for the short leafy side shoots that keep an ivy stem clothed after its first leaves have gone: seven nodes in ten of last year's stem are taken to carry one. Ivy has no spurs in the fruit-grower's sense. The share is chosen, with organs.spurLeafCount, so that a lath carrying three stems bears some 200 leaves a metre (the twelve-year specimen has 190 to a metre of route), a close cover and not a thin garland: the RHS calls an ivy's covering \"dense\" (https://www.rhs.org.uk/prevention-protection/ivy-on-buildings). No count of leaves on a stem was found."
     },
     "organs.spurLengthM": {
       "value": [
