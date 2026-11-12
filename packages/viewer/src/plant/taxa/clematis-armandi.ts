@@ -125,11 +125,11 @@ function halfColumns(lod: number): Column[] {
   for (let k = 1; k <= SIDE_VEINS; k++) {
     const at = (VEIN_AT * k) / SIDE_VEINS;
     // close beside each vein at the finest level, so that the vein is a fine line in a fine channel
-    if (lod === 0) out.push([last + VEIN_HALF, last === 0 ? 0.035 : 0.05, 0], [(last + at) / 2 + 0.02, 0.1, 0], [at - VEIN_HALF, 0.05, 0], [at, 0, 2]);
-    else out.push([(last + at) / 2, 0.1, 0], [at, 0, 2]);
+    if (lod === 0) out.push([last + VEIN_HALF, last === 0 ? 0.04 : 0.06, 0], [(last + at) / 2 + 0.02, 0.14, 0], [at - VEIN_HALF, 0.06, 0], [at, 0, 2]);
+    else out.push([(last + at) / 2, 0.14, 0], [at, 0, 2]);
     last = at;
   }
-  if (lod === 0) out.push([last + VEIN_HALF, 0.05, 0], [0.82, 0.2, 0]);
+  if (lod === 0) out.push([last + VEIN_HALF, 0.06, 0], [0.82, 0.22, 0]);
   return [...out, [1, MARGIN_OFF, 0]];
 }
 /** Half the width of the channel a vein lies in, as a share of the half width; and how far the margin samples from the texture's midrib. */
@@ -195,7 +195,7 @@ function leafletGeometry(form: LeafletForm, lod: number): THREE.BufferGeometry {
     let lift = form.fold * Math.abs(x) - 0.25 * form.half * Math.pow(Math.abs(s), 3) * rel;
     if (lod === 0) {
       // the main veins lie in channels, and the margin is a little waved
-      if (vein) lift -= (vein === 1 ? 0.0024 : 0.0016) * Math.sqrt(1 - v) * rel;
+      if (vein) lift -= (vein === 1 ? 0.0012 : 0.0008) * Math.sqrt(1 - v) * rel;
       lift += 0.006 * Math.sin(v * 11 + form.seed + s * 1.3) * s * s * rel;
     }
     const back = form.cord * Math.pow(Math.abs(s), 1.5) * (1 - smoothstep(0, 0.14, v));
@@ -215,7 +215,7 @@ function leafletGeometry(form: LeafletForm, lod: number): THREE.BufferGeometry {
     for (let i = 0; i <= nu; i++) {
       const [s, off, vein] = columns[i]!;
       // a side vein fades out short of the tip
-      const o = vein === 2 ? 0.1 * smoothstep(0.72, 0.92, v) : off;
+      const o = vein === 2 ? 0.14 * smoothstep(0.72, 0.92, v) : off;
       const at = 2 * (j * (nu + 1) + i);
       sb.uv[at] = 0.5 + (s < 0 ? -o : o);
       sb.uv[at + 1] = TEXTURE_FOOT;
@@ -329,17 +329,17 @@ const BUD_SCALE_LENGTH = characterRange(morphology, 'inflorescence.budScaleLengt
 const FLOWER_VARIANTS = 4;
 const FLOWER_LODS = 3;
 
-const WHITE_SEPAL = lin('#fcf9ec');
-const CREAM_SEPAL = lin('#f4eecf');
-const SEPAL_BASE = lin('#e4e6b2');
+const WHITE_SEPAL = lin('#fffae8');
+const CREAM_SEPAL = lin('#f7edc8');
+const SEPAL_BASE = lin('#e7e5aa');
 const FILAMENT = lin('#eef0d6');
 const ANTHER = lin('#e9dc9a');
 const STYLE_GREEN = lin('#cfdcae');
 const STALK_GREEN = lin('#7c8c50');
 const STALK_PALE = lin('#a9b678');
 const STALK_BRONZE = lin('#7a6a48');
-const SCALE_BROWN = lin('#8c7650');
-const SCALE_PALE = lin('#c2ad7c');
+const SCALE_BROWN = lin('#6e5a3c');
+const SCALE_PALE = lin('#a08a5e');
 
 interface NodeFlower {
   /** Where the flower sits and the way it faces. */
@@ -388,7 +388,7 @@ function nodeLayout(variant: number): NodeLayout {
     const stalks = rng.int(STALKS_PER_AXIL[0], STALKS_PER_AXIL[1]);
     for (let k = 0; k < 3; k++) {
       const along = cone(axil, rng.range(0.5, 0.9), (k / 3) * TAU + rng.range(0, 1));
-      out.scales.push({ at: foot.clone(), along, length: rng.range(BUD_SCALE_LENGTH[0], BUD_SCALE_LENGTH[1] * 0.8) });
+      out.scales.push({ at: foot.clone(), along, length: lerp(BUD_SCALE_LENGTH[0], BUD_SCALE_LENGTH[1], rng.range(0, 0.4)) });
     }
     const turn0 = rng.range(0, TAU);
     for (let i = 0; i < stalks; i++) {
@@ -477,12 +477,17 @@ function sepalGeometry(shape: number, lod: number): THREE.BufferGeometry {
 const sepalCache = new Map<string, THREE.BufferGeometry>();
 const SEPAL_SHAPES = 3;
 
-/** One flower: sepals that open and fall, and the boss of stamens and styles that stays. */
+/**
+ * One flower: sepals and stamens, which come with the flower and go when it is over, and the tuft of styles in its
+ * middle, which stays. The stamens are a part of the flower like the sepals, so that a flower in bud shows none.
+ */
 function addFlower(mg: Merge, flower: NodeFlower, lod: number): void {
   const rng = new RNG(9100 + flower.seed * 31);
   const { at, axis } = flower;
   const [e1, e2] = across(axis);
   const turn = rng.range(0, TAU);
+  // the stamens show a moment after the sepals part
+  const boss = Math.min(1, flower.opens + 0.05);
   for (let k = 0; k < flower.sepals; k++) {
     const theta = turn + (k / flower.sepals) * TAU + rng.range(-0.1, 0.1);
     const out = e1.clone().multiplyScalar(Math.cos(theta)).addScaledVector(e2, Math.sin(theta));
@@ -512,12 +517,13 @@ function addFlower(mg: Merge, flower: NodeFlower, lod: number): void {
       const r = STAMEN_LENGTH[1] * 0.7;
       raw.flat(at.clone().addScaledVector(e1, r * Math.cos(a)).addScaledVector(e2, r * Math.sin(a)), at.clone().addScaledVector(e1, r * Math.cos(b)).addScaledVector(e2, r * Math.sin(b)), top, ANTHER, ANTHER, FILAMENT);
     }
-    mg.add(raw.build(), IDENTITY, WHITE, at, AXIS);
+    mg.add(raw.build(), IDENTITY, WHITE, at, boss);
     return;
   }
   // stamens: slender filaments, each ending in a narrow anther; the outer ones spread, the inner stand
   const stamens = lod === 0 ? STAMENS : Math.round(STAMENS / 3.5);
   const thick = lod === 0 ? 1 : 1.9;
+  const tuft = new Merge(false);
   for (let i = 0; i < stamens; i++) {
     const f = (i + 0.5) / stamens;
     const dir = cone(axis, 0.18 + 0.95 * Math.sqrt(f) + rng.range(-0.08, 0.08), i * 2.39996 + rng.range(-0.3, 0.3));
@@ -525,10 +531,11 @@ function addFlower(mg: Merge, flower: NodeFlower, lod: number): void {
     const foot = at.clone().addScaledVector(dir, 0.0012);
     const neck = at.clone().addScaledVector(dir, length - ANTHER_LENGTH);
     const head = at.clone().addScaledVector(dir, length).addScaledVector(axis, 0.0008);
-    if (lod === 0) mg.tube([foot, neck, head], [0.00016 * thick, 0.00042 * thick, 0.0003 * thick], 3, FILAMENT, ANTHER);
-    else mg.tube([foot, head], [0.0002 * thick, 0.00042 * thick], 3, FILAMENT, ANTHER);
+    if (lod === 0) tuft.tube([foot, neck, head], [0.00016 * thick, 0.00042 * thick, 0.0003 * thick], 3, FILAMENT, ANTHER);
+    else tuft.tube([foot, head], [0.0002 * thick, 0.00042 * thick], 3, FILAMENT, ANTHER);
   }
-  // the silky styles in the middle
+  mg.add(tuft.build(), IDENTITY, WHITE, at, boss);
+  // the silky styles in the middle: they stay, and are what lengthens into the seed head
   const styles = lod === 0 ? 12 : 3;
   for (let i = 0; i < styles; i++) {
     const dir = cone(axis, 0.3 * Math.sqrt((i + 0.5) / styles), i * 2.39996);
@@ -585,7 +592,7 @@ function addNodeAxis(mg: Merge, layout: NodeLayout, lod: number, keep: (flower: 
     mg.add(geometry, frame(a, b, along, at, length), WHITE, at, AXIS);
   };
   bractCache[lod] ??= bladeGeometry(0.09, 0.3, (_u, v) => mix(STALK_GREEN, STALK_PALE, v), lod === 0 ? [2, 4] : [1, 2]);
-  scaleCache[lod] ??= bladeGeometry(0.3, 0.9, (u, v) => mix(mix(SCALE_BROWN, SCALE_PALE, 0.5 + 0.5 * Math.cos(u * 9)), SCALE_PALE, v * 0.6), lod === 0 ? [4, 4] : [2, 2]);
+  scaleCache[lod] ??= bladeGeometry(0.24, 0.45, (u, v) => mix(mix(SCALE_BROWN, SCALE_PALE, 0.5 + 0.5 * Math.cos(u * 9)), SCALE_PALE, v * 0.6), lod === 0 ? [4, 4] : [2, 2]);
   for (const bract of layout.bracts) place(bractCache[lod]!, bract.at, bract.along, bract.length);
   for (const scale of layout.scales) place(scaleCache[lod]!, scale.at, scale.along, scale.length);
 }
@@ -676,27 +683,32 @@ function addHead(mg: Merge, at: V3, axis: V3, seed: number, lod: number): void {
       raw.tri(l, raw.vert(e, PLUME), r);
       continue;
     }
-    // the feather: silky hairs stand out all along the tail, longest near its foot. They are drawn as vanes of fine
-    // teeth, foot to foot along the tail, so that the tail reads as silk and not as a thread
+    // the feather: a fine tail with silky hairs standing out all along it
     const pointAt = (f: number): V3 => {
       const x = clamp(f, 0, 1) * segs;
       const k = Math.min(segs - 1, Math.floor(x));
       return line[k]!.clone().lerp(line[k + 1]!, x - k);
     };
-    const vanes = lod === 0 ? 4 : 2;
-    const teeth = lod === 0 ? 7 : 4;
-    for (let w = 0; w < vanes; w++) {
-      const turn = (w / vanes) * TAU + rng.range(0, 0.6);
-      for (let h = 0; h < teeth; h++) {
-        const s0 = h / teeth;
-        const s1 = (h + 1) / teeth;
-        const p0 = pointAt(s0);
-        const p1 = pointAt(s1);
-        const t = tangents[Math.min(segs - 1, Math.floor(((s0 + s1) / 2) * segs))]!;
-        const out = cone(t, rng.range(0.75, 1.1), turn + rng.range(-0.25, 0.25));
-        const reach = lerp(0.0068, 0.003, (s0 + s1) / 2) * rng.range(0.85, 1.2);
-        raw.flat(p0, p1, p0.clone().lerp(p1, 0.5).addScaledVector(out, reach), TAIL_GREEN, TAIL_GREEN, PLUME);
-      }
+    // the tail itself, a fine ribbon
+    for (let k = 0; k < segs; k++) {
+      const w = lod === 0 ? 0.00035 : 0.0005;
+      const a0 = raw.vert(line[k]!.clone().addScaledVector(side, w), TAIL_GREEN);
+      const a1 = raw.vert(line[k]!.clone().addScaledVector(side, -w), TAIL_GREEN);
+      const b0 = raw.vert(line[k + 1]!.clone().addScaledVector(side, w * 0.6), PLUME);
+      const b1 = raw.vert(line[k + 1]!.clone().addScaledVector(side, -w * 0.6), PLUME);
+      raw.tri(a0, b0, a1);
+      raw.tri(a1, b0, b1);
+    }
+    // and the silk: many fine hairs standing out all round it, longest near its foot
+    const hairs = lod === 0 ? 34 : 9;
+    for (let h = 0; h < hairs; h++) {
+      const s = 0.04 + 0.94 * ((h + rng.f()) / hairs);
+      const from = pointAt(s);
+      const t = tangents[Math.min(segs - 1, Math.floor(s * segs))]!;
+      const out = cone(t, rng.range(0.4, 0.85), h * 2.39996 + rng.range(-0.6, 0.6));
+      const reach = lerp(0.0085, 0.004, s) * rng.range(0.8, 1.2) * (lod === 0 ? 1 : 1.2);
+      const w = lod === 0 ? 0.00026 : 0.0005;
+      raw.flat(from.clone().addScaledVector(t, -w), from.clone().addScaledVector(t, w), from.clone().addScaledVector(out, reach), TAIL_GREEN, TAIL_GREEN, PLUME);
     }
   }
   mg.add(raw.build(), IDENTITY, WHITE, at, AXIS);
@@ -836,8 +848,8 @@ const flowers: FlowerAsset = {
   // "globose silvery buds" (Royal Botanic Garden Edinburgh)
   budTint: [0.8, 0.86, 0.72],
   swing: 0.25,
-  translucency: 0.3,
-  sheen: 0.04,
+  translucency: 0.42,
+  sheen: 0.05,
   detailAt: [1.4, 4.2],
   detailCaps: [14, 160],
 };
@@ -847,13 +859,13 @@ const seedHeads: FruitAsset = {
   variants: FRUIT_VARIANTS,
   lods: FRUIT_LODS,
   make: makeFruitGeometry,
-  budget: [3900, 800, 200],
+  budget: [3400, 700, 170],
   pick: (r) => Math.min(FRUIT_VARIANTS - 1, Math.floor(r * FRUIT_VARIANTS)),
   authoredSize: HEADS_SPAN,
   poise: 'held',
   centreAlong: 0.35,
   // "white, feathery" (Kwantlen): the hairs dry silver-white, the achenes and stalks brown
-  ripe: lin('#fbf4e2'),
+  ripe: lin('#fff6de'),
   ripeShade: [-0.25, 1.39],
   roughness: 0.85,
   swing: 0.35,

@@ -271,8 +271,8 @@
     },
     "inflorescence.spanM": {
       "value": [
-        0.15,
-        0.19
+        0.13,
+        0.17
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -455,9 +455,9 @@
       "basis": "Kwantlen Polytechnic University plant database: the fruit is white and feathery, in early summer."
     },
     "fruit.achenesPerHead": {
-      "value": 16,
+      "value": 12,
       "status": "provisional_design_assumption",
-      "basis": "No source read counts the achenes of a head. Sixteen are drawn at the finest level of detail."
+      "basis": "No source read counts the achenes of a head. Twelve are drawn at the finest level of detail."
     },
     "fruit.headsPerNode": {
       "value": [
@@ -469,8 +469,8 @@
     },
     "fruit.spanM": {
       "value": [
-        0.14,
-        0.19
+        0.13,
+        0.17
       ],
       "unit": "m",
       "status": "provisional_design_assumption",

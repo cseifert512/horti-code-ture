@@ -20,24 +20,37 @@ const morphology = parseMorphology(JSON.parse(readFileSync(file(`species/${ID}/m
 const { model, profile } = growable().get(ID)!;
 const mid = ([a, b]: [number, number]) => (a + b) / 2;
 
-/** The parts of a model that come and go (a leaflet, a sepal), by the point each grows from: their vertices and the order they open in. */
-function parts(g: THREE.BufferGeometry): { pivot: THREE.Vector3; points: THREE.Vector3[]; uv: number[]; opens: Set<number> }[] {
+interface Part {
+  /** The point it grows from. */
+  pivot: THREE.Vector3;
+  points: THREE.Vector3[];
+  uv: number[];
+  /** Its points by the order they open in: one entry for each sepal of a flower, and one for its stamens. */
+  byOpening: Map<number, THREE.Vector3[]>;
+}
+/** The parts of a model that come and go (a leaflet; a flower's sepals and stamens), by the point each grows from. */
+function parts(g: THREE.BufferGeometry): Part[] {
   const pos = g.getAttribute('position');
   const part = g.getAttribute('aPart');
   const uv = g.getAttribute('uv') as THREE.BufferAttribute | undefined;
-  const found = new Map<string, { pivot: THREE.Vector3; points: THREE.Vector3[]; uv: number[]; opens: Set<number> }>();
+  const found = new Map<string, Part>();
   for (let i = 0; i < pos.count; i++) {
     if (part.getW(i) < 0) continue;
     const key = `${part.getX(i).toFixed(5)},${part.getY(i).toFixed(5)},${part.getZ(i).toFixed(5)}`;
     let p = found.get(key);
-    if (!p) found.set(key, (p = { pivot: new THREE.Vector3(part.getX(i), part.getY(i), part.getZ(i)), points: [], uv: [], opens: new Set() }));
-    p.points.push(new THREE.Vector3().fromBufferAttribute(pos, i));
+    if (!p) found.set(key, (p = { pivot: new THREE.Vector3(part.getX(i), part.getY(i), part.getZ(i)), points: [], uv: [], byOpening: new Map() }));
+    const point = new THREE.Vector3().fromBufferAttribute(pos, i);
+    p.points.push(point);
     if (uv) p.uv.push(uv.getX(i));
-    p.opens.add(Math.round(part.getW(i) * 1e4));
+    const opens = Math.round(part.getW(i) * 1e4);
+    if (!p.byOpening.has(opens)) p.byOpening.set(opens, []);
+    p.byOpening.get(opens)!.push(point);
   }
   return [...found.values()];
 }
 const farthest = (from: THREE.Vector3, points: THREE.Vector3[]) => points.reduce((d, p) => Math.max(d, p.distanceTo(from)), 0);
+/** The sepals of a flower: the parts that reach well beyond its stamens. */
+const sepalsOf = (flower: Part, stamenLength: number) => [...flower.byOpening.values()].filter((points) => farthest(flower.pivot, points) > stamenLength * 1.4);
 
 // species/clematis-armandi/SPECIES_PROFILE.md, "Form: what the model draws"; TAXON_LOOKS.md section 8: "counts and
 // measured sizes (leaflets, tepals, the length of a leaflet for its width) come from the file".
@@ -119,11 +132,12 @@ describe('Clematis armandi: the shapes drawn agree with its morphology file', ()
     const [fewest, most] = characterRange(morphology, 'flower.sepalCount');
     const usual = characterRange(morphology, 'flower.sepalCountUsual');
     const width = characterRange(morphology, 'flower.diameterM');
+    const stamen = characterRange(morphology, 'flower.stamenLengthM')[1];
     const counts: number[] = [];
     for (let v = 0; v < flowers.variants; v++) {
       for (const flower of parts(flowers.make(v, 0))) {
         // the sepals of a flower grow from one point and open one after another
-        counts.push(flower.opens.size);
+        counts.push(sepalsOf(flower, stamen).length);
         const across = 2 * farthest(flower.pivot, flower.points);
         expect(across).toBeGreaterThan(width[0] * 0.9);
         expect(across).toBeLessThan(width[1] * 1.1);
@@ -136,14 +150,24 @@ describe('Clematis armandi: the shapes drawn agree with its morphology file', ()
     expect(counts.filter((n) => n >= usual[0] && n <= usual[1]).length / counts.length).toBeGreaterThan(0.7);
   });
 
-  it('keeps the stalks and the boss of stamens when the sepals have gone: they are the axis of the flower', () => {
+  it('opens the stamens with the sepals and sheds them with them, and keeps the stalk and the tuft of styles of every flower', () => {
     const g = look.flowers!.default.make(0, 0);
+    const pos = g.getAttribute('position');
     const part = g.getAttribute('aPart');
-    let axis = 0;
-    for (let i = 0; i < part.count; i++) if (part.getW(i) < 0) axis++;
-    // forty stamens to a flower outnumber the points of its sepals
-    expect(axis / part.count).toBeGreaterThan(0.4);
-    expect(axis / part.count).toBeLessThan(0.9);
+    const stamens = characterRange(morphology, 'flower.stamenLengthM');
+    const style = characterRange(morphology, 'flower.styleLengthM')[1];
+    const kept: THREE.Vector3[] = [];
+    for (let i = 0; i < pos.count; i++) if (part.getW(i) < 0) kept.push(new THREE.Vector3().fromBufferAttribute(pos, i));
+    for (const flower of parts(g)) {
+      // one part of every flower is not a sepal: its boss of stamens, none longer than the flora gives
+      const boss = [...flower.byOpening.values()].filter((points) => !sepalsOf(flower, stamens[1]).includes(points));
+      expect(boss).toHaveLength(1);
+      expect(farthest(flower.pivot, boss[0]!)).toBeLessThanOrEqual(stamens[1] * 1.15);
+      expect(farthest(flower.pivot, boss[0]!)).toBeGreaterThan(stamens[0]);
+      // what stays when the flower is over: the styles, a tuft no longer than the flora gives, and the stalk beneath
+      const near = kept.filter((p) => p.distanceTo(flower.pivot) < style * 1.2);
+      expect(near.length).toBeGreaterThan(20);
+    }
   });
 
   it('draws three to five seed heads to a node, none of whose tails is longer than the flora gives', () => {
@@ -165,7 +189,7 @@ describe('Clematis armandi: the shapes drawn agree with its morphology file', ()
         if (!h) heads.set(key, (h = { at: new THREE.Vector3(part.getX(i), part.getY(i), part.getZ(i)), points: [] }));
         h.points.push(new THREE.Vector3().fromBufferAttribute(pos, i));
       }
-      const real = [...heads.values()].filter((h) => h.points.length > 60);
+      const real = [...heads.values()].filter((h) => h.points.length > 200);
       expect(real.length, `variant ${v}`).toBeGreaterThanOrEqual(fewest);
       expect(real.length, `variant ${v}`).toBeLessThanOrEqual(most);
       for (const head of real) expect(farthest(head.at, head.points)).toBeLessThan(reach);
@@ -371,7 +395,7 @@ describe('measure', () => {
     for (let v = 0; v < flowers.variants; v++) {
       const found = parts(flowers.make(v, 0));
       const xs = found.flatMap((f) => f.points.map((p) => p.x));
-      console.log(`flower variant ${v}: ${found.length} flowers, sepals ${found.map((f) => f.opens.size).join(',')}, across ${(Math.max(...xs) - Math.min(...xs)).toFixed(3)}`);
+      console.log(`flower variant ${v}: ${found.length} flowers, sepals ${found.map((f) => f.byOpening.size).join(',')}, across ${(Math.max(...xs) - Math.min(...xs)).toFixed(3)}`);
     }
     for (let v = 0; v < look.leaves.default.variants; v++) {
       const found = parts(look.leaves.default.make(v, 0));

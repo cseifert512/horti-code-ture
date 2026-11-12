@@ -302,20 +302,20 @@
     },
     "organs.racemeLengthM": {
       "value": [
-        0.15,
-        0.19
+        0.13,
+        0.17
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
       "basis": "What one flower record of this plant is: the two clusters that stand in the two leaf axils of one node, measured across both from the outermost flower of one to the outermost of the other. The parts are published: peduncle 0.4 to 8 cm, flower stalks 1.8 to 7 cm (Huang et al. 2024, https://zenodo.org/records/15001723), flowers 5 to 6 cm across (RHS). The span is this project's sum of them, not a source's."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.45,
+      "value": 0.9,
       "status": "provisional_design_assumption",
       "basis": "The share of older nodes on the main stems and branches that throw a long shoot in a year. Chosen with organs.whipsPerYearMax so that a plant six to ten years old carries the dense mass of foliage the sources describe (\"a large, vigorous evergreen climber\", RHS; used as a screen). Not counted on a plant."
     },
     "organs.whipsPerYearMax": {
-      "value": 140,
+      "value": 170,
       "status": "provisional_design_assumption",
       "basis": "A cap on the long shoots a plant throws in a year. Chosen with organs.whipShareOfNodes; not counted on a plant."
     },
@@ -428,8 +428,8 @@
     },
     "fruit.lengthM": {
       "value": [
-        0.14,
-        0.19
+        0.13,
+        0.17
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
