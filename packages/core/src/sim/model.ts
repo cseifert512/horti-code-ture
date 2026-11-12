@@ -26,6 +26,7 @@
 import { z } from 'zod';
 import { type ProvenanceEntry, type Sourced, sourced } from '../provenance.ts';
 import { ORGAN_HELD } from '../vocab.ts';
+import { GENERIC_SHOOT, type ShootParamKey } from './generic-shoot.ts';
 
 /**
  * Every parameter, with the shape of its value. `range` is [low, high]; `list` is indexed as its name says.
@@ -192,6 +193,35 @@ export const GROWTH_PARAMS = {
   'thickening.tipRadiusSquaredMm2': 'number',
   'thickening.radiusSquaredPerMetreMm2': 'number',
   'thickening.branchShare': 'number',
+  // ---- an unsupported shoot: a slender rod that bends under its own weight, turns towards the light and can take hold
+  // of a support it comes near (sim/free-shoot.ts). Unknown: the generic value of the same name is used
+  // (sim/generic-shoot.ts), and the run says so once for the plant.
+  /** Structural Young's modulus in bending of the soft growing end of a shoot, on the day it is laid down. */
+  'mechanics.greenShootModulusMPa': 'number',
+  /** The same once the wood of that stretch has set. */
+  'mechanics.woodModulusMPa': 'number',
+  /** Days over which a new stretch of stem stiffens from the one to the other. */
+  'mechanics.woodSetDays': 'number',
+  'mechanics.stemFreshDensityKgM3': 'number',
+  /** Fresh mass of leaf for each square metre of its outline. */
+  'mechanics.leafFreshMassPerAreaKgM2': 'number',
+  /** Fresh mass of one inflorescence fully open, and of one fruit (or one cluster) full grown. */
+  'mechanics.inflorescenceFreshMassKg': 'number',
+  'mechanics.fruitFreshMassKg': 'number',
+  /**
+   * The farthest an unsupported shoot holds itself out, as the straight line from where it leaves its support to its
+   * tip: what has been measured of searcher shoots. A shoot that still holds itself up at that distance grows no further.
+   */
+  'mechanics.searcherReachM': 'number',
+  /** Radians the growing end turns towards the direction it seeks for each metre grown, when at right angles to it. */
+  'tropism.turnPerM': 'number',
+  /** How far the direction a shoot seeks leans from plumb towards the light: 0 straight up, 1 straight at the light. */
+  'tropism.lightShare': 'number',
+  /**
+   * How near the tip of a searching shoot must come to a support it can grasp to take hold of it: the sweep of a
+   * revolving tip, the length of a tendril or leaf stalk. 0: a shoot in the air never takes hold again.
+   */
+  'attachment.graspReachM': 'number',
   // ---- fruit: what follows a flower that set. Unknown: no fruit is modelled. A set share of 0: the plant sets none.
   /** Share, 0 to 1, of the inflorescences that open and go over on the plant that set fruit. */
   'fruit.setShare': 'number',
@@ -268,6 +298,17 @@ type Shape<K extends GrowthParamKey> = (typeof GROWTH_PARAMS)[K] extends 'number
  * parameter must have a value. Read them with `known`, not `param`.
  */
 export const GROWTH_PARAMS_OPTIONAL = [
+  'mechanics.greenShootModulusMPa',
+  'mechanics.woodModulusMPa',
+  'mechanics.woodSetDays',
+  'mechanics.stemFreshDensityKgM3',
+  'mechanics.leafFreshMassPerAreaKgM2',
+  'mechanics.inflorescenceFreshMassKg',
+  'mechanics.fruitFreshMassKg',
+  'mechanics.searcherReachM',
+  'tropism.turnPerM',
+  'tropism.lightShare',
+  'attachment.graspReachM',
   'fruit.setShare',
   'fruit.lengthM',
   'fruit.swellDays',
@@ -320,7 +361,19 @@ const lengths = z.tuple([z.number().nonnegative(), z.number().nonnegative()]).re
 const sizes = z.tuple([z.number().positive(), z.number().positive()]).refine(([a, b]) => a <= b, 'a range is [low, high]');
 /** A wait in whole days, of at least one. */
 const waits = z.tuple([z.number().int().min(1), z.number().int().min(1)]).refine(([a, b]) => a <= b, 'a range is [low, high]');
+const positive = z.number().positive('a stiffness, a density or a time is more than nothing');
 const optionalShapes: { [K in OptionalParamKey]: z.ZodType } = {
+  'mechanics.greenShootModulusMPa': positive,
+  'mechanics.woodModulusMPa': positive,
+  'mechanics.woodSetDays': positive,
+  'mechanics.stemFreshDensityKgM3': positive,
+  'mechanics.leafFreshMassPerAreaKgM2': z.number().nonnegative(),
+  'mechanics.inflorescenceFreshMassKg': z.number().nonnegative(),
+  'mechanics.fruitFreshMassKg': z.number().nonnegative(),
+  'mechanics.searcherReachM': z.number().nonnegative(),
+  'tropism.turnPerM': z.number().nonnegative(),
+  'tropism.lightShare': share,
+  'attachment.graspReachM': z.number().nonnegative(),
   'fruit.setShare': share,
   'fruit.lengthM': lengths,
   'fruit.swellDays': lengths,
@@ -437,6 +490,20 @@ export function known<K extends OptionalParamKey>(model: GrowthModel, key: K): S
   return model.params[key].value as Shape<K> | null;
 }
 
+/**
+ * The value of a parameter of the unsupported shoot: the taxon's own where its
+ * model gives one, and otherwise the generic one, since a shoot in the air has
+ * to be bounded whether or not the plant has been measured.
+ */
+export function shootParam(model: GrowthModel, key: ShootParamKey): number {
+  return model.params[key].value ?? GENERIC_SHOOT[key].value;
+}
+
+/** The shoot parameters a model leaves to the generic set. */
+export function genericShootKeys(model: GrowthModel): ShootParamKey[] {
+  return (Object.keys(GENERIC_SHOOT) as ShootParamKey[]).filter((k) => model.params[k].value === null);
+}
+
 /** Entry `i` of a list parameter, or its last entry when the list is shorter. */
 export function listAt(model: GrowthModel, key: RequiredParamKey, i: number): number {
   const v = model.params[key].value as number[];
@@ -466,6 +533,11 @@ export function withUnknown(model: GrowthModel, key: OptionalParamKey): GrowthMo
 export function modelProvenance(model: GrowthModel): ProvenanceEntry[] {
   return (Object.keys(GROWTH_PARAMS) as GrowthParamKey[]).map((k) => {
     const p = model.params[k];
+    // a shoot parameter the model leaves out is not left out of the run: the generic value is used, and is what is counted
+    if (p.value === null && k in GENERIC_SHOOT) {
+      const g: Sourced<number> = GENERIC_SHOOT[k as ShootParamKey];
+      return { owner: `${model.taxonId} growth model (generic shoot)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
+    }
     return { owner: `${model.taxonId} growth model`, path: k, value: p.value, unit: p.unit, status: p.status, source: p.source, basis: p.basis };
   });
 }

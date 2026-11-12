@@ -90,6 +90,20 @@ export const ATTACHMENT_STATUS = ['searching', 'contacted', 'grasped', 'trained_
 export type AttachmentStatus = (typeof ATTACHMENT_STATUS)[number];
 
 /**
+ * How a shoot that is not on a support stands, which its own weight decides
+ * (`sim/free-shoot.ts`). No specification document names these states; they
+ * are the three that the published work on searcher shoots tells apart.
+ *   self_supporting  it holds its tip at or above the level, and steers it
+ *                    towards up and the light
+ *   pendulous        its weight has turned its tip below the level although
+ *                    its growth points it above: it no longer steers, and
+ *                    grows on as it hangs
+ *   plumb            it hangs straight down
+ */
+export const SHOOT_POSTURE = ['self_supporting', 'pendulous', 'plumb'] as const;
+export type ShootPosture = (typeof SHOOT_POSTURE)[number];
+
+/**
  * Twining handedness, stated as the chirality of the helix the stem forms.
  * Chirality is intrinsic: it does not depend on the viewpoint or on which way
  * along the stem one travels, which is why it is used here instead of

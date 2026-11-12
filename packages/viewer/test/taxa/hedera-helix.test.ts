@@ -485,7 +485,9 @@ describe('a specimen of common ivy, twelve years on the frame', () => {
     for (const a of data.appendages) {
       expect(a.kind).toBe('aerial_roots');
       expect(a.holding).toBe(true);
-      expect(['leader', 'lateral']).toContain(role.get(a.stemId));
+      // 'whip': a climbing shoot of the year that came within reach of the timber and took hold of it (core,
+      // SIMULATION_KEY.md section 4.3, "Unsupported shoots", (f)); the adult shoots are side shoots, and have none
+      expect(['leader', 'lateral', 'whip']).toContain(role.get(a.stemId));
       expect(a.lengthM).toBeGreaterThanOrEqual(short);
       expect(a.lengthM).toBeLessThanOrEqual(long);
     }

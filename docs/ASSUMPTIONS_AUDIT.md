@@ -35,6 +35,7 @@ npm run check                                  # the new core's tests
 | Twining direction is known for every twiner | **False**: unknown for *Trachelospermum*; for *L. henryi* it rests on congeners and two photographs (4.2, 4.6) | Recorded as unknown and provisional |
 | The documents use one vocabulary | **False**: three evidence-status lists, two bud-state lists | One canonical vocabulary, all terms mapped |
 | The yearly calendars cover the year | **False**: December missing in two documents | Fixed |
+| A shoot that is on no support can be drawn along a preset curve (the prototype's whips, carried into the core) | **False**, by the owner's eye and by arithmetic: a shoot 4 mm thick does not stand 1.7 m into the air (added 12 November 2026; section 10) | Replaced by the mechanics of a rod under its own weight, for every taxon |
 
 ## 2. The prototype (`Wisteria/`)
 
@@ -485,3 +486,71 @@ A semi-evergreen plant whose model gives no share now says so once in the trace 
 - The 0.9 that sizes a spur's leaf where a model gives none is still in the engine. *Wisteria sinensis* could carry it as a labelled number; it was left alone so that its runs stay identical.
 - Nothing here has been compared with a plant.
 - The viewer was not changed. Two of the five were looked at through it as it stands (`npm run portrait`, with a number put into a taxon's model for the picture and taken out again, never committed): *Akebia quinata* on 15 January of its sixth year, bare with no share and thinly in leaf along its stems with a share of 0.3; and the climbing hydrangea in June of its ninth year, with the same 325 stems and 74 flowerheads either way and 10,116 leaves where it had 7,038 once its side shoots add 10 to 20 cm a year up to 1.2 m. Flowering again, a leaf fall in January and a flush in December have been through `presence.ts` in tests and not through a picture.
+
+## 10. Shoots in the air: their weight, the light, and a hold within reach
+
+Added 12 November 2026, after the owner looked at the renders: "I see a bunch of shoots growing huge amounts into empty space that would just... never occur. Gravity and sun are still very much factors."
+
+**What was there.** A shoot that is on no support (a long shoot of the year, a flowering side shoot) was grown as the prototype drew its whips (section 2.1): along its heading, with a little random wander and a droop that depended on nothing but the share of its planned length it had made. The same curve served a wisteria shoot with eleven leaflets to the leaf and a honeysuckle's. Measured on `main` before the change, seed 7: on the vault left untended for ten years the wisteria's shoots stood up to 1.70 m above the point they left the timber and reached 1.65 m out from it; none ever took hold of anything, because nothing in the engine let a shoot in the air do so.
+
+**What replaced it** is in `SIMULATION_KEY.md` section 4.3, "Unsupported shoots", clause by clause, and in the heading of `packages/core/src/sim/free-shoot.ts`. In one sentence: a shoot in the air is a rod fixed at its base, bent by its own weight and that of what it carries, steered towards up and the light while it can hold itself up, stopped by the ground and turned by the timber, and able to take hold of a support it comes within reach of.
+
+**What is published and was used.**
+
+| Source | What was taken from it |
+|---|---|
+| Hattermann, Petit-Bagnard, Heinz, Heuret, Rowe 2022, *Mind the gap: reach and mechanical diversity of searcher shoots in climbing plants*, Frontiers in Forests and Global Change 5:836247, https://doi.org/10.3389/ffgc.2022.836247 | Reach (straight line, base to apex, of the longest searcher that still held itself between upright and level) of 29 climbers: 0.105 to 2.68 m, about half the species up to 1 m; stem twiners 0.10 to 2.25 m, tendril climbers and the one root climber 0.14 to 0.91 m, hook and scrambling climbers 0.72 to 2.68 m. Stiffness in bending at the searcher's base: 213 to 15 479 MN/m2, about 3000 needed to span more than about 0.8 m. That searchers which find nothing commonly flop and hang. Its species include *Lonicera japonica*, *Clematis vitalba*, *Vitis vinifera*, *Trachelospermum jasminoides* and *Hedera helix*; the page as read gives no figure for any one of them, only the extremes and the ranges by group. |
+| Vecchiato, Hattermann, Rowe and others 2023, PLoS Computational Biology 19:e1011538, https://doi.org/10.1371/journal.pcbi.1011538 | *Trachelospermum jasminoides* searchers reach about 1.1 m; stiffness at their base about 3000 MN/m2 (the page as read prints the unit as N/m2, which cannot be meant). |
+| Isnard, Rowe, Speck 2003, Annals of Botany 91:407-417, https://doi.org/10.1093/aob/mcg044 | *Clematis flammula* var. *maritima*: 1619 ± 492 MN/m2 in its aerial shoots, falling to 470 in old underground stems. Read from the abstract. |
+| Chelakkot, Mahadevan 2017, *On the growth and form of shoots*, J. R. Soc. Interface 14:20170001, https://doi.org/10.1098/rsif.2017.0001 | The form of the model: a growing shoot as an elastic rod that sags under its weight and stiffens with age; a fresh density of about 1000 kg/m3. |
+| Greenhill 1881, Proc. Cambridge Philosophical Society 4:65-73 | The height at which an upright rod buckles under its own weight, 1.986 (EI/w)^(1/3). A test, not a parameter. |
+| Darwin 1875, *The Movements and Habits of Climbing Plants*, https://www.gutenberg.org/ebooks/2485 | That a shoot which outgrows its support sinks under its own weight; the sweep of a revolving hop shoot (19 inches across) and of Ceropegia (more than 5 feet); the times of revolution of wisteria shoots. |
+
+**What is assumed.** Eleven numbers, in `packages/core/src/sim/generic-shoot.ts`, every one `provisional_design_assumption`: none has been measured on any plant in the library. A taxon replaces any of them in its `model.json`; *Wisteria sinensis* has entries of its own, which differ from the generic ones only for the weight of a raceme and of a pod (the pod worked out from Bean's dimensions), because nothing was found measured on wisteria.
+
+| Parameter | Generic value | Where it comes from | What it decides |
+|---|---|---|---|
+| `mechanics.woodModulusMPa` | 3000 | Hattermann et al.: a reading across species | How far a shoot stands before it arches. The reach goes as its cube root |
+| `mechanics.greenShootModulusMPa` | 300 | No measurement found; near the least stiff searcher base measured | How soon the growing end nods |
+| `mechanics.woodSetDays` | 30 | No measurement found; a round figure | How much of a fast shoot is still soft |
+| `mechanics.stemFreshDensityKgM3` | 1000 | The figure Chelakkot and Mahadevan take | The stem's own weight |
+| `mechanics.leafFreshMassPerAreaKgM2` | 0.2 | Not weighed: a sheet of water a fifth of a millimetre thick | Most of what a leafy shoot carries: on a wisteria shoot the leaves weigh more than twice the stem |
+| `mechanics.inflorescenceFreshMassKg` | 0.01 | Not weighed | Little: few shoots flower while they are still growing in the air |
+| `mechanics.fruitFreshMassKg` | 0.01 | Not weighed | Less still |
+| `mechanics.searcherReachM` | 1.0 | Hattermann et al.: about half of 29 species reach up to 1 m | Where a shoot that still holds itself up stops |
+| `tropism.turnPerM` | 1.5 rad/m | Chosen | Whether shoots stand plumb (a large value) or lean and arch (a small one) |
+| `tropism.lightShare` | 0.5 | Chosen | How far a shoot leans to the light |
+| `attachment.graspReachM` | 0.12 m | Half the radius of the hop's sweep in Darwin | How wide a gap a shoot crosses |
+
+The radius of a shoot of the year is not one of the eleven: it is `thickening.tipRadiusSquaredMm2`, which every growth model carries over from the prototype as 4 mm2, a shoot 4 mm thick, for a wisteria and for a clematis alike. The stiffness of a rod goes as the fourth power of its radius, so this stand-in decides more than any of the eleven. With it, the generic shoot of a taxon with small leaves holds itself out for about a metre, which is where the published reach stops it; a clematis shoot is not 4 mm thick.
+
+**Which way the light is.** Asked of the light model of section 8 (`LightField.from`): the sky as seen from the nearest place the model reads light at, within 1.5 m, in the month of midsummer, behind the timber, what the site declares and last season's leaf of the other plants. Where the model has no reading near, or is told not to act, the open sky of the site is taken: straight up for the share of light that is diffuse and from the sun's side for the rest, which in southern England at midsummer is a lean of a few degrees to the south. On the reference structures every asking was answered by the light model.
+
+**Findings, seed 7.**
+
+| | Before | After |
+|---|---|---|
+| Wisteria on the vault, untended, ten years: highest a shoot stands above where it left the timber | 1.70 m | 0.94 m |
+| The same: furthest out sideways | 1.65 m | 1.29 m |
+| The same: shoots that took hold of a member or cable from the air | 0 of 228 | 61 of 225 |
+| Wisteria on the specimen frame, untended, six years: highest above base, furthest out | 1.38 m, 1.61 m | 0.89 m, 1.32 m |
+| *Lonicera henryi* on the specimen frame, trained: highest above base, deepest below it | 0.40 m, 0.41 m | 0.42 m, 0.30 m |
+| The rose on the specimen frame, trained: highest above base, deepest below it | 0.42 m, 0.17 m | 0.46 m, 0.00 m |
+
+The short shoots of the honeysuckle and the rose (0.2 to 0.5 m in their models, and 4 mm thick) hardly bend under the mechanics: a rod of that thickness and length holds itself. The old curve made them droop more than their weight does. Their pictures change little; the wisteria's and the vine's change a great deal.
+
+**The framework is untouched.** In the wisteria reference scenario (two plants on the vault, twelve years) the framework is the same as on `main` to the micrometre, trained and untended: 151.827683 m and 162.356677 m of leaders and laterals trained, 165.122394 m and 153.241389 m untended, the same members in the same order, the same height reached. This holds because the mechanics draw nothing from the random stream that routes the framework, and because a hold taken from the air does not use up the framework's room (clause (f)). What moves: trained, 28 shoots of the year took hold in twelve years and every one went with the summer and winter cuts, spurs and flowers moved by one to three in a hundred (661 and 756 flowers in the last year against 643 and 768), and the route held is the same. Untended, 68 shoots took hold, 35 still held at the end (the rest gave up their place to framework), the route held rose from 50.7% and 45.9% to 53.1% and 46.8%, shoots of the year were 5% shorter in all, and flowers 6% and 8% fewer (279 and 270 against 296 and 293). Those movements in spurs and flowers are the order of the plant's random numbers shifting, since a shoot that stops early or takes hold makes fewer or more leaves; they are not a finding about flowering.
+
+**Cost.** A run takes about a third longer: each length laid in the air is a rod to be solved.
+
+**What is still wrong, or not looked at.**
+
+- *As grown.* A real shoot bends along its whole length as it grows heavier; here what is laid stays. The drawn shoot keeps its arch near the base and so stands a little higher and further out than an elastic rod of the same final length would hang.
+- *A shoot stops at its reach.* A shoot that still holds itself up at the published reach simply grows no further. A real one would more likely grow on, flop and hang. Stopping keeps the bound honest with one number; it also leaves a population of shoots ending at exactly that distance.
+- *Old shoots stay for ever.* An untended plant keeps every shoot of every year, bare after their first season. No source was found for when a searcher that found nothing dies back, so none does.
+- *Leaves weigh at once.* Many twiners keep the leaves of a searching shoot small until it has a hold (Hattermann et al.). Here a leaf weighs its full weight from the day it is laid, which makes shoots droop sooner than those plants' do.
+- *The timber test is round.* A rectangular member is a round bar of the same perimeter; shoots are not tested against one another or against other plants; a spur is still the short drawn curve the prototype gave it and can pass through a member.
+- *A leader that runs out of route still stops.* It does not set out into the air as a searcher, so the framework itself never crosses a gap; only shoots of the year do, and they are not framework.
+- *Wind* is not a load, nor rain, nor snow.
+
+**Not verified.** No shape drawn here has been compared with a shoot on a plant. None of the eleven numbers is this library's taxa's own. The published reaches and stiffnesses were read from the papers' text and abstracts as fetched; the per-species tables of Hattermann et al. were not reached, so no taxon here has been given the figure of its nearest relative in that study. Putz 1984 (Ecology 65:1713-1724), which later papers cite for reaches of up to 3 m in tropical lianas, could not be read.

@@ -20,12 +20,14 @@
  * are not modelled; where a profile asks for them the report says so.
  */
 import type { CalendarDate } from '../calendar.ts';
-import { type Foliage, LightGeometry, type MonthlyLight, clumpLeaves, foliageOf } from '../light/exposure.ts';
+import { type Foliage, LightGeometry, type MonthlyLight, clumpLeaves, foliageOf, midsummerMonth } from '../light/exposure.ts';
 import { LIGHT_MODEL } from '../light/model.ts';
 import { DEFAULT_SITE, type Site } from '../light/site.ts';
 import { MID_MONTH_DOY } from '../light/sun.ts';
 import { type LightReading, lightFactor, lightNeeded, readLight } from '../light/tolerance.ts';
+import type { Vec3 } from '../math/vec3.ts';
 import type { Simulation } from './engine.ts';
+import { mixLight } from './light-from.ts';
 import { param } from './model.ts';
 import type { Plant } from './types.ts';
 import { leafSilhouetteAreaM2 } from './view.ts';
@@ -51,6 +53,13 @@ export interface PlantLight extends MonthlyLight {
 
 /** The most places a plant's light is read at in one year. Light changes slowly along a route; this keeps a long run quick. */
 const READINGS_PER_PLANT = 8;
+/**
+ * How far from a place light is read at its reading is taken to say which way
+ * the light comes from, in metres. Light is read once for every metre and a
+ * half of route, so a shoot's tip within that of a reading has one. A
+ * sampling distance of this model, not a fact about any plant.
+ */
+const DIRECTION_REACH_M = 1.5;
 
 const mean = (xs: readonly number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0);
 
@@ -68,6 +77,9 @@ export class LightField {
   private readonly plantNumber = new Map<string, number>();
   private canopyOf = NaN;
   private canopyNow: Foliage | undefined;
+  /** Which way the light comes from, by place read, year and plant; null where none arrives. */
+  private readonly directions = new Map<number, Vec3 | null>();
+  private readonly nearestReading = new Map<number, number>();
 
   constructor(sim: Simulation) {
     this.sim = sim;
@@ -193,6 +205,47 @@ export class LightField {
     this.cache.set(key, record);
     this.history.push(record);
     return record;
+  }
+
+  /**
+   * Which way the light comes from at a place, for a shoot of a plant: a unit
+   * vector towards it, or null where this model cannot say. It can say within
+   * `DIRECTION_REACH_M` of a place it reads light at (the middle of a stretch
+   * of route, or a root station): the answer is the sky as seen from there in
+   * the middle of the growing season (the month of midsummer, read once a
+   * year as a plant's own light is), behind the timber, what the site
+   * declares and last season's leaf of the other plants. It cannot say where no such place is near,
+   * where next to no light arrives, or where the scenario asks for light not
+   * to be acted on; the engine then falls back on the open sky of the site.
+   */
+  from(plant: Plant, at: Vec3, date: CalendarDate): Vec3 | null {
+    if (!this.acts) return null;
+    const g = this.geometry;
+    // the nearest place light is read at is looked for once for each quarter-metre cell a shoot asks from
+    const cell = (Math.floor(at.x * 4) + 2048) * 16777216 + (Math.floor(at.y * 4) + 2048) * 4096 + (Math.floor(at.z * 4) + 2048);
+    let nearest = this.nearestReading.get(cell);
+    if (nearest === undefined) {
+      nearest = -1;
+      let least = DIRECTION_REACH_M * DIRECTION_REACH_M;
+      for (let i = 0; i < g.points.length; i++) {
+        const p = g.points[i]!.position;
+        const d = (p.x - at.x) ** 2 + (p.y - at.y) ** 2 + (p.z - at.z) ** 2;
+        if (d < least) {
+          least = d;
+          nearest = i;
+        }
+      }
+      this.nearestReading.set(cell, nearest);
+    }
+    if (nearest < 0) return null;
+    const me = this.numberOf(plant.id);
+    const key = nearest + 4096 * (me + 256 * (date.year % 512));
+    let known = this.directions.get(key);
+    if (known === undefined) {
+      const { sky, sun } = g.direction(nearest, midsummerMonth(this.site.latitudeDeg), this.canopy(date.year - 1), me);
+      this.directions.set(key, (known = mixLight(sky, sun)));
+    }
+    return known;
   }
 
   /** Multiplier on a plant's extension today. */

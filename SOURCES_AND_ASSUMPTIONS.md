@@ -13,6 +13,10 @@
 - Morales A, de Vries J, Smoleňová K, Bongers FJ, Evers JB (2026), *Elements of a functional–structural plant model*, *in silico Plants* 8(2) — https://doi.org/10.1093/insilicoplants/diag023
 - Goriely A, Neukirch S (2006), *Mechanics of Climbing and Attachment in Twining Plants*, *Physical Review Letters* 97, 184302 — https://doi.org/10.1103/PhysRevLett.97.184302
 - Klimm F, Schmier S, Bohn HF, Kleiser S, Thielen M, Speck T (2022), *Biomechanics of tendrils and adhesive pads of the climbing passion flower* Passiflora discophora, *Journal of Experimental Botany* 73(4): 1190–1203 — https://doi.org/10.1093/jxb/erab456 (open copy: https://pmc.ncbi.nlm.nih.gov/articles/PMC8866636/). **Scope caution:** one *Passiflora* species whose tendrils end in adhesive pads. It supports the general statements made here about contact-triggered coiling; it is not a study of *Vitis* and gives no grasp dimensions for *V. coignetiae*.
+- Hattermann T, Petit-Bagnard L, Heinz C, Heuret P, Rowe NP (2022), *Mind the gap: reach and mechanical diversity of searcher shoots in climbing plants*, *Frontiers in Forests and Global Change* 5:836247 — https://doi.org/10.3389/ffgc.2022.836247. **Scope:** 29 species, none of them a taxon of this library; used for the range of reach and of stiffness of shoots that hold themselves in the air, not for any one plant.
+- Chelakkot R, Mahadevan L (2017), *On the growth and form of shoots*, *Journal of the Royal Society Interface* 14:20170001 — https://doi.org/10.1098/rsif.2017.0001
+- Isnard S, Rowe NP, Speck T (2003), *Growth habit and mechanical architecture of the sand dune-adapted climber* Clematis flammula *var.* maritima, *Annals of Botany* 91(4): 407–417 — https://doi.org/10.1093/aob/mcg044
+- Darwin C (1875), *The Movements and Habits of Climbing Plants*, 2nd edition — https://www.gutenberg.org/ebooks/2485
 - RHS: Climbers and attachment mechanisms — https://www.rhs.org.uk/plants/types/climbers
 - RHS: How to tie-in climbers — https://www.rhs.org.uk/plants/types/climbers/how-to-tie-in-climbers
 - RHS: Wisteria pruning — https://www.rhs.org.uk/plants/wisteria/pruning-guide
@@ -39,6 +43,7 @@ Each `SPECIES_PROFILE.md` contains its direct RHS profile URL. The species profi
 | Three wisteria root stations on a 15-m diameter reference shell | Preliminary design concept only | Recalculate with rooting plan and growth path analysis |
 | Stem extension, internode geometry, branching rate, wood thickening | Unknown for this system | Literature + physical observations + distributions |
 | Attachment diameter, pressure and slip limits | Unknown | Prototype with actual timber members, cables and trained plants |
+| Stiffness, density and leaf weight of a young shoot; how far it holds itself out; how near a support it must come to take hold | Unknown for every taxon here; one generic set of labelled assumptions is used (`packages/core/src/sim/generic-shoot.ts`) | Bend, weigh and measure shoots of the year on real plants: a bending test on a 0.3 m length, the mass of ten leaves, the longest shoot that still holds itself level, the diameter of a shoot 0.2 m behind its tip |
 | Floral chilling/forcing thresholds | Unknown by cultivar | Study and calibrate, do not manufacture thresholds |
 | Light/water competition coefficients | Unknown | Start qualitative/aggregated; measure later |
 | Structure biomass and wind action | **Not engineered** | Structural-engineer testing and design, not renderer data |

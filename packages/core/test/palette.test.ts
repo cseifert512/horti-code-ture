@@ -214,7 +214,8 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
       expect(alert.count).toBe(j.nodeIds.length);
       expect(alert.text).toContain('the joints to inspect');
     }
-  });
+    // a second palette is grown here: given longer than the default, as the ivy test above is
+  }, 120_000);
 
   it('prints plant ids of any length in aligned columns', () => {
     const lines = formatDesignReport(palette).split('\n');

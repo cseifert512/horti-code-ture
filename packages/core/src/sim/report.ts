@@ -80,6 +80,8 @@ export type AlertKind =
   | 'not_modelled'
   | 'part_not_modelled'
   | 'assumed'
+  // its unsupported shoots are drawn with the generic shoot of a woody climber, for want of its own numbers
+  | 'generic_shoot'
   | 'caveat'
   | 'not_replanted'
   | 'recorded_only'
@@ -258,7 +260,7 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
     const stalled = sim.decisions.filter((d) => d.plantId === plant.id && d.kind === 'no_route' && d.text.includes('nobody ties it in'));
     if (stalled.length) alerts.push({ kind: 'no_hold', plantId: plant.id, count: stalled.length, text: `${stalled.length} shoot${stalled.length === 1 ? '' : 's'} stopped for want of a hold, and nobody tied the shoot in. First: ${stalled[0]!.text}` });
     if (acc.frameworkM > 0 && acc.highestM < crown * 0.97) alerts.push({ kind: 'crown_not_reached', plantId: plant.id, count: 1, text: `reached ${acc.highestM.toFixed(1)} m on a structure whose routes go to ${crown.toFixed(1)} m: route length, not height, is what ran out` });
-    for (const d of sim.decisions) if (d.plantId === plant.id && (d.kind === 'not_modelled' || d.kind === 'part_not_modelled' || d.kind === 'assumed')) alerts.push({ kind: d.kind, plantId: plant.id, count: 1, text: d.text });
+    for (const d of sim.decisions) if (d.plantId === plant.id && (d.kind === 'not_modelled' || d.kind === 'part_not_modelled' || d.kind === 'assumed' || d.kind === 'generic_shoot')) alerts.push({ kind: d.kind, plantId: plant.id, count: 1, text: d.text });
     if (profile.ukCultivation === 'annual_replant' && !sim.events.some((e) => e.plantId === plant.id && (e.type === 'plant' || e.type === 'annual_replant') && e.modelled && cal.dateOf(e.day).year === year)) {
       alerts.push({ kind: 'not_replanted', plantId: plant.id, count: 1, text: `an annual, and nobody planted it in ${year}: nothing grew at ${plant.stationId} that year` });
     }

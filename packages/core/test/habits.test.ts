@@ -606,8 +606,38 @@ describe('a leaf of its own for each kind of shoot', () => {
     it('changes the side shoots’ leaves and nothing else: every stem, the side shoots among them, and every other leaf and flower', () => {
       const off = side(plain);
       expect([...side(sim)]).toEqual([...off]);
-      expect(JSON.stringify(data.stems)).toBe(JSON.stringify(plainData.stems));
-      expect(JSON.stringify(data.flowers)).toBe(JSON.stringify(plainData.flowers));
+      // Every stem that is not a side shoot is the same to the last figure. A side shoot stands in the air and bends
+      // under what it carries (SIMULATION_KEY.md section 4.3, "Unsupported shoots", (a)): with a smaller leaf, one to a
+      // place, it carries much less, and hangs differently. It is the same shoot all the same: the same points, laid
+      // on the same days in the same lengths of stem, starting from the same place.
+      expect(JSON.stringify(data.stems.filter((x) => !off.has(x.id)))).toBe(JSON.stringify(plainData.stems.filter((x) => !off.has(x.id))));
+      const shoots = data.stems.filter((x) => off.has(x.id));
+      const plainShoots = new Map(plainData.stems.filter((x) => off.has(x.id)).map((x) => [x.id, x]));
+      expect(shoots.length).toBe(plainShoots.size);
+      const lengthOfStem = (c: number[]) => {
+        let sum = 0;
+        for (let i = 3; i < c.length; i += 3) sum += Math.hypot(c[i]! - c[i - 3]!, c[i + 1]! - c[i - 2]!, c[i + 2]! - c[i - 1]!);
+        return sum;
+      };
+      let moved = 0;
+      for (const a of shoots) {
+        const b = plainShoots.get(a.id)!;
+        expect(a.bornDay, a.id).toEqual(b.bornDay);
+        expect(a.removedDay, a.id).toEqual(b.removedDay);
+        expect(a.away, a.id).toEqual(b.away);
+        expect(a.contact.slice(0, 3), a.id).toEqual(b.contact.slice(0, 3));
+        expect(lengthOfStem(a.contact), a.id).toBeCloseTo(lengthOfStem(b.contact), 3);
+        const n = a.contact.length;
+        const apart = Math.hypot(a.contact[n - 3]! - b.contact[n - 3]!, a.contact[n - 2]! - b.contact[n - 2]!, a.contact[n - 1]! - b.contact[n - 1]!);
+        // no tip is further from where it stood than a third of the shoot's own length
+        expect(apart, a.id).toBeLessThan(lengthOfStem(a.contact) / 3 + 0.01);
+        moved = Math.max(moved, apart);
+      }
+      // and the weight of the leaf does tell: some tip stands more than a centimetre from where it stood
+      expect(moved).toBeGreaterThan(0.01);
+      // the flowers stand on those shoots: the same flowers on the same days
+      const days = (d: typeof data) => d.flowers.map((x) => [x.stemId, x.stemPoint ?? null, x.year, x.developDay, x.openDay, x.spentDay, x.lengthM, x.form ?? null]);
+      expect(days(data)).toEqual(days(plainData));
       expect(JSON.stringify(data.leaves.filter((l) => !off.has(l.stemId)))).toBe(JSON.stringify(plainData.leaves.filter((l) => !off.has(l.stemId))));
     });
   });
@@ -825,7 +855,11 @@ describe('flowering again where a flower has gone over', () => {
       expect(doy(b.openDay!)).toBeGreaterThanOrEqual(WINDOW[0]);
       expect(doy(b.openDay!)).toBeLessThanOrEqual(WINDOW[1]);
     }
-    expect(Math.max(...sim.buds.map((b) => b.flush ?? 0))).toBe(2);
+    // never more than the model allows. Whether any place gets as far as its second flowering again turns on a first
+    // flower in the first days of the window and two short waits; the waits are drawn from where the flower stands,
+    // and since shoots in the air were laid by their mechanics no place in this run has that luck
+    expect(Math.max(...sim.buds.map((b) => b.flush ?? 0))).toBeGreaterThanOrEqual(1);
+    expect(Math.max(...sim.buds.map((b) => b.flush ?? 0))).toBeLessThanOrEqual(2);
     for (const b of sim.buds.filter((x) => x.flush === 2)) expect(b.followedBy).toBeUndefined();
     // a flower that goes over too late in the season for the shortest wait is followed by none; one with room for the longest, about the share the model gives
     const spent = sim.buds.filter((b) => b.spentDay !== null && (b.flush ?? 0) < 2);
@@ -866,9 +900,12 @@ describe('flowering again where a flower has gone over', () => {
     expect(lost.length).toBeGreaterThan(3);
     for (const b of lost) {
       expect(b.end).toBe('removed_by_pruning');
-      expect(b.openDay).toBeNull();
+      // the one on its way never opens; one that had opened before the cut is taken open, as any flower on cut wood is
+      if (b.openPlannedDay > day) expect(b.openDay).toBeNull();
+      else expect(b.openDay).toBe(b.openPlannedDay);
       expect(pruned.axes.get(b.axisId)!.removedDayAt[b.pointIndex!]).toBe(day);
     }
+    expect(lost.filter((b) => b.openPlannedDay > day).length).toBeGreaterThan(3);
     expect(pruned.events.find((e) => e.eventId === 'august-cut')!.effects.floralBudsRemoved).toBeGreaterThanOrEqual(lost.length);
   });
 

@@ -650,6 +650,71 @@ export class LightGeometry {
     return { hours, share };
   }
 
+  /**
+   * Which way the light comes from at a point in a month (January = 0): the
+   * same sky map as `light`, read for direction instead of amount. Two mean
+   * directions come back, each shortened by what is in the way: of the sky
+   * that is open (half of plumb where all of it is), and of the sun's beam
+   * that gets through on the 15th. A shoot turns towards the two put together
+   * (`mixLight` in `sim/light-from.ts`). `foliage` and `exclude` as for `light`.
+   */
+  direction(i: number, month: number, foliage?: Foliage, exclude = -1): { sky: Vec3; sun: Vec3 } {
+    const mask = this.mask(i);
+    const tree = this.treeMasks[i];
+    const p = this.points[i]!.position;
+    const tauE = this.tauE;
+    const tauD = this.tauD;
+    const touched: number[] = [];
+    if (foliage) {
+      for (const group of foliage.groups) {
+        if (group.plant === exclude) continue;
+        const qx = group.x - p.x;
+        const qy = group.y - p.y;
+        const qz = group.z - p.z;
+        if (qx * qx + qy * qy + qz * qz > (GROUP_FAR * group.radiusM) ** 2) this.leaf(touched, qx, qy, qz, group.evergreenM2, group.deciduousM2, group.radiusM);
+        else for (const cl of group.members) this.leaf(touched, cl.x - p.x, cl.y - p.y, cl.z - p.z, cl.evergreenM2, cl.deciduousM2, CLUMP_RADIUS_M);
+      }
+    }
+    const leafOut = foliage ? foliage.deciduousOut[month]! : 0;
+    const treeT = tree && TREE_IN_LEAF_MONTHS.value!.includes(month + 1) ? TREE_CROWN_TRANSMISSION.inLeaf.value! : TREE_CROWN_TRANSMISSION.bare.value!;
+    const through = (c: number): number => {
+      let t = 1 - mask[c]! / 255;
+      if (t <= 0) return 0;
+      if (tree?.[c]) t *= treeT;
+      const tau = tauE[c]! + leafOut * tauD[c]!;
+      return tau > 0 ? t * Math.exp(-tau) : t;
+    };
+    let sx = 0;
+    let sy = 0;
+    let sz = 0;
+    for (let c = 0; c < CELLS; c++) {
+      const t = through(c);
+      if (t <= 0) continue;
+      sx += t * CELL_DIR[3 * c]!;
+      sy += t * CELL_DIR[3 * c + 1]!;
+      sz += t * CELL_DIR[3 * c + 2]!;
+    }
+    const cells = this.sunCell[month]!;
+    const beam = this.sunBeam[month]!;
+    let bx = 0;
+    let by = 0;
+    let bz = 0;
+    let all = 0;
+    for (let k = 0; k < cells.length; k++) {
+      const c = cells[k]!;
+      const w = through(c) * beam[k]!;
+      bx += w * CELL_DIR[3 * c]!;
+      by += w * CELL_DIR[3 * c + 1]!;
+      bz += w * CELL_DIR[3 * c + 2]!;
+      all += beam[k]!;
+    }
+    for (const c of touched) {
+      tauE[c] = 0;
+      tauD[c] = 0;
+    }
+    return { sky: { x: sx / CELLS, y: sy / CELLS, z: sz / CELLS }, sun: all > 0 ? { x: bx / all, y: by / all, z: bz / all } : { x: 0, y: 0, z: 0 } };
+  }
+
   /** Whether any declared tree is deciduous: its shade then changes with the season. */
   get seasonalShade(): boolean {
     return this.anyDeciduousTree;

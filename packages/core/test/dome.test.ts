@@ -44,6 +44,11 @@ describe('three wisterias on the 15 m hemisphere, twelve years on', () => {
           expect(r.mode).toBe('twine');
           expect(r.by).toBe('plant');
           seen.meridian++;
+        } else if (a.role !== 'leader' && a.role !== 'lateral') {
+          // a shoot of the year that took hold of a ring from the air is not framework, and nobody ties it in:
+          // it twines by itself (SIMULATION_KEY.md section 4.3, "Unsupported shoots")
+          expect(r.mode).toBe('twine');
+          expect(r.by).toBe('plant');
         } else {
           expect(r.mode).toBe('along');
           expect(r.by).not.toBe('plant');

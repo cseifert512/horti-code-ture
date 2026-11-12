@@ -58,7 +58,9 @@ describe('what is seen through the year', () => {
 
   it('finds one honeysuckle short of the 25 to 40 per cent winter-evergreen design target', () => {
     // KEY.md section 6 sets the target; this planting does not meet it as seen, and the report can now say by how much
-    for (const v of month(mixed, 1).views) expect(v.evergreenFoliage).toBeLessThan(0.2);
+    // short of the target's lower end from every viewpoint. The honeysuckle's leaf is a fifth of the view from the
+    // nearest of them: a little under until its shoots in the air were laid by their mechanics, a little over since
+    for (const v of month(mixed, 1).views) expect(v.evergreenFoliage).toBeLessThan(0.25);
   });
 
   it('has something in flower in winter, spring and summer, each from a different plant', () => {

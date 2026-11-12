@@ -11,6 +11,8 @@ import type { Site } from '../light/site.ts';
 import type { Vec3 } from '../math/vec3.ts';
 import type { TaxonProfile } from '../taxon.ts';
 import type { AppendageKind, AttachmentStatus, BudEnd, BudStage, GardenerEventType } from '../vocab.ts';
+import type { FreeShoot } from './free-shoot.ts';
+import type { LightFrom } from './light-from.ts';
 import type { GrowthModel } from './model.ts';
 import type { Rng } from './rng.ts';
 import type { StemPath } from './stem-path.ts';
@@ -45,7 +47,8 @@ export interface Run {
 export type Tip =
   | { state: 'at_node'; nodeId: string; came: string | null }
   | { state: 'on_route'; edgeId: string; toNode: string; path: StemPath; d: number; emitted: number; run: number }
-  | { state: 'free'; dir: Vec3; grownM: number; planM: number }
+  /** `rod` is the shoot as its mechanics see it, kept from its first free length on (`free-shoot.ts`). */
+  | { state: 'free'; dir: Vec3; grownM: number; planM: number; rod?: FreeShoot }
   /** `retry` is set where the shoot stopped for want of a hold: a gardener who starts tying in can set it going again. */
   | { state: 'stopped'; reason: string; retry?: { nodeId: string; came: string | null } };
 
@@ -347,6 +350,11 @@ export interface Scenario {
   /** ISO date of day 0. */
   start: string;
   seed: number;
+  /**
+   * Which way the light comes from, for the shoots that turn towards it. Left out, the light model is asked, and
+   * where it cannot say, the open sky of the site is taken (`light-from.ts`).
+   */
+  lightFrom?: LightFrom;
   bower: Bower;
   taxa: ReadonlyMap<string, { profile: TaxonProfile; model: GrowthModel }>;
   plantings: readonly Planting[];
@@ -397,8 +405,12 @@ export interface EventRecord {
  * that kind take it to mean that the plant has no flowers in the run.
  * `side_shoots_broke`, `shed`: flowering side shoots started from established stems, or had lived out their time.
  * `side_shoots_grew_on`: side shoots of earlier years set off again, for a taxon whose model says they do.
+ * `generic_shoot`: the plant's unsupported shoots are drawn with the generic shoot of a woody climber for the numbers
+ * its growth model does not give. Said once for each plant. Kept apart from `assumed`, which is about the plant's own
+ * record (which way it twines), not about the mechanics of every shoot.
+ * `attached`: a shoot in the air came within reach of a support it can grasp, and took hold.
  */
-export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'side_shoots_broke' | 'side_shoots_grew_on' | 'shed' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'died' | 'replanted';
+export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'side_shoots_broke' | 'side_shoots_grew_on' | 'shed' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'generic_shoot' | 'died' | 'replanted';
 
 /** Why the plant did what it did: the trace asked for by PROJECT_CONTEXT.md section 7.6. */
 export interface Decision {
@@ -428,6 +440,8 @@ export interface YearSummary {
   /** Stretches of route this plant holds by itself, and those a gardener tied. */
   runsSelf: number;
   runsTied: number;
+  /** Of `runsSelf`, those a shoot of the year took hold of from the air: they are not framework. */
+  runsFromAir: number;
   /** Share of all route length in the Bower that carries this plant. */
   routeShare: number;
   /** Highest point of the permanent stems; shoots of the year standing above them are not counted. */
