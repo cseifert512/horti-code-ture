@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { Calendar } from '../src/calendar.ts';
@@ -19,7 +20,19 @@ import { withFloweringWood } from './helpers.ts';
 // through the new year, and flowering side shoots that grow on from year to year. docs/ASSUMPTIONS_AUDIT.md section 9.
 
 const speciesDir = fileURLToPath(new URL('../../../species', import.meta.url));
-const library = loadGrowable(speciesDir);
+/**
+ * As in organs.test.ts: these tests are about the engine's mechanisms, not about any plant. They grow test plants
+ * from the growth models as they stood at commit 2fa217b (`fixtures/models`), Wisteria sinensis from its own file,
+ * and fix every date and number an assertion leans on. Researching a species rightly changes how it grows, and
+ * that must not move a test of the engine.
+ */
+const fixtures = fileURLToPath(new URL('./fixtures/models', import.meta.url));
+const library: Growable = new Map(
+  [...loadGrowable(speciesDir)].map(([id, t]) => {
+    const file = `${fixtures}/${id}.json`;
+    return [id, id !== 'wisteria-sinensis' && existsSync(file) ? { profile: t.profile, model: parseGrowthModel(JSON.parse(readFileSync(file, 'utf8')), `the frozen test model of ${id}`) } : t];
+  }),
+);
 const run = (s: Scenario, until: string) => new Simulation(s).runUntil(until);
 
 type Values = { [K in GrowthParamKey]?: NonNullable<GrowthModel['params'][K]['value']> };
