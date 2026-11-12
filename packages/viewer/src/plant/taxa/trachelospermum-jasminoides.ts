@@ -82,7 +82,7 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
   const a = Math.log(0.5) / Math.log(outline.widest);
   // how this leaf is held: all arch over, some twist, some are flatter than others
   const arch = rng.range(0.16, 0.3) + (second ? 0.1 : 0);
-  const fold = rng.range(0.03, 0.12);
+  const fold = rng.range(0, 0.07);
   const twist = rng.range(-0.3, 0.3);
   const roll = rng.range(0.03, 0.055);
   const wavePhase = rng.range(0, TAU);
@@ -92,15 +92,15 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
     const body = Math.pow(Math.sin(Math.PI * Math.pow(Math.max(v, 1e-6), a)), outline.fullness);
     return halfWidth * body * lerp(1, 0.8, smoothstep(0.8, 0.98, v)) + 0.004 * (1 - v);
   };
-  /** The midrib's share of the half width at `v`: a millimetre or so wide at the base, a thread at the tip. */
-  const ribAt = (v: number): number => Math.min(0.3, (0.011 * (1 - 0.7 * v)) / halfAt(v));
+  /** The midrib's share of the half width at `v`: a millimetre or two wide at the base, a thread at the tip. */
+  const ribAt = (v: number): number => Math.min(0.3, (0.016 * (1 - 0.7 * v)) / halfAt(v));
   /** The blade's surface: `u` from -1 at one margin to 1 at the other, `v` from base to tip. */
   const surface = (u: number, v: number): [number, number, number] => {
     const w = halfAt(v);
     let x = u * w;
-    // the two halves rise a little from the midrib, which lies in a shallow groove, and the margin rolls under
-    let y = fold * Math.abs(x) - roll * Math.pow(Math.abs(u), 3) * (w / halfWidth) - arch * v * v - 0.05 * smoothstep(0.7, 1, v);
-    y -= 0.004 * Math.exp(-Math.pow(x / 0.02, 2)) * (1 - 0.6 * v);
+    // each half swells a little between the midrib, which lies in a shallow groove, and the margin, which rolls under
+    let y = fold * Math.abs(x) + 0.05 * w * Math.sin(Math.PI * Math.abs(u)) - roll * Math.pow(Math.abs(u), 3) * (w / halfWidth) - arch * v * v - 0.05 * smoothstep(0.7, 1, v);
+    y -= 0.002 * Math.exp(-Math.pow(x / 0.02, 2)) * (1 - 0.6 * v);
     if (lod <= 1) y += 0.01 * Math.sin(v * 8 + wavePhase) * u * Math.abs(u);
     // a leaf is seldom flat: it turns a little about its midrib towards the tip
     const turn = twist * v;
@@ -125,10 +125,11 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
     sb.surf(nu, nv, (u01, v) => ({ p: surface(u01 * 2 - 1, v) }));
     sample(0, patch);
   } else {
-    // two halves and the midrib between them, meeting edge to edge
+    // two halves and the midrib between them, meeting edge to edge; each runs from left to right, so that all
+    // three face the same way
     for (const side of [-1, 1]) {
       const from = sb.n;
-      sb.surf(nu / 2, nv, (s, v) => ({ p: surface(side * lerp(ribAt(v), 1, s), v) }));
+      sb.surf(nu / 2, nv, (s, v) => ({ p: surface(side < 0 ? -lerp(1, ribAt(v), s) : lerp(ribAt(v), 1, s), v) }));
       sample(from, patch);
     }
     const from = sb.n;
