@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "clematis-cirrhosa-freckles",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "evergreen woody climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details",
+      "basis": "RHS, of the cultivar: \"A large evergreen climber about 3.5m tall\". Bean: \"An evergreen climber\"."
+    },
+    "habit.climbsBy": {
+      "value": "twining leaf stalks",
+      "status": "published_plant_profile",
+      "source": "https://turkiyebitkileri.com/foto%C4%9Fraf-galerisi/ranunculaceae-du%C4%9Funcice%C4%9Figiller/clematis-akasma/clematis-cirrhosa.html",
+      "basis": "Flora of Turkey, as reproduced on the page cited: long shoots usually bear ternate leaves, \"petioles twining\". RHS, of the genus: \"mostly climbing by twining leaf-stalks\". Cretan Flora: old petioles \"indurate, twisting and clasping\"."
+    },
+    "stem.habit": {
+      "value": "woody, slender",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: stems \"woody, slender\", to 10 m long in the wild \"but often much shorter\"."
+    },
+    "stem.youngSurface": {
+      "value": "silky-hairy",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: young stems silky-hairy. Flora of Turkey: stems \"striate or smooth, sometimes hairy when young\"."
+    },
+    "stem.surface": {
+      "value": "striate or smooth",
+      "status": "published_plant_profile",
+      "source": "https://turkiyebitkileri.com/foto%C4%9Fraf-galerisi/ranunculaceae-du%C4%9Funcice%C4%9Figiller/clematis-akasma/clematis-cirrhosa.html",
+      "basis": "Flora of Turkey, as reproduced on the page cited: stems \"striate or smooth\". Striate: with fine lengthwise ridges."
+    },
+    "stem.youngColour": {
+      "value": null,
+      "status": "unknown"
+    },
+    "stem.oldBark": {
+      "value": "pale brown, fibrous, splitting lengthwise into strings",
+      "status": "provisional_design_assumption",
+      "basis": "No description of the old bark of this species was found. Drawn as the old stems of woody clematis in general are: pale grey-brown and stringy. To be checked against a plant."
+    },
+    "leaf.arrangement": {
+      "value": "opposite",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: leaves \"opposite\"."
+    },
+    "leaf.longShootDivision": {
+      "value": "ternate",
+      "status": "published_plant_profile",
+      "source": "https://turkiyebitkileri.com/foto%C4%9Fraf-galerisi/ranunculaceae-du%C4%9Funcice%C4%9Figiller/clematis-akasma/clematis-cirrhosa.html",
+      "basis": "Flora of Turkey, as reproduced on the page cited: \"long shoots usually bear ternate leaves\". Flora Europaea: leaves \"simple, dentate or 3-lobed, or 1- to 2-ternate with dentate or lobed leaflets\". RHS, of the cultivar: \"divided, lobed and toothed\"."
+    },
+    "leaf.leafletCount": {
+      "value": 3,
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: leaves \"simple or trifoliolate\". Three leaflets where the leaf is divided."
+    },
+    "leaf.shortShootDivision": {
+      "value": "simple",
+      "status": "published_plant_profile",
+      "source": "https://turkiyebitkileri.com/foto%C4%9Fraf-galerisi/ranunculaceae-du%C4%9Funcice%C4%9Figiller/clematis-akasma/clematis-cirrhosa.html",
+      "basis": "Flora of Turkey, as reproduced on the page cited: \"short-shoot leaves simple or rarely ternately divided, deeply toothed to almost entire\". Bean: \"broadly ovate with a heart-shaped base or three-lobed\"."
+    },
+    "leaf.simpleLobeCount": {
+      "value": 3,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: leaves \"broadly ovate with a heart-shaped base or three-lobed\". Flora Europaea: \"simple, dentate or 3-lobed\"."
+    },
+    "leaf.margin": {
+      "value": "coarsely toothed",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: \"coarsely toothed\". Cretan Flora: leaflets \"usually gross-dentate\". RHS, of the cultivar: \"lobed and toothed\"."
+    },
+    "leaf.bladeShape": {
+      "value": [
+        "broadly ovate",
+        "heart-shaped at the base",
+        "three-lobed"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean, of the simple leaf: \"broadly ovate with a heart-shaped base or three-lobed\"."
+    },
+    "leaf.bladeLengthM": {
+      "value": [
+        0.019,
+        0.051
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean, of the species: blades \"3/4 to 2 in. long\". In metres. Flora Europaea: leaves 2 to 5.5 cm. The cultivar’s own leaf has not been measured."
+    },
+    "leaf.bladeWidthM": {
+      "value": [
+        0.013,
+        0.038
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean, of the species: blades \"1/2 to 1 1/2 in. wide\". In metres."
+    },
+    "leaf.stalkLengthM": {
+      "value": [
+        0.013,
+        0.038
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean, of the species: \"stalks 1/2 to 1 1/2 in. long\". In metres."
+    },
+    "leaf.leafletShape": {
+      "value": "narrowly ovate",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: leaflets \"narrowly ovate, usually gross-dentate\"."
+    },
+    "leaf.leafletLengthM": {
+      "value": [
+        0.02,
+        0.05
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: leaflets \"2-5 x 1.5-3.5 cm\"."
+    },
+    "leaf.leafletWidthM": {
+      "value": [
+        0.015,
+        0.035
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: leaflets \"2-5 x 1.5-3.5 cm\"."
+    },
+    "leaf.surface": {
+      "value": "glossy, without hairs, rather leathery",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: leaves \"glossy\" and glabrous. Cretan Flora: \"glabrous, bright shiny green\". Flora of Turkey: \"subcoriaceous\"."
+    },
+    "leaf.colour": {
+      "value": "glossy dark green",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details",
+      "basis": "RHS, of the cultivar: \"glossy dark green leaves\"."
+    },
+    "leaf.youngColour": {
+      "value": "light green",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society, of the cultivar: young leaves \"light green\", mature leaves \"dark green\"."
+    },
+    "leaf.winterColour": {
+      "value": "tinged bronze",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details",
+      "basis": "RHS, of the cultivar: leaves \"tinged bronze in winter\". Not drawn: the render data gives an evergreen leaf no colour of the season."
+    },
+    "inflorescence.type": {
+      "value": "flowers solitary or in pairs in the leaf axils",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: \"Flowers solitary or in pairs\". Flora of Turkey: \"singly or in axillary fascicles\". Cretan Flora: \"in the axils of clustered leaves, solitary or paired\"."
+    },
+    "inflorescence.flowersPerAxil": {
+      "value": [
+        1,
+        2
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: \"solitary or in pairs\". One is drawn: see the species profile."
+    },
+    "inflorescence.held": {
+      "value": "nodding",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: flowers \"nodding\". Clematis on the Web, of the cultivar: \"nodding\"."
+    },
+    "flower.shape": {
+      "value": "broadly bell-shaped",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: perianth \"broadly campanulate\". RHS, of the Cirrhosa Group: \"bell to bowl-shaped single flowers\"."
+    },
+    "flower.widthM": {
+      "value": [
+        0.05,
+        0.075
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society, of the cultivar: flowers \"5-7.5 cm across\". The same measure as the growth model’s organs.racemeLengthM, and the unit the flower model is authored in."
+    },
+    "flower.mouthShareOfWidth": {
+      "value": 0.78,
+      "status": "provisional_design_assumption",
+      "basis": "The width the Clematis Society gives (5 to 7.5 cm) is taken to be of the flower with its sepals spread: sepals 3 to 4 cm long cannot make a bell that wide at the mouth. As the flower hangs it is a broad bell: in a photograph of the cultivar (Wikimedia Commons, \"Clematis cirrhosa var. purpurascens Freckles (54136866406).jpg\", A. Slater, 13 November 2024) the bell is about two thirds as deep as it is wide. 0.78 of the width is used for the mouth: the narrowest the drawing may be for the size it states, and with sepals of the published length it gives a bell about half as deep as wide."
+    },
+    "flower.tepalCount": {
+      "value": 4,
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society: \"four sepals\". Clematis on the Web: 4 tepals. Clematis have no petals; the coloured parts are sepals, called tepals here."
+    },
+    "flower.tepalLengthM": {
+      "value": [
+        0.03,
+        0.04
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society, of the cultivar: the four sepals \"3-4 cm long and 2-2.5 cm wide\"."
+    },
+    "flower.tepalWidthM": {
+      "value": [
+        0.02,
+        0.025
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society, of the cultivar: the four sepals \"3-4 cm long and 2-2.5 cm wide\"."
+    },
+    "flower.tepalShape": {
+      "value": "elliptic-ovate, tapering, the margins somewhat recurved",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=126",
+      "basis": "Clematis on the Web, of the cultivar: tepals \"tapering\", margin \"somewhat recurved\". Cretan Flora: \"elliptic-ovate\". Bean: \"oval\"."
+    },
+    "flower.colourOutside": {
+      "value": "creamy pink",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society, of the cultivar: \"creamy pink on the outside and creamy white on the inside\"."
+    },
+    "flower.colourInside": {
+      "value": "creamy white, heavily speckled reddish maroon",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society: creamy white inside with \"reddish maroon dots\". RHS: \"pale yellow flowers ... heavily speckled red within\". A garden record of the plant in flower: the \"inner reddish-purple spots merging together\" (https://fobssheffield.co.uk/plant-of-the-month/clematis-cirrhosa-freckles)."
+    },
+    "flower.outsideSurface": {
+      "value": "downy",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: sepals \"downy on the outside\". Cretan Flora: \"densely short-pubescent beneath\". Flora of Turkey: \"sericeous on the back\" (silky)."
+    },
+    "flower.stalkLengthM": {
+      "value": [
+        0.025,
+        0.05
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean, of the species: flowers \"on stalks 1 to 2 in. long\". Flora Europaea: \"pedicels 2-5 cm\". The cultivar’s own has not been measured."
+    },
+    "flower.bracts": {
+      "value": "two bracts united into a cup just beneath the flower",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: two bracts beneath the flower \"united into a cup-shaped involucre\". Flora of Turkey: \"2 connate calyciform bracteoles just beneath the flower\". Flora Europaea: \"a 2-lipped involucre beneath the flower\"."
+    },
+    "flower.bractCupAlongStalk": {
+      "value": 0.97,
+      "status": "provisional_design_assumption",
+      "basis": "Where the cup of bracts sits, as a share of the stalk from its base. The floras say \"just beneath the flower\"; in the photograph of the cultivar cited under flower.mouthShareOfWidth the cup clasps the very base of the flower and of the bud. Read from that photograph."
+    },
+    "flower.bractCupWidthM": {
+      "value": 0.013,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The floras call the cup \"small\". In the photograph of the cultivar cited under flower.mouthShareOfWidth it is about a quarter as wide as the open bell and two thirds as wide as a bud, its two bracts running out into points: 13 mm is read from that, not measured."
+    },
+    "flower.stamenColour": {
+      "value": "green-yellow",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society and Clematis on the Web, of the cultivar: stamens \"green-yellow\"."
+    },
+    "flower.stamenForm": {
+      "value": "filaments flattened, without hairs, longer than the anthers",
+      "status": "published_plant_profile",
+      "source": "https://turkiyebitkileri.com/foto%C4%9Fraf-galerisi/ranunculaceae-du%C4%9Funcice%C4%9Figiller/clematis-akasma/clematis-cirrhosa.html",
+      "basis": "Flora of Turkey, as reproduced on the page cited: \"anthers shorter than the winged, glabrous filaments\"."
+    },
+    "flower.stamenCount": {
+      "value": 44,
+      "status": "provisional_design_assumption",
+      "basis": "Clematis flowers have many stamens; no count for this species was found. About forty to fifty can be made out in the photograph of the cultivar cited under flower.mouthShareOfWidth; 44 is used."
+    },
+    "flower.stamenLengthM": {
+      "value": 0.019,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "No measurement was found. In the photograph of the cultivar cited under flower.mouthShareOfWidth the boss of stamens reaches a little over half way down the tepals: 19 mm for tepals of 35 mm."
+    },
+    "flower.scent": {
+      "value": "light, of lemon",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society: a light scent. A nursery: \"lightly scented (lemon)\" (https://www.ashridgetrees.co.uk/clematis-cirrhosa-freckles)."
+    },
+    "fruit.type": {
+      "value": "a head of achenes, each with a long feathered tail",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: \"seed-vessels terminated by plumose styles ... forming large, beautifully silky tassels\". RHS, of the cultivar: \"silky seedheads\"."
+    },
+    "fruit.acheneLengthM": {
+      "value": [
+        0.003,
+        0.005
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Cretan Flora: \"achenes, 3-5 mm, with a long, persistent, plumose style\"."
+    },
+    "fruit.tailLengthM": {
+      "value": [
+        0.038,
+        0.051
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean: plumose styles \"1 1/2 to 2 in. long\". In metres."
+    },
+    "fruit.acheneCount": {
+      "value": 26,
+      "status": "provisional_design_assumption",
+      "basis": "How many achenes a head has is not published. 26 is chosen for the drawing: enough to make the \"large, silky tassel\" Bean describes."
+    },
+    "fruit.colourUnripe": {
+      "value": "silvery green, silky",
+      "status": "provisional_design_assumption",
+      "basis": "The sources say only \"silky\". Drawn as young clematis seed heads are: the tails silver-green and glossy before they dry. Chosen for the drawing."
+    },
+    "fruit.colourRipe": {
+      "value": "achenes brown, the tails pale and fluffy",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/clematis-cirrhosa/",
+      "basis": "North Carolina State Extension, of the species: fruit an achene, \"brown/copper\", \"dry small fruits with silky-plumose tail\". That the tails dry to pale fluff is as in other clematis and is not stated for this one."
+    }
+  }
+}

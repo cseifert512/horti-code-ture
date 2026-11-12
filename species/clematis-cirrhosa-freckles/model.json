@@ -1,13 +1,12 @@
 {
   "schemaVersion": 1,
   "taxonId": "clematis-cirrhosa-freckles",
-  "statement": "A running model, not a calibrated one. The sizes of its leaf, flower, leaf stalk and seed head, the length of its stems and the months it flowers in are from floras and plant records of Clematis cirrhosa and of this cultivar; its rates of growth, how freely it branches and flowers, how much seed it sets and every date inside those months are assumptions chosen to agree with what those records say of a plant’s size and season. How a shoot chooses its way over a structure is still thinner than the wisteria model those nine numbers are copied from. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "statement": "A running model, not a calibrated one. The sizes of its leaf, flower, leaf stalk and seed head, the length of its stems and the months it flowers in are from floras and plant records of Clematis cirrhosa and of this cultivar; its rates of growth, how freely it branches and flowers, how much seed it sets and every date inside those months are assumptions chosen to agree with what those records say of a plant’s size and season. How a shoot chooses its way over a structure, and how a stem thickens where it branches, are still thinner than the wisteria model those ten numbers are copied from. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
   "names": {
-    "leafForm": "long_shoot",
     "sideShootLeafForm": "short_shoot",
-    "flowerHeld": "hanging",
-    "fruitHeld": "hanging",
-    "basis": "Two leaf forms, from Flora of Turkey (as reproduced at https://turkiyebitkileri.com/): long shoots usually bear ternate leaves, whose stalks twine; short-shoot leaves are simple, deeply toothed to almost entire. The flowers are \"nodding\" (https://www.cretanflora.com/clematis_cirrhosa_text.html; Clematis on the Web), so they hang. That the seed head hangs on the same stalk is assumed: no source says how it is held."
+    "flowerHeld": "facing_out",
+    "fruitHeld": "facing_out",
+    "basis": "Two leaf forms, from Flora of Turkey (as reproduced at https://turkiyebitkileri.com/): long shoots usually bear ternate leaves, whose stalks twine, and that is the ordinary leaf here; short-shoot leaves are simple, deeply toothed to almost entire, and are named \"short_shoot\". The flowers stand in the leaf axils on stalks 2 to 5 cm long (Flora Europaea) and are \"nodding\" (https://www.cretanflora.com/clematis_cirrhosa_text.html; Clematis on the Web): the stalk stands out from its node and the flower hangs from the end of it. The direction given with a flower is therefore the way its stalk runs out from the node, not the way the flower faces; the drawing turns the bell down from the end of the stalk. That the seed head is carried on the same stalk in the same way is assumed: no source says how it is held."
   },
   "params": {
     "phenology.budburstDoy": {
@@ -120,6 +119,7 @@
         0,
         0,
         1,
+        1,
         2,
         3
       ],
@@ -165,9 +165,9 @@
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
-        0.8,
-        0.5,
-        0.3
+        0.85,
+        0.6,
+        0.35
       ],
       "status": "provisional_design_assumption",
       "basis": "A clematis stem that is trained along a support breaks into side stems at most of the places where the support forks, less readily on higher orders. Assumed; no count on a plant."
@@ -187,12 +187,12 @@
       "basis": "See architecture.budExtraDormancyChance. Assumed."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 3,
+      "value": 4,
       "status": "provisional_design_assumption",
       "basis": "The stems are slender and wiry (a few millimetres thick for years) and run several together along one wire or lath, clasping one another: three are let share a member before the next looks elsewhere. Assumed."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 4,
+      "value": 5,
       "status": "provisional_design_assumption",
       "basis": "One more than on a lath or cable: a glulam member is wide enough to tie more of these slender stems to. Assumed."
     },
@@ -260,8 +260,8 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.05,
-        0.09
+        0.045,
+        0.085
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -316,19 +316,19 @@
       "basis": "The width of one open flower. International Clematis Society, of this cultivar: flowers \"5-7.5 cm across\", the four sepals \"3-4 cm long and 2-2.5 cm wide\". Flora Europaea gives 4 to 7 cm for the species. The RHS record’s \"to 10cm in width\" and its Award of Garden Merit description’s \"5cm wide\" disagree with each other; the Society’s figure lies between them and agrees with the sepal length."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.04,
+      "value": 0.05,
       "status": "provisional_design_assumption",
       "basis": "One older node in twenty-five throws a long shoot each year. Assumed: chosen with organs.whipsPerYearMax so that an established plant makes a few tens of long shoots a year, which is what a plant that covers 4 m by 1.5 m (Crocus) and is \"vigorous\" (Bean) must do."
     },
     "organs.whipsPerYearMax": {
-      "value": 18,
+      "value": 36,
       "status": "provisional_design_assumption",
       "basis": "A cap on new long shoots a year. Assumed; see organs.whipShareOfNodes."
     },
     "organs.whipLengthM": {
       "value": [
         0.4,
-        1.1
+        1.2
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -543,28 +543,28 @@
       "basis": "Stems made last year and earlier bear short shoots in their leaf axils. Flora of Turkey distinguishes the long shoots, with ternate leaves and twining stalks, from short shoots with simple leaves (as reproduced at https://turkiyebitkileri.com/); the flowers stand \"in the axils of clustered leaves\" (https://www.cretanflora.com/clematis_cirrhosa_text.html). That a short shoot appears in the spring after its node was made is assumed."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 7,
+      "value": 11,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
       "basis": "With leaf pairs 7 cm apart, about one free node in two throws a short shoot each year, so that after two years most nodes of an older stem carry one. Assumed: no count exists."
     },
     "sideShoots.lengthM": {
       "value": [
-        0.09,
-        0.17
+        0.12,
+        0.3
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
       "basis": "Longer than on the plant, where a short shoot is a cluster of leaves a few centimetres long. The engine spaces leaves on a short shoot as on a long one (organs.leafSpacingM), so a shorter shoot would carry none: 9 to 17 cm gives each one or two pairs of leaves. A limit of the model, stated in the species profile."
     },
     "sideShoots.lifespanYears": {
-      "value": 3,
+      "value": 4,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
       "basis": "A short shoot is taken to stay, in leaf, for three growing seasons before it is shed. Assumed."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": 0,
+      "value": 0.25,
       "status": "provisional_design_assumption",
       "basis": "Short shoots on older wood are leafy only here. RHS pruning group 1 says the flowers come \"on shoots produced the previous summer\", and those are modelled along the year’s long shoots (flowering.currentSeasonFlowersPerM). Whether short shoots on wood older than that flower again is not established."
     }
