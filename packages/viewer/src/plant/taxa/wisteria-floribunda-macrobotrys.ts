@@ -499,8 +499,8 @@ const POD_SEGS: Segs[] = [
 ];
 const POD = {
   // "velvety, blue-grey seed pods" (RHS); green at first (Kwantlen)
-  body: lin('#748477'),
-  pale: lin('#9aa99c'),
+  body: lin('#6a7a6c'),
+  pale: lin('#8d9d8f'),
   stalk: lin('#8f9470'),
   stalkOld: lin('#7d7458'),
 } satisfies Record<string, RGB>;
@@ -639,7 +639,7 @@ const pods: FruitAsset = {
   centreAlong: 1.4,
   // grey-green and velvety, drying to brown
   ripe: lin('#735539'),
-  ripeShade: [0.2, 2.6],
+  ripeShade: [0.25, 2.9],
   roughness: 0.92,
   swing: 0.6,
   detailAt: [2.6],
