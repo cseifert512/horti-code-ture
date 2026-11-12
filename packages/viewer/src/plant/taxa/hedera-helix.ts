@@ -95,7 +95,7 @@ if (Math.min(...LOBES) !== FEWEST_LOBES || Math.max(...LOBES) !== MOST_LOBES) th
 /** The blade from where the stalk joins to the tip of its end lobe, as a share of the reach of the whole leaf. */
 const CLIMBING_BLADE = 0.8;
 /** How pale a main vein is drawn: its share of the way from the green of the blade to the palette's vein colour. */
-const VEIN = 0.7;
+const VEIN = 0.55;
 /** Half the width of the pale band along a main vein where it leaves the stalk, the end lobe being 1. */
 const VEIN_HALF_WIDTH = 0.02;
 
@@ -257,9 +257,12 @@ function climbingBlade(leaf: ClimbingLeaf, detail: BladeDetail): Blade {
       // Nothing here differs between two lobes along the sinus line they share, or the blade would gape there
       let y = -0.05 * r * r + 0.009 * Math.sin(Math.PI * Math.min(1, across)) * Math.pow(rho, 0.6) * (1 - 0.35 * rho) - down * rho * rho * reach * (1 - Math.min(1, across));
       if (detail.fine) y += 0.008 * Math.sin(Math.atan2(x, z) * 4.3 + phase) * rho * rho * rho;
-      // the texture: its midrib up the vein, and its side veins, a few to a lobe, running forwards from the vein to the edge
-      uvs.push(c.vein === 2 ? (i < veinColumn ? 0.455 : 0.545) : us[i]!, 0.02 + 0.55 * (reach / longest) * Math.max(0, rho - 0.3 * across * rho));
-      pale.push(c.vein === 1 && v01 > 0 ? detail.pale : 0);
+      // the texture: its midrib up the vein and nothing more. Only the strip of the shared texture below its first side
+      // vein is used: its pinnate side veins, laid round a fan of lobes, drew concentric arcs across every blade, which
+      // no ivy leaf has (Commons: Blad van klimop (Hedera helix) 01.JPG and 02.JPG show a palmate vein to each lobe and
+      // a fine pale net). The palmate veins are this model's own, pale where they leave the stalk and fading outwards
+      uvs.push(c.vein === 2 ? (i < veinColumn ? 0.455 : 0.545) : us[i]!, 0.002 + 0.01 * (reach / longest) * rho);
+      pale.push(c.vein === 1 && v01 > 0 ? detail.pale * (1 - 0.55 * v01) : 0);
       return { p: [x, y, z] };
     });
   }
@@ -323,11 +326,19 @@ interface AdultLeaf {
   yaw: number;
   seed: number;
 }
-/** Ovate, diamond-shaped ("ovate or rhombic", Metcalfe), and the narrower leaf that stands under the flowers ("more narrowly ovate", Bean). */
+/**
+ * Ovate, diamond-shaped ("ovate or rhombic", Metcalfe), and the narrower leaf that stands under the flowers ("more
+ * narrowly ovate", Bean). Photographs of adult shoots show both ends of the range on one plant: broad, nearly
+ * rounded-ovate leaves on stout shoots (Commons: 20151224Hedera helix1.jpg) and narrow ones with a drawn-out tip round
+ * the buds (Hedera helix-Lierre-Bourgeon de Fleur-20200730.jpg), so a broad and a narrow variant are drawn too. Held
+ * flatter than the climbing leaf: the blades of adult shoots stand square to the light.
+ */
 const ADULT_LEAVES: readonly AdultLeaf[] = [
-  { halfWidth: 0.34, widest: 0.36, taper: 0.8, hang: 42, roll: 7, yaw: -5, seed: 53 },
-  { halfWidth: 0.36, widest: 0.45, taper: 1, hang: 50, roll: -10, yaw: 6, seed: 59 },
-  { halfWidth: 0.27, widest: 0.38, taper: 0.85, hang: 36, roll: 4, yaw: 3, seed: 61 },
+  { halfWidth: 0.34, widest: 0.36, taper: 0.8, hang: 34, roll: 7, yaw: -5, seed: 53 },
+  { halfWidth: 0.36, widest: 0.45, taper: 1, hang: 40, roll: -10, yaw: 6, seed: 59 },
+  { halfWidth: 0.27, widest: 0.38, taper: 0.85, hang: 30, roll: 4, yaw: 3, seed: 61 },
+  { halfWidth: 0.39, widest: 0.4, taper: 0.7, hang: 38, roll: -5, yaw: -8, seed: 67 },
+  { halfWidth: 0.245, widest: 0.36, taper: 1.15, hang: 28, roll: 9, yaw: 4, seed: 71 },
 ];
 /** The adult blade as a share of the reach of the whole leaf. */
 const ADULT_BLADE = 0.95;
@@ -398,8 +409,14 @@ const STAMENS = characterNumber(morphology, 'flower.stamenCount');
 const PETAL = mid(characterRange(morphology, 'flower.petalLengthM')) / PANICLE_M;
 const DISC = characterNumber(morphology, 'flower.discDiameterM') / 2 / PANICLE_M;
 const STYLE = characterNumber(morphology, 'flower.styleLengthM') / PANICLE_M;
-/** Half the width of the end umbel, to the tips of its flowers: umbels are 3-5 cm across, and the end one is the largest of a panicle. */
-const UMBEL = mid(characterRange(morphology, 'inflorescence.umbelDiameterM')) / 2 / PANICLE_M;
+/**
+ * Half the width of the end umbel, to the tips of its flowers: umbels are 3-5 cm across, and the end one is the largest
+ * of a panicle. A quarter of the way up the range: in photographs the umbels are tight balls nearer 3 cm than 5
+ * (Commons: Gemeiner Efeu (Bahnhofstrasse, Neuendettelsau) 20250911 143302.jpg).
+ */
+const UMBEL = lerp(...characterRange(morphology, 'inflorescence.umbelDiameterM'), 0.25) / 2 / PANICLE_M;
+/** Half the width of the top of the ovary, round the disc, in units of the model: read from photographs (morphology.json). */
+const TOP = characterNumber(morphology, 'flower.ovaryTopDiameterM') / 2 / PANICLE_M;
 /** The inferior ovary under the disc: about as tall as the disc is wide. Appearance: no source measures it at flowering. */
 const OVARY = 2.2 * DISC;
 
@@ -421,14 +438,14 @@ const FLOWER = {
 function flowerBody(lod: number): THREE.BufferGeometry {
   const sb = new Surf();
   if (lod >= 2) {
-    lathe(sb, [3, 2], (v) => [[0.3 * DISC, 1.2 * DISC, 0.2 * DISC][Math.round(v * 2)]!, [0, OVARY, OVARY + 0.6 * DISC][Math.round(v * 2)]!], (_u, v) => mix(FLOWER.ovary, FLOWER.disc, v));
+    lathe(sb, [3, 2], (v) => [[0.3 * DISC, TOP, 0.2 * DISC][Math.round(v * 2)]!, [0, OVARY, OVARY + 0.6 * DISC][Math.round(v * 2)]!], (_u, v) => mix(FLOWER.ovary, FLOWER.disc, v));
     return sb.build();
   }
   const around = lod === 0 ? 8 : 5;
   // the ovary: a top-shaped cup widening from the stalk to the rim
-  lathe(sb, [around, lod === 0 ? 2 : 1], (v) => [lerp(0.3, 1.2, Math.pow(v, 0.7)) * DISC, OVARY * v], (_u, v) => mix(FLOWER.ovary, FLOWER.discRim, v * 0.6));
+  lathe(sb, [around, lod === 0 ? 2 : 1], (v) => [lerp(0.3 * DISC, TOP, Math.pow(v, 0.7)), OVARY * v], (_u, v) => mix(FLOWER.ovary, FLOWER.discRim, v * 0.6));
   // the disc: a low dome over the top of the ovary, and the style standing from its middle
-  lathe(sb, [around, 2], (v) => [1.2 * DISC * Math.cos((Math.PI / 2) * v * 0.86), OVARY + 0.6 * DISC * Math.sin((Math.PI / 2) * v)], (u, v) => mix(FLOWER.discRim, FLOWER.disc, Math.min(1, v * 1.6 + 0.15 * Math.sin(u * TAU * 5))));
+  lathe(sb, [around, 2], (v) => [TOP * Math.cos((Math.PI / 2) * v * 0.86), OVARY + 0.6 * DISC * Math.sin((Math.PI / 2) * v)], (u, v) => mix(FLOWER.discRim, FLOWER.disc, Math.min(1, v * 1.6 + 0.15 * Math.sin(u * TAU * 5))));
   if (lod === 0) lathe(sb, [3, 1], (v) => [0.2 * DISC * (1 - 0.6 * v), OVARY + 0.55 * DISC + STYLE * v], () => FLOWER.style);
   return sb.build();
 }
@@ -436,7 +453,7 @@ function flowerBody(lod: number): THREE.BufferGeometry {
 /** What opens and falls: five petals from the rim of the ovary, spread flat and then bent back, and five stamens between them. */
 function flowerCorolla(lod: number): THREE.BufferGeometry {
   const sb = new Surf();
-  const rim = 1.15 * DISC;
+  const rim = 0.96 * TOP;
   for (let k = 0; k < PETALS; k++) {
     const a = (k / PETALS) * TAU;
     const out = new V3(Math.cos(a), 0, Math.sin(a));
@@ -468,10 +485,11 @@ function flowerCorolla(lod: number): THREE.BufferGeometry {
     // between the petals, standing out and up from the edge of the disc
     const a = ((k + 0.5) / STAMENS) * TAU;
     const out = new V3(Math.cos(a), 0, Math.sin(a));
-    const lean = 52 * DEG;
+    // spreading well out, as they bristle from a ball of flowers in photographs (Commons: Hedera helix 002.JPG)
+    const lean = 66 * DEG;
     const dir = out.clone().multiplyScalar(Math.sin(lean)).add(new V3(0, Math.cos(lean), 0));
-    const from = out.clone().multiplyScalar(0.95 * DISC).add(new V3(0, OVARY + 0.15 * DISC, 0));
-    const length = 0.95 * PETAL;
+    const from = out.clone().multiplyScalar(0.8 * TOP).add(new V3(0, OVARY + 0.15 * DISC, 0));
+    const length = 1.05 * PETAL;
     const to = from.clone().addScaledVector(dir, length);
     if (lod === 0) {
       const side = new V3().crossVectors(dir, UP).normalize();
@@ -581,7 +599,7 @@ function makePanicle(variant: number, lod: number): THREE.BufferGeometry {
       return;
     }
     // globose: stalks in every direction but back down the stalk of the umbel
-    rays(head.axis, head.flowers, 128 * DEG, 31 * variant + h).forEach((dir, i) => {
+    rays(head.axis, head.flowers, 160 * DEG, 31 * variant + h).forEach((dir, i) => {
       // the stalk of a flower: what is left of the umbel's radius under the ovary and the stamens that stand out beyond it
       const stalk = (head.radius - OVARY - 0.75 * PETAL) * (0.9 + 0.2 * hash2(variant * 17 + h, i));
       const at = head.centre.clone().addScaledVector(dir, stalk);
@@ -612,8 +630,8 @@ const BERRY_STYLE = characterNumber(morphology, 'flower.styleLengthM') / CLUSTER
 
 const FRUIT = {
   // unripe: green. The green of each colour also says how dark the ripe fruit is there (see ripeShade)
-  berry: lin('#5c8a3a'),
-  berryShade: lin('#4c7a34'),
+  berry: lin('#4a7434'),
+  berryShade: lin('#3d6230'),
   crown: lin('#6a7a3c'),
   style: lin('#8a8f50'),
   stalk: lin('#7a9a4c'),
@@ -621,7 +639,7 @@ const FRUIT = {
 
 function berry(lod: number): THREE.BufferGeometry {
   const sb = new Surf();
-  const [around, along] = ([[10, 6], [5, 3], [4, 2]] as const)[lod]!;
+  const [around, along] = ([[10, 6], [5, 2], [4, 2]] as const)[lod]!;
   // globose, a little flattened on top, where the disc of the flower was
   lathe(
     sb,
@@ -650,15 +668,16 @@ function makeBerries(variant: number, lod: number): THREE.BufferGeometry {
   const count = BERRY_COUNTS[variant]!;
   const mg = new Merge(false);
   const lean = new V3(0.06 * (variant - 1), 1, 0.04).normalize();
-  // the stalk of the umbel, as long as the cluster is wide
-  const centre = lean.clone().multiplyScalar(0.92);
+  // the stalk of the umbel, a little over half as long as the cluster is wide (Commons: 2026-04-11 Hedera helix im NSG
+  // Jockgrimer Tongruben, a ripe umbel close on its shoot)
+  const centre = lean.clone().multiplyScalar(0.6);
   mg.tube([new V3(), centre.clone().multiplyScalar(0.5), centre], [0.038, 0.032, 0.028], [6, 4, 3][lod]!, FRUIT.stalk, FRUIT.stalk);
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   const one = new V3(1, 1, 1);
-  rays(lean, count, 125 * DEG, 400 + variant).forEach((dir, i) => {
+  rays(lean, count, 150 * DEG, 400 + variant).forEach((dir, i) => {
     // each berry at the end of the stalk its flower stood on: the cluster is half a unit from its middle to its outside
-    const stalk = (0.5 - 2 * BERRY) * (0.86 + 0.28 * hash2(variant + 40, i));
+    const stalk = (0.5 - 2 * BERRY) * (0.9 + 0.16 * hash2(variant + 40, i));
     const at = centre.clone().addScaledVector(dir, stalk);
     if (lod < 2) mg.tube([centre.clone(), at], [0.017, 0.015], lod === 0 ? 4 : 3, FRUIT.stalk, FRUIT.stalk);
     q.setFromUnitVectors(UP, dir);
@@ -670,7 +689,7 @@ function makeBerries(variant: number, lod: number): THREE.BufferGeometry {
   // a few flowers set nothing: their stalks stand empty
   if (lod === 0) for (const dir of rays(lean, 3, 110 * DEG, 77 + variant)) mg.tube([centre.clone(), centre.clone().addScaledVector(dir, 0.2)], [0.015, 0.011], 3, FRUIT.stalk, FRUIT.stalk);
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, 0.7, 0), 0.9);
+  g.boundingSphere = new THREE.Sphere(new V3(0, 0.5, 0), 0.8);
   return g;
 }
 
@@ -679,8 +698,8 @@ function makeBerries(variant: number, lod: number): THREE.BufferGeometry {
 // timber. The render data gives the way into the surface as +Z; the cluster
 // lies on that surface, in the XY plane, spreading from under the stem. Which
 // way the stem runs across that plane is not told to a model, so the two rows
-// a real cluster stands in cannot be laid along the stem: the roots are drawn
-// as a tuft spreading all round, and the stem covers those that lie along it.
+// a real cluster stands in cannot be laid along the stem with certainty: they
+// are laid across the model's +Y and fanned wide (see makeRootlets).
 // ---------------------------------------------------------------------------
 /** "a median of 38 roots to a root cluster" (Melzer et al. 2012). */
 const ROOTLETS_IN_CLUSTER = characterNumber(morphology, 'stem.rootletsPerCluster');
@@ -692,20 +711,25 @@ function makeRootlets(variant: number, lod: number): THREE.BufferGeometry {
   const count = [ROOTLETS_IN_CLUSTER, 14, 7][lod]!;
   const seed = 900 + variant * 29;
   for (let i = 0; i < count; i++) {
-    const a = (i / count) * TAU + (hash2(seed, i) - 0.5) * 0.9;
-    // they leave the stem along a stretch of it and not at one point: each starts somewhere under it
-    const under = 0.4 * Math.sqrt(hash2(seed + 4, i));
-    const where = a + (hash2(seed + 7, i) - 0.5) * 1.4;
-    const fromX = Math.cos(where) * under;
-    const fromY = Math.sin(where) * under;
+    // a dense brush, not a star (Commons: 2022HederaHelix1.jpg, Efeu mit Adventivwurzeln.jpg): two rows leaving the
+    // stem to either side along a stretch of it, most roots short and a few long. Which way the stem runs is not told
+    // to the model; the rows are laid across +Y, which is along a stem that climbs a post and across one that runs
+    // along a lath, so they fan out enough to read as a brush either way
+    const side = i % 2 === 0 ? 1 : -1;
+    const a = (side > 0 ? 0 : Math.PI) + (hash2(seed, i) - 0.5) * 1.5;
+    const fromX = side * 0.05 * hash2(seed + 4, i);
+    const fromY = (hash2(seed + 7, i) - 0.5) * 0.55;
     // unbranched, of unequal length, a little crooked, pressed to the surface: off it only where it leaves the stem
-    const length = 0.4 + 0.6 * hash2(seed + 1, i);
+    // the first two are as long as the data's length, which is the longest a root is drawn
+    const h = i < 2 ? 1 : hash2(seed + 1, i);
+    const length = 0.22 + 0.78 * h * h;
     const bend = (hash2(seed + 2, i) - 0.5) * 1.1;
     const at = (t: number): V3 => {
       const b = a + bend * t;
       return new V3(fromX + Math.cos(b) * length * t, fromY + Math.sin(b) * length * t, -0.1 * (1 - t) * (1 - t) - 0.025);
     };
-    const thick = (lod === 2 ? 0.075 : 0.045) * (0.8 + 0.4 * hash2(seed + 3, i));
+    // fine: a rootlet is a fraction of a millimetre across
+    const thick = (lod === 2 ? 0.06 : lod === 1 ? 0.035 : 0.026) * (0.8 + 0.4 * hash2(seed + 3, i));
     if (lod === 0) mg.tube([at(0.05), at(0.55), at(1)], [thick, thick * 0.85, thick * 0.5], 3, ROOTLET.young, ROOTLET.tip);
     else mg.tube([at(0.05), at(1)], [thick, thick * 0.6], 3, ROOTLET.young, ROOTLET.tip);
   }
@@ -732,9 +756,11 @@ const climbingLeaf: LeafAsset = {
   budget: [1100, 340, 40],
   // five lobes for most; three, or shallow ones, for the rest
   pick: (_lengthM, r) => (r < 0.4 ? 0 : r < 0.65 ? 1 : r < 0.85 ? 2 : 3),
-  // dark and shining, the veins pale (greenB is what a vein is drawn towards); evergreen, so it has no autumn colours of its own
-  palette: { greenA: lin('#2c4a17'), greenB: lin('#b4c090'), young: lin('#8aa43a'), autumnA: lin('#2c4a17'), autumnB: lin('#b4c090') },
-  roughness: 0.3,
+  // dark and shining, the veins pale green rather than white (greenB is what a vein is drawn towards); evergreen, so it
+  // has no autumn colours of its own. Darker and a little bluer than the first pass, as on a wall in shade (Commons:
+  // 20150318-stare-drzewce-park-hedera-helix.jpg), and shinier
+  palette: { greenA: lin('#24431a'), greenB: lin('#a3b480'), young: lin('#8aa43a'), autumnA: lin('#24431a'), autumnB: lin('#a3b480') },
+  roughness: 0.2,
   // leathery: little light comes through
   translucency: 0.2,
   detailReach: 0.75,
@@ -746,10 +772,10 @@ const adultLeaf: LeafAsset = {
   lods: ADULT_DETAIL.length,
   make: makeAdultLeaf,
   budget: [260, 100, 40],
-  pick: (_lengthM, r) => (r < 0.45 ? 0 : r < 0.8 ? 1 : 2),
-  // a little lighter and plainer than the climbing leaf, its veins less marked
-  palette: { greenA: lin('#33531a'), greenB: lin('#9bad72'), young: lin('#8fa83e'), autumnA: lin('#33531a'), autumnB: lin('#9bad72') },
-  roughness: 0.34,
+  pick: (_lengthM, r) => (r < 0.3 ? 0 : r < 0.55 ? 1 : r < 0.72 ? 2 : r < 0.88 ? 3 : 4),
+  // a little lighter and plainer than the climbing leaf, its veins less marked; very glossy (Commons: Hedera helix 002.JPG)
+  palette: { greenA: lin('#2b4c19'), greenB: lin('#8fa468'), young: lin('#8fa83e'), autumnA: lin('#2b4c19'), autumnB: lin('#8fa468') },
+  roughness: 0.2,
   translucency: 0.2,
   detailReach: 0.75,
 };
@@ -764,8 +790,9 @@ const panicle: FlowerAsset = {
   authoredSize: 1,
   poise: 'held',
   centreAlong: 0.45,
-  // a bud is green and felted
-  budTint: [0.72, 0.84, 0.62],
+  // a bud is a tight knob felted grey-white with star-shaped hairs (Commons: Hedera helix-Lierre-Bourgeon de
+  // Fleur-20200730.jpg): kept pale, since a tint can only darken the flowers' own colours, not whiten them
+  budTint: [0.95, 0.97, 0.86],
   swing: 0.12,
   translucency: 0.15,
   sheen: 0,
@@ -778,14 +805,14 @@ const berries: FruitAsset = {
   variants: BERRY_COUNTS.length,
   lods: BERRY_LODS,
   make: makeBerries,
-  budget: [3300, 900, 320],
+  budget: [3950, 1000, 420],
   pick: (r) => Math.min(BERRY_COUNTS.length - 1, Math.floor(r * BERRY_COUNTS.length)),
   authoredSize: 1,
   poise: 'held',
-  centreAlong: 0.9,
+  centreAlong: 0.6,
   // dull blue-black; the stalks, painted a brighter green than the berries, ripen to a purplish brown and not to black
-  ripe: lin('#5a4a52'),
-  ripeShade: [-0.5, 3.2],
+  ripe: lin('#4c3f58'),
+  ripeShade: [-0.3, 3.0],
   roughness: 0.55,
   swing: 0.1,
   detailAt: [0.8, 2.5],
@@ -799,9 +826,9 @@ const clingingRoots: AppendageAsset = {
   make: makeRootlets,
   budget: [520, 110, 64],
   pick: (r) => Math.min(2, Math.floor(r * 3)),
-  // pale when new, brown and woody within a year or two
+  // cream when new, brown and withered within a few years (Commons: 2022HederaHelix1.jpg and 2022HederaHelix2.jpg)
   aged: ROOTLET.old,
-  agedDays: [60, 500],
+  agedDays: [200, 1000],
   roughness: 0.95,
   swing: 0,
   detailAt: [0.6, 1.6],
