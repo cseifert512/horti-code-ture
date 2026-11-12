@@ -390,7 +390,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not acted on: the model has no pruning routine for this plant. Bean, of the genus: young shoots \"shortened once or twice in summer\"."
+      "basis": "Acted on by the vine's routine (vineRoutine, two summer visits): every shoot of the year shortened to five or six leaves. Bean, of the genus: \"The young shoots are shortened back once or twice during the summer\" (https://www.treesandshrubsonline.org/articles/vitis/); the RHS plant record gives pruning group 11, \"in midwinter, and in midsummer, if restricted growth is required\". Neither gives a count: five or six leaves is the wisteria routine's, an assumption that makes \"shortened back\" specific."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -398,8 +398,9 @@
         2
       ],
       "unit": "buds",
-      "status": "provisional_design_assumption",
-      "basis": "Not acted on: the model has no pruning routine for this plant. Bean, of the genus: cut back hard in December or January \"to one or two buds\"."
+      "status": "published_plant_profile",
+      "basis": "Acted on by the vine's routine (vineRoutine, 15 December): every shoot of the year that is not framework cut to its first one or two nodes. Bean, of the genus: \"then cut hard back in December or January to one or two buds (later pruning causes bleeding)\"; \"The same pruning should be given to plants grown on walls.\" Of the genus, not of this species in particular.",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/"
     },
     "regrowth.shootsPerCut": {
       "value": [
@@ -559,13 +560,13 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot of the year from a spur, by the end of its season. Annual shoots of 2 to 5 m are given by a wall-greening supplier (fassadengruen.de, excerpt only) and the longest shoot of a young plant in Gifu made 3.24 m on average; on a framework of many spurs most stay shorter, and the gardener shortens them \"once or twice during the summer\" (Bean, of the genus), which the model does not do. Taken from a short shoot to one that arches and hangs: Bean, of the genus, \"if the shoots are allowed to hang loosely, they are very elegant\"."
+      "basis": "A shoot of the year from a spur, by the end of its season. Annual shoots of 2 to 5 m are given by a wall-greening supplier (fassadengruen.de, excerpt only) and the longest shoot of a young plant in Gifu made 3.24 m on average; on a framework of many spurs most stay shorter, and the gardener shortens them \"once or twice during the summer\" (Bean, of the genus), which the routine of care now does (vineRoutine). Taken from a short shoot to one that arches and hangs: Bean, of the genus, \"if the shoots are allowed to hang loosely, they are very elegant\"."
     },
     "sideShoots.lifespanYears": {
-      "value": 1,
+      "value": 30,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "The year's shoots are cut \"hard back in December or January to one or two buds\" (Bean, of the genus), so on the gardened plant they are gone before the next spring and the next year's shoots break from the spur. On a plant left alone they would stay and become canes; the engine has one lifespan for both, and the gardened plant is the baseline."
+      "basis": "Left uncut, a shoot of the year stays on the plant as its own wood: an unpruned vine keeps its shoots and they become canes (Bean, of the genus: whole trees \"over which they can ramble at will\"). No source read says how long such a shoot lives on this species; 30 seasons is longer than any run here, so nothing is shed in a run. On the gardened plant the winter cut (vineRoutine, Bean: \"cut hard back in December or January to one or two buds\") takes the year's shoots back to stubs, and next year's shoots break from the stubs. Until 12 November 2026 this was 1, a stand-in for that cut."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.35,

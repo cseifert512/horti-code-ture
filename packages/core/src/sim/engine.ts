@@ -1416,7 +1416,9 @@ export class Simulation {
       let at = n.pointIndex;
       if (n.sideShootId !== null) {
         const last = this.axes.get(n.sideShootId)!;
-        if (last.removedDay === null && !kept.has(last.id)) continue;
+        // a stub of an earlier winter that bore nothing last season, on a plant whose stubs outlive a season, can bear again
+        const bare = last.shortenedYear !== undefined && last.shortenedYear < year && !last.children.some((c) => this.axes.get(c)!.removedDay === null);
+        if (last.removedDay === null && !kept.has(last.id) && !bare) continue;
         if (last.removedDay === null) {
           bearer = last;
           at = last.alive - 1;
@@ -2183,6 +2185,10 @@ export class Simulation {
         this.events.push(this.record(e, date, this.shortenSideShoots(plant, e, date, fx), true, fx));
         return;
       }
+      case 'trim_to_bounds': {
+        this.events.push(this.record(e, date, this.trimToBounds(plant, e, fx), true, fx));
+        return;
+      }
       case 'monitor': {
         const alive = plant.axisIds.map((id) => this.axes.get(id)!).filter((a) => a.removedDay === null);
         const fw = alive.filter((a) => a.role === 'leader' || a.role === 'lateral').reduce((s, a) => s + this.lengthOf(a), 0);
@@ -2209,6 +2215,133 @@ export class Simulation {
    * cut down low and shoot again. Returns what the log says of the visit.
    */
   private shortenSideShoots(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }>, date: CalendarDate, fx: EventRecord['effects']): string {
+    const rose = e.keepShare && !e.keepNodes && e.withinM === undefined && (e.which ?? 'flowered') === 'flowered' && !e.freeShoots && (e.remains ?? 'stub') === 'stub' && !e.spareFlowering;
+    const said = rose ? this.shortenFlowered(plant, { ...e, keepShare: e.keepShare! }, date, fx) : this.shortenShootsOfYear(plant, e, date, fx);
+    return said + this.renewCanes(plant, e, fx);
+  }
+
+  /**
+   * The nodes of a shoot, base first, as the point indices of the leaves it bore (fallen or not): where its buds are.
+   */
+  private nodesOf(axis: Axis): number[] {
+    return [...new Set((this.leavesByAxis.get(axis.id) ?? []).map((l) => l.pointIndex))].filter((i) => i > 0 && i < axis.alive).sort((x, y) => x - y);
+  }
+
+  /**
+   * Every other use of `shorten_side_shoots`: a vine's winter cut to one or two buds and its summer shortening, and
+   * ivy's adult growth kept within a distance of its stem. Which shoots: side shoots that have flowered, or all of
+   * them, and the free shoots of the year as well where `freeShoots` says so. How much stays: a count of nodes from
+   * the shoot's own base, or what stands within `withinM` of where its line leaves the framework, or a share of its
+   * length. A winter cut (`remains` 'stub') leaves a stub that bears next season's side shoot from its top; where
+   * the shoot already stands on such a stub, the cut is made back at the stub, so a spur stays one stub long. A summer
+   * shortening (`remains` 'shoot') leaves the shoot itself, stopped. Whatever stood beyond a cut goes with it,
+   * flowers at the shoot's end included; with `spareFlowering` a shoot whose end carries a flower or fruit is left.
+   * Each count or share is drawn for the shoot from its place.
+   */
+  private shortenShootsOfYear(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }>, date: CalendarDate, fx: EventRecord['effects']): string {
+    const stub = (e.remains ?? 'stub') === 'stub';
+    const all = (e.which ?? 'flowered') === 'all';
+    const season = date.month >= 7 ? date.year + 1 : date.year;
+    const fruitBefore = this.fruits.filter((f) => f.plantId === plant.id && f.removedBy === e.id).length;
+    let sides = 0;
+    let free = 0;
+    let unflowered = 0;
+    let spared = 0;
+    let backToStub = 0;
+    const endBears = (a: Axis) =>
+      (this.budsByAxis.get(a.id) ?? []).some((b) => b.pointIndex === null && b.end === null && b.stage !== 'spent') || (this.fruitsByAxis.get(a.id) ?? []).some((f) => f.removedDay === null && f.pointIndex >= a.alive - 1);
+    /** Length of `a` to keep, by the rule of the event, or null where nothing is to be cut. */
+    const keepOf = (a: Axis, base: Vec3): number | null => {
+      const rng = this.at(plant, a.contact[0]!, SALT.shorten + date.year);
+      if (e.keepNodes) {
+        const nodes = this.nodesOf(a);
+        const k = rng.int(e.keepNodes[0], e.keepNodes[1]);
+        if (nodes.length <= k) return null;
+        return k <= 0 ? 0 : a.lengthAt[nodes[k - 1]!]!;
+      }
+      if (e.withinM !== undefined) {
+        let j = 0;
+        while (j + 1 < a.alive && distance(a.contact[j + 1]!, base) <= e.withinM) j++;
+        return j >= a.alive - 1 ? null : a.lengthAt[j]!;
+      }
+      if (e.keepShare) return rng.range(...e.keepShare) * this.lengthOf(a);
+      return null;
+    };
+    for (const id of [...plant.axisIds]) {
+      const a = this.axes.get(id)!;
+      if (a.removedDay !== null || a.alive < 2) continue;
+      const isSide = a.role === 'side_shoot';
+      const isFree = a.role === 'whip' && !!e.freeShoots;
+      if (!isSide && !isFree) continue;
+      // a stub cut in an earlier winter is not cut again: the gardener shortens the shoot it bore
+      if (isSide && a.shortenedYear !== undefined) continue;
+      if (isSide && !all && !(this.budsByAxis.get(a.id) ?? []).some((b) => b.openDay !== null)) {
+        unflowered++;
+        continue;
+      }
+      if (e.spareFlowering && endBears(a)) {
+        spared++;
+        continue;
+      }
+      // the stubs of earlier winters it stands on, and the foot of the line on the framework
+      let first: Axis = a;
+      for (let s = a.parent ? this.axes.get(a.parent.axisId) : undefined; s && s.role === 'side_shoot'; s = s.parent ? this.axes.get(s.parent.axisId) : undefined) first = s;
+      if (isSide && stub && first !== a && e.keepNodes) {
+        // a spur is cut back to the buds at its own base: the shoot from the stub goes, the stub bears again
+        for (const c of [...first.children]) this.removeAxis(this.axes.get(c)!, e.id, fx);
+        first.shortenedYear = season;
+        for (const n of plant.leafNodes) if (n.sideShootId === a.id) n.sideShootId = first.id;
+        backToStub++;
+        sides++;
+        continue;
+      }
+      const keep = keepOf(a, first.contact[0]!);
+      if (keep === null) continue;
+      this.cutAt(a, keep, e.id, fx);
+      // a flower at the end of a shoot goes with the end
+      for (const b of this.budsByAxis.get(a.id) ?? []) if (b.pointIndex === null) this.loseBud(plant, b, e.id, fx);
+      if (isSide && stub) a.shortenedYear = season;
+      if (a.tip.state !== 'stopped') a.tip = { state: 'stopped', reason: stub ? 'cut back by the gardener' : 'shortened by the gardener in summer' };
+      if (isSide) sides++;
+      else free++;
+    }
+    const fruit = this.fruits.filter((f) => f.plantId === plant.id && f.removedBy === e.id).length - fruitBefore;
+    const rule = e.keepNodes ? `to ${e.keepNodes[0] === e.keepNodes[1] ? e.keepNodes[0] : `${e.keepNodes[0]} or ${e.keepNodes[1]}`} node${e.keepNodes[1] === 1 ? '' : 's'} from its base` : e.withinM !== undefined ? `back to within ${e.withinM.toFixed(2)} m of where it leaves its stem` : `keeping ${Math.round((e.keepShare?.[0] ?? 0) * 100)}% to ${Math.round((e.keepShare?.[1] ?? 0) * 100)}% of its length`;
+    let said = `${stub ? 'cut back to stubs' : 'shortened'}: ${sides} ${all ? '' : 'flowered '}side shoot${sides === 1 ? '' : 's'}${e.freeShoots ? ` and ${free} free shoot${free === 1 ? '' : 's'} of the year` : ''} cut back, each ${rule}; ${fx.stemRemovedM.toFixed(1)} m of shoot, ${fx.leafSitesRemoved} lea${fx.leafSitesRemoved === 1 ? 'f' : 'ves'}, ${fx.floralBudsRemoved} flower bud${fx.floralBudsRemoved === 1 ? '' : 's'} and ${fruit} fruit went with the cuts`;
+    if (backToStub) said += ` (${backToStub} of them standing on the stub of an earlier winter, cut back to that stub, which bears again)`;
+    if (spared) said += `; ${spared} shoot${spared === 1 ? '' : 's'} ending in a flower or fruit left, since nothing stands beyond ${spared === 1 ? 'it' : 'them'}`;
+    if (unflowered) said += `; ${unflowered} side shoot${unflowered === 1 ? '' : 's'} that had not flowered left as ${unflowered === 1 ? 'it was' : 'they were'}`;
+    if (stub && e.freeShoots) said += '; the stubs of free shoots stay as they are';
+    return said;
+  }
+
+  /**
+   * `trim_to_bounds`: every free shoot of the year that holds nothing and whose tip stands further than the distance
+   * from where it left its support is cut off there, with all it carried. The model has no declared envelope: this is
+   * what "out of bounds" can mean in it. Shoots that took hold of a support from the air, and the framework, are left.
+   */
+  private trimToBounds(plant: Plant, e: Extract<GardenerEvent, { type: 'trim_to_bounds' }>, fx: EventRecord['effects']): string {
+    let cut = 0;
+    let within = 0;
+    for (const id of [...plant.axisIds]) {
+      const a = this.axes.get(id)!;
+      if (a.role !== 'whip' || a.removedDay !== null || a.alive < 2) continue;
+      if (a.runs.some((r) => r.status !== 'detached')) continue;
+      const base = a.contact[0]!;
+      let reach = 0;
+      for (let i = 1; i < a.alive; i++) reach = Math.max(reach, distance(a.contact[i]!, base));
+      if (reach <= e.freeBeyondM) {
+        within++;
+        continue;
+      }
+      this.removeAxis(a, e.id, fx);
+      cut++;
+    }
+    return `trimmed to bounds: ${cut} free shoot${cut === 1 ? '' : 's'} standing out more than ${e.freeBeyondM.toFixed(2)} m from the timber cut off where ${cut === 1 ? 'it leaves' : 'they leave'} it, ${fx.stemRemovedM.toFixed(1)} m of shoot and ${fx.leafSitesRemoved} lea${fx.leafSitesRemoved === 1 ? 'f' : 'ves'} with them; ${within} within bounds left`;
+  }
+
+  /** The rose's winter cut, as it was first written: flowered side shoots to a share of their length. */
+  private shortenFlowered(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }> & { keepShare: [number, number] }, date: CalendarDate, fx: EventRecord['effects']): string {
     let cut = 0;
     let unflowered = 0;
     let backToFirst = 0;
@@ -2252,6 +2385,12 @@ export class Simulation {
       : 'winter pruning: no flowered side shoots to cut back';
     if (backToFirst) said += ` (${backToFirst} of them, standing on the stubs of earlier winters further out than a side shoot grows, cut back to the first stub)`;
     if (unflowered) said += `; ${unflowered} side shoot${unflowered === 1 ? '' : 's'} that had not flowered left as ${unflowered === 1 ? 'it was' : 'they were'}`;
+    return said;
+  }
+
+  /** With `renewCanes`: where more canes rise from the base than the gardener keeps, the oldest beyond that number are cut down low to shoot again. */
+  private renewCanes(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }>, fx: EventRecord['effects']): string {
+    let said = '';
     if (e.renewCanes) {
       const { keep, stubM } = e.renewCanes;
       const standing = (a: Axis) => a.removedDay === null && a.alive > 0;
