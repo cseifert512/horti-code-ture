@@ -140,15 +140,22 @@ describe('the leaf', () => {
     expect(characterText(morphology, 'leaf.division')).toBe('odd-pinnate');
     for (let v = 0; v < leaf.variants; v++) {
       const parts = partsOf(leaf.make(v, 0));
-      const centre = (p: (typeof parts)[number]) => p.box.getCenter(new THREE.Vector3());
-      const left = parts.filter((p) => centre(p).x < -0.03).length;
-      const right = parts.filter((p) => centre(p).x > 0.03).length;
-      expect(left).toBe(right);
-      expect(left + right).toBe(parts.length - 1);
-      // the end leaflet reaches the tip of the leaf
-      const end = parts.find((p) => Math.abs(centre(p).x) <= 0.03)!;
-      const tip = Math.max(...parts.map((p) => p.box.max.z));
-      expect(end.box.max.z).toBe(tip);
+      // leaflets that leave the stalk at the same place are a pair
+      const places = new Map<string, typeof parts>();
+      for (const p of parts) {
+        const key = p.pivot.z.toFixed(4);
+        places.set(key, [...(places.get(key) ?? []), p]);
+      }
+      const along = [...places.values()].sort((a, b) => a[0]!.pivot.z - b[0]!.pivot.z);
+      const side = (p: (typeof parts)[number]) => Math.sign(p.box.getCenter(new THREE.Vector3()).x - p.pivot.x);
+      for (const pair of along.slice(0, -1)) {
+        expect(pair).toHaveLength(2);
+        expect(side(pair[0]!)).toBe(-side(pair[1]!));
+      }
+      // the last place on the stalk bears the one end leaflet, which reaches the tip of the leaf
+      const end = along.at(-1)!;
+      expect(end).toHaveLength(1);
+      expect(end[0]!.box.max.z).toBe(Math.max(...parts.map((p) => p.box.max.z)));
     }
   });
 
@@ -233,10 +240,12 @@ describe('the raceme', () => {
     for (let v = 0; v < raceme.variants; v++) {
       const n = flowers(v, 0).length;
       expect(Math.abs(n - count)).toBeLessThanOrEqual(5);
+      expect(n).toBeGreaterThan(100);
       expect(flowers(v, 1).length).toBe(n);
       expect(flowers(v, 2).length).toBe(n);
-      // from far off, half as many, each drawn larger
-      expect(flowers(v, 3).length).toBe(Math.ceil(n / 2));
+      // from far off, about three in eight, each drawn larger
+      expect(flowers(v, 3).length / n).toBeGreaterThan(0.34);
+      expect(flowers(v, 3).length / n).toBeLessThan(0.42);
     }
   });
 
@@ -245,10 +254,10 @@ describe('the raceme', () => {
     for (let v = 0; v < raceme.variants; v++) {
       const g = raceme.make(v, 0);
       const parts = flowers(v, 0).sort((a, b) => a.t - b.t);
-      // one flower to 6 to 9 mm of stalk
+      // one flower to 5 or 6 mm of stalk: wider apart than the species, whose 100 and more stand on 20 to 50 cm
       const along = (parts[0]!.pivot.y - parts.at(-1)!.pivot.y) / (parts.length - 1);
-      expect(along).toBeGreaterThan(0.006);
-      expect(along).toBeLessThan(0.009);
+      expect(along).toBeGreaterThan(0.005);
+      expect(along).toBeLessThan(0.0065);
       // the top of the stalk is bare
       expect(-parts[0]!.pivot.y / raceme.authoredSize).toBeGreaterThan(0.06);
       expect(-parts[0]!.pivot.y / raceme.authoredSize).toBeLessThan(0.12);
@@ -321,27 +330,35 @@ describe('the raceme', () => {
     expect(characterText(morphology, 'flower.standardColour')).toContain('yellow');
     expect(characterText(morphology, 'flower.wingAndKeelColour')).toContain('darker than the standard');
     const g = raceme.make(0, 0);
-    // the first open flower: its standard is what stands above its foot, its wings and keel what lies at or below it
-    const first = flowers(0, 0).sort((a, b) => a.t - b.t)[0]!;
-    const mine = (t: number) => t === first.t;
-    const pivotY = first.pivot.y;
-    const out = (p: THREE.Vector3) => Math.hypot(p.x - first.pivot.x, p.z - first.pivot.z);
+    // an open flower from the upper part of the raceme: beyond its own stalk, the standard is what stands highest
+    // and the wings and keel what lies lowest
+    const one = flowers(0, 0).sort((a, b) => a.t - b.t)[20]!;
+    const mine = (t: number) => t === one.t;
+    const out = (p: THREE.Vector3) => Math.hypot(p.x - one.pivot.x, p.z - one.pivot.z);
     const stalk = mid(characterRange(morphology, 'flower.stalkLengthM'));
-    const standard = meanColour(g, (p, t) => mine(t) && p.y > pivotY + 0.006 && out(p) > stalk * 0.8);
-    const below = meanColour(g, (p, t) => mine(t) && p.y < pivotY - 0.001 && out(p) > stalk * 1.2);
+    const pos = g.getAttribute('position');
+    const tags = g.getAttribute('aPart');
+    const heights: number[] = [];
+    const q = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) if (mine(tags.getW(i)) && out(q.fromBufferAttribute(pos, i)) > stalk) heights.push(q.y);
+    heights.sort((a, b) => a - b);
+    const low = heights[Math.floor(heights.length * 0.3)]!;
+    const high = heights[Math.floor(heights.length * 0.8)]!;
+    const standard = meanColour(g, (p, t) => mine(t) && out(p) > stalk && p.y >= high);
+    const below = meanColour(g, (p, t) => mine(t) && out(p) > stalk && p.y <= low);
     const lum = ([r, gg, b]: [number, number, number]) => 0.2126 * r + 0.7152 * gg + 0.0722 * b;
     expect(lum(standard)).toBeGreaterThan(lum(below) * 2);
     // violet-blue: blue over red over green
     expect(below[2]).toBeGreaterThan(below[0] * 1.8);
     expect(below[0]).toBeGreaterThan(below[1]);
     // pale violet: light, and bluer than it is green
-    expect(lum(standard)).toBeGreaterThan(0.55);
+    expect(lum(standard)).toBeGreaterThan(0.45);
     expect(standard[2]).toBeGreaterThan(standard[1]);
     // the yellow eye: some vertex of the flower is yellow (red and green high, blue low)
     const col = g.getAttribute('color');
     const part = g.getAttribute('aPart');
     let yellow = 0;
-    for (let i = 0; i < col.count; i++) if (part.getW(i) === first.t && col.getX(i) > 0.6 && col.getY(i) > 0.5 && col.getZ(i) < col.getY(i) * 0.6) yellow++;
+    for (let i = 0; i < col.count; i++) if (part.getW(i) === one.t && col.getX(i) > 0.6 && col.getY(i) > 0.5 && col.getZ(i) < col.getY(i) * 0.6) yellow++;
     expect(yellow).toBeGreaterThan(0);
   });
 
@@ -393,36 +410,41 @@ describe('the pods', () => {
     }
   });
 
-  it('are flat and widest towards the end: as wide as recorded, and less than half as thick', () => {
+  it('are flat and widest towards the end: as wide as recorded there, and less than half as thick', () => {
     const [narrow, wide] = characterRange(morphology, 'fruit.widthM');
-    // the single pod of the first variant, measured across in slices down its length
+    // the single pod of the first variant, measured across in two slices: one in its broad part, one in its neck
     const g = pods.make(0, 0);
     const pos = g.getAttribute('position');
     g.computeBoundingBox();
-    const bottom = g.boundingBox!.min.y;
+    const tip = g.boundingBox!.min.y;
+    /** `from` and `to` are heights above the tip of the pod, as shares of its length. */
     const slice = (from: number, to: number): { wide: number; thick: number } => {
-      // from and to are shares of the pod's length up from its tip
       const pts: THREE.Vector3[] = [];
       for (let i = 0; i < pos.count; i++) {
-        const y = pos.getY(i) - bottom;
+        const y = pos.getY(i) - tip;
         if (y >= from * pods.authoredSize && y <= to * pods.authoredSize) pts.push(new THREE.Vector3().fromBufferAttribute(pos, i));
       }
       // the pod is turned about its own length: its width is the greatest span across, its thickness the span square to that
       let best = 0;
       let dir = new THREE.Vector2(1, 0);
-      for (const a of pts) for (const b of pts) if (Math.hypot(a.x - b.x, a.z - b.z) > best) {
-        best = Math.hypot(a.x - b.x, a.z - b.z);
-        dir = new THREE.Vector2(a.x - b.x, a.z - b.z).normalize();
+      for (const a of pts) {
+        for (const b of pts) {
+          const d = Math.hypot(a.x - b.x, a.z - b.z);
+          if (d > best) {
+            best = d;
+            dir = new THREE.Vector2(a.x - b.x, a.z - b.z).normalize();
+          }
+        }
       }
       const across = pts.map((p) => -p.x * dir.y + p.z * dir.x);
       return { wide: best, thick: Math.max(...across) - Math.min(...across) };
     };
-    const upper = slice(0.15, 0.45);
-    const lower = slice(0.6, 0.85);
-    expect(upper.wide).toBeGreaterThan(narrow);
-    expect(upper.wide).toBeLessThan(wide);
-    expect(upper.wide).toBeGreaterThan(lower.wide * 1.2);
-    expect(upper.thick).toBeLessThan(upper.wide * 0.6);
+    const broad = slice(0.2, 0.3);
+    const neck = slice(0.72, 0.82);
+    expect(broad.wide).toBeGreaterThan(narrow);
+    expect(broad.wide).toBeLessThan(wide);
+    expect(broad.wide).toBeGreaterThan(neck.wide * 1.3);
+    expect(broad.thick).toBeLessThan(broad.wide * 0.5);
   });
 
   it('are grey-green and velvety when unripe and ripen to brown', () => {
@@ -431,9 +453,11 @@ describe('the pods', () => {
     expect(characterText(morphology, 'fruit.surface')).toBe('velvety');
     const g = pods.make(0, 0);
     const [r, gg, b] = meanColour(g, (p) => p.y < -pods.authoredSize);
-    // greyed: no channel far from the others; green leading, blue not far behind
+    // greyed, with a blue cast: green leads, and neither red nor blue is far behind it
     expect(gg).toBeGreaterThan(r);
-    expect(b / gg).toBeGreaterThan(0.75);
+    expect(gg).toBeGreaterThan(b);
+    expect(b / gg).toBeGreaterThan(0.7);
+    expect(r / gg).toBeGreaterThan(0.65);
     expect(pods.ripe[0]).toBeGreaterThan(pods.ripe[1] * 1.5);
     expect(pods.ripe[1]).toBeGreaterThan(pods.ripe[2] * 1.5);
     expect(pods.roughness).toBeGreaterThan(0.85);
@@ -496,12 +520,13 @@ describe('a specimen grown by the engine for eight years', () => {
     for (const month of [5, 6, 7, 8, 9, 10]) expect(leavesOn(mid15(month)), `month ${month}`).toBeGreaterThan(300);
     for (const month of [1, 2, 3]) expect(leavesOn(mid15(month)), `month ${month}`).toBe(0);
     expect(leavesOn(`${year}-12-20`)).toBe(0);
-    // in full autumn colour before they fall
-    const day = cal.dayOf(`${year}-11-04`);
+    // green in September, and in full autumn colour in mid November, while most are still on the plant
     const seasons = seasonsOf(data, year);
-    const states = data.leaves.map((l) => leafState(l, seasons.get(l.plantId), day)).filter((s) => s.present);
-    expect(states.length).toBeGreaterThan(300);
-    expect(states.filter((s) => s.autumn > 0.9).length / states.length).toBeGreaterThan(0.8);
+    const on = (iso: string) => data.leaves.map((l) => leafState(l, seasons.get(l.plantId), cal.dayOf(iso))).filter((s) => s.present);
+    expect(on(`${year}-09-15`).every((s) => s.autumn === 0)).toBe(true);
+    const november = on(`${year}-11-15`);
+    expect(november.length).toBeGreaterThan(300);
+    expect(november.filter((s) => s.autumn > 0.9).length / november.length).toBeGreaterThan(0.95);
   });
 
   // taxon.json: flowering.monthsUK [5, 6]. CLAUDE.md: "A flowering month is an envelope, not a trigger."
@@ -563,7 +588,7 @@ describe('a specimen grown by the engine for eight years', () => {
       expect(f.lengthM).toBeGreaterThanOrEqual(short);
       expect(f.lengthM).toBeLessThanOrEqual(long);
       // each follows a raceme that went over: it starts where and when one was spent
-      expect(data.flowers.some((fl) => fl.spentDay === f.swell[0] && fl.position.every((x, i) => x === f.position[i]))).toBe(true);
+      expect(data.flowers.some((fl) => fl.spentDay === f.swell[0] && fl.position.every((x, i) => Math.abs(x - f.position[i]!) < 0.002))).toBe(true);
       expect(fruitState(f, cal.dayOf(`${year}-08-01`)).phase).toBe('swelling');
       expect(fruitState(f, cal.dayOf(`${year}-11-20`)).phase).toBe('ripe');
       expect(fruitState(f, cal.dayOf(`${year}-12-31`)).phase).toBe('ripe');

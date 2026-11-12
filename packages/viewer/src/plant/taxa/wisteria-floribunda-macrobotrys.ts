@@ -499,8 +499,8 @@ const POD_SEGS: Segs[] = [
 ];
 const POD = {
   // "velvety, blue-grey seed pods" (RHS); green at first (Kwantlen)
-  body: lin('#7b8a70'),
-  pale: lin('#9eab93'),
+  body: lin('#748477'),
+  pale: lin('#9aa99c'),
   stalk: lin('#8f9470'),
   stalkOld: lin('#7d7458'),
 } satisfies Record<string, RGB>;
@@ -520,8 +520,8 @@ function makePod(lod: number, seeds: number): THREE.BufferGeometry {
     for (let k = 0; k < seeds; k++) swell += Math.exp(-(((v - lerp(0.3, 0.86, (k + 0.5) / seeds)) / 0.05) ** 2));
     swell = Math.min(1, swell);
     const w = POD_HALF_WIDTH * body * neck * end * (0.84 + 0.2 * swell) + 0.0004;
-    // flat between the seeds and plump over each
-    const thick = w * (0.18 + 0.4 * swell);
+    // flat, and a little fuller over each seed: the seeds are lens-shaped and only 2 to 4 mm thick
+    const thick = w * (0.19 + 0.18 * swell);
     // the velvet is paler where it catches the light: over the seeds and along the two seams
     const c = mix(POD.body, POD.pale, Math.min(1, 0.12 + 0.3 * Math.pow(Math.abs(Math.cos(th)), 6) + 0.5 * swell * Math.abs(Math.sin(th))));
     return { p: [Math.cos(th) * w, -v * POD_LEN, Math.sin(th) * thick + 0.011 * Math.sin(v * 2.6) - 0.004 * Math.sin(v * 6.5)], c };
@@ -647,11 +647,11 @@ const pods: FruitAsset = {
 };
 
 /**
- * Stems: "green and pubescent when young, becoming grey or reddish brown at
- * maturity" (Compton and others 2019); old bark grey, smooth and dotted with
- * lenticels, the trunk "fluted and muscle-like" (Seattle Japanese Garden, NC
- * State). The ages at which a shoot turns are not recorded anywhere read: they
- * are chosen for the picture, in days.
+ * Stems: green and downy when young, grey or reddish brown when mature
+ * (Compton and others 2019, of the genus); old bark grey, smooth and dotted
+ * with lenticels, the trunk "fluted and muscle-like" (Seattle Japanese Garden;
+ * NC State says the same). The ages at which a shoot turns are not recorded
+ * anywhere read: they are chosen for the picture, in days.
  */
 const wood: WoodLook = {
   young: lin('#84905e'),
