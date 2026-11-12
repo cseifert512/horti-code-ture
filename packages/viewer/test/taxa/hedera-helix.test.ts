@@ -187,7 +187,8 @@ describe('the climbing leaf', () => {
 // ovate or rhombic"; Bean, never lobed.
 describe('the adult leaf', () => {
   const leaf = look.leaves['adult']!;
-  const reach = param(model, 'organs.leafLengthM');
+  // the leaf of flowering side shoots has its own length (core, model.ts: organs.sideShootLeafLengthM)
+  const reach = known(model, 'organs.sideShootLeafLengthM')!;
   const blades = Array.from({ length: leaf.variants }, (_, v) => bladeOf(leaf.make(v, 0)));
 
   it('is the form the growth model names for the leaves of flowering shoots, and no other form is named', () => {
@@ -208,16 +209,16 @@ describe('the adult leaf', () => {
     }
   });
 
-  it('reaches the 10 cm of the largest adult leaves; the smallest are drawn smaller than 6 cm, as the profile says', () => {
+  it('is a blade of 6 to 10 cm at the adult leaf lengths the growth model gives, larger than most climbing leaves', () => {
     const [long0, long1] = characterRange(morphology, 'leaf.adult.bladeLengthM');
     for (const b of blades) {
+      // within a tenth of the published range at both ends of the model's own range for the adult leaf
       expect(reach[1] * b.length).toBeGreaterThan(long1 * 0.9);
       expect(reach[1] * b.length).toBeLessThan(long1 * 1.1);
-      // one leaf length for both forms: a limit of the engine, recorded in the profile and in the growth model
-      expect(reach[0] * b.length).toBeLessThan(long0);
+      expect(reach[0] * b.length).toBeGreaterThan(long0 * 0.9);
+      expect(reach[0] * b.length).toBeLessThan(long0 * 1.1);
     }
-    expect(profile).toContain('one range of leaf length');
-    expect(model.params['organs.leafLengthM'].basis).toContain('smallest adult leaves are drawn too small');
+    expect(mid(reach)).toBeGreaterThan(mid(param(model, 'organs.leafLengthM')));
   });
 });
 
@@ -422,11 +423,54 @@ describe('a specimen of common ivy, twelve years on the frame', () => {
   it('bears the lobed leaf on its climbing stems and the unlobed adult leaf only on its flowering shoots, none of which is near the ground', () => {
     for (const l of data.leaves) expect(l.form, l.stemId).toBe(role.get(l.stemId) === 'side_shoot' ? 'adult' : undefined);
     expect(leavesOn(`${last}-07-15`, 'adult')).toBeGreaterThan(100);
-    expect(leavesOn(`${last}-07-15`, 'default')).toBeGreaterThan(10 * leavesOn(`${last}-07-15`, 'adult'));
+    // the climbing leaf is still most of the cover at twelve years; the adult growth is a crown on it, not the plant
+    expect(leavesOn(`${last}-07-15`, 'default')).toBeGreaterThan(2 * leavesOn(`${last}-07-15`, 'adult'));
     // none in the first five years: no wood is yet as old as the model asks before it bears an adult shoot
     expect(leavesOn('2031-07-15', 'adult')).toBe(0);
     const clear = param(model, 'organs.clearStemHeightM');
     for (const s of data.stems.filter((x) => x.role === 'side_shoot')) expect(s.contact[2]!).toBeGreaterThanOrEqual(clear);
+  });
+
+  // Metcalfe 2005: leaves of the climbing stems "alternate", one to a node on long shoots; no spurs or leafy short
+  // shoots. RHS plant record: "mature plants produce bushy, non-clinging branches"; the US Forest Service review (after
+  // Stein and Fosket 1969): adult leaves in a "2/5th spiral". Hattermann et al. 2022: ivy's searchers reach 0.14-0.91 m.
+  it('has no spurs; its adult shoots lengthen year by year into a bush; its free juvenile shoots sag and do not stand', () => {
+    expect(param(model, 'organs.spurChance')).toBe(0);
+    expect(data.stems.filter((s) => s.role === 'spur')).toHaveLength(0);
+    // an adult shoot that has lived several seasons is longer than any first season makes
+    const firstSeason = known(model, 'sideShoots.lengthM')![1];
+    const lengthOf = (s: RenderData['stems'][number]) => {
+      let m = 0;
+      for (let i = 3; i < s.contact.length; i += 3) m += Math.hypot(s.contact[i]! - s.contact[i - 3]!, s.contact[i + 1]! - s.contact[i - 2]!, s.contact[i + 2]! - s.contact[i - 1]!);
+      return m;
+    };
+    const adult = data.stems.filter((s) => s.role === 'side_shoot' && s.removedDay[0]! < 0);
+    expect(adult.filter((s) => lengthOf(s) > firstSeason * 1.5).length).toBeGreaterThan(10);
+    for (const s of adult) expect(lengthOf(s)).toBeLessThanOrEqual(known(model, 'sideShoots.maxLengthM')! + 0.05);
+    expect(known(model, 'organs.alternateDivergenceDeg')).toBe(144);
+    // free shoots: none reaches farther from where it left the timber than the published reach, and most end below it
+    const reachM = known(model, 'mechanics.searcherReachM')!;
+    expect(reachM).toBeGreaterThanOrEqual(0.14);
+    expect(reachM).toBeLessThanOrEqual(0.91);
+    const free = data.stems.filter((s) => s.role === 'whip' && s.contact.length >= 9);
+    expect(free.length).toBeGreaterThan(100);
+    let below = 0;
+    const rises: number[] = [];
+    for (const s of free) {
+      const n = s.contact.length;
+      const out = Math.hypot(s.contact[n - 3]! - s.contact[0]!, s.contact[n - 2]! - s.contact[1]!, s.contact[n - 1]! - s.contact[2]!);
+      expect(out).toBeLessThan(reachM + 0.1);
+      if (s.contact[n - 1]! < s.contact[2]!) below++;
+      let top = 0;
+      for (let i = 2; i < n; i += 3) top = Math.max(top, s.contact[i]! - s.contact[2]!);
+      rises.push(top);
+    }
+    // limp: a third or more end lower than they started, and half rise no more than a hand's breadth before bowing
+    expect(below).toBeGreaterThan(free.length / 3);
+    rises.sort((a, b) => a - b);
+    expect(rises[Math.floor(rises.length / 2)]!).toBeLessThan(0.15);
+    // every leaf is kept through the winter: the model says so, rather than leaving it to the profile
+    expect(known(model, 'organs.winterLeafShare')).toBe(1);
   });
 
   // RHS (ivy on buildings): flowers "from September to November". Metcalfe 2005: "from about 10 years old".

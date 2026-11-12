@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taxonId": "hedera-helix",
-  "statement": "A running model, not a calibrated one, and still thinner than the wisteria model in one respect: how a shoot chooses its next member is copied from it. What the plant is like is taken from published descriptions (Metcalfe 2005, Biological Flora of the British Isles; the RHS; Bean): the months of growth, flowering and fruit, leaf life, the rootlets, and that only adult shoots flower. Rates of extension, branching and thickening, and how many adult shoots a stem throws, are provisional and were chosen so that a plant covers what the RHS says ivy covers in ten years. None has been measured on a plant. The engine places adult shoots by the age of the wood, not at the top of the support in the light, where ivy makes them. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "statement": "A running model, not a calibrated one, and still thinner than the wisteria model in one respect: how a shoot chooses its next member is copied from it. What the plant is like is taken from published descriptions (Metcalfe 2005, Biological Flora of the British Isles; the RHS; Bean; the US Forest Service review): the months of growth, flowering and fruit, leaf life, the rootlets, that ivy has no spurs, that only adult shoots flower, and the reach of its free shoots (Hattermann et al. 2022). Rates of extension, branching and thickening, how many adult shoots a stem throws and how they grow on, and the mechanics of a free shoot are provisional and were chosen so that a plant covers what the RHS says ivy covers in ten years and looks as ivy does in photographs. None has been measured on a plant. The engine places adult shoots by the age of the wood and above a fixed height, not at the top of the support in the light, where ivy makes them, and does not tie their flowering to light. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
   "names": {
     "sideShootLeafForm": "adult",
     "flowerHeld": "facing_out",
@@ -180,7 +180,7 @@
     "architecture.budExtraDormancyChance": {
       "value": 0.25,
       "status": "provisional_design_assumption",
-      "basis": "A quarter of branch buds are taken to wait before breaking, so that a lattice fills over several years and not at once. Chosen."
+      "basis": "A quarter of branch buds are taken to wait before breaking, so that a lattice fills over several years and not at once. Chosen. (Raising it to a half, waiting up to six years, was tried in the second pass as a way to renew leafy shoots on old stems: it slowed the cover and was not kept.)"
     },
     "architecture.budExtraDormancyYears": {
       "value": [
@@ -194,7 +194,7 @@
     "architecture.maxStemsPerRoute": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Ivy stems are slender and lie side by side on what they climb. Three stems 22 mm apart are what a 40 mm lath has room for as the engine lays them."
+      "basis": "Ivy stems are slender and lie side by side on what they climb. Three stems 22 mm apart are what a 40 mm lath has room for as the engine lays them. Tried at six in the second pass: the engine then piled stems on the members it had reached first and left the lower laths of the specimen frame empty, so the value was kept."
     },
     "architecture.maxStemsPerPrimaryMember": {
       "value": 6,
@@ -265,21 +265,21 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.025,
+        0.03,
         0.05
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Derived, not measured: a climbing shoot makes about one leaf a week (Stein and Fosket 1969, as tabulated by the US Forest Service review) through a season of some 33 weeks (March to October, Metcalfe 2005), and is taken here to extend 0.7 m in that time, which is a node every 2 cm; nodes on strong leading shoots stand farther apart. The engine has one spacing for both phases: the crowded nodes of adult shoots (two leaves a week on a shoot that extends little) cannot be given."
+      "basis": "A climbing shoot makes about one leaf a week (Stein and Fosket 1969, as tabulated by the US Forest Service review, https://www.fs.usda.gov/database/feis/plants/vine/hedhel/all.html: juvenile \"1 leaf/week\") through a season of some 33 weeks (March to October, Metcalfe 2005) while it extends some 0.7 to 1.5 m: a node every 2 to 5 cm. The engine stores a stem point every 4 cm and puts a leaf at most at every point, so a spacing below that cannot be drawn. Derived, not measured."
     },
     "organs.leafLengthM": {
       "value": [
-        0.042,
-        0.1
+        0.045,
+        0.105
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "What the engine calls leaf length is drawn as the reach of the leaf from the stem to the farthest point of the blade as it is held, stalk and blade together. The blade is 4 to 10 cm long (Metcalfe 2005, leaves of climbing stems \"4-10(-25) cm\") and hangs at an angle from a stalk of 2 to 10 cm (VicFlora); as the viewer holds it the climbing leaf's blade is as long as the reach, so a reach of 4.2 to 10 cm gives blades of 4.1 to 10 cm on stalks of 2 to 7 cm. One range serves both leaf forms: adult blades are 6 to 10 cm (Metcalfe), so the smallest adult leaves are drawn too small."
+      "basis": "What the engine calls leaf length is drawn as the reach of the climbing leaf from the stem to the farthest point of its blade as it hangs, stalk and blade together; as the viewer holds the leaf, its blade is about as long as that reach. The blade is 4 to 10 cm long (Metcalfe 2005, leaves of climbing stems \"4-10(-25) cm\") on a stalk of 2 to 10 cm (VicFlora), so a reach of 4.5 to 10.5 cm gives blades of 4.5 to 10.4 cm. The first pass took 4.2 to 10 cm; the small change moves the smallest leaves up from the very foot of the range. The adult leaf has its own range (organs.sideShootLeafLengthM)."
     },
     "organs.leavesPerNode": {
       "value": 1,
@@ -288,9 +288,10 @@
       "basis": "Metcalfe 2005: \"Leaves petiolate, simple, alternate\". One leaf at a node."
     },
     "organs.spurChance": {
-      "value": 0.7,
-      "status": "provisional_design_assumption",
-      "basis": "Stands for the short leafy side shoots that keep an ivy stem clothed after its first leaves have gone: seven nodes in ten of last year's stem are taken to carry one. Ivy has no spurs in the fruit-grower's sense. The share is chosen, with organs.spurLeafCount, so that a lath carrying three stems bears some 200 leaves a metre (the twelve-year specimen has 190 to a metre of route), a close cover and not a thin garland: the RHS calls an ivy's covering \"dense\" (https://www.rhs.org.uk/prevention-protection/ivy-on-buildings). No count of leaves on a stem was found."
+      "value": 0,
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Ivy has no spurs and no short leafy shoots that stand in for them: Metcalfe 2005 describes the leaves of the climbing stems as \"alternate\", one to a node along long shoots, and the only short-shooted growth of the plant as the adult flowering branches, which are modelled as side shoots. The first pass used 0.7 here to thicken the cover; it drew about 1,400 bare pegs that ivy does not have. Zero: the cover now comes from leaf size, stems side by side and free shoots that bridge the gaps."
     },
     "organs.spurLengthM": {
       "value": [
@@ -299,7 +300,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of such a short leafy shoot: a centimetre or so, little more than a cluster of leaves on the stem. Chosen. The engine stands every such shoot 3 cm off its stem whatever its length and sets its leaves at its foot, so a bare peg shows where a real plant has none."
+      "basis": "Not used while organs.spurChance is 0; present because every model carries every parameter."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -308,7 +309,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Leaves on such a short shoot, renewed each year. Chosen with organs.spurChance for a close cover; see there."
+      "basis": "Not used while organs.spurChance is 0; present because every model carries every parameter."
     },
     "organs.racemeLengthM": {
       "value": [
@@ -320,23 +321,23 @@
       "basis": "The greatest extent of the whole inflorescence, a panicle of umbels, which is what one flower record stands for. Derived: 3 to 5 umbels in a panicle (Metcalfe 2005), each 3 to 5 cm across (https://cretanflora.com/hedera_helix_helix_text.html), the end one above and the others below it on stalks of their own. No source read measures the panicle."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.02,
+      "value": 0.1,
       "status": "provisional_design_assumption",
-      "basis": "Each year some nodes of older stems throw a climbing shoot that finds no hold and stands free of the support, as ivy shoots do at the edge of what they cover. A real one is slender and limp and hangs; how the engine carries it is not this number's business. The share is chosen: no count was found."
+      "basis": "Share of the nodes of older stems that each year throw a climbing shoot of the year that has found no hold. These free juvenile shoots are what keeps an ivy on a lattice clothed: the engine renews no leaf on a stem once its route is full, and with no spurs (organs.spurChance) the framework's own leaves are gone after four years (organs.leafLifespanYears), so without them the frame shows bare laths from the eighth year. In life the same work is done by juvenile shoots that branch from old stems, lean across the gaps, sag, trail and root where they touch (plagiotropic, Stein and Fosket 1969, as tabulated by the US Forest Service review, https://www.fs.usda.gov/database/feis/plants/vine/hedhel/all.html). They are short and limp here: they stop at mechanics.searcherReachM and hang under their leaves. The share was raised from the first pass's 0.02 in steps until the specimen frame at twelve years was covered as closely as ivy on a fence in photographs (Commons: 20150318-stare-drzewce-park-hedera-helix.jpg); no count was found."
     },
     "organs.whipsPerYearMax": {
-      "value": 30,
+      "value": 200,
       "status": "provisional_design_assumption",
-      "basis": "A cap on such free shoots a year on one plant. Chosen."
+      "basis": "A cap on such free shoots a year on one plant, high enough not to bind on the specimen frame in its later years. Chosen; the first pass took 30."
     },
     "organs.whipLengthM": {
       "value": [
-        0.2,
-        0.6
+        0.25,
+        0.7
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a free shoot of the year: up to what a climbing shoot with a hold is taken to make in a season (extension.lateralMPerSeasonByOrder). Chosen."
+      "basis": "Length a free shoot of the year is set to make, before its weight and reach stop it: up to what a climbing shoot makes in a season. Few reach it: the mechanics stop a shoot at mechanics.searcherReachM or bend it down first. Chosen."
     },
     "organs.leafLifespanYears": {
       "value": 4,
@@ -346,10 +347,10 @@
       "basis": "Metcalfe 2005, section VII: \"Leaves are long-lived (3-4 years)\". Four growing seasons: the engine drops a leaf at the end of the calendar year, and ivy sheds mainly in late spring of the year after, so four is the nearer whole number."
     },
     "organs.clearStemHeightM": {
-      "value": 0.4,
+      "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not a clean stem kept by a gardener: the height below which no adult shoot is thrown. Ivy flowers on \"well-lit, aerial\" shoots (Metcalfe 2005) and not at the foot of the plant, and this is the only height the engine can keep them above. It keeps the short leafy shoots and the trailing shoots off the lowest 0.4 m too, so the foot of an old plant shows its bare stems, as old ivy does. The height is chosen; no source gives one."
+      "basis": "The height below which no adult shoot, flower or free shoot is made. Ivy flowers on \"well-lit, aerial\" shoots (Metcalfe 2005), \"mostly after the plant reaches the top of its support\" (Bean), and \"Adult English ivy flowers in bright light\" (US Forest Service review). The engine places adult shoots by the age of the wood, and this one height also keeps free juvenile shoots off the stem: 1.2 m was tried in the second pass, and left the lower half of the frame bare of everything, which no ivy on a fence is. 0.3 m keeps the foot of the plant clear and lets free shoots clothe the rest; on the specimen frame in full sun adult shoots then stand from 0.3 m up (median 1.2 m), lower than on a real plant, where they would be mostly at and over the top. A rule the engine lacks: adult shoots where the stem has reached the top of its support or full light."
     },
     "flowering.competenceYears": {
       "value": 9,
@@ -369,7 +370,7 @@
     "flowering.spurFloralChance": {
       "value": 0.85,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant, whose short leafy shoots do not flower; present because every model carries every parameter."
+      "basis": "Not applicable: ivy has no spurs (organs.spurChance is 0); present because every model carries every parameter."
     },
     "flowering.unprunedFactor": {
       "value": 0.5,
@@ -417,10 +418,10 @@
       "basis": "RHS ivy guide: an overgrown ivy can be hard pruned, as it regenerates readily from old wood. The number of shoots from a cut is chosen."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 2.25,
+      "value": 1.5625,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "A climbing shoot of the year is taken to be 3 mm thick. Not measured."
+      "basis": "A climbing shoot of the year taken to be 2.5 mm thick (radius 1.25 mm). No measurement of a juvenile ivy shoot was found that could be opened: the Virginia Tech factsheet calls the twig \"slender\" and the US Forest Service review says \"branches are typically slender on low-growing plants\". The first pass took 3 mm; adult branches are stouter (sideShoots.baseDiameterMm). Stiffness goes as the fourth power of the radius: at 2.5 mm a shoot with its leaves holds itself out for a few tenths of a metre and then bows, as ivy shoots off a wall do."
     },
     "thickening.radiusSquaredPerMetreMm2": {
       "value": 2.2,
@@ -440,12 +441,12 @@
     },
     "fruit.lengthM": {
       "value": [
-        0.03,
-        0.04
+        0.025,
+        0.035
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The width of the fruiting umbel, which is what one fruit record stands for. Derived: berries 6 to 8 mm across (Metcalfe 2005) on the stalks of an umbel 3 to 5 cm across in flower. No source read measures the cluster in fruit."
+      "basis": "The width of the fruiting umbel, which is what one fruit record stands for: a tight ball of 12 to 22 berries 6 to 8 mm across (Metcalfe 2005), about 2.5 to 3.5 cm as read from photographs (Commons: 2026-04-11 Hedera helix im NSG Jockgrimer Tongruben). No source read measures the cluster in fruit; the first pass took 3 to 4 cm from the umbel in flower."
     },
     "fruit.swellDays": {
       "value": [
@@ -556,30 +557,174 @@
       "basis": "Stands for the change to adult growth, which the engine can time only by the age of the wood. On the specimen frame the leading stem tops out in its fifth season, so wood there throws adult shoots from the tenth, when sources say adult growth begins (RHS ivy guide: \"around 10 years in\"; Bean: \"mostly after the plant reaches the top of its support\"). Lower, older wood throws them earlier than a real plant would."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 8,
+      "value": 2.5,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "The engine turns this into a chance at each node (here 0.3) and offers it only to nodes that do not already carry a short leafy shoot, which are three in ten (organs.spurChance): so about 2.4 adult shoots a year break on a metre of stem old enough, and an old stem comes to carry about five. Chosen for a bushy head and not a scatter; no count was found."
+      "basis": "New adult shoots a year on each metre of stem old enough to bear them. With no spurs every leaf node may now throw one (the first pass offered three in ten nodes), and the shoots now live on and lengthen, so far fewer a year make the same bushy head: an old stretch of stem carries several, each branching on as it lengthens. Chosen; no count was found."
     },
     "sideShoots.lengthM": {
       "value": [
-        0.15,
-        0.35
+        0.12,
+        0.3
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of an adult shoot, which in the engine is what it makes in its first season. An adult clone made about 30 to 38 cm of shoot a season in North Carolina ('Treetop', HortScience 27(3): 279, read in abstract only: https://journals.ashs.org/hortsci/view/journals/hortsci/27/3/article-p279.xml); less is assumed in Britain. A real adult shoot goes on growing and branching into a bush, which the engine does not do."
+      "basis": "Length an adult shoot makes in its first season. An adult clone made about 30 to 38 cm of shoot a season in North Carolina ('Treetop', HortScience 27(3): 279, seen only as a search summary: the article could not be opened); less is assumed in a first season in Britain."
     },
     "sideShoots.lifespanYears": {
-      "value": 6,
+      "value": 15,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Adult branches are permanent wood. Six seasons is a working figure: an engine side shoot neither lengthens nor branches, so one that lived for ever would stand unchanged while a real one became a bush."
+      "basis": "Adult branches are permanent wood: the \"tree ivy\" of old plants is built of them (RHS plant record: mature plants produce bushy, non-clinging branches). The engine keeps a side shoot for this many seasons; fifteen outlasts any run here. The first pass took six, because then a side shoot could neither lengthen nor branch."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.7,
       "status": "provisional_design_assumption",
       "basis": "Share of adult shoots that end in an inflorescence in a year, once the plant flowers. Adult ivy in the light flowers freely (Metcalfe 2005); the share is chosen."
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 1000,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "Structural bending modulus of a set juvenile shoot. Not measured for ivy in any source that could be opened. Hattermann et al. 2022 found ivy's stems to have the smallest share of mechanical tissue of their 29 climbers (\"from 18% (Hedera helix)\"), measured stiffness at searcher bases from 213 MN/m2 up, and found about 3000 MN/m2 needed to span more than about 0.8 m. A third of the generic 3000 is taken. Tried at 1500 in the second pass: four free shoots in five then still ended above where they left the timber."
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.3,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Fresh mass of leaf for each square metre of outline. Not weighed. Ivy's leaf is \"coriaceous\" (Metcalfe 2005), thicker and heavier than the thin broad leaf the generic 0.2 stands for; 0.3 is a sheet of water 0.3 mm thick. Hattermann et al. 2022: ivy \"developed fully expanded leaves from the beginning of the self-supporting phase\", so the engine's weighing a leaf in full from the day it is laid suits this plant."
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.6,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "The farthest a free ivy shoot holds itself out before it stops. Hattermann et al. 2022: the root climber group, which was ivy alone (n = 10), \"spanned the shortest range of distances from 14 to 91 cm\". 0.6 m, a little above the middle of that range, is chosen: the paper as read gives no mean."
+    },
+    "attachment.graspReachM": {
+      "value": 0.03,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How near the tip of a free ivy shoot must come to timber to take hold. Ivy neither twines nor sweeps: attachment roots form where the shoot lies against a surface and are 1 to 15 mm long (Melzer et al. 2010, https://pmc.ncbi.nlm.nih.gov/articles/PMC2894893). 3 cm, the least in the generic range, stands for a shoot that has come down on to a member."
+    },
+    "tropism.turnPerM": {
+      "value": 0.3,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "basis": "How sharply a growing ivy shoot in the air turns towards the way it seeks. Juvenile shoots are plagiotropic and creep and trail (Stein and Fosket 1969, as tabulated by the US Forest Service review, https://www.fs.usda.gov/database/feis/plants/vine/hedhel/all.html: juvenile \"plagiotrophic\", adult \"orthotrophic\"); a pull a fifth of the generic 1.5 leaves them to lean, sag and hang under their leaves rather than turn up. Adult shoots stand by their start (sideShoots.startTowardsLight) and their stoutness (sideShoots.baseDiameterMm). Chosen."
+    },
+    "tropism.lightShare": {
+      "value": 0.1,
+      "status": "provisional_design_assumption",
+      "basis": "How far the way a shoot seeks leans from plumb towards the light. One number serves both phases, though they differ: adult ivy flowers \"in bright light\" (US Forest Service review) and its shoots stand out to it, while \"the juvenile form of English ivy most often occurs in the shade\" (the same review) and creeps over surfaces; gardening writers say juvenile shoots turn away from the light, which no source opened here states and which a share between 0 and 1 cannot say. A small lean is chosen."
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.003,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "One panicle of three to five umbels of about twenty flowers each, the flowers 3 to 4 mm petals on an ovary of a few millimetres (Metcalfe 2005). Not weighed: three grams is an estimate from those sizes, well below the generic 10 g."
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.004,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "One fruiting umbel: 10 to 18 berries 6 to 8 mm across (Metcalfe 2005), each about 0.2 to 0.27 g if as dense as water, with their stalks. Not weighed."
+    },
+    "sideShoots.extensionMPerYear": {
+      "value": [
+        0.15,
+        0.3
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Length an adult shoot adds each season after its first, so that it lengthens year by year into the bushy growth adult ivy makes, as the first pass could not. The 'Treetop' adult clone made about 30 to 38 cm a season (HortScience 27(3): 279, seen only as a search summary); a little less is taken for Britain."
+    },
+    "sideShoots.maxLengthM": {
+      "value": 0.9,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The length beyond which an adult shoot adds no more. Adult branches stand out some way from what they climb, a bushy layer of a few decimetres to a metre over a wall or trunk (Commons: Selbsttragender Efeubaum near Bunol, and At the River Lee, Fishers Green). The engine's side shoot neither forks nor dies back, so a long one is a single arching wand: 0.9 m is a working cap, read from photographs and not measured."
+    },
+    "sideShoots.branchAngleDeg": {
+      "value": [
+        50,
+        80
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Angle between the bearing stem and an adult shoot as it sets out. Adult ivy branches stand out from the wall or trunk the climbing stem lies on (Bean: bushy branches \"with no aerial roots\"), wider than the generic 35 to 70. Read from photographs (Commons: Hedera helix 002.JPG, H. Zell; Hedera helix - Efeu an Baumstamm 1.jpg), not measured."
+    },
+    "sideShoots.startTowardsLight": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "How far an adult shoot's first heading is turned towards up and the light. Adult shoots are orthotropic (Stein and Fosket 1969, as tabulated by the US Forest Service review) and grow to the light; half way is chosen."
+    },
+    "sideShoots.breakSpreadDays": {
+      "value": [
+        0,
+        42
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Days after bud burst over which a year's adult shoots break. Ivy makes leaves \"almost continuously from March to October\" with the main flush in April and May (Metcalfe 2005); six weeks is chosen within that."
+    },
+    "sideShoots.baseDiameterMm": {
+      "value": 5,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "Diameter at the foot of an adult shoot of the longest first-season length. Adult shoots are stouter than climbing ones; the 'Treetop' adult clone is described as having young branches 3 to 6 mm thick (HortScience 27(3): 279, seen only as a search summary, not opened). 5 mm is chosen."
+    },
+    "organs.alternateDivergenceDeg": {
+      "value": 144,
+      "unit": "degrees",
+      "status": "published_plant_profile",
+      "source": "https://www.fs.usda.gov/database/feis/plants/vine/hedhel/all.html",
+      "basis": "US Forest Service review (after Stein and Fosket 1969): the adult leaves stand in a \"2/5th spiral\", 144 degrees from one to the next. The engine uses this to place adult shoots round their bearing stem; the climbing shoot's own leaves, which are alternate in two ranks, are set left and right by the engine whatever this says."
+    },
+    "organs.sideShootLeafLengthM": {
+      "value": [
+        0.062,
+        0.105
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "The reach of an adult leaf as the viewer holds it, its blade about as long as the reach. Metcalfe 2005: \"leaves of flowering stems 6-10 cm\"; VicFlora gives their stalks 2.5 to 11 cm. 6.2 to 10.5 cm of reach gives blades of 6 to 10.4 cm. The first pass had to draw adult leaves at the climbing leaf's size, the smallest of them too small."
+    },
+    "organs.sideShootLeafSpacingM": {
+      "value": [
+        0.015,
+        0.03
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Stem length between adult leaves. Adult shoots make two leaves a week against the juvenile one (Stein and Fosket 1969, as tabulated by the US Forest Service review) while extending less, so their leaves are crowded; derived, not measured. The engine puts a leaf at most at every stored stem point, 4 cm apart, so the crowding cannot be drawn finer than that."
+    },
+    "organs.sideShootLeafLifespanYears": {
+      "value": 4,
+      "unit": "growing seasons",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Metcalfe 2005: \"Leaves are long-lived (3-4 years)\", for the plant as a whole. Counted from the year that stretch of the adult shoot was made, so that an adult branch that lengthens for several years is in leaf towards its ends and bare at its foot."
+    },
+    "organs.winterLeafShare": {
+      "value": 1,
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
+      "basis": "Every leaf stays on through the winter: ivy is evergreen and its leaves live 3 to 4 years (Metcalfe 2005). Given so that the model says so rather than leaving it to the profile. What this cannot say: an evergreen leaf at the end of its life is dropped by the engine at the end of the calendar year, all on one day, whereas the main fall of ivy leaves is in late spring (US Forest Service review: \"The main period of litterfall occurs in late spring\")."
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 100,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "basis": "Bending modulus of the soft growing end of a juvenile shoot on the day it is laid. Not measured. Below the generic 300 in the proportion taken for the set wood (mechanics.woodModulusMPa): a third."
+    },
+    "mechanics.woodSetDays": {
+      "value": 60,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Days over which a new stretch of juvenile shoot stiffens. Not measured. Twice the generic month: ivy's juvenile shoots stay green and pliant through their first season (\"slender, light green but later turning light brown\", Virginia Tech dendrology factsheet), and its stems carry little mechanical tissue (Hattermann et al. 2022)."
     }
   }
 }

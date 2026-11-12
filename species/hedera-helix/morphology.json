@@ -291,6 +291,12 @@
       "source": "https://czasopisma.up.lublin.pl/asphc/article/view/2741",
       "basis": "Konarska 2014, table 1: \"Length of nectary (mm) 2.1 +/- 0.3\" (n = 10), read here as the width of the disc across the top of the ovary."
     },
+    "flower.ovaryTopDiameterM": {
+      "value": 0.003,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Width of the top of the inferior ovary, round the nectar disc, of an open flower: about 3 mm, read from photographs in which flowers and berries can be set against one another (Commons: Gemeiner Efeu (Bahnhofstrasse, Neuendettelsau) 20250911 143302.jpg; Hedera helix 002.JPG, H. Zell). Wider than the disc itself (flower.discDiameterM, 2.1 mm, Konarska 2014) and short of the 6-8 mm berry it swells into. No source read measures it. The first pass drew it 2.5 mm, which left the umbel looking sparse beside the photographs."
+    },
     "flower.styleLengthM": {
       "value": 0.0015,
       "unit": "m",
@@ -347,15 +353,20 @@
       "basis": "Metcalfe 2005: \"Typically only one umbel per panicle develops into fruit, normally the terminal one\". One fruit record is therefore one umbel of berries."
     },
     "fruit.berriesPerUmbel": {
-      "value": [10, 18],
+      "value": [12, 22],
       "status": "provisional_design_assumption",
-      "basis": "How many berries the drawing gives a fruiting umbel: most of its 20 or so flowers. No count was found; fruiting heads in photographs are well filled."
+      "basis": "How many berries the drawing gives a fruiting umbel. No count was found in a flora. In photographs a ripe umbel shows some fifteen berries on its visible side, crowded and touching (Commons: 2026-04-11 Hedera helix im NSG Jockgrimer Tongruben, Achim Lammerts), and a few flowers of most umbels set nothing and leave bare stalks (20151224Hedera helix1.jpg). The first pass drew 10 to 18, spaced apart."
     },
     "fruit.clusterWidthM": {
-      "value": [0.03, 0.04],
+      "value": [0.025, 0.035],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The width of the fruiting umbel, which is what the growth model's fruit.lengthM measures and what the drawing is scaled to. Derived from berries 6 to 8 mm across on the stalks of an umbel 3 to 5 cm across in flower; no source read measures the cluster."
+      "basis": "The width of the fruiting umbel, which is what the growth model's fruit.lengthM measures and what the drawing is scaled to. No source read measures the cluster. Read from photographs: a ripe umbel is a tight ball some four berries of 6 to 8 mm across (Metcalfe 2005), about 2.5 to 3.5 cm (Commons: 2026-04-11 Hedera helix im NSG Jockgrimer Tongruben, Achim Lammerts). The first pass took 3 to 4 cm from the umbel in flower, which spread the berries apart."
+    },
+    "fruit.colourRipening": {
+      "value": "green, then dull purple-brown, then blue-black",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs of ivy in December, in which half-grown berries are purplish brown beside green ones (Commons: 20151224Hedera helix1.jpg). The drawing's ripe colour is a purple-black so that a berry part way through ripening passes through a dull purple and not an olive."
     }
   }
 }
