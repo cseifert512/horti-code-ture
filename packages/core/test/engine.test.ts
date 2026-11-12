@@ -147,8 +147,12 @@ describe('pruning has consequences', () => {
       const a = summary(stripped, 'wisteria.1', y);
       const b = summary(trained, 'wisteria.1', y);
       expect(a.frameworkM).toBe(b.frameworkM);
-      expect(a.routeShare).toBe(b.routeShare);
       expect(a.highestM).toBe(b.highestM);
+      // Light has a direction as well as an amount, and the neighbour's shoots in the air turn towards it
+      // (SIMULATION_KEY.md section 4.3, "Unsupported shoots", (g)): with the spurs' leaf gone they lean a little
+      // differently, and one or two of them come within reach of a different lath. The route the framework holds
+      // is the same; what its shoots of the year hold besides moves by less than a hundredth of the structure.
+      expect(Math.abs(a.routeShare - b.routeShare)).toBeLessThan(0.01);
     }
     // its flowering answers to light (its profile: "full sun matters for profuse flowering"), and it has no less of it for the cut
     const light = (sim: Simulation, y: number) => sim.light.of(sim.plants.get('wisteria.1')!, y).seasonShare;

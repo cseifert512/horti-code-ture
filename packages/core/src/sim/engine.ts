@@ -338,7 +338,8 @@ export class Simulation {
       if (axis.role === 'side_shoot') {
         // it lengthens by millimetres a day: lay the stem down a step at a time, not a point a day
         axis.owedM += delta;
-        if (axis.owedM < STEP && axis.owedM < axis.targetLengthM - this.lengthOf(axis)) continue;
+        // (less a nanometre: a shoot that has all but a rounding error of its length owed lays it today, not tomorrow)
+        if (axis.owedM < STEP && axis.owedM < axis.targetLengthM - this.lengthOf(axis) - 1e-9) continue;
         delta = axis.owedM;
         axis.owedM = 0;
       }

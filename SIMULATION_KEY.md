@@ -68,6 +68,34 @@ P(attach) = f_{mechanism}(d_{support},\kappa,\alpha,roughness,contact,ontogeny,t
 
 Evaluate each tip/contact against the local support and its mechanism (stem twining, petiole twining, tendril, aerial root, scrambling/tie, none). Enforce any **declared exclusion surfaces**, attachment duration, unsupported span, ageing/thickening and gardener-supplied tie events. A failed encounter cannot magically produce a stable climbing connection.
 
+#### Unsupported shoots (note of 12 November 2026)
+
+This section asks for the "unsupported span" to be enforced and says no more about a shoot that is on no support. Until this date the engine grew such a shoot as the prototype drew its whips: along its heading, with a little random wander and a droop that depended only on how much of its planned length it had made. Its thickness, its leaves and what stood in front of it changed nothing, and a wisteria shoot 4 mm thick stood 2 m into the air. The owner asked for that to be put right ("the plant growth is bounded by physics... gravity and sun are still very much factors"), and it is replaced by the rules below, for every taxon, because the first priority of `PROJECT_CONTEXT.md` section 0 is mechanical plausibility. The mechanics and what they leave out are set out at the head of `packages/core/src/sim/free-shoot.ts`; the numbers and their sources are in `sim/generic-shoot.ts`; what was found is in `docs/ASSUMPTIONS_AUDIT.md` section 9. Tests: `packages/core/test/free-shoot.test.ts`.
+
+**(a) A shoot in the air is a rod under its own weight.** It is fixed where it leaves its support or its parent stem and carries its own weight and that of its leaves, flowers and fruit. With ψ the angle of the stem from plumb (0 up, π down) at distance s from the base, κ* the curvature its own growth gave it, M the bending moment and W(s) the weight of everything beyond s:
+
+\[
+\frac{d\psi}{ds} = \kappa^{*}(s) + \frac{M(s)}{E(s)\,I(s)}, \qquad \frac{dM}{ds} = -W(s)\,\sin\psi, \qquad \psi(0)=\psi_{base},\; M(L)=0, \qquad I = \tfrac{\pi}{4} r^{4}
+\]
+
+This is the elastica of a heavy rod, with its large rotations kept. E rises from the taxon's green-shoot modulus to its set-wood modulus over the days its model gives; r is the radius the run stores for the stem. A level rod sags at its tip by wL³/6EI while that is small, and an upright one stands only up to Greenhill's height, 1.986 (EI/w)^(1/3): both are tested. Nothing is a drawn curve.
+
+**(b) As grown.** The render contract stores one fixed position for each point of a stem. So each new length is laid in the direction the rod's tip has on the day it is laid, and what is already laid keeps the shape it had when its wood set: it is not bent further as the shoot beyond it grows heavier. The line drawn keeps more of an arch near the base than a wholly elastic rod of the final length would.
+
+**(c) Finite reach.** While a shoot holds its tip at or above the level it is `self_supporting` and steers. When its weight has turned its tip below the level although its growth points it above, it is `pendulous`: it stops steering and grows on as it hangs, to its planned length, and once it hangs within a few degrees of straight down it is `plumb`. A shoot that still holds itself up when the straight line from its base to its tip reaches `mechanics.searcherReachM` grows no further: that parameter is what has been measured of how far searcher shoots hold themselves out.
+
+**(d) Not below the ground.** A shoot that comes down to the ground stops there. Nothing is laid below z = 0.
+
+**(e) Not through the timber.** A length of stem is not laid into a member or cable. A shoot that holds itself up turns aside along what it meets, or away from it; one that hangs comes to rest on it. Every member and cable is taken as round for this, with the radius of the bar of the same perimeter.
+
+**(f) Taking hold again.** A searching shoot (any shoot in the air but a flowering side shoot) whose tip comes within `attachment.graspReachM` of a stretch of route that its way of holding on can grasp by itself (`attachment.ts`), and that is not already carrying all the stems it can, takes hold there and grows on as supported growth. The hold is `contacted` on the day it is made and `grasped` once a coil's length of stem lies along the support. A support that was already within reach where the shoot set out does not count: this is how a climber crosses a gap, not how a bud at a node chooses a member, which is the framework's decision. A shoot in the air is never tied in. **Its holds do not use up the framework's room**: leaders and laterals count leaders and laterals when they choose a member, so that what a shoot of the year does never reroutes the framework; where framework comes to a member such shoots have filled, the last of them gives up its place. A hold that a cut leaves with less than a coil of stem on the support is lost with the cut.
+
+**(g) Light.** While it holds itself up, the growing end turns towards a direction between plumb and the light, by `tropism.turnPerM` radians for each metre grown. Which way the light is, is asked of the scenario (`Scenario.lightFrom`), then of the light model (the sky as seen from the nearest place it reads light at, behind the timber, what the site declares and last season's leaf of other plants), and failing both is taken as the open sky of the site: straight up for the share of light that comes from the whole sky, and from the sun's side for the rest.
+
+**(h) Numbers.** Eleven parameters, all optional in a growth model (`mechanics.*`, `tropism.*`, `attachment.graspReachM`). A shoot has to be bounded whether or not the plant has been measured, so where a model gives none the engine uses one generic value for any woody climber (`sim/generic-shoot.ts`), each labelled a provisional assumption with its basis and source, and the run says once for each plant which of them it was drawn with (`generic_shoot` in the decisions and the report's alerts). None of the eleven has been measured on any plant in the library.
+
+Not changed by this note: a spur is still the short drawn curve the prototype gave it; a leader or lateral that finds no way on at a node still stops there and does not set out into the air; wind, rain and snow are not loads.
+
 ### 4.4 Bud history / flowering for old-wood species
 
 \[
