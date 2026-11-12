@@ -416,10 +416,10 @@
       "basis": "A young shoot about 2.4 mm thick. The sources call the stems slender and give no thickness for a young one."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 1.2,
+      "value": 0.7,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Chosen so that the main stem of a ten-year-old specimen, carrying some eighty to a hundred and thirty metres of growth, is 2 to 2.5 cm thick at its foot: at and just over the upper end of the 0.5 to 2 cm the Chinese Pharmacopoeia 2020 gives for harvested woody stems (https://shennongalpha.westlake.edu.cn/knowledge/nmm-00b1). Not measured on a plant of known age."
+      "basis": "Chosen so that the main stem of a ten-year-old specimen, which carries between a hundred and forty and two hundred and sixty metres of growth, is 2 to 2.7 cm thick at its foot: at and a little over the upper end of the 0.5 to 2 cm the Chinese Pharmacopoeia 2020 gives for harvested woody stems (https://shennongalpha.westlake.edu.cn/knowledge/nmm-00b1). Not measured on a plant of known age."
     },
     "thickening.branchShare": {
       "value": 0.9,

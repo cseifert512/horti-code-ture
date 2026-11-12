@@ -713,7 +713,7 @@ const fruit: FruitAsset = {
   poise: 'hangs',
   centreAlong: (FRUIT_STALK + FRUIT_LEN / 2) / FRUIT_LEN,
   // "greyish violet or purplish" (Bean), glaucous (Flora of North America); the seam brightens as it nears splitting
-  ripe: lin('#957fa6'),
+  ripe: lin('#9585a4'),
   ripeShade: [0.5, 1.15],
   roughness: 0.78,
   swing: 0.45,

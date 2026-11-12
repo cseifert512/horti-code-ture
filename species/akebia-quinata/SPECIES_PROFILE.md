@@ -38,7 +38,7 @@ One plant carries flowers of both sexes in every raceme, but is self-incompatibl
 
 **Fruit.** A fleshy follicle from each carpel that sets: sausage-shaped, 5 to 8 cm long and 3 to 4 cm thick, hanging by the stalk the flower had, singly or two or three together like the fingers of a hand. Pale green with a bloom, ripening greyish violet.
 
-**Stems.** Young shoots about 2.5 mm thick, green, turning red-brown in their first year; older stems grey-brown, slowly ridged and furrowed, and slender still: a ten-year-old plant's main stem is 2 to 2.5 cm thick at the foot.
+**Stems.** Young shoots about 2.5 mm thick, green, turning red-brown in their first year; older stems grey-brown, slowly ridged and furrowed, and slender still: a ten-year-old plant's main stem is 2 to 2.7 cm thick at the foot.
 
 **Habit on a trellis.** A plant on the specimen frame (a 2.4 by 2.6 m trellis of laths, a post and three cables) reaches the top in its second year, holds four fifths of the routes by its fourth or fifth, and by its tenth carries some 140 m of stem on the lattice, about a thousand short branches, 6,000 to 6,500 leaves in summer and some 200 racemes in April. Left alone it twines laths and cables unaided and leaves the 150 mm post bare; tied in, it is led along the post as well.
 
