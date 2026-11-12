@@ -415,10 +415,10 @@
       "basis": "A young shoot about 2.6 mm through. Slender in every photograph; the only measured figure is for its hybrid 'Inov42' (US PP21,819): new growth 2 mm in diameter. Not measured on this plant."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 6,
+      "value": 4.5,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Gives a main stem 25 to 35 mm through under a plant ten years old. Old stems of that order are seen in photographs (Wikimedia Commons \"Lonicera acuminata kz03.jpg\"), and its hybrid 'Inov42' is recorded at about 25 mm at the base at five years (US PP21,819). Not measured on this plant."
+      "basis": "Gives the specimen a main stem about 31 mm through at six years and about 36 mm at ten. The one measured figure is for its hybrid 'Inov42' (US PP21,819): old wood about 25 mm through at the base at five years, on a plant the patent calls more compact; photographs of old plants show stems of 25 to 40 mm twisted together (Wikimedia Commons \"Lonicera acuminata kz03.jpg\"). Not measured on this plant."
     },
     "thickening.branchShare": {
       "value": 0.9,
