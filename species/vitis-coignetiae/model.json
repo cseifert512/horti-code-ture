@@ -9,25 +9,25 @@
   },
   "params": {
     "phenology.budburstDoy": {
-      "value": 112,
+      "value": 108,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Late April. No UK date for this species was found in any source read. Chosen late because the young growth is frost-tender (Plants for a Future: \"young spring growth can be damaged by late frosts\") and outdoor vines in the UK start late."
+      "basis": "Mid to late April. No UK date for this species was found in any source read. Chosen late because the young growth is frost-tender (Plants for a Future: \"young spring growth can be damaged by late frosts\") and outdoor vines in the UK start late."
     },
     "phenology.growthEndDoy": {
-      "value": 268,
+      "value": 250,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Late September, as the leaves begin to colour. No date found; a choice."
+      "basis": "Early September, when extension stops and the canes ripen. The engine spreads a season's growth evenly either side of its middle, which this puts at the end of June. No date found; a choice."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        114,
+        110,
         150
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Leaves open from budburst to the end of May. No date found; a choice."
+      "basis": "Leaves on wood that was there already open from budburst to the end of May. No date found; a choice."
     },
     "phenology.autumnColourDoy": {
       "value": [
@@ -266,13 +266,13 @@
     },
     "organs.leafLengthM": {
       "value": [
-        0.16,
-        0.34
+        0.105,
+        0.225
       ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/vitis/vitis-coignetiae/",
-      "basis": "Stalk and blade together, which is what the engine and the drawing mean by leaf length. Bean: blade \"ordinarily 4 to 8 in. wide\", at most 12 in. long and 10 in. broad; stalk 2 to 6 in. The drawing gives the stalk a third of the whole and makes the blade 0.72 of the whole wide, so 0.16 to 0.34 m is a blade 0.11 to 0.24 m wide on a stalk of 0.05 to 0.11 m. The largest leaves Bean records are a little larger than this range allows."
+      "basis": "What the engine and the drawing mean by leaf length: from the node to the farthest point of the leaf along the line of its stalk. The blade of this plant hangs from the end of a long stalk and curls over towards its tip, so this length is about two thirds stalk, and the blade is nearly as wide as the whole of it (0.975 of it in the drawing). Bean: blade \"ordinarily 4 to 8 in. wide\", at most 12 in. long and 10 in. broad; stalk 2 to 6 in. So 0.105 to 0.225 m is a blade 0.10 to 0.22 m wide and 0.12 to 0.26 m long on a stalk of 0.07 to 0.15 m. The coverage and light figures take a leaf as a disc 0.56 of this length across, which for this plant is about a third of the area of the blade."
     },
     "organs.leavesPerNode": {
       "value": 1,
@@ -306,11 +306,11 @@
     "organs.racemeLengthM": {
       "value": [
         0.07,
-        0.13
+        0.12
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The length of a panicle in flower, stalk and all. No source read gives it for this species. Chosen a little longer than the bunch it becomes (fruit.lengthM), the stalk included. Darwin measured a flower stalk of 8 1/2 in. on the common vine, a larger thing."
+      "basis": "The length of a panicle in flower, stalk and all. No source read gives it for this species. Chosen a little shorter than the bunch it becomes (fruit.lengthM), which goes on lengthening as the berries swell. Darwin measured a flower stalk of 8 1/2 in. on the common vine, a larger thing."
     },
     "organs.whipShareOfNodes": {
       "value": 0.03,
@@ -432,12 +432,12 @@
     },
     "fruit.lengthM": {
       "value": [
-        0.06,
-        0.11
+        0.08,
+        0.13
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The length of a bunch, berries only. No source read gives it for this species: chosen for some forty berries 10 mm across (RHS: 1 cm; Bean: 1/2 in.; Oregon State: 10 mm). A germplasm record seen only as a search excerpt gives a cluster of 34 g at 0.9 g a berry."
+      "basis": "The length of a bunch, stalk and berries together. No source read gives it for this species: chosen for some forty berries 10 mm across (RHS: 1 cm; Bean: 1/2 in.; Oregon State: 10 mm). A germplasm record seen only as a search excerpt gives a cluster of 34 g at 0.9 g a berry."
     },
     "fruit.swellDays": {
       "value": [
@@ -544,10 +544,10 @@
       "basis": "Buds on wood made last year, and on older wood, break into the year's shoots. RHS, of grapevines: the flower-carrying side shoots are new shoots of the season from the permanent stems."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 3.5,
+      "value": 2.5,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "About one short shoot to every third node of older stem each year. A choice, set so that an established plant covers its support in leaf, as every description of it says it does (RHS: \"vigorous\"; hazards: \"heavy shade from large leaves\")."
+      "basis": "About one new short shoot to every third or fourth node of older stem each year. A choice, set so that an established plant covers its support in leaf, as every description of it says it does (RHS: \"vigorous\"; hazards: \"heavy shade from large leaves\")."
     },
     "sideShoots.lengthM": {
       "value": [
@@ -559,10 +559,10 @@
       "basis": "The engine's side shoot is stiff and does not hang, so it is given the length a young vine shoot stands by itself. Many of the real shoots go on to several metres: those are the long canes (organs.whip*)."
     },
     "sideShoots.lifespanYears": {
-      "value": 1,
+      "value": 2,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Renewed every year. Under the pruning the RHS gives (group 11, midwinter) the year's shoots are cut back to the framework, and on an untended plant the weak ones die back; the engine sheds them all before spring, which is nearer the pruned plant."
+      "basis": "A shoot stays a second year as a cane, in leaf again from its buds, and then goes: cut out under the pruning the RHS gives (group 11, midwinter), or shaded out on a plant left alone. Two and not one, so that a plant in May is in leaf on last year's canes while this year's shoots are still short, as a vine is. A choice."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.35,
