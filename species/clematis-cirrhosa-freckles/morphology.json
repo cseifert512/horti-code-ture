@@ -342,14 +342,14 @@
       "basis": "Bean: plumose styles \"1 1/2 to 2 in. long\". In metres."
     },
     "fruit.acheneCount": {
-      "value": 26,
+      "value": 36,
       "status": "provisional_design_assumption",
-      "basis": "How many achenes a head has is not published. 26 is chosen for the drawing: enough to make the \"large, silky tassel\" Bean describes."
+      "basis": "How many achenes a head has is not published. In a photograph of the species in fruit (Wikimedia Commons, \"Clematis cirrhosa395.jpg\", Nanosanchez, 14 February 2013) each head is a brush of roughly thirty to fifty tails; 36 is used."
     },
     "fruit.colourUnripe": {
-      "value": "silvery green, silky",
+      "value": "green at the achenes, the tails paling to silky cream-white",
       "status": "provisional_design_assumption",
-      "basis": "The sources say only \"silky\". Drawn as young clematis seed heads are: the tails silver-green and glossy before they dry. Chosen for the drawing."
+      "basis": "The sources say only \"silky\". Read from a photograph of the species in fruit (Wikimedia Commons, \"Clematis cirrhosa395.jpg\", Nanosanchez, 14 February 2013): each young head a hanging brush, green where the achenes are, the tails cream-white."
     },
     "fruit.colourRipe": {
       "value": "achenes brown, the tails pale and fluffy",

@@ -303,11 +303,11 @@ function makeSimpleLeaf(variant: number, lod: number): THREE.BufferGeometry {
  * leaf no season.
  */
 const LEAF_PALETTE = {
-  greenA: lin('#3a5a26'),
-  greenB: lin('#4b6c2c'),
+  greenA: lin('#35602a'),
+  greenB: lin('#4d7a30'),
   young: lin('#a5ba60'),
-  autumnA: lin('#4b6c2c'),
-  autumnB: lin('#3a5a26'),
+  autumnA: lin('#4d7a30'),
+  autumnB: lin('#35602a'),
 } as const;
 
 const ternateLeaf: LeafAsset = {
@@ -428,13 +428,13 @@ const STAMEN_LENGTH = characterNumber(morphology, 'flower.stamenLengthM') / FLOW
 const FRECKLES = {
   creamIn: lin('#f8f2dc'),
   throat: lin('#cfdb94'),
-  deep: lin('#8c1447'),
-  crimson: lin('#c2265f'),
+  deep: lin('#7a1a4c'),
+  crimson: lin('#b32e66'),
   creamOut: lin('#f2e8c2'),
-  pink: lin('#dd9aa8'),
+  pink: lin('#d58fa6'),
   baseOut: lin('#c2d08a'),
-  filament: lin('#e9ebb4'),
-  anther: lin('#ebe09a'),
+  filament: lin('#f0edc8'),
+  anther: lin('#efe39a'),
   style: lin('#dfe8b0'),
   carpel: lin('#93a45c'),
 };
@@ -482,7 +482,7 @@ function bellLine(length: number, tipRadius: number, start: number): (v: number)
 const merged = (u: number, v: number): number => smoothstep(0.07, 0.24, v) * (1 - smoothstep(0.5, 0.9, v)) * (1 - smoothstep(0.3, 0.85, Math.abs(u)));
 /** How thickly the inside of a tepal is freckled at a point: thickest where they merge, thinning to the margin and the tip, none in the throat. */
 const freckling = (u: number, v: number): number =>
-  Math.min(0.93, 0.36 + 0.6 * merged(u, v)) * smoothstep(0.03, 0.12, v) * (1 - 0.82 * smoothstep(0.8, 1, Math.abs(u))) * (1 - 0.65 * smoothstep(0.86, 1, v));
+  Math.min(0.93, 0.5 + 0.45 * merged(u, v)) * smoothstep(0.03, 0.12, v) * (1 - 0.55 * smoothstep(0.86, 1, Math.abs(u))) * (1 - 0.45 * smoothstep(0.9, 1, v));
 
 /** One stamen, standing along +Y from the origin, one unit long: a flattened filament and an anther shorter than it (Flora of Turkey). */
 function stamenGeometry(lod: number): THREE.BufferGeometry {
@@ -536,7 +536,7 @@ function makeFlower(variant: number, lod: number): THREE.BufferGeometry {
 
   // ---- the tepals: parts, each pivoting where it joins
   const line = bellLine(TEPAL_LENGTH, TIP_RADIUS[variant]!, 0.03);
-  const halfWidth = (v: number) => (TEPAL_WIDTH / 2) * Math.pow(Math.sin(Math.PI * Math.pow(0.08 + 0.92 * v, 1.0)), 0.45);
+  const halfWidth = (v: number) => (TEPAL_WIDTH / 2) * Math.pow(Math.sin(Math.PI * Math.pow(0.1 + 0.9 * v, 1.08)), 0.4);
   for (let k = 0; k < TEPALS; k++) {
     const theta = (k / TEPALS) * TAU + Math.PI / TEPALS + variant * 0.5;
     const er = e1.clone().multiplyScalar(Math.cos(theta)).addScaledVector(e2, Math.sin(theta));
@@ -685,35 +685,39 @@ const TAIL_M = middle('fruit.tailLengthM');
 const SEED_M = ACHENE_M + TAIL_M;
 const ACHENE = ACHENE_M / SEED_M;
 const TAIL = TAIL_M / SEED_M;
-/** Not published: the drawing's own number, and said to be in the morphology file. */
+/** Not published: counted roughly in a photograph of the species in fruit, and said to be in the morphology file. */
 const ACHENES = characterNumber(morphology, 'fruit.acheneCount');
 const SEED_STALK = FLOWER_STALK_M / SEED_M;
 const SEED_CUP = CUP_M / SEED_M;
 
-/** Unripe: silky and silver-green. The green of each colour also says how pale that part dries (see `ripeShade`). */
-const SEED = { tail: lin('#a9b886'), plume: lin('#dde5c8'), plumeTip: lin('#f0f3e4'), achene: lin('#566b30'), stalk: lin('#66753f') };
+/**
+ * Unripe, as a photograph of the species in fruit shows it: green where the
+ * achenes are, the tails paling to silky cream-white at their tips. The green
+ * of each colour also says how pale that part dries (see `ripeShade`).
+ */
+const SEED = { base: lin('#8fb45a'), tail: lin('#cfe0a8'), tip: lin('#f1f3e2'), achene: lin('#5d7a34'), stalk: lin('#6f8a48') };
 
 /** Share of the achenes drawn, steps along a tail, vanes of hair to a tail, [around, along] an achene, the stalk and the cup, at each level of detail. */
 const SEED_DETAIL = [
-  { achenes: 1, steps: 14, vanes: 3, body: [5, 3], stalk: [6, 8], cup: [12, 3] },
-  { achenes: 0.62, steps: 5, vanes: 2, body: [3, 1], stalk: [4, 4], cup: [6, 2] },
-  { achenes: 0.4, steps: 2, vanes: 2, body: null, stalk: [3, 2], cup: null },
+  { achenes: 1, steps: 10, vanes: 2, body: [4, 2], stalk: [6, 8], cup: [12, 4] },
+  { achenes: 0.55, steps: 4, vanes: 2, body: [3, 1], stalk: [4, 4], cup: [6, 2] },
+  { achenes: 0.34, steps: 2, vanes: 2, body: null, stalk: [3, 2], cup: null },
 ] as const;
 const SEED_VARIANTS = 2;
 
 /**
- * The head: achenes over most of a ball round the end of the stalk, each with
- * its tail. A tail leaves along its achene's line and curls over, all of them
- * the same way round, so that the head is a whorl. Its silky hairs are drawn
- * as vanes: thin strips along the tail with a ragged outer edge, standing
- * forward off it on three sides.
+ * The head hangs as the flower did: a brush of achenes at the end of the
+ * stalk, their long silky tails falling together and spreading towards their
+ * tips. That is the young head; ripe, it fluffs out into a round puff, which
+ * one model cannot also be: the tails here spread more than a young head's
+ * and less than a ripe one's. The hairs of a tail are drawn as two narrow
+ * vanes along it with ragged edges.
  */
 function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
   const detail = SEED_DETAIL[lod]!;
   const rng = new RNG(5200 + variant * 59);
   const mg = new Merge(false);
-  // the stalk has stiffened and does not bend over as far as it did in flower
-  const stalk = noddingStalk(SEED_STALK, variant === 0 ? 1.15 : 0.9, (variant - 0.5) * 0.05);
+  const stalk = noddingStalk(SEED_STALK, variant === 0 ? 1.4 : 1.15, (variant - 0.5) * 0.05);
   const top = stalk.end;
   const axis = stalk.axis;
   const [e1, e2] = square(axis);
@@ -727,63 +731,52 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
   );
   if (detail.cup) {
     const at = stalk.at(CUP_AT);
-    mg.add(bractCup(at, stalk.tangent(CUP_AT), SEED_CUP, detail.cup), ID, [0.8, 0.8, 0.8], at, -1);
+    mg.add(bractCup(at, stalk.tangent(CUP_AT), SEED_CUP, detail.cup), ID, [0.85, 0.85, 0.85], at, -1);
   }
 
-  const count = Math.max(4, Math.round(ACHENES * detail.achenes));
+  const count = Math.max(5, Math.round(ACHENES * detail.achenes));
   // the fewer tails a coarser head has, the broader each is drawn, so that the head keeps its mass
-  const broad = lod === 0 ? 1 : lod === 1 ? 1.35 : 1.9;
+  const broad = lod === 0 ? 1 : lod === 1 ? 1.5 : 2.4;
   const bodies = new Surf();
   const plumes = new Surf();
   for (let i = 0; i < count; i++) {
-    const polar = Math.acos(1 - ((i + 0.5) / count) * 1.55);
+    // the achenes stand over a dome at the end of the stalk, the outer ones leaning out most
+    const lean = 1.25 * Math.sqrt((i + 0.5) / count);
     const turn = i * 2.39996 + variant * 1.3;
-    const dir = axis
-      .clone()
-      .multiplyScalar(Math.cos(polar))
-      .addScaledVector(e1, Math.sin(polar) * Math.cos(turn))
-      .addScaledVector(e2, Math.sin(polar) * Math.sin(turn))
-      .normalize();
-    const from = top.clone().addScaledVector(dir, 0.03);
+    const outwards = e1.clone().multiplyScalar(Math.cos(turn)).addScaledVector(e2, Math.sin(turn));
+    const dir = axis.clone().multiplyScalar(Math.cos(lean)).addScaledVector(outwards, Math.sin(lean)).normalize();
+    const from = top.clone().addScaledVector(dir, 0.025);
     const seedEnd = from.clone().addScaledVector(dir, ACHENE);
-    // the achene: a small flattened body
     if (detail.body) {
       const [a1, a2] = square(dir);
       bodies.surf(detail.body[0], detail.body[1], (u, v) => {
         const th = u * TAU;
-        const r = 0.036 * Math.sin(Math.PI * (0.1 + 0.85 * v));
+        const r = 0.03 * Math.sin(Math.PI * (0.12 + 0.8 * v));
         const p = from
           .clone()
           .addScaledVector(dir, ACHENE * v)
           .addScaledVector(a1, Math.cos(th) * r)
-          .addScaledVector(a2, Math.sin(th) * r * 0.55);
+          .addScaledVector(a2, Math.sin(th) * r * 0.6);
         return { p: [p.x, p.y, p.z], c: SEED.achene };
       });
     }
-    // which way this tail curls: round the head, the same way as its neighbours, and back a little towards the stalk
-    const round = new V3().crossVectors(axis, dir);
-    if (round.lengthSq() < 1e-4) round.copy(e1);
-    round.normalize();
-    const curlTo = round
-      .multiplyScalar(0.85)
-      .addScaledVector(axis, -0.35)
-      .add(new V3(rng.range(-0.3, 0.3), rng.range(-0.3, 0.3), rng.range(-0.3, 0.3)));
-    curlTo.addScaledVector(dir, -curlTo.dot(dir)).normalize();
-    const twistTo = new V3().crossVectors(dir, curlTo);
-    const curl = rng.range(1.2, 2.3);
-    const twist = rng.range(-0.5, 0.9);
-    const length = TAIL * rng.range(0.9, 1.08);
-    const fineSteps = 28;
+    // the tail: it leaves along its achene's line, falls in with the others, and spreads again towards its tip
+    const length = TAIL * rng.range(0.85, 1.08);
+    const fall = rng.range(0.55, 0.8);
+    const flare = rng.range(0.25, 0.6) * Math.sin(lean);
+    const wander = new V3(rng.range(-1, 1), rng.range(-1, 1), rng.range(-1, 1)).multiplyScalar(0.22);
+    const fineSteps = 24;
     const fine: V3[] = [seedEnd.clone()];
     const heading = new V3();
     for (let s = 1; s <= fineSteps; s++) {
       const f = (s - 0.5) / fineSteps;
-      const bend = curl * Math.pow(f, 1.5);
       heading
         .copy(dir)
-        .multiplyScalar(Math.cos(bend))
-        .addScaledVector(curlTo, Math.sin(bend) * Math.cos(twist * f))
-        .addScaledVector(twistTo, Math.sin(bend) * Math.sin(twist * f));
+        .multiplyScalar(1 - fall * smoothstep(0, 0.35, f))
+        .addScaledVector(axis, fall * smoothstep(0, 0.35, f) * 1.3)
+        .addScaledVector(outwards, flare * smoothstep(0.45, 1, f))
+        .addScaledVector(wander, Math.sin(f * 5 + i))
+        .normalize();
       fine.push(fine[s - 1]!.clone().addScaledVector(heading, length / fineSteps));
     }
     const along = (f: number): V3 => {
@@ -792,7 +785,7 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
       return fine[j]!.clone().lerp(fine[j + 1]!, x - j);
     };
     // a frame carried along the tail without spinning, for the vanes to stand on
-    const axisPoints: V3[] = [];
+    const points: V3[] = [];
     const tangents: V3[] = [];
     const sides: V3[] = [];
     let side = square(dir)[0];
@@ -800,31 +793,33 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
       const f = j / detail.steps;
       const tangent = along(Math.min(1, f + 0.02)).sub(along(Math.max(0, f - 0.02))).normalize();
       side = side.clone().addScaledVector(tangent, -side.dot(tangent)).normalize();
-      axisPoints.push(along(f));
+      points.push(along(f));
       tangents.push(tangent);
       sides.push(side);
     }
     const spin = rng.range(0, TAU);
     for (let m = 0; m < detail.vanes; m++) {
-      const round2 = spin + (m / detail.vanes) * TAU;
+      // two vanes, one each side of the tail, so that it is a feather and not a blade
+      const round = spin + (m / detail.vanes) * TAU;
       plumes.surf(1, detail.steps, (u, v) => {
         const j = Math.round(v * detail.steps);
-        const at = axisPoints[j]!;
-        if (u < 0.5) return { p: [at.x, at.y, at.z], c: SEED.tail };
+        const at = points[j]!;
+        const colour = v < 0.25 ? mix(SEED.base, SEED.tail, v / 0.25) : mix(SEED.tail, SEED.tip, (v - 0.25) / 0.75);
+        if (u < 0.5) return { p: [at.x, at.y, at.z], c: colour };
         const tangent = tangents[j]!;
         const other = new V3().crossVectors(tangent, sides[j]!);
-        const out = sides[j]!.clone().multiplyScalar(Math.cos(round2)).addScaledVector(other, Math.sin(round2));
-        // the hairs are longest about the middle of the tail; the edge of the vane is ragged, hair by hair
-        const reach = (0.035 + 0.125 * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.8)), 0.6)) * broad * (lod === 0 ? (j % 2 === 0 ? 0.42 : 1) * (0.85 + 0.3 * hash2(i * 7 + m, j)) : 0.8);
-        const p = at.clone().addScaledVector(out, reach * 0.78).addScaledVector(tangent, reach * 0.5);
-        return { p: [p.x, p.y, p.z], c: mix(SEED.plume, SEED.plumeTip, hash2(j, i + m)) };
+        const out = sides[j]!.clone().multiplyScalar(Math.cos(round)).addScaledVector(other, Math.sin(round));
+        // the hairs are short at the achene and longest past the middle; the edge of the vane is ragged, hair by hair
+        const reach = (0.012 + 0.05 * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.7) * 0.94), 0.7)) * broad * (lod === 0 ? (j % 2 === 0 ? 0.5 : 1) * (0.8 + 0.4 * hash2(i * 7 + m, j)) : 0.8);
+        const p = at.clone().addScaledVector(out, reach).addScaledVector(tangent, reach * 0.7);
+        return { p: [p.x, p.y, p.z], c: mix(colour, SEED.tip, 0.6) };
       });
     }
   }
   if (detail.body) mg.add(bodies.build(), ID, WHITE, top, -1);
   mg.add(plumes.build(), ID, WHITE, top, -1);
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(top.clone(), 1.3);
+  g.boundingSphere = new THREE.Sphere(top.clone().addScaledVector(axis, 0.5), 1.1);
   return g;
 }
 
@@ -833,18 +828,18 @@ const seedHead: FruitAsset = {
   variants: SEED_VARIANTS,
   lods: 3,
   make: makeSeedHead,
-  budget: [3300, 520, 110],
+  budget: [2400, 520, 110],
   pick: (r) => Math.min(SEED_VARIANTS - 1, Math.floor(r * SEED_VARIANTS)),
   // one achene with its tail, which is what the growth model's fruit.lengthM measures for this plant
   authoredSize: 1,
   poise: 'hangs',
-  centreAlong: 0.8,
-  // the tails dry from silky silver-green to pale fluff, the achenes to brown
-  ripe: lin('#efe6cf'),
+  centreAlong: 0.9,
+  // the tails dry from silky green-white to pale fluff, the achenes to brown
+  ripe: lin('#f0e8d2'),
   ripeShade: [0.1, 1.15],
   // silky: it shines
   roughness: 0.5,
-  swing: 0.5,
+  swing: 0.6,
   detailAt: [1.2, 4],
   detailCaps: [30, 300],
 };
@@ -934,8 +929,8 @@ const stalkCoil: AppendageAsset = {
  * this species' own.
  */
 const wood: WoodLook = {
-  young: lin('#73803f'),
-  mature: lin('#86633f'),
+  young: lin('#7d7244'),
+  mature: lin('#7f4a3a'),
   old: [0.84, 0.76, 0.63],
   woodyDays: [100, 330],
   oldDays: [520, 1500],

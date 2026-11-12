@@ -121,6 +121,7 @@
         1,
         1,
         2,
+        2,
         3
       ],
       "unit": "growing seasons",
@@ -150,9 +151,9 @@
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        2,
-        1.2,
-        0.7
+        2.4,
+        1.5,
+        0.9
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -165,9 +166,9 @@
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
-        0.85,
-        0.6,
-        0.35
+        0.9,
+        0.65,
+        0.4
       ],
       "status": "provisional_design_assumption",
       "basis": "A clematis stem that is trained along a support breaks into side stems at most of the places where the support forks, less readily on higher orders. Assumed; no count on a plant."
@@ -187,12 +188,12 @@
       "basis": "See architecture.budExtraDormancyChance. Assumed."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 4,
+      "value": 5,
       "status": "provisional_design_assumption",
       "basis": "The stems are slender and wiry (a few millimetres thick for years) and run several together along one wire or lath, clasping one another: three are let share a member before the next looks elsewhere. Assumed."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 5,
+      "value": 6,
       "status": "provisional_design_assumption",
       "basis": "One more than on a lath or cable: a glulam member is wide enough to tie more of these slender stems to. Assumed."
     },
@@ -260,8 +261,8 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.045,
-        0.085
+        0.04,
+        0.08
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -316,12 +317,12 @@
       "basis": "The width of one open flower. International Clematis Society, of this cultivar: flowers \"5-7.5 cm across\", the four sepals \"3-4 cm long and 2-2.5 cm wide\". Flora Europaea gives 4 to 7 cm for the species. The RHS record’s \"to 10cm in width\" and its Award of Garden Merit description’s \"5cm wide\" disagree with each other; the Society’s figure lies between them and agrees with the sepal length."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.05,
+      "value": 0.06,
       "status": "provisional_design_assumption",
       "basis": "One older node in twenty-five throws a long shoot each year. Assumed: chosen with organs.whipsPerYearMax so that an established plant makes a few tens of long shoots a year, which is what a plant that covers 4 m by 1.5 m (Crocus) and is \"vigorous\" (Bean) must do."
     },
     "organs.whipsPerYearMax": {
-      "value": 36,
+      "value": 44,
       "status": "provisional_design_assumption",
       "basis": "A cap on new long shoots a year. Assumed; see organs.whipShareOfNodes."
     },
@@ -543,15 +544,15 @@
       "basis": "Stems made last year and earlier bear short shoots in their leaf axils. Flora of Turkey distinguishes the long shoots, with ternate leaves and twining stalks, from short shoots with simple leaves (as reproduced at https://turkiyebitkileri.com/); the flowers stand \"in the axils of clustered leaves\" (https://www.cretanflora.com/clematis_cirrhosa_text.html). That a short shoot appears in the spring after its node was made is assumed."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 11,
+      "value": 12,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
       "basis": "With leaf pairs 7 cm apart, about one free node in two throws a short shoot each year, so that after two years most nodes of an older stem carry one. Assumed: no count exists."
     },
     "sideShoots.lengthM": {
       "value": [
-        0.12,
-        0.3
+        0.15,
+        0.38
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
