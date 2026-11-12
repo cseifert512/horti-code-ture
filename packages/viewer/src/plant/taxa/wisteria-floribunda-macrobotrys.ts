@@ -104,7 +104,7 @@ interface FlowerSegs {
   stalk: Segs | null;
 }
 const FLOWER_SEGS: FlowerSegs[] = [
-  { standard: [7, 6], wing: [4, 2], keel: [4, 2], blade: null, calyx: [5, 1], stalk: [3, 2] },
+  { standard: [6, 6], wing: [5, 2], keel: [4, 2], blade: null, calyx: [5, 1], stalk: [3, 2] },
   { standard: [3, 3], wing: [2, 1], keel: [2, 1], blade: null, calyx: null, stalk: [3, 1] },
   { standard: [2, 2], wing: null, keel: null, blade: [2, 1], calyx: null, stalk: null },
   { standard: [1, 2], wing: null, keel: null, blade: [2, 1], calyx: null, stalk: null },
@@ -170,9 +170,9 @@ function makeFlower(lod: number): THREE.BufferGeometry {
     for (const side of [-1, 1]) {
       sb.surf(seg.wing[0], seg.wing[1], (s, t01) => {
         const t = t01 * 2 - 1;
-        const half = WING_HALF_WIDTH * Math.pow(Math.sin(Math.PI * Math.pow(0.07 + 0.85 * s, 1.2)), 0.7);
+        const half = WING_HALF_WIDTH * Math.pow(Math.sin(Math.PI * Math.pow(0.07 + 0.9 * s, 1.25)), 0.55);
         const z = Z0 + 0.14 + 0.86 * s;
-        let y = -0.04 - 0.1 * s + t * half;
+        let y = -0.04 - 0.16 * s * s + t * half;
         if (fine) y += 0.03 * Math.exp(-(((s - 0.12) / 0.08) ** 2)) * (t > 0 ? 1 : 0); // the ear at its foot
         const x = side * (0.055 + 0.075 * Math.sin(Math.PI * s * 0.85)) * (1 - 0.4 * t * t);
         return { p: [x, y, z], c: mix(C.wing, C.wingTip, s) };
