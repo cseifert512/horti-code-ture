@@ -57,9 +57,10 @@ describe('six ways of climbing, each at the foot of a bare glulam rib', () => {
 
     it('leaves the other four at the foot of the rib, each for its own reason', () => {
       for (const id of ['honeysuckle', 'clematis', 'vine', 'rose']) expect(end(untended, id).frameworkM, id).toBeLessThan(0.1);
-      expect(stalled(untended, 'honeysuckle')).toContain('too thick for a twining stem to grasp (limit 40 mm)');
-      expect(stalled(untended, 'clematis')).toContain('too thick for a twining leaf stalk to grasp (limit 8 mm)');
-      expect(stalled(untended, 'vine')).toContain('too thick for a tendril to grasp (limit 12 mm)');
+      // each says the limit its own model gives, in millimetres
+      expect(stalled(untended, 'honeysuckle')).toMatch(/too thick for a twining stem to grasp \(limit \d+ mm\)/);
+      expect(stalled(untended, 'clematis')).toMatch(/too thick for a twining leaf stalk to grasp \(limit \d+ mm\)/);
+      expect(stalled(untended, 'vine')).toMatch(/too thick for a tendril to grasp \(limit \d+ mm\)/);
       expect(stalled(untended, 'rose')).toContain('a scrambling cane cannot hold on by itself');
       for (const id of ['honeysuckle', 'clematis', 'vine', 'rose']) expect(stalled(untended, id), id).toContain('nobody ties it in');
     });

@@ -2050,6 +2050,7 @@ export class Simulation {
     let sideShoots = 0;
     let runsSelf = 0;
     let runsTied = 0;
+    let runsFromAir = 0;
     let highestM = 0;
     const held = new Set<string>();
     for (const id of plant.axisIds) {
@@ -2067,11 +2068,12 @@ export class Simulation {
         held.add(run.edgeId);
         if (run.by === 'plant') runsSelf++;
         else runsTied++;
+        if (this.tookHold.has(a.id)) runsFromAir++;
       }
     }
     let heldM = 0;
     for (const id of held) heldM += this.scenario.bower.graph.edges.get(id)!.curve.length;
-    return { year, plantId: plant.id, frameworkM, whipM, spurs, sideShoots, floralBudsInitiated: stats.initiated, flowersOpened: stats.opened, fruitsSet: stats.fruits, floralBudsLostToPruning: stats.lost, runsSelf, runsTied, routeShare: this.routeTotalM > 0 ? heldM / this.routeTotalM : 0, highestM };
+    return { year, plantId: plant.id, frameworkM, whipM, spurs, sideShoots, floralBudsInitiated: stats.initiated, flowersOpened: stats.opened, fruitsSet: stats.fruits, floralBudsLostToPruning: stats.lost, runsSelf, runsTied, runsFromAir, routeShare: this.routeTotalM > 0 ? heldM / this.routeTotalM : 0, highestM };
   }
 }
 

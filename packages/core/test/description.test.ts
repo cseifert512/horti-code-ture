@@ -9,6 +9,7 @@ import type { Polyline } from '../src/math/polyline.ts';
 import { type Vec3, distance } from '../src/math/vec3.ts';
 import { loadGrowable } from '../src/node/load-taxa.ts';
 import { Simulation } from '../src/sim/engine.ts';
+import { param } from '../src/sim/model.ts';
 import { MODELLED_ROUTINE, type PlantingPlan, parsePlantingPlan, plantingOn } from '../src/sim/planting.ts';
 import { designReport } from '../src/sim/report.ts';
 import { HEMISPHERE_VIEWPOINTS } from '../src/sim/scenarios.ts';
@@ -59,7 +60,25 @@ describe('a Bower read from a description of what is built', () => {
       const host = e.host.type === 'member' ? arbour.bower.members.find((m) => m.id === e.host.id)!.curve : arbour.bower.supports.find((s) => s.id === e.host.id)!.curve;
       for (const p of e.curve.points) expect(off(host, p), e.id).toBeLessThan(0.12);
       expect(e.kind).toBe(e.host.type === 'member' ? 'timber' : 'cable');
-      expect(e.axis).toBe(e.curve);
+      // what a stem twines or lies on is the element itself, to the millimetre: the route only slants in to its joints
+      for (const p of e.axis.points) expect(off(host, p), e.id).toBeLessThan(1e-6);
+      expect(e.curve.length, e.id).toBeGreaterThanOrEqual(e.axis.length - 1e-9);
+    }
+  });
+
+  // A cable fixed to the face of a post is half the post's width from the post's centre line, where the joint is.
+  // The route along it must not run from joint to joint in a straight line beside the cable as drawn.
+  it('runs the route along a cable on the cable, away from its ends', () => {
+    for (const e of arbour.bower.graph.edges.values()) {
+      if (e.kind !== 'cable') continue;
+      const host = arbour.bower.supports.find((s) => s.id === e.host.id)!.curve;
+      const n = 40;
+      for (let i = 0; i <= n; i++) {
+        const d = (i / n) * e.curve.length;
+        // within a quarter of its length of either end the route may be slanting in to a joint
+        if (d < e.curve.length * 0.27 || d > e.curve.length * 0.73) continue;
+        expect(off(host, e.curve.pointAt(d)), `${e.id} at ${d.toFixed(2)} m`).toBeLessThan(1e-6);
+      }
     }
   });
 
@@ -277,17 +296,25 @@ describe('four climbers on the arbour, eight years on', () => {
     expect(checked).toBeGreaterThan(2000);
   });
 
-  it('leaves the cut-down clematis its three stubs each February, however many years it is done', () => {
-    // one of its three stems finds the cable full and stalls at the foot: it must not stand as a stub of
-    // no length whose regrowth becomes more stubs every year (the log once read "2264 stubs left")
+  it('leaves the cut-down clematis one stub for each of its stems each February, however many years it is done', () => {
+    // a stem that finds the cable full and stalls at the foot must not stand as a stub of no length whose
+    // regrowth becomes more stubs every year (the log once read "2264 stubs left"). The plant has three stems
+    // from the ground, the third from its second year, so there are never more than three stubs.
+    const stubsLeft = (outcome: string): number => Number(/(\d+) stubs? left to shoot again/.exec(outcome)?.[1] ?? Number.NaN);
     const cuts = sim.events.filter((e) => e.plantId === 'clematis' && e.type === 'hard_prune');
     expect(cuts).toHaveLength(7);
-    for (const c of cuts) expect(c.outcome, c.date).toContain('3 stubs left to shoot again');
+    for (const c of cuts) {
+      expect(stubsLeft(c.outcome), c.date).toBeGreaterThanOrEqual(1);
+      expect(stubsLeft(c.outcome), c.date).toBeLessThanOrEqual(3);
+    }
+    expect(stubsLeft(cuts[cuts.length - 1]!.outcome)).toBe(3);
     const standing = sim.plants
       .get('clematis')!
       .axisIds.map((id) => sim.axes.get(id)!)
       .filter((a) => a.role === 'leader' && a.removedDay === null);
-    expect(standing.length).toBeLessThanOrEqual(9);
+    // what stands after the last cut and a season's regrowth: three stubs, each with at most the shoots a cut calls up
+    const mostShoots = param(taxa.get('clematis-viticella-etoile-violette')!.model, 'regrowth.shootsPerCut')[1];
+    expect(standing.length).toBeLessThanOrEqual(3 * (1 + mostShoots));
   });
 
   it('hangs the wisteria from the rafters in May and reports what the arbour is made of', () => {

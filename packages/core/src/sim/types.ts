@@ -417,6 +417,8 @@ export interface YearSummary {
   /** Stretches of route this plant holds by itself, and those a gardener tied. */
   runsSelf: number;
   runsTied: number;
+  /** Of `runsSelf`, those a shoot of the year took hold of from the air: they are not framework. */
+  runsFromAir: number;
   /** Share of all route length in the Bower that carries this plant. */
   routeShare: number;
   /** Highest point of the permanent stems; shoots of the year standing above them are not counted. */

@@ -39,7 +39,10 @@ describe('Japanese wisteria beside Chinese wisteria, on the same vault with the 
       const of = (sim: Simulation, year: number) => sim.summaries.find((s) => s.plantId === id && s.year === year)!;
       for (const year of [2027, 2028, 2029]) {
         expect(of(japanese, year).frameworkM, `${id} ${year}`).toBeCloseTo(of(chinese, year).frameworkM, 1);
-        expect(of(japanese, year).runsSelf + of(japanese, year).runsTied, `${id} ${year}`).toBe(of(chinese, year).runsSelf + of(chinese, year).runsTied);
+        // the framework's stretches: what a shoot of the year took hold of from the air is not framework, and the two
+        // plants' shoots, with leaves of different weight, do not come near the same laths
+        const stretches = (sim: Simulation) => of(sim, year).runsSelf + of(sim, year).runsTied - of(sim, year).runsFromAir;
+        expect(stretches(japanese), `${id} ${year}`).toBe(stretches(chinese));
       }
       const ratio = of(japanese, 2034).frameworkM / of(chinese, 2034).frameworkM;
       expect(ratio, id).toBeGreaterThan(0.8);
