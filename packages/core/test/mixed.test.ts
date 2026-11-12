@@ -136,7 +136,8 @@ describe('the winter clematis, which flowers on last summer’s shoots', () => {
     const cut: GardenerEvent = { id: 'autumn-tidy', date: '2032-10-05', type: 'hard_prune', plantId: 'winter-clematis', target: { allStems: true }, keepM: 0.25 };
     const sim = run(mixed('trained', [cut]), '2033-04-30');
     const rec = sim.events.find((e) => e.eventId === 'autumn-tidy')!;
-    expect(rec.effects.floralBudsRemoved).toBeGreaterThan(10);
+    // how many buds there were to take depends on its neighbours: beside a full-grown honeysuckle it forms fewer
+    expect(rec.effects.floralBudsRemoved).toBeGreaterThan(5);
     expect(opened(sim, 2032).length).toBe(0);
     expect(opened(trained, 2032).length).toBeGreaterThan(5);
     // and the run said, when the buds formed, that any cut before opening would take them
@@ -216,11 +217,14 @@ describe('winter', () => {
     expect(jan['clematis']).toBeUndefined();
   });
 
-  it('is green everywhere in summer, and mostly wisteria', () => {
+  // Leaf records are not compared between plants: one wisteria record is a compound leaf a quarter of a metre long,
+  // one honeysuckle record a single leaf of a few centimetres.
+  it('is green everywhere in summer: every plant is in leaf', () => {
     const jul = inLeafOn('2034-07-20');
     expect(jul['honeysuckle']).toBeGreaterThan(200);
     expect(jul['clematis']).toBeGreaterThan(30);
-    expect(jul['wisteria.0']! + jul['wisteria.1']!).toBeGreaterThan(jul['honeysuckle']! * 2);
+    expect(jul['wisteria.0']).toBeGreaterThan(200);
+    expect(jul['wisteria.1']).toBeGreaterThan(200);
   });
 
   it('marks leaves as evergreen by taxon, and gives an evergreen leaf more than one season', () => {

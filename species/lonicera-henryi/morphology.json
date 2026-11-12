@@ -1,0 +1,344 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "lonicera-henryi",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "evergreen or semi-deciduous twining climber",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: \"An evergreen or semi-deciduous climber\". RHS plant record: \"A vigorous twining evergreen climber to 8m\"."
+    },
+    "habit.leafRetention": {
+      "value": "winter-green or semi-deciduous in Britain",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/taxa/2cd4p9h.amg/lonicera-henryi",
+      "basis": "BSBI: a climbing shrub that is winter-green or semi-deciduous. RHS: evergreen. Bean: evergreen or semi-deciduous. Flora of China (as L. acuminata): semi-evergreen. Info Flora: evergreen, the leaves conspicuous in leafless winter woods. A German guide (gartenjournal.net) has some leaves falling in very hard winters. The taxon file keeps the RHS word, evergreen."
+    },
+    "habit.stemLengthM": {
+      "value": 10,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "Info Flora: shoots up to 10 m long, climbing or creeping. Bean records a plant about 30 ft into a laurel at Trewithen; the RHS gives an ultimate height of 4 to 8 m."
+    },
+    "habit.annualShootLengthM": {
+      "value": [0.47, 1.5],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://link.springer.com/article/10.1007/s00035-005-0710-2",
+      "basis": "Weber (2005), Botanica Helvetica 115: 77-81, abstract: \"Current-year shoots were 47-150 cm long\", at one forest site near Zurich. The growth model uses the same range for its long shoots."
+    },
+    "habit.shootsPerSquareMetre": {
+      "value": [128, 366],
+      "status": "peer_reviewed",
+      "source": "https://link.springer.com/article/10.1007/s00035-005-0710-2",
+      "basis": "Weber (2005), abstract: 128 to 366 shoots or stems to the square metre of forest floor in an established mat. What the growth of a trained plant is compared with; nothing is drawn from it."
+    },
+    "stem.climbsBy": {
+      "value": "twining stems, without clinging organs or tendrils",
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "Info Flora: it winds round a support \"ohne Haftorgane oder Ranken\"."
+    },
+    "stem.twiningHandedness": {
+      "value": "left_handed",
+      "status": "provisional_design_assumption",
+      "basis": "As in taxon.json: no written source gives the direction; read from two photographs of identified plants on Wikimedia Commons (\"Lonicera acuminata kz03.jpg\", \"Korina 2017-08-01 Lonicera henryi 2.jpg\"), and in agreement with its relatives. Check a specimen before relying on it."
+    },
+    "stem.youngSurface": {
+      "value": "densely strigose: set with stiff hairs",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: \"slender more or less densely strigose shoots\". RHS: \"downy shoots\". Flora of China (as L. acuminata): branches with dense, curved or spreading, brown-yellow stiff hairs. The hairs are not drawn: the viewer has no way to clothe a stem."
+    },
+    "stem.youngFlush": {
+      "value": "bronze",
+      "status": "published_plant_profile",
+      "source": "https://www.gardensillustrated.com/plants/honeysuckle-lonicera-how-to-grow/",
+      "basis": "Gardens Illustrated: new shoots are downy and often flushed with bronze."
+    },
+    "stem.youngColour": {
+      "value": ["green", "crimson", "red-brown"],
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs of identified plants (Wikimedia Commons \"Lonicera acuminata kz01.jpg\", \"Korina 2017-08-01 Lonicera henryi 1.jpg\", \"Lonicera acuminata kz05.jpg\"): the growing tip green and hairy, the shoot of a few weeks crimson to red-brown on the lit side, then pale brown. No flora states the colour."
+    },
+    "stem.oldBark": {
+      "value": "light brown, shredding in long strips",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/lonicera-acuminata/common-name/vine-honeysuckle",
+      "basis": "NC State (as L. acuminata, with L. henryi as a former name): bark light brown and scaly; mature branches hollow. Kwantlen: bark exfoliating, brown. The long papery strips are seen in a photograph of old stems in the Botanischer Garten Berlin-Dahlem (Wikimedia Commons \"Lonicera acuminata kz03.jpg\")."
+    },
+    "stem.youngDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "stem.oldDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "stem.internodeLengthM": {
+      "value": [0.035, 0.08],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "No flora gives it. Read from photographs of identified plants (Wikimedia Commons \"Lonicera acuminata kz01.jpg\", \"Korina 2017-08-01 Lonicera henryi.jpg\"): the pairs of leaves stand rather less than a leaf-length apart. Its hybrid with L. japonica, 'Inov42', measured about 25 mm (US PP21,819) and is described there as more compact than L. henryi. The growth model's leaf spacing is this range."
+    },
+    "leaf.arrangement": {
+      "value": "opposite",
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "Info Flora: \"Blätter gegenständig\". Flora of China (as L. acuminata) adds: occasionally in whorls of three."
+    },
+    "leaf.division": {
+      "value": "simple",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.kpu.ca/Plant/lohe",
+      "basis": "Kwantlen plant database (as L. acuminata, Henry honeysuckle): leaf type simple, arrangement opposite."
+    },
+    "leaf.bladeLengthM": {
+      "value": [0.044, 0.102],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: leaves \"1 3/4 to 4 in. long\", in metres. Info Flora: 3 to 12 cm; EPPO alert: 4 to 12 cm; Flora of China, for the whole of L. acuminata: 2.5 to 13 cm."
+    },
+    "leaf.bladeWidthM": {
+      "value": [0.013, 0.041],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: leaves \"1/2 to 1 5/8 in. wide\", in metres. Info Flora: 1 to 4 cm."
+    },
+    "leaf.stalkLengthM": {
+      "value": [0.003, 0.013],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: stalk \"1/8 to 1/2 in. long\", in metres. Info Flora: short-stalked, 3 to 10 mm."
+    },
+    "leaf.shape": {
+      "value": ["oblong-lanceolate", "oblong-ovate"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: \"oblong-lanceolate to oblong-ovate\". RHS: lance-shaped. Info Flora: lanceolate to broadly lanceolate."
+    },
+    "leaf.base": {
+      "value": ["rounded", "cordate"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: \"rounded or cordate at the base\"."
+    },
+    "leaf.apex": {
+      "value": "abruptly to gradually acuminate",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: apex abruptly to gradually acuminate: drawn out to a point. Flora of China (as L. acuminata): acuminate to caudate."
+    },
+    "leaf.margin": {
+      "value": "entire, fringed with hairs",
+      "status": "published_plant_profile",
+      "source": "https://www.infoflora.ch/de/assets/content/documents/neophyten/inva_loni_hen_d.pdf",
+      "basis": "Info Flora: \"ganzrandig\" (entire). Bean: downy only on the midrib and margins. Flora of China (as L. acuminata): margin often ciliate. EPPO alert: fringed margins."
+    },
+    "leaf.colourAbove": {
+      "value": "dark green",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: dark green above. RHS: dark green leaves. Info Flora: \"oberseits dunkelgrün\"."
+    },
+    "leaf.colourBeneath": {
+      "value": "paler green, rather glossy",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: paler and rather glossy beneath. The viewer gives both faces of a leaf one colour, so this is recorded and not drawn."
+    },
+    "leaf.surface": {
+      "value": "leathery and glossy",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/lonicera-acuminata/common-name/vine-honeysuckle",
+      "basis": "NC State (as L. acuminata): leaves shiny and leathery. Kwantlen: lustrous. The Thurgau leaflet on the plant: \"ledrigen\" (leathery) leaves."
+    },
+    "leaf.lateralVeinPairs": {
+      "value": [6, 8],
+      "status": "provisional_design_assumption",
+      "basis": "Counted on a photograph of the upper side of leaves of an identified plant (Wikimedia Commons \"Korina 2017-08-01 Lonicera henryi 1.jpg\"): six to eight looping side veins each side of a pale midrib, all impressed, the blade a little quilted between them. No flora gives the number."
+    },
+    "leaf.youngColour": {
+      "value": "bronze-flushed green",
+      "status": "published_plant_profile",
+      "source": "https://www.gardensillustrated.com/plants/honeysuckle-lonicera-how-to-grow/",
+      "basis": "Gardens Illustrated: new shoots are downy and often flushed with bronze. Taken to include the leaves as they unfold."
+    },
+    "leaf.sheddingColour": {
+      "value": "yellow",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.kpu.ca/Plant/lohe",
+      "basis": "Kwantlen: yellow in autumn; NC State: autumn colour gold or yellow, deciduous in colder regions. The colour of a leaf about to be shed. Not drawn: the engine never turns an evergreen leaf."
+    },
+    "leaf.lifespanYears": {
+      "value": null,
+      "unit": "years",
+      "status": "unknown"
+    },
+    "inflorescence.type": {
+      "value": "twin-flowered stalks gathered into a cluster at the end of the shoot",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: flowers at the end of the shoot in a cluster, each stalk twin-flowered. Flora of China (as L. acuminata): flowers paired, axillary at branchlet tips, sometimes in panicles. Info Flora: in pairs in the leaf axils and at the ends of the branches."
+    },
+    "inflorescence.widthM": {
+      "value": [0.051, 0.076],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: \"a cluster 2 or 3 in. across\", in metres. This is what the growth model's organs.racemeLengthM measures for this taxon, and the size the flower model is authored at."
+    },
+    "inflorescence.flowerCount": {
+      "value": [6, 14],
+      "status": "provisional_design_assumption",
+      "basis": "Counted on photographs of identified plants (Wikimedia Commons \"Lonicera acuminata kz01.jpg\", \"Lonicera acuminata kz05.jpg\", \"Gardenology.org-IMG 1367 bbg09.jpg\"): three to seven pairs to a cluster. No flora gives the number for this species; its hybrid 'Inov42' is recorded with 12 to a terminal whorl (US PP21,819)."
+    },
+    "inflorescence.pairStalkLengthM": {
+      "value": [0, 0.023],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China 19 (2011), as L. acuminata, which there includes L. henryi: peduncle 0 to 23 mm, shorter toward the branchlet tips. Read from a mirror of the text."
+    },
+    "inflorescence.bractLengthM": {
+      "value": 0.006,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: bracts awl-shaped, about 1/4 in. long. Flora of China (as L. acuminata): subulate, 2 to 4 mm, occasionally leaf-like."
+    },
+    "inflorescence.openingOrder": {
+      "value": "from the lowest pair upwards",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs in which the lower flowers of a cluster are open or faded and the upper still in bud (Wikimedia Commons \"Lonicera acuminata in Lyon BG (3).jpg\", \"Gardenology.org-IMG 1367 bbg09.jpg\"). Recorded so for its hybrid 'Inov42' (US PP21,819: lower whorls open first). Not stated for the species."
+    },
+    "flower.corollaLengthM": {
+      "value": [0.015, 0.024],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): corolla bilabiate, 1.5 to 2.4 cm. Info Flora, for L. henryi: 1.5 to 2.5 cm."
+    },
+    "flower.tubeLengthM": {
+      "value": [0.013, 0.019],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: tube 1/2 to almost 3/4 in. long, hairy within, glabrous outside. Flora of China (as L. acuminata): tube funnel-shaped, 9 to 12 mm."
+    },
+    "flower.widthAcrossLipsM": {
+      "value": 0.019,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: corolla two-lipped, about 3/4 in. across."
+    },
+    "flower.shape": {
+      "value": "two-lipped, the lips much reflexed",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: two-lipped, the lips much reflexed. Flora of China (as L. acuminata): upper lip erect and irregularly four-lobed, lower lip recurved."
+    },
+    "flower.upperLipLobes": {
+      "value": 4,
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): upper lip irregularly 4-lobed, the lobes 1 to 2 mm; the lower lip is the fifth."
+    },
+    "flower.stamenCount": {
+      "value": 5,
+      "status": "published_plant_profile",
+      "source": "https://www.i-flora.com/en/fact-sheets/phylogenetic-tree/art/show/lonicera-henryi.html",
+      "basis": "i-flora fact sheet for L. henryi: five stamens. Flora of China (as L. acuminata): stamens longer than or about as long as the corolla. Bean: slightly downy."
+    },
+    "flower.styleExsertionM": {
+      "value": 0.013,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: style hairy, protruding 1/2 in. beyond the corolla."
+    },
+    "flower.colour": {
+      "value": ["purplish red", "yellow"],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-henryi/",
+      "basis": "Bean: \"purplish red\". RHS: \"Dull yellow and red\". Rainyside: yellow throats and petals in shades of pink, orange and maroon. Info Flora: yellow, orange-red to pink. Forms vary from yellow to reddish purple (NC State)."
+    },
+    "flower.colourAgeing": {
+      "value": "white tinged red, becoming yellow tinged orange or purple",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): corolla white tinged red, becoming yellow tinged orange or purple. Photographs of cultivated L. henryi show the tube turning yellow to coppery orange as a flower ages."
+    },
+    "flower.budColour": {
+      "value": "greenish cream, flushing purplish red towards the tip",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs of identified plants (Wikimedia Commons \"Lonicera acuminata kz01.jpg\", young buds; \"Lonicera acuminata kz05.jpg\" and \"Gardenology.org-IMG 1367 bbg09.jpg\", buds about to open). No flora describes the bud."
+    },
+    "flower.scent": {
+      "value": "none to faint",
+      "status": "published_plant_profile",
+      "source": "https://rainyside.com/plant_gallery/vines/Lonicera_henryi.html",
+      "basis": "Rainyside: the flowers have no fragrance. A German guide has a faint scent in warm weather; Kwantlen and Info Flora call them fragrant. The sources disagree; the taxon file records it as unscented."
+    },
+    "fruit.type": {
+      "value": "berry",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): berries; the two ovaries of a pair free. Kwantlen: true berry."
+    },
+    "fruit.berryDiameterM": {
+      "value": [0.006, 0.007],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): berries ovoid, 6 to 7 mm in diameter. EPPO alert: 6 to 7 mm."
+    },
+    "fruit.shape": {
+      "value": "ovoid",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): berries ovoid."
+    },
+    "fruit.colourRipe": {
+      "value": "blue-black with a bloom",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): berries blue-black, pruinose. Info Flora, for L. henryi: \"Beeren schwarzblau, bereift\". Bean: blackish purple. RHS: black."
+    },
+    "fruit.colourUnripe": {
+      "value": "glaucous grey-green",
+      "status": "provisional_design_assumption",
+      "basis": "Read from dated photographs of full-sized unripe berries on an identified plant (Wikimedia Commons \"Korina 2017-08-01 Lonicera henryi 2.jpg\" and \"... 3.jpg\", 1 August 2017). No flora describes the unripe berry."
+    },
+    "fruit.berriesPerCluster": {
+      "value": [4, 10],
+      "status": "provisional_design_assumption",
+      "basis": "Counted on photographs of identified plants in fruit (Wikimedia Commons \"Korina 2017-08-01 Lonicera henryi 3.jpg\", \"Korina 2018-08-29 Lonicera henryi.jpg\"): two to five pairs at a shoot tip. Not every flower of a cluster sets. No flora gives the number."
+    },
+    "fruit.clusterWidthM": {
+      "value": [0.018, 0.03],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Derived, not measured: berries 6 to 7 mm through (Flora of China), four to ten of them close together at a shoot tip. This is what the growth model's fruit.lengthM measures for this taxon, and the size the fruit model is authored at."
+    },
+    "fruit.crown": {
+      "value": "crowned by the persistent calyx",
+      "status": "provisional_design_assumption",
+      "basis": "Read from a close photograph of ripe berries of an identified plant (Wikimedia Commons \"Korina 2017-08-28 Lonicera henryi.jpg\"): each berry keeps a small five-toothed calyx at its tip. Flora of China gives the calyx lobes as up to 1.5 mm but does not say that they persist."
+    },
+    "fruit.seedLengthM": {
+      "value": [0.004, 0.0045],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.zhiwutong.com/latin/Caprifoliaceae/Lonicera-acuminata-Wall.htm",
+      "basis": "Flora of China (as L. acuminata): seeds ellipsoid to oblong, 4 to 4.5 mm. Recorded; not drawn."
+    }
+  }
+}
