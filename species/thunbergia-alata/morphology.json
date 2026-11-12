@@ -29,7 +29,7 @@
       "value": "green and slender, hairy when young",
       "status": "published_plant_profile",
       "source": "https://keyserver.lucidcentral.org/weeds/data/media/Html/thunbergia_alata.htm",
-      "basis": "Weeds of Australia: stems \"slender and green, and hairy (pubescent) when young\". Botany Brisbane adds that the base may become woody in older plants, which a plant of one British summer does not reach."
+      "basis": "Weeds of Australia: stems \"slender and green, and hairy (pubescent) when young\". Botany Brisbane adds that the base may become woody in older plants, which a plant of one British summer does not reach. Photographs show the older lengths of stem flushed a dull purplish brown (Commons: \"Starr-110307-2322-Thunbergia alata-flowers and leaves-Kula Botanical Garden-Maui\", \"Thunbergia alata close.JPG\"); the model colours them so."
     },
     "stem.diameterM": {
       "value": [0.001, 0.002],
@@ -87,12 +87,12 @@
     "leaf.teethPerSide": {
       "value": [1, 3],
       "status": "provisional_design_assumption",
-      "basis": "No description counts the teeth. From photographs: one to three blunt teeth on each side, on the lower two thirds of the blade, and none on some leaves."
+      "basis": "No description counts them. Read from photographs: one to three blunt angles on each side, in the lower two thirds of the blade, more like the corners of an ivy leaf than the teeth of a saw (Commons: \"Black eyed susan flower in london.jpg\", \"Black-eyed Susan 2.JPG\", \"Starr-110307-2322-Thunbergia alata-flowers and leaves-Kula Botanical Garden-Maui\"); some leaves have none (\"Mosca abeja.jpg\")."
     },
     "leaf.basalVeins": {
       "value": 5,
       "status": "provisional_design_assumption",
-      "basis": "From photographs: five main veins spread from the top of the stalk, the outer pair running into the basal lobes. Wisconsin Extension says only \"prominent veins\" beneath. The Flora of China account, which is remembered as giving the number, could not be opened to check."
+      "basis": "Read from photographs: five main veins spread from the top of the stalk, the outer pair running into the basal lobes, with sometimes a weaker pair beyond (Commons: \"Mosca abeja.jpg\", \"Black eyed susan flower in london.jpg\"). Wisconsin Extension says only \"prominent veins\" beneath. The Flora of China account could not be opened to check."
     },
     "leaf.bladeLengthM": {
       "value": [0.03, 0.08],
@@ -111,7 +111,7 @@
     "leaf.widthToLength": {
       "value": [0.55, 0.95],
       "status": "provisional_design_assumption",
-      "basis": "The blade's width for its length, between the ratios of the middles of two published ranges: 0.55 (Weeds of Australia, 2-8 x 1-4.5 cm) and 0.95 (Australian Tropical Rainforest Plants, 3-8 x 3-7.5 cm). The model draws leaves at three points within it. Derived, not measured."
+      "basis": "The blade's width for its length, between the ratios of the middles of two published ranges: 0.55 (Weeds of Australia, 2-8 x 1-4.5 cm) and 0.95 (Australian Tropical Rainforest Plants, 3-8 x 3-7.5 cm). Photographs show both ends on garden plants: a narrow toothed leaf (Commons: \"Thunbergia alata close.JPG\") and a leaf nearly as wide as long (Commons: \"Black eyed susan flower in london.jpg\"). The model draws leaves at three points within the range. Derived, not measured."
     },
     "leaf.petioleLengthM": {
       "value": [0.025, 0.035],
@@ -130,7 +130,7 @@
       "value": [0.003, 0.008],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Across both wings, at the stem end and at the blade end of the stalk. No description gives a width; from photographs, against the width of the blade."
+      "basis": "Across both wings, at the stem end and at the blade end of the stalk. No description gives a width. Read from a photograph in which the stalk shows as a flat green strap about 5 mm across below a blade about 8 cm long (Commons: \"Black eyed susan flower in london.jpg\"); in others the wing is too narrow to see."
     },
     "leaf.surface": {
       "value": "softly hairy on both sides, dull",
@@ -143,6 +143,11 @@
       "status": "published_plant_profile",
       "source": "https://hort.extension.wisc.edu/articles/black-eyed-susan-vine-thunbergia-alata/",
       "basis": "Wisconsin Extension: \"dull dark green above, pale green with prominent veins below\"."
+    },
+    "leaf.posture": {
+      "value": "the stalk spreading, the blade hanging from it tip downwards and facing outwards, the leaves lying over one another like tiles",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs of plants on walls and trellis (Commons: \"Climber at timber-framed house, Limburg.jpg\", \"Black-eyed Susan 2.JPG\", \"Thunbergia alata, Hungary.jpg\"): blades hang at 45 degrees and more from their stalks. The model cannot follow this beyond about 30 degrees (a leaf model must stay nine tenths of its length along its axis), and the engine sets leaves round the stem without regard to where the light is."
     },
     "leaf.coldColour": {
       "value": "yellowing, then limp and brown",
@@ -228,6 +233,11 @@
       "source": "https://sweetgum.nybg.org/science/vh/monographs-details/?irn=56530",
       "basis": "Wasshausen & Wood: \"limb subactinomorphic; lobes obovate to obdeltate, apically truncate\". Wisconsin Extension: \"opens flat, with five overlapping petals\". Singapore NParks: tips nearly flat with a small notch in the middle."
     },
+    "flower.lobeFreeShare": {
+      "value": [0.4, 0.7],
+      "status": "provisional_design_assumption",
+      "basis": "How much of a lobe's length stands free of its neighbours, the rest being joined or overlapping. Read from photographs: free for a little under half in flowers whose lobes overlap (\"Thunbergia alata 1DS-II 1-1742.jpg\", \"Thunbergia alata close.JPG\"), for two thirds in flowers whose lobes stand apart like the blades of a propeller (\"Black Eyed Susan (Thunbergia alata) with orange flowers.jpg\", \"Thunbergia alata, Hungary.jpg\"). All on Commons. The model draws the middle."
+    },
     "flower.colour": {
       "value": "orange",
       "status": "published_plant_profile",
@@ -240,10 +250,15 @@
       "source": "https://sweetgum.nybg.org/science/vh/monographs-details/?irn=56530",
       "basis": "Wasshausen & Wood: \"a dark purple glandular eye in the throat\". Australian Tropical Rainforest Plants: throat \"reddish brown to black\", hairy. Wisconsin Extension: \"brownish-maroon center\". RHS: \"dark brown centres\"."
     },
-    "flower.reverseColour": {
-      "value": "paler than the face; the tube pale outside",
+    "flower.eyeShareOfWidth": {
+      "value": [0.18, 0.25],
       "status": "provisional_design_assumption",
-      "basis": "No description read gives the colour of the back of the lobes or the outside of the tube. From photographs: a paler, yellower orange behind, and a cream to dull purplish tube. A guess to be checked against a plant."
+      "basis": "The dark eye as a share of the flower's width. Read from photographs on Commons: about a fifth (\"Thunbergia alata, Hungary.jpg\", \"Black eyed susan flower in london.jpg\", \"Thunbergia alata 1DS-II 1-1742.jpg\") to a quarter (\"1024 Schwarzäugige Susanne-1858.jpg\", \"Black-eyed Susan 2.JPG\"). With the published width it puts the lobes at 13 to 14 mm, inside the published 10-15 mm."
+    },
+    "flower.reverseColour": {
+      "value": "the back of the lobes the same orange a little paler; the tube pale yellow orange outside",
+      "status": "provisional_design_assumption",
+      "basis": "No description read gives it. Read from a photograph that shows flowers side on (Commons: \"Black Eyed Susan (Thunbergia alata) with orange flowers.jpg\"). The model draws a lobe in one colour on both faces."
     },
     "flower.stamenCount": {
       "value": 4,
@@ -274,6 +289,11 @@
       "status": "published_plant_profile",
       "source": "https://keyserver.lucidcentral.org/weeds/data/media/Html/thunbergia_alata.htm",
       "basis": "Weeds of Australia: \"an elongated beak 9-15 mm long\". Australian Tropical Rainforest Plants: about 13 mm. Botany Brisbane: nearly 2 cm."
+    },
+    "fruit.baseHeightToWidth": {
+      "value": 0.7,
+      "status": "provisional_design_assumption",
+      "basis": "The round base of the capsule is lower than it is wide, in two swellings with a furrow between. Read from one photograph of a ripening capsule (Commons: \"Kapselfrucht.jpg\"); Wasshausen & Wood call the capsule depressed-globose, which agrees. The same photograph shows the beak stouter than drawn at first, about a third as thick as the base is wide, and the bracts withered and hanging beneath a ripe capsule; a second (\"Kapselfrucht 02.jpg\") shows them green, folded and standing apart either side of the green beak, which is how the model draws them at every age."
     },
     "fruit.colour": {
       "value": "green, drying to tan and brown",

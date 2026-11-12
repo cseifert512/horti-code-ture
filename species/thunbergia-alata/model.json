@@ -76,19 +76,19 @@
     },
     "phenology.flowerLastsDays": {
       "value": [
-        3,
-        6
+        5,
+        9
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "How long one corolla stays on before it drops whole. No source gives it; growers describe flowers that do not last long and are followed at once by more. Taken as three to six days. Unmeasured, and the number of flowers open at once follows from it directly."
+      "basis": "How long a node is in flower. No source gives the life of one corolla. A photograph of a seed-grown plant (Wikimedia Commons: \"Black Eyed Susan (Thunbergia alata) with orange flowers.jpg\") shows two or three successive nodes of one shoot in flower together; at a node every three or four days that is about a week to a node, whether as one corolla or as the two axils flowering in turn, which the engine cannot tell apart since it gives a node one flower. Unmeasured, and the number of flowers open at once follows from it directly."
     },
     "extension.leaderMPerSeason": {
-      "value": 2.0,
+      "value": 2.4,
       "unit": "m",
       "status": "published_plant_profile",
-      "source": "https://ballaustralia.com/wp-content/uploads/plant_list/cultural_notes/T/Thunbergia-Susie-CN.pdf",
-      "basis": "Stem made in one summer. The breeder gives the vine length of the Susie series as \"6 to 8 ft./1.8 to 2 m\" (PanAmerican Seed); RHS 1.5 to 2.5 m high; Wisconsin Extension up to 8 ft in a season under ideal conditions and usually 3 to 5 ft in the Midwest. Two metres is the top of the breeder's figure and the middle of the RHS band."
+      "source": "https://hort.extension.wisc.edu/articles/black-eyed-susan-vine-thunbergia-alata/",
+      "basis": "The most stem one shoot makes in a summer: \"as much as 8 feet in one season under ideal conditions\" (Wisconsin Extension), which is 2.4 m; RHS \"to 2.5 m tall\". Most stems stop short of it, at the length drawn for each from architecture.leaderLengthM: the breeder gives the vine length of the Susie series as 1.8 to 2 m, and Wisconsin 3 to 5 ft as usual in the Midwest."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
@@ -122,11 +122,21 @@
         0,
         0,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Eight twining stems from the base in the year it is planted: the seedling's own stem and the branches that break from its lowest leaf axils within weeks. Sources say only \"many twining stems\" and \"one or many stems\" (Botany Brisbane); eight is chosen so that one plant clothes the 0.5 to 1 m spread and 1.5 to 2.5 m height the RHS gives it. The engine cannot branch a stem in the year it is made, so every branch is entered here as a stem from the ground and all eight start on planting day, which real branches do not."
+      "basis": "Eighteen twining stems in the year it is planted, standing for the seedling's own stem and every branch it makes. It branches from the leaf axils all summer; sources say only \"many twining stems\" (SANBI, as a search result gives it: the page could not be opened) and \"one or many stems\" (Botany Brisbane). The engine cannot branch a stem in the year it is made, so every branch is entered here as a stem from the ground, and all start on planting day, which real branches do not. The number is chosen, not counted, from what the plant is said to cover: set 30 cm apart (RHS Plants) it gives \"quick cover\" (RHS) to a fence 1.5 to 2.5 m high, and a strip 0.3 m wide and 1.8 m high under two layers of leaf needs about 800 leaves of this size, which is about 35 m of stem."
     },
     "architecture.nurseryCaneM": {
       "value": 0.2,
@@ -188,24 +198,24 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 8,
+      "value": 18,
       "status": "provisional_design_assumption",
       "basis": "As many as the plant has. The stems are a millimetre or two thick and wind round one another as readily as round the support, so a plant given one string sends every stem up it as a single rope. Not a count from a source."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 3,
+      "value": 18,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "As many as the plant has: a gardener can tie any number of stems a millimetre or two thick up a glulam member. Not a count from a source."
     },
     "routing.occupancyCost": {
-      "value": 1.6,
+      "value": 0.6,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How much a stem is put off a support by each stem already on it: little. Photographs show the stems of one plant roped together up a single cane or post into a dense column of leaf (Wikimedia Commons: \"Thunbergia alata, Hungary.jpg\", \"Black Eyed Susan (Thunbergia alata) with orange flowers.jpg\"). Lowered from the 1.6 copied from wisteria, whose leaders a gardener spaces out. A weight in the engine's choice of route, not a measurement."
     },
     "routing.downhillCostPerM": {
-      "value": 5,
+      "value": 10.7,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Raised in step with routing.giveUpCost, so that the drop a shoot will follow before it gives up stays what it was (about 0.85 m). A twining shoot does not wind downhill; how far one of this plant will go down a support is not recorded."
     },
     "routing.uphillBonusPerM": {
       "value": 2,
@@ -213,9 +223,9 @@
       "basis": "A twining shoot climbs: its tip sweeps round until it meets something upright and winds up it. Set so that a rise of 0.4 m is worth as much as the largest chance element in the choice (routing.noise), which at the value copied from wisteria it was not. A weight in the engine's choice of route, not a measurement."
     },
     "routing.straightOnBonus": {
-      "value": 0.6,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No leaning towards carrying straight on. A woody leader keeps its line; the tip of this plant circles as it grows (Darwin timed a circle at about three hours) and takes the first upright it meets. At 0 a stem led along a rail turns up the next free upright it comes to."
     },
     "routing.riserBonus": {
       "value": 1.4,
@@ -238,9 +248,9 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "routing.giveUpCost": {
-      "value": 4.2,
+      "value": 9,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Raised from the 4.2 copied from wisteria so that a support already carrying stems does not stop the next one: at 4.2 the third or fourth stem to reach a cable gave up, and this plant's stems wind round one another as a matter of course. A weight in the engine's choice of route, not a measurement."
     },
     "attachment.maxGraspDiameterMm": {
       "value": 20,
@@ -249,10 +259,10 @@
       "basis": "No measurement exists. Darwin grew a dozen plants on \"sticks of various thicknesses\" and on string and all twined them, without giving a thickness; growers give it canes, netting, wire and string. A slender herbaceous twiner, taken to hold anything up to a stout cane and nothing as thick as a 40 mm lath."
     },
     "attachment.minPitchM": {
-      "value": 0.08,
+      "value": 0.16,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "How far the stem climbs in one turn round a thin support, taken as about one internode. No source gives the pitch of its coils; the internode is from organs.leafSpacingM."
+      "basis": "How far the stem climbs in one turn round a thin support. No source gives the pitch of its coils; a real stem probably coils tighter than this, about a turn to an internode. The engine stores a stem as points 4 cm apart, so 0.16 m, four points to the turn, is the tightest coil it can draw as a coil at all."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
@@ -435,13 +445,12 @@
     },
     "fruit.lengthM": {
       "value": [
-        0.014,
-        0.025
+        0.0125,
+        0.022
       ],
       "unit": "m",
-      "status": "published_plant_profile",
-      "source": "https://keyserver.lucidcentral.org/weeds/data/media/Html/thunbergia_alata.htm",
-      "basis": "The capsule from its base to the end of its beak: a \"globular base 5-10 mm across and an elongated beak 9-15 mm long\" (Weeds of Australia); base about 8 mm and beak about 13 mm (Australian Tropical Rainforest Plants). The stalk and the two bracts round it are not counted."
+      "status": "provisional_design_assumption",
+      "basis": "The capsule from its foot to the end of its beak. Built from published sizes and one photograph: a base 5-10 mm across and a beak 9-15 mm long (Weeds of Australia), the base about 0.7 as high as it is wide (Wikimedia Commons: \"Kapselfrucht.jpg\"), so 3.5 to 7 mm of base and 9 to 15 mm of beak. The stalk and the two bracts are not counted."
     },
     "fruit.swellDays": {
       "value": [
