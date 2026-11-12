@@ -69,6 +69,8 @@ interface BladeShape {
   /** Undulation of the margin, and where along the leaf it starts. */
   wave: number;
   phase: number;
+  /** How far the blade is turned about its midrib to face the light, at its base and by its tip, in radians: no two leaves of a shoot lie quite alike. */
+  turn: readonly [number, number];
 }
 
 // The shared leaf texture has eleven pairs of side veins; this leaf has six or seven, so it is given the lower two
@@ -102,7 +104,11 @@ function blade(shape: BladeShape, lod: number): THREE.BufferGeometry {
     if (lod < 2) y += shape.wave * Math.sin(v * 9 + shape.phase + u * 1.3) * a * a;
     // the midrib impressed above
     if (lod === 0) y -= 0.006 * Math.exp(-((a / 0.12) ** 2)) * (1 - 0.6 * v);
-    return { p: [x, y, v] };
+    // the blade turned about its midrib, more by the tip
+    const turn = lerp(shape.turn[0], shape.turn[1], v);
+    const [cos, sin] = [Math.cos(turn), Math.sin(turn)];
+    const bend = -shape.arch * Math.pow(v, 1.7);
+    return { p: [x * cos - (y - bend) * sin, bend + x * sin + (y - bend) * cos, v] };
   });
   for (let i = 1; i < sb.uv.length; i += 2) sb.uv[i] = TEX_FROM + TEX_SPAN * sb.uv[i]!;
   return sb.build();
@@ -124,19 +130,19 @@ function leafOf(shape: BladeShape, stalkShare: number, lod: number, tone: number
 /** Bean: "ovate, oval, or obovate, more or less tapered at the base, mostly pointed, sometimes blunt". */
 const LONG_SHOOT_LEAVES: BladeShape[] = [
   // ovate and pointed
-  { base: 0.62, tip: 1.02, width: 1, arch: 0.2, wave: 0.02, phase: 0.4 },
+  { base: 0.62, tip: 1.02, width: 1, arch: 0.24, wave: 0.02, phase: 0.4, turn: [-0.3, -0.6] },
   // oval and pointed
-  { base: 0.8, tip: 0.95, width: 0.96, arch: 0.26, wave: 0.028, phase: 2.1 },
+  { base: 0.8, tip: 0.95, width: 0.96, arch: 0.3, wave: 0.028, phase: 2.1, turn: [0.1, 0.25] },
   // a broader oval with a short point
-  { base: 0.7, tip: 0.8, width: 1.06, arch: 0.16, wave: 0.016, phase: 4.0 },
+  { base: 0.7, tip: 0.8, width: 1.06, arch: 0.18, wave: 0.016, phase: 4.0, turn: [0.35, 0.65] },
 ];
 const FLOWERING_SHOOT_LEAVES: BladeShape[] = [
   // oval and blunt
-  { base: 0.7, tip: 0.62, width: 1.02, arch: 0.18, wave: 0.018, phase: 1.2 },
+  { base: 0.7, tip: 0.62, width: 1.02, arch: 0.22, wave: 0.018, phase: 1.2, turn: [0.3, 0.6] },
   // obovate: widest beyond the middle, tapered to the base, blunt
-  { base: 1.0, tip: 0.55, width: 1, arch: 0.22, wave: 0.022, phase: 3.3 },
+  { base: 1.0, tip: 0.55, width: 1, arch: 0.28, wave: 0.022, phase: 3.3, turn: [-0.1, -0.25] },
   // oval with a short point
-  { base: 0.78, tip: 0.85, width: 0.94, arch: 0.14, wave: 0.014, phase: 5.2 },
+  { base: 0.78, tip: 0.85, width: 0.94, arch: 0.16, wave: 0.014, phase: 5.2, turn: [-0.35, -0.7] },
 ];
 const LEAF_LODS = 3;
 const makeLongShootLeaf = (variant: number, lod: number): THREE.BufferGeometry => leafOf(LONG_SHOOT_LEAVES[variant]!, lerp(STALK_SHORT, STALK_LONG, 0.6 + 0.2 * variant), lod, 0.2 + 0.3 * variant);
@@ -440,7 +446,8 @@ function makeHead(variant: number, lod: number): THREE.BufferGeometry {
     for (let j = 0; j < count; j++) {
       const order = (0.62 * (opened + rng.range(0, 0.6))) / open;
       // the whorl that opened first has turned buff yellow; the next is turning; the last is still white
-      const yellow = smoothstep(0.2, 0.7, [0.95, 0.55, 0.15][k]! - rng.range(0, 0.3));
+      // (in a head of one whorl the six do not open on one evening either: some have turned and some have not)
+      const yellow = smoothstep(0.2, 0.7, whorls === 1 ? (j % 3 === 2 ? 0.1 : 0.9) : [0.95, 0.55, 0.15][k]! - rng.range(0, 0.3));
       const tint: RGB = [lerp(1, 0.985, yellow), lerp(1, 0.85, yellow), lerp(1, 0.33, yellow)];
       const turn = first + (j / count) * TAU + rng.range(-0.16, 0.16);
       const lift = [0.2, 0.62, 0.95][k]! + rng.range(-0.12, 0.12);
@@ -582,7 +589,7 @@ const head: FlowerAsset = {
   variants: HEADS.length,
   lods: HEAD_LODS,
   make: makeHead,
-  budget: [16000, 2400, 420],
+  budget: [16000, 2400, 260],
   pick: (r) => Math.min(HEADS.length - 1, Math.floor(r * HEADS.length)),
   authoredSize: HEAD_WIDTH,
   poise: 'held',
@@ -623,7 +630,7 @@ const berries: FruitAsset = {
  */
 const wood: WoodLook = {
   young: lin('#7f8a52'),
-  mature: lin('#a8845a'),
+  mature: lin('#9a8262'),
   old: [0.9, 0.82, 0.7],
   woodyDays: [60, 240],
   oldDays: [420, 1300],
