@@ -81,16 +81,20 @@ One limited visible sector; not mixed indiscriminately through a rose or small c
 | When | What | Source |
 |---|---|---|
 | Every year, December or January (while dormant) | Cut the year's shoots "hard back ... to one or two buds", leaving a framework of canes with short spurs. Later pruning makes the vine bleed. | Bean, of the genus: "The young shoots are shortened back once or twice during the summer, and then cut hard back in December or January to one or two buds (later pruning causes bleeding)"; "The same pruning should be given to plants grown on walls." Plants for a Future: prune in winter when dormant. |
-| Midsummer, once or twice (June to August) | Shorten the young shoots; tie in any that are needed to extend the framework. | Bean, of the genus (above). RHS plant record: pruning group 11, in midwinter, "and in midsummer, if restricted growth is required". |
-| As needed | Trim to fit the space, "removing as much from the longer shoots as necessary". On a large structure it may need no cutting back. | RHS pruning group 11 page; BBC Gardeners' World ("won't need cutting back" on a shed or garage). |
+| Midsummer, once or twice (June to August) | Shorten the young shoots; tie in any that are needed to extend the framework. | Bean, of the genus (above). RHS plant record: pruning group 11, "in midwinter, and in midsummer, if restricted growth is required". |
+| As needed | Trim to fit the space, "removing as much from the longer shoots as necessary"; the RHS group 11 page also says "No regular pruning needed". On a large structure it may need no cutting back. | RHS pruning group 11 page; BBC Gardeners' World ("won't need cutting back" on a shed or garage). Bean, of the genus: on a pergola "the shoots can be trained and pruned back annually as much as is necessary". |
 | Establishing | Tie the canes to the timber: a tendril is assumed to hold a cable or wire but not a 40 mm lath, and the plant "needs wire or netting to cling to" (BBC Gardeners' World). | growth model, attachment.maxGraspDiameterMm |
 
-**What the model would need to act on it.** Only the two wisterias' prunes, the Group 3 clematis's cut-down and the climbing rose's routine are modelled (`MODELLED_ROUTINE` in `packages/core/src/sim/planting.ts`). For this plant the model folds the winter cut into the lifespan of a side shoot (one season), which removes the year's shoots before spring but does not leave the spur's one or two buds as the next year's starting points, and does not touch the long canes (whips) that stand up from the top of the frame. To prune it as the sources say, the model would need two dated visits:
+All quotations above were checked against the pages on 12 November 2026.
 
-1. **Winter spur prune**, one day between 1 December and 31 January (bleeding begins as the sap rises): every side shoot and every free cane of the year that is not tied in as framework is cut back to its first one or two nodes (`pruning.winterBudsKept` [1, 2], already in the growth model); the buds left there are where the next year's side shoots break.
-2. **Summer shortening**, one or two days between mid June and mid August: every side shoot longer than its first five or six leaves is cut back to that leaf (`pruning.summerLeavesKept` [5, 6], already in the growth model; the counts are Bean's "shortened back" made specific, an assumption), and its removed length is lost with its leaves, tendrils and any bunch beyond the cut.
+**What the model does (12 November 2026).** The routine is modelled (`vineRoutine` in `packages/core/src/sim/scenarios.ts`, `MODELLED_ROUTINE` 'vine_spur_and_summer'), and a trained plant gets it wherever it is planted:
 
-Neither is run today: the trained plant is tied in and grows on.
+1. **Winter cut, 15 December every year.** Every side shoot of the year, flowered or not, and every free cane, is cut to its first one or two nodes (`pruning.winterBudsKept` [1, 2]); what stood beyond goes with leaves, tendrils and any bunch still hanging. A side shoot's stub stays and next year's shoot breaks from its top; a shoot that stands on last winter's stub is cut back to that stub, so a spur stays one stub long. The framework, tied in, is not cut.
+2. **Summer shortening, 7 July and 15 August.** Every shoot of the year longer than five or six leaves (`pruning.summerLeavesKept` [5, 6], an assumption that makes Bean's "shortened back" specific) is cut back to that leaf and stops. A shoot ending in a panicle or bunch is left: the model puts the bunch at the shoot's end, and a gardener stops a shoot two or so leaves beyond its bunch, which here is nothing.
+
+The stand-in that came before (each side shoot shed after one season, `sideShoots.lifespanYears` 1) is gone: left untended, the plant keeps its shoots.
+
+What it does not do: it does not restrain the framework, which on the reference hemisphere still holds about 280 m at twelve years with or without the routine. Bean's "pruned back annually as much as is necessary" and the RHS's "removing as much from the longer shoots as necessary" need a bound for the plant that no design has declared; the engine has no envelope to cut to. It does not tie in shoots to extend the framework (framework growth is tied as it extends anyway). Shoots from below a summer cut (sublaterals) are not grown.
 
 ## Interactions with the broader palette
 

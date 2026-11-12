@@ -123,6 +123,21 @@ export const GENERIC_SHOOT = {
     basis: 'Generic, not this taxon\'s. Chosen, not measured: a shoot is taken to seek the direction half way between up and the light.',
     range: [0, 1],
   },
+  /** The least a free shoot leans from plumb where it sets out. */
+  'mechanics.leanDeg': {
+    value: 4,
+    unit: 'degrees',
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. No stem is exactly upright or exactly straight. A rod set out exactly plumb carries no bending load in the mechanics, and so would stand straight to any length, past the height at which its own weight must bring it over (Greenhill 1881); with a small lean it arches when its stiffness and weight say it must and stands when it can. Four degrees is a choice: an imperfection of the size engineers give a column to make its buckling computable, not a measurement of any shoot. Where a shoot already leans more, as most do, it changes nothing.',
+    range: [0.5, 15],
+  },
+  /** Where along a leaf its weight hangs, as a share of the leaf\'s length from the node: what makes a leafy shoot heavier on one side. */
+  'mechanics.leafWeightOffsetShare': {
+    value: 0.5,
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. A leaf\'s weight hangs off the stem at the middle of the leaf, not on the stem\'s axis, so leaves turned one way weigh on that side of the shoot. Half the leaf\'s length (stalk and blade, as the engine measures it) from the node is a choice: the blade is heavier than the stalk, which would put it further out, and a leaf hangs nearer the stem than its full reach. Not measured on any plant here.',
+    range: [0, 1],
+  },
   /** How near the tip of a searching shoot must come to a support to take hold of it. */
   'attachment.graspReachM': {
     value: 0.12,
@@ -178,4 +193,20 @@ export const GENERIC_SIDE_SHOOT = {
 } satisfies Record<string, Sourced<number | [number, number]>>;
 
 export type SideShootParamKey = keyof typeof GENERIC_SIDE_SHOOT;
+
+/**
+ * The generic leaf: how far a leaf stalk turns its blade away from the support and towards the open sky and the
+ * light, where a taxon's model does not say. Used by every plant, and said once for each plant that uses it.
+ */
+export const GENERIC_LEAF = {
+  /** Share, 0 to 1, by which a leaf's direction is turned from where its node sets it towards the open and the light. */
+  'organs.leafTurnToOpenShare': {
+    value: 0.5,
+    status: 'provisional_design_assumption',
+    basis: 'Generic, not this taxon\'s. On a climber the leaf stalks turn the blades away from the support and towards the open sky and the light, whichever way the stem runs (the leaf mosaic of ivy on a wall is the familiar case); no measurement of how far was found for any plant here. Half way from the direction the node gives (to its side, a little up and forward) towards the open and the light is a choice: enough that leaves on a level lath and on a post both face out, while each leaf stays on its own side of the stem, so that two ranks stay two ranks and pairs stay pairs.',
+    range: [0, 1],
+  },
+} satisfies Record<string, Sourced<number>>;
+
+export type LeafParamKey = keyof typeof GENERIC_LEAF;
 export const SIDE_SHOOT_PARAM_KEYS = Object.keys(GENERIC_SIDE_SHOOT) as SideShootParamKey[];

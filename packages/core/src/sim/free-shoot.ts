@@ -96,6 +96,11 @@ export interface Rod {
   compliance: readonly number[];
   /** Weight carried at the far end of each segment, N. */
   load: readonly number[];
+  /**
+   * Moment of weight hung off the stem's axis at the far end of each segment, N m: a leaf's weight times how far its
+   * middle stands out from the stem, level, in the rod's plane; positive on the side the plane points to. Left out: none.
+   */
+  couple?: readonly number[];
 }
 
 export interface RodSolution {
@@ -125,21 +130,27 @@ export function solveRod(rod: Rod, near = 0): RodSolution {
   for (let k = n - 1; k >= 0; k--) beyond[k] = w += rod.load[k]!;
   let most = 0;
   let along = 0;
+  const couple = rod.couple;
   for (let k = 0; k < n; k++) {
     along += rod.lengthM[k]!;
-    most += rod.load[k]! * along;
+    most += rod.load[k]! * along + (couple ? Math.abs(couple[k]!) : 0);
   }
   if (!(most > 0)) return { tipIncline: unloaded, unloadedIncline: unloaded, baseMoment: 0, found: true };
 
   let tip = unloaded;
-  /** The moment left over at the tip when the base moment is `m0`: zero when the rod is in balance. */
+  /**
+   * The moment left over at the tip when the base moment is `m0`: zero when the rod is in balance. A weight hung off
+   * the axis at the far end of segment k bends every joint up to and including the one it hangs at, and none beyond.
+   */
   const left = (m0: number): number => {
     let psi = rod.baseIncline;
     let m = m0;
     for (let k = 0; k < n; k++) {
       psi += rod.turn[k]! + m * rod.compliance[k]!;
       m -= beyond[k]! * rod.lengthM[k]! * Math.sin(psi);
+      if (couple && k > 0) m -= couple[k - 1]!;
     }
+    if (couple && n > 0) m -= couple[n - 1]!;
     tip = psi;
     return m;
   };
@@ -243,6 +254,11 @@ export interface FreeShoot {
   feltAtM: number;
   /** How long it was when its rod was last solved: it is solved again every `SOLVE_EVERY_M` of growth, and in between the tip keeps the sag it had. */
   solvedAtM: number;
+  /**
+   * True once its tip has come as far from its base as shoots of its kind are known to hold themselves out (the
+   * searcher reach): from then on it no longer steers towards up and the light, and grows on as its weight lets it.
+   */
+  pastReach?: boolean;
 }
 
 /** The level direction a vector leans in, or `fallback` where it stands plumb. Kept on the same side as `fallback`. */
@@ -258,11 +274,18 @@ export const inclineOf = (d: Vec3, plane: Vec3): number => Math.atan2(dot(d, pla
 /** The unit direction at an angle from plumb in a plane. */
 export const directionAt = (incline: number, plane: Vec3): Vec3 => add(scale(plane, Math.sin(incline)), scale(UP, Math.cos(incline)));
 
-/** A shoot that is about to grow its first free length from point `basePoint`, heading `dir`. */
-export function startFreeShoot(basePoint: number, dir: Vec3): FreeShoot {
+/**
+ * A shoot that is about to grow its first free length from point `basePoint`, heading `dir`. With `leanRad`, a shoot
+ * heading nearer plumb than that is set out leaning that far: towards the side it already leans to where it leans at
+ * all, and otherwise towards `leanToward` (a level direction). No stem is exactly upright, and a rod that is carries no
+ * bending load: without the lean it would stand straight to any length.
+ */
+export function startFreeShoot(basePoint: number, dir: Vec3, leanRad = 0, leanToward: Vec3 = v3(1, 0, 0)): FreeShoot {
   const d = normalize(dir);
-  const plane = levelOf(d, v3(1, 0, 0));
-  const incline = inclineOf(d, plane);
+  // a heading that leans less than a thousandth of a radian has no side of its own worth keeping
+  const plane = Math.hypot(d.x, d.y) > 1e-3 ? levelOf(d, v3(1, 0, 0)) : leanRad > 0 ? levelOf(leanToward, leanToward) : levelOf(d, v3(1, 0, 0));
+  let incline = inclineOf(d, plane);
+  if (leanRad > 0 && Math.abs(incline) < leanRad) incline = incline < 0 ? -leanRad : leanRad;
   return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null, light: null, lightAskedAtM: 0, feltAtM: -1, solvedAtM: -1 };
 }
 

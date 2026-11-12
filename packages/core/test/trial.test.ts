@@ -51,8 +51,11 @@ describe('six ways of climbing, each at the foot of a bare glulam rib', () => {
         expect(edge.kind).toBe('timber');
         expect(r.mode).toBe('along');
         expect(r.by).toBe('plant');
-        expect(r.status).toBe('grasped');
+        // grasped, or, for a free shoot of the year that has just come down on a lath from the air and laid less than
+        // a coil's length along it before it stopped, touched (SIMULATION_KEY.md 4.3 (f))
+        expect(['grasped', 'contacted']).toContain(r.status);
       }
+      expect(runs.filter(({ r }) => r.status === 'grasped').length).toBeGreaterThan(10);
     });
 
     it('leaves the other four at the foot of the rib, each for its own reason', () => {

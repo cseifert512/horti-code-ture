@@ -196,20 +196,34 @@ describe('shoots in the air, in a run', () => {
     expect(highest).toBeGreaterThan(0.3);
   });
 
-  it('stops a shoot that still holds itself up at the reach its growth model gives', () => {
-    // a rod far too stiff to droop goes on until the reach stops it
+  // (c) as replaced on 12 November 2026: a shoot that still holds itself up at its reach no longer stops there; it stops
+  // turning upwards and nods over, and grows on as its weight lets it (docs/ASSUMPTIONS_AUDIT.md section 12)
+  it('lets a shoot that still holds itself up at its reach grow on past it, nodding over and no longer turning up', () => {
+    // a rod far too stiff to droop: only the end of its upward turning bends it over
     const stiff = withModel(library, WISTERIA, (m) => withParam(withParam(m, 'mechanics.woodModulusMPa', 300_000, 'a test: too stiff to droop'), 'mechanics.greenShootModulusMPa', 300_000, 'a test: too stiff to droop'));
-    const short = withModel(stiff, WISTERIA, (m) => withParam(m, 'mechanics.searcherReachM', 0.5, 'a test: half a metre'));
-    for (const [taxa, limit] of [
-      [stiff, reach],
-      [short, 0.5],
-    ] as const) {
+    for (const limit of [reach, 0.5]) {
+      const taxa = withModel(stiff, WISTERIA, (m) => withParam(m, 'mechanics.searcherReachM', limit, 'a test of the reach'));
       const sim = one(gapFrame, noHold(eager(taxa)), WISTERIA, 'untended', 4);
-      const stopped = sim.decisions.filter((d) => d.kind === 'stopped' && d.text.includes('held itself out'));
-      expect(stopped.length).toBeGreaterThan(0);
+      expect(sim.decisions.some((d) => d.kind === 'stopped' && d.text.includes('held itself out'))).toBe(false);
+      let past = 0;
       for (const a of inTheAir(sim)) {
-        for (const s of stretches(a)) for (const i of s.points) expect(distance(a.contact[i]!, a.contact[s.base]!), a.id).toBeLessThanOrEqual(limit + STEP);
+        for (const s of stretches(a)) {
+          const base = a.contact[s.base]!;
+          const at = s.points.findIndex((i) => distance(a.contact[i]!, base) >= limit);
+          if (at < 1 || s.points.length - at < 12) continue;
+          const dirZ = (k: number) => {
+            const p = a.contact[s.points[k - 1]!]!;
+            const q = a.contact[s.points[k]!]!;
+            return (q.z - p.z) / distance(p, q);
+          };
+          // a shoot still rising when it gets there (one already level, or turned along a member, is not the case)
+          if (dirZ(at) < 0.3) continue;
+          // beyond its reach the shoot heads lower than it did when it got there
+          expect(dirZ(s.points.length - 1), a.id).toBeLessThan(dirZ(at) - 0.05);
+          past++;
+        }
       }
+      expect(past, `reach ${limit} m`).toBeGreaterThan(0);
     }
   });
 
@@ -461,11 +475,12 @@ describe('which way the light is', () => {
 
   it('is asked of the light model, and of the open sky only where the model is told not to act', () => {
     const acting = one(specimenFrame, library, WISTERIA, 'untended', 4);
-    expect(acting.lightAsked.lightModel).toBeGreaterThan(10);
+    // (a shoot asks every 0.2 m while it steers, which since 12 November 2026 it stops doing once past its reach)
+    expect(acting.lightAsked.lightModel).toBeGreaterThan(5);
     expect(acting.lightAsked.scenario).toBe(0);
     const still = one(specimenFrame, library, WISTERIA, 'untended', 4, { lightResponse: false });
     expect(still.lightAsked.lightModel).toBe(0);
-    expect(still.lightAsked.openSky).toBeGreaterThan(10);
+    expect(still.lightAsked.openSky).toBeGreaterThan(5);
     // near a member the model's answer is still a direction, upward on an open frame
     const plant = acting.plants.get('plant')!;
     const here = acting.light.from(plant, v3(0.9, -0.1, 2.7), acting.calendar.dateOf(acting.calendar.dayOf('2030-06-15')))!;
@@ -481,7 +496,8 @@ describe('which way the light is', () => {
 // ---------------------------------------------------------------------------------------------------------------
 describe('the numbers behind a shoot in the air', () => {
   it('has a generic value, labelled as such, for every one of them', () => {
-    expect(SHOOT_PARAM_KEYS.length).toBe(11);
+    // eleven, and since 12 November 2026 the lean a shoot sets out at and where a leaf's weight hangs off its stem
+    expect(SHOOT_PARAM_KEYS.length).toBe(13);
     for (const key of SHOOT_PARAM_KEYS) {
       const g = GENERIC_SHOOT[key];
       expect(GROWTH_PARAMS_OPTIONAL as readonly string[], key).toContain(key);
@@ -496,7 +512,8 @@ describe('the numbers behind a shoot in the air', () => {
 
   it('uses a taxon\'s own value where its model gives one, and the generic one where it gives none', () => {
     const own = library.get(WISTERIA)!.model;
-    expect(genericShootKeys(own)).toEqual([]);
+    // the wisteria's model gives every one but the two added on 12 November 2026, which no model gives yet
+    expect(genericShootKeys(own)).toEqual(['mechanics.leanDeg', 'mechanics.leafWeightOffsetShare']);
     const stripped = SHOOT_PARAM_KEYS.reduce((m, key) => withUnknown(m, key), own);
     expect(genericShootKeys(stripped)).toEqual(SHOOT_PARAM_KEYS);
     for (const key of SHOOT_PARAM_KEYS) expect(shootParam(stripped, key), key).toBe(GENERIC_SHOOT[key].value);
@@ -513,15 +530,17 @@ describe('the numbers behind a shoot in the air', () => {
   it('says once for each plant that it is drawn with the generic shoot, and counts those numbers as the assumptions they are', () => {
     const generic = withModel(library, WISTERIA, (m) => SHOOT_PARAM_KEYS.reduce((x, key) => withUnknown(x, key), m));
     const sim = new Simulation(wisteriaOnVault({ taxa: generic, care: 'untended', years: 3 })).runUntil('2029-12-31');
-    const said = sim.decisions.filter((d) => d.kind === 'generic_shoot');
+    // (a plant whose long shoots leave their stems at the generic side shoot's angles says that in a line of its own)
+    const said = sim.decisions.filter((d) => d.kind === 'generic_shoot' && d.text.includes('generic shoot of a woody climber'));
     expect(said.map((d) => d.plantId)).toEqual(['wisteria.0', 'wisteria.1']);
     expect(said[0]!.text).toContain('generic shoot of a woody climber');
     for (const key of SHOOT_PARAM_KEYS) expect(said[0]!.text).toContain(key);
     const alerts = designReport(sim).alerts.filter((a) => a.kind === 'generic_shoot');
-    expect(alerts.map((a) => a.plantId)).toEqual(['wisteria.0', 'wisteria.1']);
+    expect([...new Set(alerts.map((a) => a.plantId))]).toEqual(['wisteria.0', 'wisteria.1']);
     // with its own numbers the plant is not said to be generic
     const own = new Simulation(wisteriaOnVault({ taxa: library, care: 'untended', years: 1 })).runUntil('2027-12-31');
-    expect(own.decisions.some((d) => d.kind === 'generic_shoot')).toBe(false);
+    // (but for the two numbers no model gives yet: nothing else of the generic shoot is named)
+    for (const d of own.decisions.filter((x) => x.kind === 'generic_shoot' && x.text.includes('generic shoot of a woody climber'))) expect(d.text).toContain('no value for mechanics.leanDeg, mechanics.leafWeightOffsetShare.');
     // the provenance of a run lists the generic value used, not a gap
     const entries = modelProvenance(generic.get(WISTERIA)!.model).filter((e) => (SHOOT_PARAM_KEYS as string[]).includes(e.path));
     expect(entries.length).toBe(SHOOT_PARAM_KEYS.length);
