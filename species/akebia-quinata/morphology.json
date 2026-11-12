@@ -325,6 +325,12 @@
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: carpels 3 to 6 (to 9), cylindric, spreading apart. Flora of North America: 3 to 7 pistils."
     },
+    "flower.female.carpelLengthM": {
+      "value": [0.005, 0.008],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "No flora read gives the length of a carpel in flower. Drawn at about a third to a half of the sepal's length (1 to 2 cm), as the flower is seen; to be measured on a living flower."
+    },
     "flower.female.carpelColour": {
       "value": "dark purple, the stigma glistening",
       "status": "provisional_design_assumption",
