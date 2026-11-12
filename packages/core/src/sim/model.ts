@@ -15,23 +15,47 @@
  * may be `unknown`; the part is then left out of the run, and the run says
  * so. Zero, with its basis, says the plant does not have the part.
  *
+ * So are the things a plant may or may not do (keep part of its foliage
+ * through winter, flower again after a flower has gone over, grow its
+ * flowering side shoots on from year to year) and the numbers that set one
+ * leaf form apart from another. Unknown, each leaves the plant as it was
+ * before the engine could do it.
+ *
  * One file per taxon: `species/<id>/model.json`.
  */
 import { z } from 'zod';
 import { type ProvenanceEntry, type Sourced, sourced } from '../provenance.ts';
 import { ORGAN_HELD } from '../vocab.ts';
 
-/** Every parameter, with the shape of its value. `range` is [low, high]; `list` is indexed as its name says. */
+/**
+ * Every parameter, with the shape of its value. `range` is [low, high]; `list` is indexed as its name says.
+ * `window` is [first day, last day] of the year, both included; where the first is later than the last the
+ * window runs through the new year, so [320, 45] is 16 November to 14 February (`windows.ts`).
+ */
 export const GROWTH_PARAMS = {
   // ---- phenology: day of year (1 = 1 January). Provisional fixed dates until a weather-driven model replaces them.
+  // The growing season, bud burst to growth end, is the one pair of dates that cannot cross the new year: growth is
+  // counted by calendar year throughout the engine.
   'phenology.budburstDoy': 'number',
   'phenology.growthEndDoy': 'number',
-  'phenology.leafFlushDoy': 'range',
-  'phenology.autumnColourDoy': 'range',
-  'phenology.leafFallDoy': 'range',
-  'phenology.floralInitiationDoy': 'range',
-  'phenology.flowerOpenDoy': 'range',
-  'phenology.petalFallDoy': 'range',
+  /** Through the new year: the flush of a year began late in the year before. */
+  'phenology.leafFlushDoy': 'window',
+  /** Through the new year, as `leafFallDoy`: the leaves of a year go on colouring into the next. */
+  'phenology.autumnColourDoy': 'window',
+  /** Through the new year: the leaves of a year go on falling into the next, and the last is down on its last day. */
+  'phenology.leafFallDoy': 'window',
+  /** Only the last day is read: the day the year's flower buds form. */
+  'phenology.floralInitiationDoy': 'window',
+  /**
+   * Through the new year: a display that opens from late in one year into the next. Its flowers belong to the
+   * year it began in.
+   */
+  'phenology.flowerOpenDoy': 'window',
+  /**
+   * Read after the opening: where its first day is earlier in the year than the opening's first day it is the
+   * next year's, and a window that crosses the new year is not needed to say that petals fall after the winter.
+   */
+  'phenology.petalFallDoy': 'window',
   /**
    * How long one flower lasts, for plants whose flowers come and go in
    * succession through a long season. [0, 0] where the whole display falls
@@ -96,6 +120,36 @@ export const GROWTH_PARAMS = {
   'organs.leafLifespanYears': 'number',
   /** Height below which the stem is kept clean: no spurs, whips or flowers. */
   'organs.clearStemHeightM': 'number',
+  // ---- leaves by form. `leafLengthM`, `leafSpacingM`, `leavesPerNode` and `leafLifespanYears` above describe the
+  // leaf of climbing and extension shoots. A spur's leaf and a flowering side shoot's leaf may differ from it, as
+  // they may be named apart (`names.spurLeafForm`, `names.sideShootLeafForm`). Unknown: as before these existed.
+  /**
+   * Length of a leaf on a spur. Unknown: nine tenths of `organs.leafLengthM`, which is what the Wisteria prototype
+   * drew and is not a measurement of any plant. (How many leaves a spur carries is `organs.spurLeafCount`; they
+   * are renewed every year, so a spur's leaf has no lifespan to give.)
+   */
+  'organs.spurLeafLengthM': 'range',
+  /** Length of a leaf on a flowering side shoot. Unknown: `organs.leafLengthM`. */
+  'organs.sideShootLeafLengthM': 'range',
+  /** Stem length between leaf nodes on a flowering side shoot. Unknown: `organs.leafSpacingM`. */
+  'organs.sideShootLeafSpacingM': 'range',
+  /** 1 or 2, as `organs.leavesPerNode`, for a flowering side shoot. Unknown: `organs.leavesPerNode`. */
+  'organs.sideShootLeavesPerNode': 'number',
+  /**
+   * Growing seasons a leaf stays on a flowering side shoot, counted from the year that stretch of the shoot was
+   * made. Unknown: the shoot is in leaf along its whole length every year it lives.
+   */
+  'organs.sideShootLeafLifespanYears': 'number',
+  /**
+   * Share, 0 to 1, of the plant's leaves that stay on through winter: a semi-evergreen plant, or an evergreen
+   * one where it stands exposed. Each leaf is kept or not, decided where it stands.
+   * Unknown: the leaf habit of the taxon's profile decides, every leaf for an evergreen and none for any other.
+   * On a plant whose profile says evergreen, a leaf that is kept lives out `organs.leafLifespanYears` and one
+   * that is not falls in the leaf fall of its first year. On any other plant, a leaf that is kept stays on,
+   * green, through the winter after its last season and is shed as the next spring's leaves open
+   * (`phenology.leafFlushDoy`); one that is not falls as a deciduous leaf does.
+   */
+  'organs.winterLeafShare': 'number',
   // ---- flowering
   /** Full growing seasons after planting before any flower bud can form. */
   'flowering.competenceYears': 'number',
@@ -112,6 +166,22 @@ export const GROWTH_PARAMS = {
    */
   'flowering.currentSeasonFlowersPerM': 'number',
   'flowering.currentSeasonMinShootM': 'number',
+  // ---- repeat flowering: a flower that has gone over may be followed by another at the same place, in flushes,
+  // while the taxon's flowering window (`phenology.flowerOpenDoy`) lasts. For flowers at the nodes of shoots and at
+  // the ends of flowering side shoots; a spur's flower is never followed. Unknown, or a count or share of 0: each
+  // place flowers once a year. The first three are needed together.
+  /** The most times one place flowers again in a season, after its first flower. */
+  'flowering.repeatMaxPerSeason': 'number',
+  /** Days from a flower going over to the next one at the same place opening. */
+  'flowering.repeatIntervalDays': 'range',
+  /** Share, 0 to 1, of the flowers that go over which are followed by another, while the count and the season allow. */
+  'flowering.repeatShare': 'number',
+  /**
+   * The same wait where a gardener deadheads (`deadhead_or_select_flowers`), counted from the day of the
+   * deadheading: the next flower opens that many days after it, or when it would have anyway if that is sooner.
+   * Unknown: deadheading is recorded and changes nothing, as for a plant that does not flower again.
+   */
+  'flowering.repeatIntervalDeadheadedDays': 'range',
   // ---- pruning
   'pruning.summerLeavesKept': 'range',
   'pruning.winterBudsKept': 'range',
@@ -133,14 +203,16 @@ export const GROWTH_PARAMS = {
    * Days of the year between which fruit ripens (colours, dries). Each fruit
    * starts on a day in the window and is ripe by a later day in it: the first
    * such window to end after the fruit is full grown, which may be next year's.
+   * The window may run through the new year.
    */
-  'fruit.ripenDoy': 'range',
+  'fruit.ripenDoy': 'window',
   /**
    * Days of the year between which ripe fruit falls, splits or is eaten: each
    * goes on a day in the first such window after it is ripe. A window early in
-   * the year therefore means the fruit hangs on through the winter.
+   * the year therefore means the fruit hangs on through the winter; one that
+   * runs through the new year, that it goes during it.
    */
-  'fruit.fallDoy': 'range',
+  'fruit.fallDoy': 'window',
   // ---- appendages: the small parts a plant holds on or defends itself with. Unknown: none are drawn.
   /**
    * Which leaf nodes along a shoot bear a tendril, as a pattern that repeats
@@ -179,10 +251,16 @@ export const GROWTH_PARAMS = {
    * 0: the shoots are leafy only.
    */
   'sideShoots.terminalFlowerShare': 'number',
+  // A side shoot that lives more than one season may grow on: the two below are needed together.
+  // Unknown, or an extension of [0, 0]: it stays the length it made in its first season.
+  /** Length a living side shoot adds in each season after its first. */
+  'sideShoots.extensionMPerYear': 'range',
+  /** The length beyond which a side shoot adds no more. */
+  'sideShoots.maxLengthM': 'number',
 } as const;
 
 export type GrowthParamKey = keyof typeof GROWTH_PARAMS;
-type Shape<K extends GrowthParamKey> = (typeof GROWTH_PARAMS)[K] extends 'number' ? number : (typeof GROWTH_PARAMS)[K] extends 'range' ? [number, number] : number[];
+type Shape<K extends GrowthParamKey> = (typeof GROWTH_PARAMS)[K] extends 'number' ? number : (typeof GROWTH_PARAMS)[K] extends 'range' | 'window' ? [number, number] : number[];
 
 /**
  * Parameters a model may leave `unknown`. They describe parts of the plant
@@ -208,6 +286,18 @@ export const GROWTH_PARAMS_OPTIONAL = [
   'sideShoots.lengthM',
   'sideShoots.lifespanYears',
   'sideShoots.terminalFlowerShare',
+  'organs.spurLeafLengthM',
+  'organs.sideShootLeafLengthM',
+  'organs.sideShootLeafSpacingM',
+  'organs.sideShootLeavesPerNode',
+  'organs.sideShootLeafLifespanYears',
+  'organs.winterLeafShare',
+  'flowering.repeatMaxPerSeason',
+  'flowering.repeatIntervalDays',
+  'flowering.repeatShare',
+  'flowering.repeatIntervalDeadheadedDays',
+  'sideShoots.extensionMPerYear',
+  'sideShoots.maxLengthM',
 ] as const satisfies readonly GrowthParamKey[];
 export type OptionalParamKey = (typeof GROWTH_PARAMS_OPTIONAL)[number];
 export type RequiredParamKey = Exclude<GrowthParamKey, OptionalParamKey>;
@@ -216,14 +306,20 @@ const optional: ReadonlySet<string> = new Set(GROWTH_PARAMS_OPTIONAL);
 const shapes = {
   number: z.number(),
   range: z.tuple([z.number(), z.number()]).refine(([a, b]) => a <= b, 'a range is [low, high]'),
+  // no order is asked of a window: first later than last is a window that runs through the new year
+  window: z.tuple([z.number(), z.number()]),
   list: z.array(z.number()).min(1),
 };
 
 /** What the values of the optional parameters must look like where they are given. */
 const share = z.number().min(0, 'a share is between 0 and 1').max(1, 'a share is between 0 and 1');
 const doy = z.number().int().min(1).max(366);
-const window = z.tuple([doy, doy]).refine(([a, b]) => a <= b, 'a window is [first day of the year, last day of the year]');
+const window = z.tuple([doy, doy]);
 const lengths = z.tuple([z.number().nonnegative(), z.number().nonnegative()]).refine(([a, b]) => a <= b, 'a range is [low, high]');
+/** A length that something must have to be there at all. */
+const sizes = z.tuple([z.number().positive(), z.number().positive()]).refine(([a, b]) => a <= b, 'a range is [low, high]');
+/** A wait in whole days, of at least one. */
+const waits = z.tuple([z.number().int().min(1), z.number().int().min(1)]).refine(([a, b]) => a <= b, 'a range is [low, high]');
 const optionalShapes: { [K in OptionalParamKey]: z.ZodType } = {
   'fruit.setShare': share,
   'fruit.lengthM': lengths,
@@ -243,6 +339,18 @@ const optionalShapes: { [K in OptionalParamKey]: z.ZodType } = {
   'sideShoots.lengthM': lengths,
   'sideShoots.lifespanYears': z.number().int('a side shoot lives a whole number of growing seasons').nonnegative(),
   'sideShoots.terminalFlowerShare': share,
+  'organs.spurLeafLengthM': sizes,
+  'organs.sideShootLeafLengthM': sizes,
+  'organs.sideShootLeafSpacingM': sizes,
+  'organs.sideShootLeavesPerNode': z.union([z.literal(1), z.literal(2)], 'leaves stand singly (1) or in opposite pairs (2)'),
+  'organs.sideShootLeafLifespanYears': z.number().int('a leaf lasts a whole number of growing seasons').min(1),
+  'organs.winterLeafShare': share,
+  'flowering.repeatMaxPerSeason': z.number().int('a place flowers again a whole number of times').nonnegative(),
+  'flowering.repeatIntervalDays': waits,
+  'flowering.repeatShare': share,
+  'flowering.repeatIntervalDeadheadedDays': waits,
+  'sideShoots.extensionMPerYear': lengths,
+  'sideShoots.maxLengthM': z.number().nonnegative(),
 };
 
 const paramShape = Object.fromEntries(

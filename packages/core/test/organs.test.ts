@@ -94,7 +94,8 @@ describe('a growth model may leave the parts a plant may or may not have unknown
       ['appendages.leafStalkCoilShare', -0.1],
       ['sideShoots.terminalFlowerShare', 2],
       ['fruit.ripenDoy', [250, 400]],
-      ['fruit.fallDoy', [90, 15]],
+      // first day later than last is a window through the new year and is accepted (habits.test.ts); a day 0 is no day
+      ['fruit.fallDoy', [90, 0]],
       ['fruit.lengthM', [0.2, 0.1]],
       ['appendages.tendrilNodePattern', [1, 2, 0]],
       ['appendages.tendrilNodePattern', []],

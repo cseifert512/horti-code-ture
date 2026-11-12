@@ -26,12 +26,31 @@ export interface LeafState {
 }
 const ABSENT: LeafState = { present: false, expansion: 0, autumn: 0 };
 
-/** `season` is the entry for this leaf's plant in the calendar year that `day` falls in. */
+/**
+ * `season` is the entry for this leaf's plant in the calendar year that `day` falls in.
+ *
+ * A leaf that is kept through winter (`evergreen`) is there from its first
+ * opening until it is removed or its last year ends. That covers the leaves a
+ * semi-evergreen plant keeps: the data gives each of those the following
+ * spring as its last year and the day it was shed as the day it was removed.
+ *
+ * A taxon whose leaf fall runs through the new year has last year's leaves
+ * still dropping in January, and one whose flush does has next year's leaves
+ * opening in December: the season entry carries what is needed for both.
+ */
 export function leafState(leaf: RenderLeaf, season: RenderSeason | undefined, day: number): LeafState {
   if (!season || day < leaf.bornDay || (leaf.removedDay >= 0 && day >= leaf.removedDay)) return ABSENT;
+  const j = jitter(leaf.position[0], leaf.position[1], leaf.position[2]);
+  // last year's leaf fall, still going on: a leaf that was out last year hangs on until its own day in it
+  if (!leaf.evergreen && season.leafFallBefore && leaf.firstYear < season.year && (leaf.lastYear === null || leaf.lastYear >= season.year - 1)) {
+    const [fall0, fall1] = season.leafFallBefore;
+    if (day <= fall0 + j * (fall1 - fall0)) {
+      const [turn0, turn1] = season.autumnColourBefore ?? [fall0, fall0];
+      return { present: true, expansion: 1, autumn: clamp01((day - turn0 - j * 10) / Math.max(1, turn1 - turn0)) };
+    }
+  }
   if (season.year < leaf.firstYear || (leaf.lastYear !== null && season.year > leaf.lastYear)) return ABSENT;
   const [flush0, flush1] = season.leafFlush;
-  const j = jitter(leaf.position[0], leaf.position[1], leaf.position[2]);
   // a leaf on wood that was already there opens with the flush; one on new growth opens as that growth is made
   const opensFrom = Math.max(flush0, leaf.bornDay);
   const opensOver = leaf.bornDay > flush0 ? 21 : Math.max(1, flush1 - flush0);
@@ -48,7 +67,12 @@ export function leafState(leaf: RenderLeaf, season: RenderSeason | undefined, da
   if (day < opensFrom) return ABSENT;
   const [fall0, fall1] = season.leafFall;
   // leaves drop one by one across the fall, none remaining after it
-  if (day > fall0 + j * (fall1 - fall0)) return ABSENT;
+  if (day > fall0 + j * (fall1 - fall0)) {
+    // unless next year's flush has begun already, at a place that comes into leaf again next year
+    const next = season.leafFlushAfter;
+    if (next && day >= next[0] && (leaf.lastYear === null || leaf.lastYear > season.year)) return { present: true, expansion: clamp01((day - next[0]) / Math.max(1, next[1] - next[0])), autumn: 0 };
+    return ABSENT;
+  }
   const [turn0, turn1] = season.autumnColour;
   return { present: true, expansion: clamp01((day - opensFrom) / opensOver), autumn: clamp01((day - turn0 - j * 10) / Math.max(1, turn1 - turn0)) };
 }
