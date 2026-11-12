@@ -9,25 +9,25 @@
   },
   "params": {
     "phenology.budburstDoy": {
-      "value": 118,
+      "value": 102,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Late into leaf: \"Late to leaf out in spring\" (University of Connecticut plant database, of the parent C. radicans); \"among the last woody plants to leaf out\" (White Flower Farm growing guide). No source gives a date for Britain; taken as 28 April."
+      "basis": "Late into leaf: \"Late to leaf out in spring\" (University of Connecticut plant database, of the parent C. radicans); \"among the last woody plants to leaf out\" (White Flower Farm growing guide). No source gives a date for Britain. Buds are taken to break on 12 April; the engine shows a leaf only once its shoot has grown past its first node, so the first leaves are out in the second week of May."
     },
     "phenology.growthEndDoy": {
-      "value": 275,
+      "value": 205,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Shoots are taken to lengthen until the start of October, while trusses are still opening (RHS: flowers \"from late summer until the first frosts\"). No dated source."
+      "basis": "A shoot of the year stops lengthening when its truss forms at its tip (\"New twigs grow about 60-80 cm before flower buds appear\", Havlis nursery catalogue); that is taken as 24 July, a few days before the first trusses open, and the framework is taken to stop with it. The engine stands a truss at the tip its shoot has reached on the day the truss opens, so a shoot must have stopped by then. No dated source."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        122,
-        160
+        106,
+        150
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Leaves on wood that was already there open from the first days of May to early June, following the late budburst. No dated source."
+      "basis": "Not what times this plant's leaves: every leaf is on a shoot of the year and opens as that shoot is made. The window follows budburst for any leaf on older wood. No dated source."
     },
     "phenology.autumnColourDoy": {
       "value": [
@@ -49,12 +49,12 @@
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        195,
-        204
+        190,
+        196
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "The truss forms at the tip of a shoot of the year once the shoot has made its length (\"New twigs grow about 60-80 cm before flower buds appear\", Havlis nursery catalogue). The engine forms the buds of side shoots on the second day given here; it is set a few days before the first trusses open so that a bud is not shown ahead of a shoot that is still lengthening."
+      "basis": "The truss forms at the tip of a shoot of the year once the shoot has made its length (\"New twigs grow about 60-80 cm before flower buds appear\", Havlis nursery catalogue). The engine forms the buds of side shoots on the second day given here, 15 July, when the shoots have all but stopped; the first trusses then show as buds for two weeks before they open and the later ones for a month."
     },
     "phenology.flowerOpenDoy": {
       "value": [
@@ -256,12 +256,12 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.08,
-        0.14
+        0.07,
+        0.12
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Stem between one pair of leaves and the next. No flora gives it; the University of Michigan climbers database says only that the internodes of C. radicans are long. Chosen so that a flowering shoot of 60 to 80 cm carries five to eight pairs of leaves below its truss."
+      "basis": "Stem between one pair of leaves and the next. No flora gives it; the University of Michigan climbers database says only that the internodes of C. radicans are long. Chosen so that a flowering shoot of 60 to 80 cm carries six to nine pairs of leaves below its truss."
     },
     "organs.leafLengthM": {
       "value": [
@@ -417,7 +417,7 @@
       "value": 20,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Chosen so that a main stem carrying about 12 m of framework is about 3 cm through after ten years (\"a stout main stem\", Bean of C. radicans). Not measured."
+      "basis": "Chosen so that the main stem of a plant that has filled the specimen frame is about 5 cm through at the ground after ten years (\"a stout main stem\", Bean of C. radicans). Not measured."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -506,12 +506,12 @@
     },
     "appendages.aerialRootLengthM": {
       "value": [
-        0.004,
-        0.01
+        0.005,
+        0.012
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of one rootlet. No source measures them; short, a few millimetres."
+      "basis": "Length of one rootlet. No source measures them; short, a centimetre at most."
     },
     "appendages.prickleSpacingM": {
       "value": [
@@ -538,10 +538,10 @@
       "basis": "The shoots of the year break from wood made in an earlier year: from the two or three buds a late-winter prune leaves at the base of last year's shoot (RHS)."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 3.5,
+      "value": 6,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "Flowering shoots a year for each metre of framework. With a pair of buds at every node, about 0.11 m apart, a metre has some eighteen buds; about one in five is taken to make a shoot. A choice; nobody has counted."
+      "basis": "Shoots of the year for each metre of framework. With a pair of buds at every node, about 0.095 m apart, a metre has some twenty buds, and a spur cut to two or three buds (RHS) breaks more than one; about one bud in three is taken to make a shoot. Set so that a plant of six years clothes the specimen frame in summer, which is well inside the 2.5 to 4 m spread the RHS gives it at five to ten years. A choice; nobody has counted."
     },
     "sideShoots.lengthM": {
       "value": [
