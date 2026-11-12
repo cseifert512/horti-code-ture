@@ -299,6 +299,120 @@
       #design-error {
         border-left: 3px solid #ff8a7a;
       }
+      /* ---- the plant picker: one taxon per root station --------------------------- */
+      /* the list of stations scrolls; in a window too short even for that, the whole card does, and never runs under the timeline */
+      #picker {
+        flex: 0 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-right: 6px;
+      }
+      #picker h2 {
+        margin: 0;
+      }
+      /* the log gives way to the picker first, down to its heading and a line of its list */
+      body.picking #log {
+        flex-shrink: 20;
+        min-height: 64px;
+      }
+      #picker-stations {
+        list-style: none;
+        margin: 0;
+        padding: 0 6px 0 0;
+        overflow-y: auto;
+        /* a station at least, whatever else the column holds */
+        flex: 0 1 auto;
+        min-height: 62px;
+        display: grid;
+        align-content: start;
+        gap: 2px;
+      }
+      #picker-stations li {
+        padding: 4px 6px 6px;
+        border-radius: 8px;
+      }
+      #picker-stations li.marked {
+        background: rgba(255, 255, 255, 0.14);
+        box-shadow: inset 3px 0 0 #ffd3ea;
+      }
+      #picker-stations .field > span {
+        justify-content: flex-start;
+        gap: 6px;
+        overflow-wrap: anywhere;
+      }
+      #picker-stations .field > span b {
+        color: var(--ink);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      #picker-stations select {
+        width: 100%;
+        min-width: 0;
+      }
+      #picker-stations li.chosen select {
+        background: rgba(255, 255, 255, 0.24);
+      }
+      .picker-settings {
+        flex: none;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+        padding: 8px 6px 0 0;
+        border-top: 1px solid var(--glass-line);
+      }
+      .picker-settings select {
+        width: 100%;
+        min-width: 0;
+      }
+      #picker input[type='number'] {
+        height: 30px;
+        padding: 0 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .picker-pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 64px;
+        gap: 8px;
+      }
+      .picker-pair input {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      #picker .actions button {
+        flex: 1 1 auto;
+        padding-inline: 8px;
+        white-space: nowrap;
+      }
+      #picker-grow:not(:disabled) {
+        background: rgba(255, 255, 255, 0.92);
+        color: #1b1630;
+        font-weight: 600;
+      }
+      #picker-error {
+        flex: none;
+        margin: 0;
+        padding: 8px 10px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.08);
+        border-left: 3px solid #ff8a7a;
+        font: inherit;
+        font-size: 12px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-height: 22vh;
+        overflow-y: auto;
+      }
+      #picker-error b {
+        display: block;
+        margin-bottom: 3px;
+        font-weight: 600;
+      }
       #drop {
         position: fixed;
         inset: 14px;
@@ -884,7 +998,8 @@
       html.curtained #curtain {
         display: flex;
       }
-      body.plants #hint {
+      body.plants #hint,
+      body.picking #hint {
         display: none;
       }
 
@@ -975,6 +1090,9 @@
             <option value="palette-untended">Reference palette, untended</option>
             <option value="palette-ivy">Reference palette with ivy, trained</option>
           </optgroup>
+          <optgroup label="Your own choice">
+            <option value="custom">Choose plants...</option>
+          </optgroup>
           <optgroup label="Not a simulation">
             <option value="fixture">Render test plant (hand-made)</option>
           </optgroup>
@@ -1021,6 +1139,31 @@
           <p class="note" id="still-note" hidden></p>
         </div>
       </details>
+    </div>
+
+    <div id="picker" class="card" hidden>
+      <h2>Plants at each root station</h2>
+      <p class="note" id="picker-intro">One taxon to a station. Choose, then Grow.</p>
+      <pre id="picker-error" role="alert" hidden></pre>
+      <ol id="picker-stations" aria-label="Root stations"></ol>
+      <div class="picker-settings">
+        <div class="picker-pair">
+          <label class="field"
+            ><span>Care</span>
+            <select id="picker-care" title="Trained: tied in and pruned on its routine, the plant a client is shown. Untended: planted and left, to show what the care is worth.">
+              <option value="trained">Kept by the gardener</option>
+              <option value="untended">Nobody gardening</option>
+            </select></label
+          >
+          <label class="field"><span>Years</span><input type="number" id="picker-years" min="1" max="30" step="1" value="10" aria-label="Years to grow, 1 to 30" /></label>
+        </div>
+        <div class="actions">
+          <button type="button" id="picker-grow">Grow</button>
+          <button type="button" id="picker-save" title="The plan as a .planting.json file, to open again with A design... or to hand to npm run simulate -- design">Save planting file</button>
+        </div>
+        <button type="button" id="picker-save-structure" hidden title="This built-in structure as a .bower.json description: a planting file names stations, and the description says where they are">Save structure file</button>
+        <p class="note" id="picker-status" role="status"></p>
+      </div>
     </div>
 
     <div id="log" class="card" hidden>

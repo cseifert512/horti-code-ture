@@ -4,17 +4,18 @@
 // plant of one taxon closely, on a small standard frame (?specimen=<taxonId>).
 // The viewer holds no growth logic: it reads core data and calls core functions.
 import * as THREE from 'three';
-import { type Bower, Calendar, DEFAULT_SITE, type DesignReport, type ExposureField, type RenderData, type Site, type SupportEdge, type Viewpoint, compassWords, exposureField, foliageFromRenderData, makeHemisphereBower, makeVaultBower, sunAt } from '@horti/core';
+import { type Bower, Calendar, DEFAULT_SITE, type DesignReport, type ExposureField, HEMISPHERE_VIEWPOINTS, type RenderData, type Site, type SupportEdge, VAULT_VIEWPOINTS, type Viewpoint, compassWords, exposureField, foliageFromRenderData, makeHemisphereBower, makeVaultBower, sunAt } from '@horti/core';
 import yardBower from '../../../examples/arbour-in-a-yard.bower.json?raw';
 import arbourPlanting from '../../../examples/arbour.planting.json?raw';
 import specimenFrame from '../../../examples/specimen-frame.bower.json?raw';
-import { ARBOUR_EXAMPLE, DesignDesk, type DesignFile } from './design/open.ts';
+import { ARBOUR_EXAMPLE, DesignDesk, type DesignFile, type OpenedDesign } from './design/open.ts';
+import { MAX_YEARS, MIN_YEARS, type PickerChoice, encodePicks, pickerShell, planFromPicks, plantingFileName, plantingFileText, readPickerAddress, stationsOf, structureFileName, structureFileText, taxaOffered, writePickerAddress } from './design/picker.ts';
 import { type ReachView, type StationField, materials, reachView, routeInfo, stationField } from './overlay/model.ts';
 import { ExposureOverlay, type LightMeasure, type LightMonth, type LightScale } from './overlay/exposure.ts';
 import { ReachOverlay } from './overlay/view.ts';
 import { makeTestPlant } from './plant/fixture.ts';
 import { loadLooks, lookFault, lookFor } from './plant/registry.ts';
-import { type Care, type Planting, SPECIES_IDS, canGrow, growDesign, growFault, growScenario } from './plant/scenario.ts';
+import { type Care, type Planting, SPECIES_IDS, type ScenarioRun, canGrow, growDesign, growFault, growScenario, growable } from './plant/scenario.ts';
 import { shared } from './plant/shaders.ts';
 import { PlantView, makePlantMaterials } from './plant/view.ts';
 import { renderReport } from './report/panel.ts';
@@ -25,13 +26,14 @@ import { renderStill, saveBlob } from './scene/still.ts';
 import { frameSubject, frameWhole } from './specimen/framing.ts';
 import { SPECIMEN_VIEWS, SPECIMEN_YEARS, type SpecimenView, type Subject, describeSubject, findSubject, specimenPlan } from './specimen/specimen.ts';
 import { type BuiltStructure, buildStructure } from './structure/build.ts';
+import { toThree } from './structure/frames.ts';
 import { makeBarkTextures, makeLeafTexture } from './textures.ts';
 
 /** The two reference shells, or a design read from files. */
 type BowerKey = 'vault' | 'hemisphere' | 'design';
-/** Where the plants shown come from: nowhere, the growth engine, or the hand-made render test. */
-type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'fixture';
-const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'fixture'];
+/** Where the plants shown come from: nowhere, the growth engine, the plant picker, or the hand-made render test. */
+type PlantSource = 'none' | 'trained' | 'untended' | 'mixed-trained' | 'mixed-untended' | 'palette-trained' | 'palette-untended' | 'palette-ivy' | 'custom' | 'fixture';
+const PLANT_SOURCES: readonly PlantSource[] = ['none', 'trained', 'untended', 'mixed-trained', 'mixed-untended', 'palette-trained', 'palette-untended', 'palette-ivy', 'custom', 'fixture'];
 /** The sources that are scenarios of the growth engine. */
 const SCENARIOS: Partial<Record<PlantSource, { planting: Planting; care: Care }>> = {
   trained: { planting: 'wisteria', care: 'trained' },
@@ -276,7 +278,8 @@ function showDesign(): void {
   if (d) {
     name.replaceChildren(d.bower.name, Object.assign(document.createElement('small'), { textContent: `${d.files.bower}${d.files.planting ? ` + ${d.files.planting}` : ' · no planting plan'}${shown ? '' : ' · not on show'}` }));
   }
-  el('design-years-field').hidden = !(shown && d?.plan);
+  // the picker has its own years: the plan the design came with is not on show
+  el('design-years-field').hidden = !(shown && d?.plan && state.plants !== 'custom');
   el<HTMLInputElement>('design-years').value = String(state.years);
   const warnings = el('design-warnings');
   warnings.hidden = !(shown && d && d.warnings.length);
@@ -337,6 +340,244 @@ window.addEventListener('drop', (e) => {
   el('drop').hidden = true;
   void readFiles(e.dataTransfer?.files);
 });
+
+// ---- the plant picker: one taxon per root station, chosen here -------------------------
+// The choices become a planting plan (design/picker.ts), which the core checks and
+// grows by the same path as a plan read from a file (growDesign). Nothing about
+// plants is decided here.
+
+/** What has been chosen on one structure, and the run last grown from it. */
+interface PickerDesk {
+  picks: Map<string, string>;
+  care: Care;
+  years: number;
+  /** The design the picks belong to; null on a built-in shell. A new design starts afresh. */
+  design: OpenedDesign | null;
+  grown: { run: ScenarioRun; address: string } | null;
+  /** Why the latest attempt was not grown, in words. */
+  error: string | null;
+}
+const pickers = new Map<BowerKey, PickerDesk>();
+/** The built-in shells as the picker plants them, built once so that the same stations are drawn and grown on. */
+const pickerShells = new Map<'vault' | 'hemisphere', Bower>();
+
+/** The picker's choices for the structure on show. */
+function pickerNow(): PickerDesk {
+  const key = state.bowerKey;
+  const design = key === 'design' ? desk.current : null;
+  let p = pickers.get(key);
+  if (!p || p.design !== design) {
+    p = { picks: new Map(), care: 'trained', years: state.years, design, grown: null, error: null };
+    pickers.set(key, p);
+  }
+  return p;
+}
+
+/** The structure the picker plants: every rib foot of the vault, every meridian of the hemisphere, or the design's own stations. */
+function pickerBower(): Bower {
+  const key = state.bowerKey;
+  if (key === 'design') return desk.current!.bower;
+  let shell = pickerShells.get(key);
+  if (!shell) pickerShells.set(key, (shell = pickerShell(key)));
+  return shell;
+}
+
+const pickerViewpoints = (): readonly Viewpoint[] => (state.bowerKey === 'design' ? (desk.current?.viewpoints ?? []) : state.bowerKey === 'vault' ? VAULT_VIEWPOINTS : HEMISPHERE_VIEWPOINTS);
+const choiceAddress = (p: PickerDesk): string => `${encodePicks(p.picks)}|${p.care}|${p.years}`;
+
+/** The taxa offered, by label; each marked where its look in this viewer is still the stand-in. */
+function offered() {
+  return taxaOffered(growable(), (id) => {
+    try {
+      return lookFor(id).provisional;
+    } catch {
+      return true;
+    }
+  });
+}
+
+/** Fill the picker panel for the structure on show, or hide it when the picker is not the planting chosen. */
+function showPicker(): void {
+  const box = el('picker');
+  const open = state.plants === 'custom' && !specimen;
+  box.hidden = !open;
+  document.body.classList.toggle('picking', open);
+  if (!open) {
+    markStation(null);
+    return;
+  }
+  const p = pickerNow();
+  const taxa = offered();
+  const list = el('picker-stations');
+  list.replaceChildren(
+    ...stationsOf(pickerBower()).map((s) => {
+      const li = document.createElement('li');
+      li.dataset['station'] = s.id;
+      const label = document.createElement('label');
+      label.className = 'field';
+      const name = document.createElement('span');
+      name.append(Object.assign(document.createElement('b'), { textContent: s.id }), s.note ?? '');
+      const select = document.createElement('select');
+      select.append(new Option('Nothing here', ''));
+      for (const t of taxa) select.append(new Option(t.provisional ? `${t.label} (stand-in look)` : t.label, t.id));
+      select.value = p.picks.get(s.id) ?? '';
+      // the whole name, where the list is too narrow to show it
+      const titled = () => {
+        li.classList.toggle('chosen', select.value !== '');
+        select.title = select.selectedOptions[0]?.textContent ?? '';
+      };
+      titled();
+      select.addEventListener('change', () => {
+        if (select.value) p.picks.set(s.id, select.value);
+        else p.picks.delete(s.id);
+        titled();
+        showPickerStatus();
+      });
+      // which station this is, in the picture
+      select.addEventListener('focus', () => markStation(s.id));
+      li.addEventListener('pointerdown', () => markStation(s.id));
+      label.append(name, select);
+      li.append(label);
+      return li;
+    }),
+  );
+  el<HTMLSelectElement>('picker-care').value = p.care;
+  el<HTMLInputElement>('picker-years').value = String(p.years);
+  el('picker-save-structure').hidden = state.bowerKey === 'design';
+  el('picker-intro').textContent = `${stationsOf(pickerBower()).length} stations. Choose, then Grow.`;
+  markStation(marked && pickerBower().rootStations.some((s) => s.id === marked) ? marked : null);
+  showPickerStatus();
+  showDesign();
+}
+
+/** Say where the choice stands against what is on show, and why the latest attempt was refused, if it was. */
+function showPickerStatus(): void {
+  const p = pickerNow();
+  const status = el('picker-status');
+  const changed = p.grown !== null && p.grown.address !== choiceAddress(p);
+  const n = p.picks.size;
+  const chosen = `${n} ${n === 1 ? 'station' : 'stations'} chosen`;
+  status.textContent = !p.grown ? `${chosen}. Nothing grown yet.` : changed ? `${chosen}. Changed since it was grown: press Grow to see it.` : `On show: ${p.grown.run.data.plants.length} plants, ${p.care === 'trained' ? 'kept by the gardener (trained)' : 'with nobody gardening (untended)'}, ${p.years} ${p.years === 1 ? 'year' : 'years'}.`;
+  el<HTMLButtonElement>('picker-save').disabled = n === 0;
+  el<HTMLButtonElement>('picker-grow').disabled = n === 0;
+  const error = el('picker-error');
+  error.hidden = !p.error;
+  if (p.error) error.replaceChildren(Object.assign(document.createElement('b'), { textContent: 'Not grown. The picture is as it was.' }), p.error);
+}
+
+/** Grow what is chosen. Anything the core refuses is shown in its words, and what is on show stays. */
+function growPicked(keepDay = false): void {
+  const p = pickerNow();
+  const bowerNow = pickerBower();
+  const result = planFromPicks(p.picks, bowerNow, growable());
+  if (!result.ok) {
+    p.error = result.error;
+    showPickerStatus();
+    return;
+  }
+  let run: ScenarioRun;
+  try {
+    run = growDesign({ bower: bowerNow, plan: result.plan, viewpoints: pickerViewpoints() }, p.care, p.years);
+  } catch (e) {
+    p.error = e instanceof Error ? e.message : String(e);
+    showPickerStatus();
+    return;
+  }
+  p.error = null;
+  p.grown = { run, address: choiceAddress(p) };
+  // the mark is for choosing: it does not stand in the picture of what was grown, nor in a still of it
+  marked = null;
+  showPlants('custom', keepDay);
+  writeAddress(p);
+}
+
+/** Put the choice in the address, so that the planting on show can be linked to. Nothing is reloaded. */
+function writeAddress(p: PickerDesk): void {
+  const choice: PickerChoice = { picks: p.picks, care: p.care, years: p.years };
+  const params = writePickerAddress(new URLSearchParams(location.search), choice);
+  // the structure: an address can name a design only by the example it opens; a design read from files cannot be linked to
+  const example = state.bowerKey !== 'design' ? state.bowerKey : desk.current?.files.bower === 'arbour.bower.json' ? 'arbour' : desk.current?.files.bower === 'arbour-in-a-yard.bower.json' ? 'yard' : null;
+  if (!example) return;
+  params.set('bower', example);
+  history.replaceState(null, '', `${location.pathname}?${params.toString().replaceAll('%3A', ':').replaceAll('%2C', ',')}${location.hash}`);
+}
+
+el<HTMLSelectElement>('picker-care').addEventListener('change', (e) => {
+  pickerNow().care = (e.target as HTMLSelectElement).value === 'untended' ? 'untended' : 'trained';
+  showPickerStatus();
+});
+el<HTMLInputElement>('picker-years').addEventListener('change', (e) => {
+  const input = e.target as HTMLInputElement;
+  const p = pickerNow();
+  const years = Math.round(Number(input.value));
+  p.years = Math.min(MAX_YEARS, Math.max(MIN_YEARS, Number.isFinite(years) ? years : p.years));
+  input.value = String(p.years);
+  showPickerStatus();
+});
+el('picker-grow').addEventListener('click', () => {
+  const button = el<HTMLButtonElement>('picker-grow');
+  button.disabled = true;
+  el('picker-status').textContent = 'Growing...';
+  // let the words be drawn before the run, which takes a few seconds
+  setTimeout(() => {
+    try {
+      growPicked();
+    } finally {
+      button.disabled = false;
+    }
+  }, 30);
+});
+el('picker-save').addEventListener('click', () => {
+  const p = pickerNow();
+  const result = planFromPicks(p.picks, pickerBower(), growable());
+  if (!result.ok) {
+    p.error = result.error;
+    showPickerStatus();
+    return;
+  }
+  saveBlob(new Blob([plantingFileText(result.plan)], { type: 'application/json' }), plantingFileName(pickerBower()));
+});
+el('picker-save-structure').addEventListener('click', () => {
+  if (state.bowerKey === 'design') return;
+  saveBlob(new Blob([structureFileText(pickerBower(), pickerViewpoints())], { type: 'application/json' }), structureFileName(pickerBower()));
+});
+
+// ---- which station a row of the picker is, in the picture ---------------------------------
+/** A ring on the ground at the station and a post standing from it, drawn over everything in the overlay's own colour. */
+const stationMark = (() => {
+  const material = new THREE.MeshBasicMaterial({ color: '#ffd3ea', toneMapped: false, fog: false, depthTest: false, transparent: true, opacity: 0.95, side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.56, 48), material);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.015;
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 2.2, 8), material);
+  post.position.y = 1.1;
+  const group = new THREE.Group();
+  group.add(ring, post);
+  group.renderOrder = 10;
+  for (const m of [ring, post]) m.renderOrder = 10;
+  group.visible = false;
+  return group;
+})();
+stage.overlayScene.add(stationMark);
+/** The station marked in the picture, if one is. */
+let marked: string | null = null;
+
+/** Mark a station in the picture, or none. The station also becomes the design overlay's, so that its reach is there when the overlay is shown. */
+function markStation(stationId: string | null): void {
+  for (const li of el('picker-stations').children) (li as HTMLElement).classList.toggle('marked', (li as HTMLElement).dataset['station'] === stationId);
+  const station = stationId ? bower.rootStations.find((s) => s.id === stationId) : undefined;
+  marked = station ? station.id : null;
+  stationMark.visible = !!station;
+  if (station) {
+    const p = toThree(station.position);
+    stationMark.position.set(p.x, 0, p.z);
+    // as big as the structure asks: a 15 m dome is seen from farther off than a 4 m arbour
+    const size = structure ? structure.bounds.getSize(new THREE.Vector3()) : new THREE.Vector3(4, 4, 4);
+    stationMark.scale.setScalar(Math.min(2.5, Math.max(0.6, Math.max(size.x, size.z) / 6)));
+    if (station.id !== state.stationId) showStation(station.id);
+  }
+  invalidate();
+}
 
 function showMaterials(): void {
   const m = materials(bower);
@@ -498,8 +739,6 @@ function showPlants(source: PlantSource, keepDay = false): void {
   lastReport = null;
   el<HTMLButtonElement>('save-viewpoints').disabled = true;
   el<HTMLSelectElement>('plants').value = source;
-  document.body.classList.toggle('plants', source !== 'none');
-  el('plant-bar').hidden = source === 'none';
   el('log').hidden = true;
   el('report').hidden = true;
   const asked = ++reportAsked;
@@ -508,16 +747,25 @@ function showPlants(source: PlantSource, keepDay = false): void {
   // a scenario is drawn on the Bower it was grown on; anything else on the default one
   const scenario = SCENARIOS[source];
   const design = state.bowerKey === 'design' ? desk.current : null;
-  const run = !scenario
-    ? null
-    : state.bowerKey === 'design'
-      ? design?.plan
-        ? growDesign({ bower: design.bower, plan: design.plan, viewpoints: design.viewpoints }, scenario.care, state.years)
-        : null
-      : growScenario(scenario.planting, state.bowerKey, scenario.care);
-  const on = run?.bower ?? bowerOf(state.bowerKey);
+  // the picker's planting is grown when "Grow" is pressed, before anything on show is taken down
+  const run =
+    source === 'custom'
+      ? (pickerNow().grown?.run ?? null)
+      : !scenario
+        ? null
+        : state.bowerKey === 'design'
+          ? design?.plan
+            ? growDesign({ bower: design.bower, plan: design.plan, viewpoints: design.viewpoints }, scenario.care, state.years)
+            : null
+          : growScenario(scenario.planting, state.bowerKey, scenario.care);
+  // the picker with nothing grown yet shows the structure with every station it offers
+  const planted = source !== 'none' && !(source === 'custom' && !run);
+  document.body.classList.toggle('plants', planted);
+  el('plant-bar').hidden = !planted;
+  const on = run?.bower ?? (source === 'custom' ? pickerBower() : bowerOf(state.bowerKey));
   if (signature(on) !== signature(bower)) showStructure(on, 'keep', true);
-  if (source === 'none') {
+  showPicker();
+  if (!planted) {
     placeSun();
     return;
   }
@@ -664,7 +912,16 @@ function showDay(day: number): void {
   invalidate();
 }
 
-el<HTMLSelectElement>('plants').addEventListener('change', (e) => showPlants((e.target as HTMLSelectElement).value as PlantSource));
+el<HTMLSelectElement>('plants').addEventListener('change', (e) => {
+  const source = (e.target as HTMLSelectElement).value as PlantSource;
+  // the address holds a picker's choice only while it is on show
+  if (source !== 'custom' && new URLSearchParams(location.search).has('pick')) {
+    const params = new URLSearchParams(location.search);
+    for (const k of ['plants', 'pick', 'care']) params.delete(k);
+    history.replaceState(null, '', `${location.pathname}${params.size ? `?${params.toString()}` : ''}${location.hash}`);
+  }
+  showPlants(source);
+});
 el<HTMLInputElement>('plant-day').addEventListener('input', (e) => {
   state.playing = false;
   showDay(Number((e.target as HTMLInputElement).value));
@@ -1083,6 +1340,8 @@ canvas.addEventListener('pointerleave', () => {
 });
 canvas.addEventListener('pointerdown', (e) => {
   pressAt = { x: e.clientX, y: e.clientY };
+  // a hand on the picture lets go of the picker's station mark
+  if (marked) markStation(null);
 });
 canvas.addEventListener('pointerup', (e) => {
   const moved = pressAt ? Math.hypot(e.clientX - pressAt.x, e.clientY - pressAt.y) : Infinity;
@@ -1239,6 +1498,17 @@ if (specimen) {
     if (!url.has('plants')) state.plants = 'trained';
   }
   showBower(state.bowerKey, viewFromUrl(), Number.isFinite(state.budgetM), true);
+  // ?plants=custom&pick=<stationId>:<taxonId>,...&care=&years=: the picker filled in from the address, and grown if all of it fits
+  if (state.plants === 'custom') {
+    const p = pickerNow();
+    const read = readPickerAddress(url, pickerBower(), growable());
+    p.picks = new Map(read.picks);
+    p.care = read.care;
+    p.years = read.years;
+    if (read.faults.length) p.error = `The address asks for what cannot be grown here:\n${read.faults.map((f) => `- ${f}`).join('\n')}`;
+    else if (p.picks.size) growPicked(true);
+    showPicker();
+  }
   showOverlay(state.overlay);
   if (url.get('ui') === '0') document.body.classList.add('bare');
 }
