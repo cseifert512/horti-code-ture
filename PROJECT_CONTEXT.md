@@ -77,6 +77,8 @@ Select a palette by local climate, geometry, support mechanism, root conditions,
 
 Bower's gardeners will cultivate the architectural outcome. Pruning, training, plant replacement, and inspection are not failures of the algorithm; they are part of the design process. The software should make this labour imaginable, schedulable, and eventually measurable.
 
+**The gardened plant is the baseline (owner's decision, 12 November 2026).** A Bower will have an in-house gardener, and the wisteria will be pruned. The plant a client is shown, and the one a design is judged by, is therefore the plant as that gardener keeps it: trained, tied in and pruned on its own routine. A run with nobody gardening is a comparison that shows what the care is worth; it is not a prediction of what will stand on the building. It follows that every taxon needs its routine of care in the model, as the two wisterias and the cut-down clematis already have theirs, and that a fault which shows only on a neglected plant matters less than one that shows on a kept one.
+
 A composition that only works if nobody ever prunes, if plants magically attach themselves to unsuitable timber, or if an inaccessible crown needs weekly attention is not an acceptable design.
 
 ### 3.5 Inform fabrication and engineering decisions
