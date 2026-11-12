@@ -1,105 +1,108 @@
 {
   "schemaVersion": 1,
   "taxonId": "rosa-the-generous-gardener",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one. Its numbers are chosen for this rose from what the breeder, the RHS and growers say of it (its height, the size of its flowers, its season, how a climbing rose is trained and pruned) and from one measured garden rose of another cultivar; none has been measured on a plant of 'The Generous Gardener'. It flowers on side shoots from canes that a gardener has tied in, and shows repeat flowering as a steady succession, not as flushes. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "facing_out",
+    "fruitHeld": "facing_out",
+    "basis": "A spray carries on the line of the side shoot it ends, and its flowers nod on their own stalks: the breeder describes flowers that \"nod gracefully on the stem\" (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose). The nodding is drawn by the flower model. That the hips are held where the flowers were is assumed: a hip is the swollen base of the flower it follows."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 85,
+      "value": 66,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Early March. No dated record of this cultivar breaking bud was found. The RHS has climbing roses pruned between December and February, before growth starts, and fed in March or April \"before flowering\" (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide, https://www.rhs.org.uk/plants/roses/growing-guide); David Austin describes roses responding \"with remarkable vigour\" as the days lengthen through spring (https://eu.davidaustinroses.com/blogs/news/what-the-longest-day-reveals-about-roses). The day is a choice inside that."
     },
     "phenology.growthEndDoy": {
-      "value": 275,
+      "value": 288,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Mid October. A repeat-flowering rose goes on making flowering growth into autumn: \"a late flourish in October, or even November\" (https://www.crocus.co.uk/features/_/articleid.1321/). No measured date; the engine also spreads the year's extension evenly between budburst and this day, which a rose that grows in flushes does not do."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        90,
+        72,
+        120
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Leaves open from mid March to the end of April as the shoots of the year lengthen. A choice that follows from the budburst date; not observed. Nearly every leaf of this plant stands on growth of the year, and opens as that growth is made, so this window matters only to the nursery cane."
+    },
+    "phenology.autumnColourDoy": {
+      "value": [
+        305,
+        340
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "November. Garden roses of this kind keep their leaves late and yellow a little before they drop; no source read describes autumn colour in this cultivar, and none is claimed for it. The dates are a choice."
+    },
+    "phenology.leafFallDoy": {
+      "value": [
+        322,
+        360
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Mid November to Christmas. The RHS lists the plant as deciduous (https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details) and has climbing roses pruned from December and renovated \"when the rose is leafless\" between late autumn and late winter (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide). In mild winters some leaves hang on longer than this; the engine treats the plant as fully deciduous."
+    },
+    "phenology.floralInitiationDoy": {
+      "value": [
+        125,
         140
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
-    },
-    "phenology.autumnColourDoy": {
-      "value": [
-        283,
-        310
-      ],
-      "unit": "day of year",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
-    },
-    "phenology.leafFallDoy": {
-      "value": [
-        320,
-        350
-      ],
-      "unit": "day of year",
-      "status": "provisional_design_assumption",
-      "basis": "Loses most of its leaves over a UK winter. Dates are a placeholder."
-    },
-    "phenology.floralInitiationDoy": {
-      "value": [
-        150,
-        165
-      ],
-      "unit": "day of year",
-      "status": "provisional_design_assumption",
-      "basis": "Buds are taken to form on the shoots of the year in early June. No dated source."
+      "basis": "A rose forms its flower buds at the tips of the shoots of the year as they grow, with no resting stage; they show about a month before they open. The second day is the one on which the engine gives each flowering side shoot its bud (20 May), a little before the first flowers of June. No dated source."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        182,
-        288
+        157,
+        293
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Repeat-flowering: flowers open in succession across the RHS envelope of midsummer to autumn (1 July to 15 October)."
+      "basis": "6 June to 20 October. The breeder: \"Repeat flowering\", in flushes \"from late spring to early winter\" (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose). Repeat-flowering roses give \"a main flush in June\" with \"five to six weeks between flushes\" and \"a late flourish in October, or even November\" (https://www.crocus.co.uk/features/_/articleid.1321/); David Austin: \"By late June, many varieties are producing an abundance of blooms\" (https://eu.davidaustinroses.com/blogs/news/what-the-longest-day-reveals-about-roses); the RHS: \"repeat-flowering from midsummer to autumn\" (https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details). The engine opens one spray on each flowering side shoot on a day drawn evenly from this window, so it shows a steady succession and not a June flush followed by lesser ones: growers of this cultivar report later bloom as \"sporadic, into September and October, but nothing like the main flush\" (https://www.helpmefind.com/gardening/l.php?l=2.37005&tab=32)."
     },
     "phenology.petalFallDoy": {
       "value": [
-        146,
-        166
+        175,
+        318
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used: each spray lasts phenology.flowerLastsDays from the day it opens. Present because every model carries every parameter; the window is the opening window moved on by the life of a spray."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        8,
-        16
+        16,
+        26
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "How long one flower lasts. A placeholder."
+      "basis": "How long one spray is in flower: its two to four flowers open in succession (\"Flowers open in succession\", https://eu.davidaustinroses.com/blogs/news/what-the-longest-day-reveals-about-roses) and each lasts some days. Growers say single blooms of this cultivar \"fall apart quickly\" (https://www.helpmefind.com/gardening/l.php?l=2.37005&tab=32). No count of days was found; a choice."
     },
     "extension.leaderMPerSeason": {
-      "value": 1.5,
+      "value": 2.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: grows up to 4.5 m, in a size band reached in 5 to 10 years. Not a growth rate; a placeholder of that order."
+      "basis": "Length a main cane adds in a full season. The breeder gives the plant 15 ft (4.5 m), the height of \"a 3-year-old established rose, pruned once a year\" (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose), and the RHS \"up to 4.5m\" (https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details), in a size band reached in 5 to 10 years; one grower records a first-year plant \"growing 12 feet tall by the end of the summer\" and another that it took \"many seasons\" to make canes long enough to climb (https://www.helpmefind.com/gardening/l.php?l=2.37005&tab=32). A height is not a growth rate: 2.2 m a season is a choice that brings a cane to its length in about three seasons."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        1,
-        0.6,
-        0.4
+        1.4,
+        0.8
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate. Not measured."
+      "basis": "Branch canes are taken to grow more slowly than the main canes they spring from. Not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 1,
+      "value": 1.5,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Each year the canes throw the flowering side shoots that carry the display. Rate is a placeholder."
+      "basis": "Not used: this model throws no free long shoots (organs.whipShareOfNodes is 0). Present because every model carries every parameter."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -107,67 +110,67 @@
         0.8
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A newly planted rose is taken to make half its later growth in its first season and four fifths in its second, while it roots. No measured figure for a rose; a choice."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
         0,
         1,
-        2
+        2,
+        3,
+        5
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "New canes from the base over the first three seasons. A placeholder."
+      "basis": "Two canes on the plant as it comes from the nursery, then a new cane from the base in each of the next three seasons and one more in the sixth: six in all. The RHS, renovating a climbing rose, keeps \"no more than six young, vigorous stems\" (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide). The engine never takes an old cane out, as a gardener does, so six is where it stops."
     },
     "architecture.nurseryCaneM": {
-      "value": 0.5,
+      "value": 0.4,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant. Not measured."
+      "basis": "A bare-root or potted climbing rose arrives cut back to short canes. Not measured."
     },
     "architecture.maxBranchOrder": {
       "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Main canes carry branch canes, which carry one further order. The short flowering side shoots are counted apart (sideShoots)."
     },
     "architecture.leaderLengthM": {
       "value": [
-        3,
-        4.5
+        3.4,
+        4.6
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: grows up to 4.5 m. Used as a cap on cane length; a height is not a route length, so this is a placeholder."
+      "basis": "The length at which a main cane stops. The breeder gives 15 ft (4.5 m) as a climber (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose), the RHS \"up to 4.5m\" (https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details), HelpMeFind 150 to 450 cm (https://www.helpmefind.com/rose/l.php?l=2.37005). Those are heights; a cane tied along a lattice is longer than the height it reaches, so this is a choice of that order and not a reading."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        1.2,
-        0.6,
-        0.3
+        1.5,
+        0.7
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the cane. Not measured."
+      "basis": "Branch canes are taken to be about a third the length of a main cane, and theirs half that again. Not measured."
     },
     "architecture.lateralLengthSpread": {
-      "value": 0.3,
+      "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Branch canes vary in length by about a third either way. Not measured."
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
-        0.9,
-        0.75,
-        0.55
+        0.4,
+        0.25
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The chance that a cane tied past a crossing of the lattice later throws a branch cane there. A climbing rose branches from its tied-in canes, the more so where they are bent towards the level; how often has not been counted. A choice that fills the specimen frame with a framework of the order a trained plant has, not a thicket."
     },
     "architecture.budExtraDormancyChance": {
       "value": 0.5,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Half the buds that will make a branch cane wait a year or more before they do, so that the framework fills over several years. No source for a rose; a choice."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
@@ -176,62 +179,62 @@
       ],
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "See architecture.budExtraDormancyChance."
     },
     "architecture.maxStemsPerRoute": {
       "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Canes a gardener ties along one lath or cable. The RHS spaces training wires 30 cm apart (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide); two canes to a member is a choice for a lattice whose members are farther apart than that."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 3,
+      "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "As architecture.maxStemsPerRoute: a gardener does not bundle canes on a glulam member either."
     },
     "routing.occupancyCost": {
-      "value": 1.6,
+      "value": 2.2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A rose goes where it is tied. The gardener fans the canes out over the support, so a member that already carries a cane is the less likely to be given another. A choice."
     },
     "routing.downhillCostPerM": {
-      "value": 5,
+      "value": 4,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A cane is rarely tied downwards. A choice."
     },
     "routing.uphillBonusPerM": {
-      "value": 1.2,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
-    },
-    "routing.straightOnBonus": {
       "value": 0.6,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The gardener leads canes upwards, but less eagerly than a twiner climbs: the RHS trains the main shoots of a climbing rose \"as horizontal as possible\" to make them flower low down (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide). A choice."
+    },
+    "routing.straightOnBonus": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "A cane is stiff and is tied on along the line it is growing in where it can be. A choice."
     },
     "routing.riserBonus": {
-      "value": 1.4,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
-    },
-    "routing.tierBonus": {
       "value": 1.2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The first cane is led up to the top of the support. A choice."
+    },
+    "routing.tierBonus": {
+      "value": 1.6,
+      "status": "provisional_design_assumption",
+      "basis": "The other canes are tied along the level members, as the RHS advises (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide). A choice."
     },
     "routing.roleDropChance": {
-      "value": 0.12,
+      "value": 0.15,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How often the gardener changes the line of a cane at a crossing. A choice."
     },
     "routing.noise": {
       "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The unevenness of one gardener's tying-in from cane to cane. A choice."
     },
     "routing.giveUpCost": {
       "value": 4.2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A cane with nowhere to go but steeply down is stopped. A choice."
     },
     "attachment.maxGraspDiameterMm": {
       "value": 1,
@@ -243,40 +246,41 @@
       "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to a rose: it does not twine. Present because every model carries every parameter."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to a rose: it does not twine. Present because every model carries every parameter."
     },
     "organs.leafSpacingM": {
       "value": [
-        0.05,
-        0.09
+        0.025,
+        0.04
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Stem between one leaf and the next. On a measured garden rose of another cultivar ('Radrazz') the internodes of a flowering shoot were 1 to 63.5 mm, about 12 to 34 mm in mid shoot (https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2013.00418/full); the long canes of a climber are longer-jointed than that. One spacing serves both the canes and the flowering side shoots of this model, so it lies between the two. Not measured on this cultivar."
     },
     "organs.leafLengthM": {
       "value": [
-        0.08,
-        0.14
+        0.11,
+        0.17
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "The whole leaf, stalk to the tip of the end leaflet. HelpMeFind and NC State call the foliage \"large\" (https://www.helpmefind.com/rose/l.php?l=2.37005, https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/); NC State puts the leaflets in its 1 to 3 inch class. A leaf of five or seven leaflets 4 to 6 cm long is 9 to 15 cm long. Not measured on this cultivar."
     },
     "organs.leavesPerNode": {
       "value": 1,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State Extension plant record: leaf arrangement \"Alternate\". One leaf to a node."
     },
     "organs.spurChance": {
       "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "No spurs are modelled for this plant."
+      "basis": "A rose has no flowering spurs: it flowers at the ends of leafy side shoots (sideShoots)."
     },
     "organs.spurLengthM": {
       "value": [
@@ -285,7 +289,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to a rose: see organs.spurChance. Present because every model carries every parameter."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -294,83 +298,85 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "No spurs are modelled for this plant."
+      "basis": "Not applicable to a rose: see organs.spurChance."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.07,
-        0.1
+        0.155,
+        0.225
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Width of a single flower. A placeholder."
+      "basis": "The width of a spray: two to four flowers, each of the breeder's \"medium\" bloom size, which David Austin gives as about 2 to 3.5 inches (5 to 9 cm) (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose); HelpMeFind gives an average bloom diameter of 2.5 inches and \"in small clusters\" (https://www.helpmefind.com/rose/l.php?l=2.37005). Two flowers side by side and the gap between them. The width of a spray is not given by any source: it is worked out from the bloom size."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.1,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "The share of older nodes that throw a flowering side shoot each year. A placeholder."
+      "basis": "No free long shoots. The long shoots a climbing rose makes each year are the canes a gardener ties in, which this model grows as tied canes; those left over are tied in or shortened in autumn (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide). The engine has no routine that does that for a rose, and a shoot it left would stand bare for ever, so none is thrown."
     },
     "organs.whipsPerYearMax": {
-      "value": 80,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "See organs.whipShareOfNodes."
     },
     "organs.whipLengthM": {
       "value": [
-        0.2,
-        0.5
+        1,
+        2
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a flowering side shoot. A placeholder."
+      "basis": "Not used: see organs.whipShareOfNodes. Present because every model carries every parameter."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "basis": "RHS plant record: foliage \"Deciduous\". A leaf lasts the season it grew in."
     },
     "organs.clearStemHeightM": {
-      "value": 0.3,
+      "value": 0.4,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "The base of a climbing rose is bare: the RHS sets the lowest training wire 45 cm above the ground (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide), and a grower of this cultivar reports \"hardly any leaves until you get to the top of the plant\" (https://www.helpmefind.com/gardening/l.php?l=2.37005&tab=32). A choice of that order."
     },
     "flowering.competenceYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its second season. A placeholder."
+      "basis": "Flowers from its second summer: the side shoots that flower break from canes made the year before. A rose planted in spring may give a few flowers in its first summer; the model gives none."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.5,
+        0.6,
+        0.85,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "A young plant is taken to flower on fewer of its side shoots. Not measured."
     },
     "flowering.spurFloralChance": {
-      "value": 0.85,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to a rose: it has no spurs."
     },
     "flowering.unprunedFactor": {
-      "value": 0.5,
+      "value": 1,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to a rose: this factor belongs to spur pruning."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 10,
+      "value": 0,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flowers per metre of the growth of the year, over the whole season. A placeholder."
+      "basis": "No flowers along the canes themselves. A rose flowers at the end of a leafy shoot, never from a leaf node of a long cane, so every flower of this model is the spray at the end of a side shoot (sideShoots.terminalFlowerShare). In life a strong new cane may also end in a spray late in its first summer; that is left out."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.15,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used: see flowering.currentSeasonFlowersPerM."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -379,7 +385,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to a rose: this is the summer cut of a spur-pruned plant. Present because every model carries every parameter."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -388,119 +394,172 @@
       ],
       "unit": "buds",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to a rose: this is the winter cut of a spur-pruned plant. Present because every model carries every parameter."
     },
     "regrowth.shootsPerCut": {
       "value": [
         1,
-        2
+        3
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A rose cane cut hard breaks from the buds below the cut, commonly two or three of them. Not counted on this cultivar."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 2.6,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A shoot 3.2 mm thick where it is new: of the order of the stalk under a spray and the tip of a side shoot. A cane tip is stouter than this. Not measured."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 10,
+      "value": 16,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Gives a main cane that carries ten metres of branch canes a base about 20 mm thick, which is of the order of the old canes of a climbing rose. Not measured."
     },
     "thickening.branchShare": {
       "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A branch cane adds nearly all of its own section to the cane that bears it. Not measured."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.35,
+      "status": "provisional_design_assumption",
+      "basis": "The share of sprays that leave hips. The cultivar sets them where the spent flowers are left: \"lovely orange hips in the autumn\" (https://www.provendernurseries.co.uk/factsheets/rosa-the-generous-gardener-ausdrawn); a vase of its hips, \"rather fat and rosy orange\", was picked in late December (https://teddingtongardener.com/2013/12/22). How freely it sets them has not been counted. The RHS has climbing roses deadheaded through the season, and stops in midsummer only where hips are wanted (https://www.rhs.org.uk/plants/roses/growing-guide). The engine cannot deadhead by date, so one share stands for both: about a third of sprays are taken to be left and to set."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.085,
+        0.115
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The length of the cluster of hips a spray leaves, from the end of the side shoot to the far end of the hips: a main stalk of about 3 cm, a stalk of about 5 cm to each hip and a hip of 18 to 26 mm. No source gives the size of the hips: the only measure found is NC State's 1 to 3 inch class (https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/) and \"rather fat\" (https://teddingtongardener.com/2013/12/22). Worked out from those, not measured."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        35,
+        50
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A hip is taken to reach its size five to seven weeks after the petals fall. Not measured."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        250,
+        335
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Hips colour between early September and the end of November: \"orange hips in the autumn\" (https://www.provendernurseries.co.uk/factsheets/rosa-the-generous-gardener-ausdrawn). Hips set by the last flowers of the year are full grown too late to colour, and stay green until they go with their shoot."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        20,
+        70
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Hips hang on the bare plant through the winter (picked in late December: https://teddingtongardener.com/2013/12/22; a winter food for thrushes and blackbirds: https://www.rhs.org.uk/plants/roses/growing-guide) and are taken to go between late January and early March, before growth starts. Not observed."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to a rose: it has no tendrils."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to a rose: see appendages.tendrilNodePattern."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to a rose: its leaf stalks do not coil."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to a rose: see appendages.leafStalkCoilShare."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to a rose: it makes no clinging rootlets."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable to a rose: see appendages.aerialRootPatchSpacingM."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0.02,
+        0.07
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Stem between one prickle and the next. Sources disagree about how armed this cultivar is: NC State calls it \"nearly prickle-free\" (https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/), while growers call it \"thorny, but not more than a normal thorny rose\" and the taxon file records thorns as a hazard near the public. The model takes the cautious reading, a moderately armed cane. Not counted on a plant."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0.0044,
+        0.0084
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not measured on this cultivar. The prickles of another climbing rose, Rosa arvensis 'Splendens', were 4.8 mm high (quartiles 4.4 to 5.4) on slender shoots and 7.5 mm (6.2 to 8.4) on stout ones (https://pmc.ncbi.nlm.nih.gov/articles/PMC4667892/); the range spans the two."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The flowering side shoots of a climbing rose break from canes made in an earlier year: the RHS keeps the framework and shortens the \"flowered side shoots\" each winter (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide)."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 14,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "About half the buds along an older cane break into a side shoot each spring. On a cane trained towards the level nearly every bud breaks, on an upright one only the uppermost; the engine does not tell the two apart. Not counted on a plant."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.2,
+        0.6
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A flowering shoot of a measured garden rose of another cultivar had 10 to 16 leaves on internodes of about 12 to 34 mm (https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2013.00418/full), which is a shoot of this order. Not measured on this cultivar."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 1,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A side shoot flowers in the summer it grows and is gone before the next: the RHS cuts flowered side shoots back by two thirds in winter (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide), and new ones break from what is left. The engine sheds the whole shoot at the next budburst and starts another from the cane."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.75,
+      "status": "provisional_design_assumption",
+      "basis": "Three side shoots in four end in a spray; the rest are blind. Not counted on a plant."
     }
   }
 }

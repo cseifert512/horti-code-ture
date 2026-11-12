@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "rosa-the-generous-gardener",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous climbing rose",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "basis": "RHS plant record: \"A climbing rose up to 4.5m high\"; foliage \"Deciduous\", habit \"Climbing\". The breeder: \"strong, elegantly arching growth\"."
+    },
+    "habit.heightM": {
+      "value": 4.5,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose",
+      "basis": "The breeder: 15 ft (4.5 m), the height of \"a 3-year-old established rose, pruned once a year\", measured at the first flush in June. The RHS record says \"up to 4.5m\" and puts it in its 4 to 8 m class; HelpMeFind gives 150 to 450 cm."
+    },
+    "habit.spreadM": {
+      "value": [2.5, 4],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "basis": "RHS plant record: ultimate spread 2.5 to 4 metres. HelpMeFind gives a width of 120 cm and NC State 3 to 4 ft, which are the plant grown as a shrub."
+    },
+    "stem.habit": {
+      "value": "arching canes that do not hold on by themselves",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/roses/climbing/pruning-guide",
+      "basis": "RHS, of climbing roses: \"not self-clinging\", needing trellis or wires to which the shoots are tied. NC State, of this cultivar: habit \"Arching, climbing\"."
+    },
+    "stem.colourYoung": {
+      "value": ["green", "red-burgundy"],
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State Extension plant record: stem colour \"Green\" and \"Red/Burgundy\", surface \"Smooth (glabrous)\". A grower describes dark foliage with \"attractive burgandy\" new growth (https://www.houzz.com/discussions/1577723/please-comment-on-austin-s-the-generous-gardener)."
+    },
+    "stem.barkOld": {
+      "value": null,
+      "status": "unknown"
+    },
+    "stem.prickles": {
+      "value": "prickly, by most growers' accounts; sources disagree",
+      "status": "provisional_design_assumption",
+      "basis": "NC State calls the stems \"nearly prickle-free\" (https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/) and one US nursery lists the rose as nearly thornless. Growers say otherwise: \"It is thorny, but not more than a normal thorny rose\" (https://www.houzz.com/discussions/1577723/please-comment-on-austin-s-the-generous-gardener). The breeder says nothing. The taxon file records thorns as a hazard beside public paths, and the drawing follows that: a moderately armed cane."
+    },
+    "stem.prickleBaseLengthToHeight": {
+      "value": [1.2, 1.45],
+      "status": "provisional_design_assumption",
+      "basis": "Measured on another climbing rose, not on this one: the prickles of Rosa arvensis 'Splendens' were 4.8 mm high on a base 5.9 mm long (the smaller kind) and 7.5 mm high on a base 10.9 mm long (the larger), medians (Gallenmueller and others 2015, https://pmc.ncbi.nlm.nih.gov/articles/PMC4667892/). The ratio is borrowed for want of any measurement of an English rose."
+    },
+    "stem.prickleBaseWidthToHeight": {
+      "value": [0.37, 0.4],
+      "status": "provisional_design_assumption",
+      "basis": "As stem.prickleBaseLengthToHeight, from the same measurements of Rosa arvensis 'Splendens': bases 1.9 and 2.8 mm wide under prickles 4.8 and 7.5 mm high."
+    },
+    "stem.prickleShape": {
+      "value": "hooked, broad at the base, flattened along the stem",
+      "status": "provisional_design_assumption",
+      "basis": "No source describes the prickles of this cultivar. Drawn as the prickles of large-flowered garden roses are: a guess of kind, not a reading."
+    },
+    "leaf.arrangement": {
+      "value": "alternate",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State Extension plant record: leaf arrangement \"Alternate\"."
+    },
+    "leaf.division": {
+      "value": "odd-pinnate",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State: \"pinnately compound and with an odd number (3-11) of leaflets\"."
+    },
+    "leaf.leafletCountRecorded": {
+      "value": [3, 11],
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State: \"an odd number (3-11) of leaflets\". The range the record gives, which is that of roses at large and not a count on this cultivar."
+    },
+    "leaf.leafletCount": {
+      "value": [5, 7],
+      "status": "provisional_design_assumption",
+      "basis": "The usual numbers on a garden rose of this kind: a measured garden rose of another cultivar bore leaves of five or seven leaflets (https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2013.00418/full). Not counted on this cultivar; the record gives only 3 to 11."
+    },
+    "leaf.leafletCountUnderFlower": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "On roses the uppermost leaves of a flowering shoot are reduced, commonly to three leaflets; the same measured rose bore leaves of one to nine. Drawn on the shortest leaves only. Not counted on this cultivar."
+    },
+    "leaf.leafletShape": {
+      "value": "ovate",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State Extension plant record: leaf shape \"Ovate\"."
+    },
+    "leaf.margin": {
+      "value": "serrate",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State Extension plant record: leaf margin \"Serrate\"."
+    },
+    "leaf.surface": {
+      "value": "glossy, hairless",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State: leaf feel \"Glossy\", hairs \"None\". The RHS: \"glossy green leaves\". The breeder: \"polished dark green foliage\"."
+    },
+    "leaf.colour": {
+      "value": "dark green",
+      "status": "published_plant_profile",
+      "source": "https://www.helpmefind.com/rose/l.php?l=2.37005",
+      "basis": "HelpMeFind: \"Large, glossy, dark green foliage\". NC State: \"Glossy dark green foliage\". The breeder: \"polished dark green foliage\"."
+    },
+    "leaf.colourYoung": {
+      "value": "burgundy",
+      "status": "provisional_design_assumption",
+      "basis": "One grower's account of the plant: dark foliage with \"attractive burgandy\" new growth (https://www.houzz.com/discussions/1577723/please-comment-on-austin-s-the-generous-gardener). NC State gives the stems as green and red-burgundy. No plant record describes the young leaves."
+    },
+    "leaf.colourAutumn": {
+      "value": null,
+      "status": "unknown"
+    },
+    "leaf.leafletLengthM": {
+      "value": [0.025, 0.076],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State Extension plant record: leaf length \"1-3 inches\", a size class of the record and not a measurement; its text calls the foliage large. Read as the leaflet, in metres."
+    },
+    "leaf.leafletWidthToLength": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "An ovate leaflet about three fifths as wide as long. NC State puts both length and width in the same 1 to 3 inch class, which says no more than that. Not measured."
+    },
+    "leaf.stipules": {
+      "value": "joined to the leaf stalk for most of their length, the tips free",
+      "status": "provisional_design_assumption",
+      "basis": "A character of the genus Rosa as floras describe it (stipules adnate to the petiole); no description of this cultivar mentions them, and the flora treatments could not be opened while this file was written. Drawn as in garden roses at large."
+    },
+    "inflorescence.type": {
+      "value": "flowers singly or in small clusters at the ends of leafy side shoots",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State: inflorescence \"Singly or in small clusters\". HelpMeFind: \"in small clusters\". That they end side shoots from the tied-in canes is the RHS's account of climbing roses, which shortens the \"flowered side shoots\" each winter."
+    },
+    "inflorescence.flowerCount": {
+      "value": [1, 5],
+      "status": "provisional_design_assumption",
+      "basis": "\"Small clusters\" is all the records say; no count was found. One to five buds to a spray, of which one to three open while the model shows the spray in flower, is a choice."
+    },
+    "inflorescence.held": {
+      "value": "nodding",
+      "status": "published_plant_profile",
+      "source": "https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose",
+      "basis": "The breeder: \"Bears beautifully formed flowers, which nod gracefully on the stem.\" The growth model's names section records the hold of the spray as facing_out: it carries on the line of its side shoot, and the nodding of each flower on its own stalk is drawn."
+    },
+    "inflorescence.measuredAs": {
+      "value": "the width of the spray, across its open flowers",
+      "status": "provisional_design_assumption",
+      "basis": "What organs.racemeLengthM of the growth model measures for this plant, and so what the flower model is authored to: one flower record is one spray at the end of a side shoot."
+    },
+    "inflorescence.widthM": {
+      "value": [0.155, 0.225],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Worked out, not read: two flowers of the breeder's bloom size (5 to 9 cm) side by side and the gap between them. The same figure as organs.racemeLengthM in the growth model."
+    },
+    "flower.diameterM": {
+      "value": [0.05, 0.09],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose",
+      "basis": "The breeder: bloom size \"Medium\", 2 to 3.5 inches (5 to 9 cm) average diameter at prime. HelpMeFind: average diameter 2.5 inches. NC State: 2 to 3 inches."
+    },
+    "flower.petalCount": {
+      "value": [40, 50],
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State Extension plant record: \"40-50 petals\". HelpMeFind gives 41 (\"very full (41+ petals)\"). The breeder's American listing is reported to give 55, but that page could not be opened while this file was written, so the figure is not used. The RHS record calls the flowers \"semi-double\", which none of these counts is. The drawing takes the middle of the range."
+    },
+    "flower.form": {
+      "value": "cupped, opening wide to show the stamens",
+      "status": "published_plant_profile",
+      "source": "https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose",
+      "basis": "The breeder: \"When the petals open they expose numerous stamens, providing an almost water lily-like effect.\" NC State: flower shape \"Cup\". The RHS: \"reminiscent of waterlilies\"."
+    },
+    "flower.colour": {
+      "value": "pale pink",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details",
+      "basis": "RHS plant record: \"pale pink flowers\". The breeder: \"Pale pink\"; HelpMeFind: \"Light pink\"."
+    },
+    "flower.colourCentre": {
+      "value": "soft glowing pink",
+      "status": "published_plant_profile",
+      "source": "https://www.gardenista.com/products/the-generous-gardener-climbing/",
+      "basis": "The breeder's description as a retailer reprints it: \"their color a soft glowing pink at the center, shading to palest pink on the outer petals\"."
+    },
+    "flower.colourOuter": {
+      "value": "palest pink",
+      "status": "published_plant_profile",
+      "source": "https://www.gardenista.com/products/the-generous-gardener-climbing/",
+      "basis": "As flower.colourCentre: \"shading to palest pink on the outer petals\". BBC Gardeners' World Magazine describes the flowers as \"soft pink to pale white-pink\"."
+    },
+    "flower.sepalCount": {
+      "value": 5,
+      "status": "provisional_design_assumption",
+      "basis": "Five sepals is the rule in the genus Rosa. No description of this cultivar counts them, and the flora treatments could not be opened while this file was written."
+    },
+    "flower.stamens": {
+      "value": "numerous",
+      "status": "published_plant_profile",
+      "source": "https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose",
+      "basis": "The breeder: the open petals \"expose numerous stamens\". How many is not given; the number drawn is a matter of appearance."
+    },
+    "flower.scent": {
+      "value": "strong: Old Rose, musk and myrrh",
+      "status": "published_plant_profile",
+      "source": "https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose",
+      "basis": "The breeder: fragrance \"Strong\", with notes of \"Old Rose, musk and myrrh\". Not drawn."
+    },
+    "flower.stalkLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "fruit.type": {
+      "value": "hip",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State: the fruit is a rose hip, which \"will appear under the sepals of where the flower was after the flower dies\"."
+    },
+    "fruit.colourUnripe": {
+      "value": "green",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/rosa-the-generous-gardener-ausdrawn/",
+      "basis": "NC State: fruit colour green, turning red-burgundy."
+    },
+    "fruit.colourRipe": {
+      "value": "orange",
+      "status": "published_plant_profile",
+      "source": "https://www.provendernurseries.co.uk/factsheets/rosa-the-generous-gardener-ausdrawn",
+      "basis": "Provender Nurseries: \"Produces lovely orange hips in the autumn\" where the flowers are left. A gardener who picked them in late December: \"rather fat and rosy orange\" (https://teddingtongardener.com/2013/12/22). NC State gives red-burgundy."
+    },
+    "fruit.shape": {
+      "value": "rounded, rather fat",
+      "status": "provisional_design_assumption",
+      "basis": "\"Rather fat\" is one gardener's description of hips picked from the plant (https://teddingtongardener.com/2013/12/22). No plant record gives the shape."
+    },
+    "fruit.hipLengthM": {
+      "value": [0.018, 0.026],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The length of one hip. No source gives it: NC State puts the fruit in its 1 to 3 inch class, and the hips are called \"rather fat\". 18 to 26 mm is a choice at the foot of that class."
+    },
+    "fruit.clusterLengthM": {
+      "value": [0.085, 0.115],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "What fruit.lengthM of the growth model measures for this plant, and so what the fruit model is authored to: the hips of one spray with their stalks, from the end of the side shoot to the far end of the hips. Worked out, not read: a main stalk of about 3 cm, a stalk of 5 cm to each hip, bent as the flower nodded, and a hip of 18 to 26 mm."
+    },
+    "fruit.widthToLength": {
+      "value": 0.85,
+      "status": "provisional_design_assumption",
+      "basis": "A hip nearly as wide as long, for \"rather fat\". Not measured."
+    },
+    "fruit.perSpray": {
+      "value": [1, 3],
+      "status": "provisional_design_assumption",
+      "basis": "A spray that is left is taken to set one hip for each flower that opened. Not counted."
+    }
+  }
+}
