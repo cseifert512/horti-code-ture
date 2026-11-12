@@ -1,11 +1,13 @@
 // The stage every Bower is shown on: renderer, camera and orbit controls, sky,
-// sun with soft shadows, image-based ambient light, fog and the lawn. Settings
-// follow the Wisteria prototype (Wisteria/src/main.js) so that a render from
-// the new core can be judged against it.
+// sun with soft shadows, image-based ambient light, haze and the ground. The
+// sun is put where a direction says it is: the core works that out from the
+// site, the date and the hour (`sunAt`), and the sliders remain as an
+// override. How a frame is turned into a picture is in `pipeline.ts`.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Sky } from 'three/addons/objects/Sky.js';
-import { makeGroundTexture } from '../textures.ts';
+import { makeGround } from './ground.ts';
+import { Pipeline, type PipelineSettings } from './pipeline.ts';
 
 export interface SunSettings {
   /** Degrees above the horizon. */
@@ -22,21 +24,38 @@ export interface ViewPreset {
 export interface Stage {
   renderer: THREE.WebGLRenderer;
   scene: THREE.Scene;
+  /** Design overlays: drawn over the finished picture in their own exact colours, hidden where the scene is in front. */
+  overlayScene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   controls: OrbitControls;
+  pipeline: Pipeline;
   sun: THREE.DirectionalLight;
   /** Unit vector towards the sun, world frame. */
   sunDir: THREE.Vector3;
+  /** Put the sun by hand. */
   setSun(settings: SunSettings): void;
+  /** Put the sun where a unit vector in the three.js frame says it is. It may be below the horizon. */
+  setSunDirection(direction: THREE.Vector3): void;
+  /** Degrees the sun stands above the horizon now; negative at night. */
+  sunElevation(): number;
+  /** Draw the sky with or without its cloud. Returns whether it had cloud before. */
+  setClouds(on: boolean): boolean;
   /**
-   * Fit the shadow frustum, fog and orbit limits to a subject, and optionally move the camera.
+   * Fit the shadow frustum, haze and orbit limits to a subject, and optionally move the camera.
    * `shadowBoxM` is the least half-width of the box the shadows are drawn in: smaller for a small
    * subject seen close, where the default would leave its shadows coarse.
    */
   frame(bounds: THREE.Box3, view?: ViewPreset, shadowBoxM?: number): void;
   /** Mark the shadow map stale (the subject or the sun changed). */
   invalidateShadows(): void;
-  render(): void;
+  /**
+   * Draw a frame. The quick way by default: the scene straight to the window, tone-mapped as it is drawn, as the
+   * viewer always did. `careful`: through the pipeline, with its shading of corners, for a picture that will be
+   * looked at (a scene at rest, a specimen, ?quality=high).
+   */
+  render(careful?: boolean): void;
+  /** Draw the present view into a target of any size, for a still. The camera's aspect is the caller's to set. */
+  renderTo(target: THREE.WebGLRenderTarget, width: number, height: number): void;
   /**
    * Match the drawing buffer to the window. Called every frame rather than on
    * the resize event, which an embedding pane does not always send. Returns
@@ -63,21 +82,23 @@ function makeSky(): Sky {
       .replace('varying vec3 vSunDirection;', 'varying vec3 vSunDirection; varying float vSunfade;');
   }
   sky.scale.setScalar(450);
-  // the prototype's sky is clear
-  const clouds = m.uniforms['cloudCoverage'];
-  if (clouds) clouds.value = 0;
   return sky;
 }
 
-export function createStage(canvas: HTMLCanvasElement): Stage {
+export function createStage(canvas: HTMLCanvasElement, quality: Partial<PipelineSettings> = {}): Stage {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;
+  // Drawn straight to the window, a material tone-maps itself with this curve and exposure. Drawn into the pipeline's
+  // target, three.js leaves the light linear and the pipeline applies the same curve and exposure at the end: the two
+  // ways give the same picture, but for the shading of corners and the finer edges of the careful one.
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 0.62;
+  const pipeline = new Pipeline(renderer, quality);
+  const baseExposure = pipeline.settings.exposure;
 
   const scene = new THREE.Scene();
+  const overlayScene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 900);
   const size = { width: 0, height: 0, pixelRatio: 0 };
   function syncSize(): boolean {
@@ -110,10 +131,17 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
   const sky = makeSky();
   scene.add(sky);
   const su = sky.material.uniforms;
-  su['turbidity']!.value = 5;
-  su['rayleigh']!.value = 1.6;
+  su['turbidity']!.value = 4.2;
+  su['rayleigh']!.value = 1.5;
   su['mieCoefficient']!.value = 0.004;
   su['mieDirectionalG']!.value = 0.82;
+  // Fair-weather cloud, high and thin: enough that the sky is a sky. It is worked out afresh at every pixel of sky in
+  // every frame, which a moving picture cannot afford: it is off until asked for (setClouds), which stills, a specimen's
+  // portrait and ?quality=high do.
+  if (su['cloudCoverage']) su['cloudCoverage'].value = 0;
+  if (su['cloudDensity']) su['cloudDensity'].value = 0.32;
+  if (su['cloudElevation']) su['cloudElevation'].value = 0.42;
+  if (su['time']) su['time'].value = 40;
 
   const sun = new THREE.DirectionalLight(0xfff0dc, 3.4);
   sun.castShadow = true;
@@ -123,7 +151,8 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
   sun.shadow.radius = 2.5;
   sun.target.position.set(0, 1.4, 0);
   scene.add(sun, sun.target);
-  scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x8a9a6a, 0.35));
+  const skyLight = new THREE.HemisphereLight(0xcfe0ff, 0x8a9a6a, 0.35);
+  scene.add(skyLight);
   const fog = new THREE.Fog(0xcfdbe4, 16, 160);
   scene.fog = fog;
 
@@ -133,41 +162,62 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
   envSky.material.uniforms = sky.material.uniforms;
   envScene.add(envSky);
   let envRT: THREE.WebGLRenderTarget | null = null;
+  /** Where the sun was when the sky's light on the scene was last worked out. */
+  const envSun = new THREE.Vector3(0, -2, 0);
   const sunDir = new THREE.Vector3();
   let sunDistance = 20;
-  let current: SunSettings = { ...DEFAULT_SUN };
+  let elevationNow = DEFAULT_SUN.elevation;
   let shadowsStale = true;
 
-  function setSun(settings: SunSettings): void {
-    current = { ...settings };
-    const phi = THREE.MathUtils.degToRad(90 - settings.elevation);
-    const theta = THREE.MathUtils.degToRad(settings.azimuth);
-    sunDir.setFromSphericalCoords(1, phi, theta);
-    su['sunPosition']!.value.copy(sunDir);
-    sun.position.copy(sunDir).multiplyScalar(sunDistance).add(sun.target.position);
-    const low = THREE.MathUtils.smoothstep(settings.elevation, 2, 30);
-    sun.color.setRGB(1, 0.72 + 0.22 * low, 0.5 + 0.36 * low);
-    sun.intensity = 0.6 + 2.8 * low;
+  let envAt = 0;
+  /** When the sun last moved without the sky's light being worked out again; 0 if none is owed. */
+  let envOwed = 0;
+  function refreshSkyLight(): void {
+    envSun.copy(sunDir);
+    envAt = performance.now();
+    envOwed = 0;
     envRT?.dispose();
-    const exposure = renderer.toneMappingExposure;
-    renderer.toneMappingExposure = 0.35;
     envRT = pmrem.fromScene(envScene, 0.02);
-    renderer.toneMappingExposure = exposure;
     scene.environment = envRT.texture;
     scene.environmentIntensity = 0.9;
+  }
+
+  function setSunDirection(direction: THREE.Vector3): void {
+    sunDir.copy(direction).normalize();
+    elevationNow = THREE.MathUtils.radToDeg(Math.asin(THREE.MathUtils.clamp(sunDir.y, -1, 1)));
+    su['sunPosition']!.value.copy(sunDir);
+    sun.position.copy(sunDir).multiplyScalar(sunDistance).add(sun.target.position);
+    // warm and weak near the horizon; gone a little below it, when only the sky is left to light the scene
+    const low = THREE.MathUtils.smoothstep(elevationNow, 2, 30);
+    const up = THREE.MathUtils.smoothstep(elevationNow, -3, 3);
+    sun.color.setRGB(1, 0.72 + 0.22 * low, 0.5 + 0.36 * low);
+    sun.intensity = (0.6 + 2.8 * low) * up;
+    sun.castShadow = up > 0.02;
+    const dusk = THREE.MathUtils.smoothstep(elevationNow, -12, 4);
+    skyLight.intensity = 0.06 + 0.29 * dusk;
+    // the colour of the sky at the horizon, in the scene's own units of light: it is exposed with everything else
+    fog.color.setRGB(1.02, 1.17, 1.32).multiplyScalar((0.1 + 0.9 * dusk) * (0.7 + 0.3 * low));
+    // a low sun gives less light; the picture is opened up a little for it, as an eye or a camera would
+    pipeline.settings.exposure = baseExposure * (1.3 - 0.3 * low) * (1 + 0.5 * (1 - dusk));
+    renderer.toneMappingExposure = pipeline.settings.exposure;
+    // The sky's light on the scene follows the sun, but working it out is dear: while the sun keeps moving (a
+    // timeline playing through the year) it is done at most twice a second, and once more when the sun comes to rest.
+    const turned = envSun.angleTo(sunDir);
+    const now = performance.now();
+    if (!envRT || turned > THREE.MathUtils.degToRad(12) || (turned > THREE.MathUtils.degToRad(2.5) && now - envAt > 500)) refreshSkyLight();
+    else if (turned > THREE.MathUtils.degToRad(0.4)) envOwed = now;
     shadowsStale = true;
   }
 
-  // ---- lawn ---------------------------------------------------------------------
-  {
-    const gt = makeGroundTexture();
-    gt.repeat.set(220, 220);
-    const lawn = new THREE.Mesh(new THREE.CircleGeometry(300, 64), new THREE.MeshStandardMaterial({ map: gt, roughness: 1 }));
-    lawn.name = 'lawn';
-    lawn.rotation.x = -Math.PI / 2;
-    lawn.receiveShadow = true;
-    scene.add(lawn);
+  function setSun(settings: SunSettings): void {
+    const phi = THREE.MathUtils.degToRad(90 - settings.elevation);
+    const theta = THREE.MathUtils.degToRad(settings.azimuth);
+    setSunDirection(new THREE.Vector3().setFromSphericalCoords(1, phi, theta));
   }
+
+  // ---- the ground, and the edge of the world ---------------------------------------
+  const ground = makeGround();
+  scene.add(ground.group);
 
   function frame(bounds: THREE.Box3, view?: ViewPreset, shadowBoxM = 6.5): void {
     const sphere = bounds.getBoundingSphere(new THREE.Sphere());
@@ -185,39 +235,78 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
     cam.updateProjectionMatrix();
     sun.target.position.set(sphere.center.x, Math.min(1.4, sphere.center.y), sphere.center.z);
     sun.target.updateMatrixWorld();
-    // keep the soft-shadow width roughly constant in metres as the box grows
-    sun.shadow.radius = THREE.MathUtils.clamp(2.5 * (6.5 / half), 1, 2.5);
-    fog.near = Math.max(16, r * 4.2);
-    fog.far = Math.max(160, r * 34);
+    // keep the soft edge of a shadow about the same width in metres as the box grows
+    sun.shadow.radius = THREE.MathUtils.clamp(3.2 * (6.5 / half), 1.4, 3.2);
+    fog.near = Math.max(30, r * 6);
+    fog.far = Math.max(520, r * 70);
     controls.maxDistance = Math.max(26, r * 5.5);
+    ground.fit(r);
     if (view) {
       camera.position.copy(view.position);
       controls.target.copy(view.target);
       controls.update();
     }
-    setSun(current);
+    setSunDirection(sunDir.clone());
   }
 
-  setSun(current);
+  setSun(DEFAULT_SUN);
+
+  const freshShadows = () => {
+    // the sun has stood still for a moment with the sky's light a little behind it: catch up
+    if (envOwed && performance.now() - envOwed > 350) refreshSkyLight();
+    if (!shadowsStale) return;
+    renderer.shadowMap.needsUpdate = true;
+    shadowsStale = false;
+  };
 
   return {
     renderer,
     scene,
+    overlayScene,
     camera,
     controls,
+    pipeline,
     sun,
     sunDir,
     setSun,
+    setSunDirection,
+    sunElevation: () => elevationNow,
+    setClouds(on) {
+      const cover = su['cloudCoverage'];
+      if (!cover) return false;
+      const had = cover.value > 0;
+      if (had !== on) {
+        cover.value = on ? 0.34 : 0;
+        // the sky lights the scene: with its cloud changed, that light is worked out again
+        refreshSkyLight();
+      }
+      return had;
+    },
     frame,
     invalidateShadows() {
       shadowsStale = true;
     },
-    render() {
-      if (shadowsStale) {
-        renderer.shadowMap.needsUpdate = true;
-        shadowsStale = false;
+    render(careful = false) {
+      freshShadows();
+      const overlay = overlayScene.children.some((c) => c.visible) ? overlayScene : null;
+      if (careful) {
+        const buffer = renderer.getDrawingBufferSize(new THREE.Vector2());
+        pipeline.render(scene, overlay, camera, buffer.x, buffer.y, null);
+        return;
       }
+      renderer.setRenderTarget(null);
+      renderer.autoClear = true;
       renderer.render(scene, camera);
+      if (overlay) {
+        // over the picture, with its depth: an overlay is hidden where timber is in front of it
+        renderer.autoClear = false;
+        renderer.render(overlay, camera);
+        renderer.autoClear = true;
+      }
+    },
+    renderTo(target, width, height) {
+      freshShadows();
+      pipeline.render(scene, overlayScene.children.some((c) => c.visible) ? overlayScene : null, camera, width, height, target);
     },
     syncSize,
   };
