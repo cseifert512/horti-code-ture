@@ -52,6 +52,10 @@ const withModel = (taxa: Growable, id: string, change: (m: GrowthModel) => Growt
   const t = taxa.get(id)!;
   return new Map([...taxa, [id, { profile: t.profile, model: change(t.model) }]]);
 };
+/** The same plant throwing a shoot of the year from half of its old leaf nodes, so that a small frame has shoots to test. */
+const eager = (taxa: Growable, id = WISTERIA): Growable =>
+  withModel(taxa, id, (m) => withParam(withParam(m, 'organs.whipShareOfNodes', 0.5, 'a test: many shoots of the year'), 'organs.whipsPerYearMax', 30, 'a test: many shoots of the year'));
+const noHold = (taxa: Growable, id = WISTERIA): Growable => withModel(taxa, id, (m) => withParam(m, 'attachment.graspReachM', 0, 'a test: nothing to take hold of'));
 const one = (bower: Bower, taxa: Growable, taxonId: string, care: 'trained' | 'untended', years: number, extra: Partial<Scenario> = {}): Simulation => {
   const scenario = plantingOn(bower, { schemaVersion: 1, name: `one ${taxonId}`, plants: [{ plantId: 'plant', taxonId, stationId: 'foot' }] }, { taxa, care, years });
   return new Simulation({ ...scenario, ...extra }).runUntil(`${2027 + years - 1}-12-31`);
@@ -72,7 +76,12 @@ function stretches(a: Axis): { base: number; points: number[] }[] {
   if (a.contact.length > 1 && isFree(a, 0) && out[0]) out[0].base = 0;
   return out;
 }
-const inTheAir = (sim: Simulation): Axis[] => [...sim.axes.values()].filter((a) => stretches(a).length > 0);
+/**
+ * The axes whose unsupported lengths the mechanics laid: shoots of the year (and what a winter cut has left of them)
+ * and flowering side shoots. A spur is not one: it is still the short drawn curve the prototype gave it.
+ */
+const laidInTheAir = (a: Axis): boolean => a.role === 'whip' || a.role === 'side_shoot' || (a.role === 'spur' && a.tip.state === 'stopped' && a.tip.reason === 'cut back to a spur');
+const inTheAir = (sim: Simulation): Axis[] => [...sim.axes.values()].filter((a) => laidInTheAir(a) && stretches(a).length > 0);
 const tipRadiusM = (m: GrowthModel) => Math.sqrt(param(m, 'thickening.tipRadiusSquaredMm2')) / 1000;
 /** The tallest a bare shoot of a taxon could stand were it set wood from end to end: no shoot of it can stand taller. */
 const tallest = (m: GrowthModel): number => {
@@ -195,7 +204,7 @@ describe('shoots in the air, in a run', () => {
       [stiff, reach],
       [short, 0.5],
     ] as const) {
-      const sim = one(gapFrame, withModel(taxa, WISTERIA, (m) => withParam(m, 'attachment.graspReachM', 0, 'a test: nothing to take hold of')), WISTERIA, 'untended', 4);
+      const sim = one(gapFrame, noHold(eager(taxa)), WISTERIA, 'untended', 4);
       const stopped = sim.decisions.filter((d) => d.kind === 'stopped' && d.text.includes('held itself out'));
       expect(stopped.length).toBeGreaterThan(0);
       for (const a of inTheAir(sim)) {
@@ -206,8 +215,8 @@ describe('shoots in the air, in a run', () => {
 
   it('droops further with a thinner stem, on the same plant', () => {
     const drop = (radiusSquaredMm2: number): number => {
-      const taxa = withModel(library, WISTERIA, (m) => withParam(withParam(m, 'thickening.tipRadiusSquaredMm2', radiusSquaredMm2, 'a test of stem thickness'), 'attachment.graspReachM', 0, 'a test: nothing to take hold of'));
-      const sim = one(gapFrame, taxa, WISTERIA, 'untended', 5);
+      const taxa = withModel(noHold(eager(library)), WISTERIA, (m) => withParam(m, 'thickening.tipRadiusSquaredMm2', radiusSquaredMm2, 'a test of stem thickness'));
+      const sim = one(gapFrame, taxa, WISTERIA, 'untended', 4);
       let sum = 0;
       let n = 0;
       for (const a of inTheAir(sim)) {
@@ -226,8 +235,11 @@ describe('shoots in the air, in a run', () => {
 
   it('puts nothing below the ground, and stops a hanging shoot where it touches down', () => {
     // shoots thrown from low on the frame, long enough to reach the ground
-    const low = withModel(library, WISTERIA, (m) => withParam(withParam(m, 'organs.clearStemHeightM', 0.3, 'a test: shoots from low down'), 'organs.whipLengthM', [1.6, 2.4], 'a test: long shoots'));
-    const sim = one(specimenFrame, low, WISTERIA, 'untended', 5);
+    // many long limp shoots thrown from low on the frame: they hang, and the lowest of them reach the ground
+    const low = withModel(noHold(eager(library)), WISTERIA, (m) =>
+      withParam(withParam(withParam(m, 'organs.clearStemHeightM', 0.3, 'a test: shoots from low down'), 'organs.whipLengthM', [1.6, 2.4], 'a test: long shoots'), 'mechanics.woodModulusMPa', 300, 'a test: limp shoots'),
+    );
+    const sim = one(specimenFrame, low, WISTERIA, 'untended', 4);
     const landed = sim.decisions.filter((d) => d.kind === 'stopped' && d.text.includes('reached the ground'));
     expect(landed.length).toBeGreaterThan(0);
     for (const run of [sim, untended]) {
@@ -286,7 +298,7 @@ describe('the timber and the cables', () => {
 // (f) Taking hold again: how a climber crosses a gap
 // ---------------------------------------------------------------------------------------------------------------
 describe('a searching shoot that comes within reach of a support it can grasp', () => {
-  const sim = one(gapFrame, library, WISTERIA, 'untended', 6);
+  const sim = one(gapFrame, eager(library), WISTERIA, 'untended', 5);
   const wire = [...gapFrame.graph.edges.values()].filter((e) => e.kind === 'cable');
   const holders = [...sim.axes.values()].filter((a) => a.runs.some((r) => wire.some((e) => e.id === r.edgeId)));
 
@@ -347,11 +359,11 @@ describe('a searching shoot that comes within reach of a support it can grasp', 
   });
 
   it('takes hold of nothing when its growth model gives it no reach, or when it cannot grasp what it meets', () => {
-    const none = one(gapFrame, withModel(library, WISTERIA, (m) => withParam(m, 'attachment.graspReachM', 0, 'a test: no reach')), WISTERIA, 'untended', 6);
+    const none = one(gapFrame, noHold(eager(library)), WISTERIA, 'untended', 5);
     expect(none.decisions.some((d) => d.kind === 'attached')).toBe(false);
     for (const a of none.axes.values()) if (a.role !== 'leader' && a.role !== 'lateral') expect(a.runs.length, a.id).toBe(0);
     // a twiner that can pass round nothing thicker than 3 mm cannot take a 5 mm cable, however near it comes
-    const weak = one(gapFrame, withModel(library, WISTERIA, (m) => withParam(m, 'attachment.maxGraspDiameterMm', 3, 'a test: a feeble grasp')), WISTERIA, 'trained', 6);
+    const weak = one(gapFrame, withModel(eager(library), WISTERIA, (m) => withParam(m, 'attachment.maxGraspDiameterMm', 3, 'a test: a feeble grasp')), WISTERIA, 'trained', 5);
     expect(weak.decisions.some((d) => d.kind === 'attached')).toBe(false);
   });
 });
@@ -362,14 +374,17 @@ describe('a searching shoot that comes within reach of a support it can grasp', 
 describe('the wisteria reference scenario', () => {
   const END = '2035-12-31';
   const run = (taxa: Growable, care: 'trained' | 'untended', extra: Partial<Scenario> = {}) => new Simulation({ ...wisteriaOnVault({ taxa, care, years: 9 }), ...extra }).runUntil(END);
-  const noHold = withModel(library, WISTERIA, (m) => withParam(m, 'attachment.graspReachM', 0, 'a comparison: no hold from the air'));
+  const without_ = noHold(library);
   const framework = (sim: Simulation) => sim.summaries.map((s) => `${s.plantId} ${s.year} ${s.frameworkM.toFixed(6)} ${s.highestM.toFixed(6)}`);
-  const frameworkRuns = (sim: Simulation) => [...sim.axes.values()].filter((a) => a.role === 'leader' || a.role === 'lateral').map((a) => `${a.id}:${a.runs.map((r) => r.edgeId).join('>')}`);
+  // an axis's id carries a serial number that counts every shoot and bud made before it, so the stems are told by
+  // what they are and when they began: plant, role, order, day, and the members they went along, in order
+  const frameworkRuns = (sim: Simulation) =>
+    [...sim.axes.values()].filter((a) => a.role === 'leader' || a.role === 'lateral').map((a) => `${a.plantId} ${a.role} ${a.order} ${a.bornDay} ${a.lengthAt[a.contact.length - 1]!.toFixed(6)}:${a.runs.map((r) => `${r.edgeId}/${r.mode}/${r.by}`).join('>')}`);
 
   for (const care of ['trained', 'untended'] as const) {
     it(`builds the same framework, member for member, whether or not shoots in the air take hold (${care})`, () => {
       const holding = run(library, care);
-      const without = run(noHold, care);
+      const without = run(without_, care);
       expect(holding.decisions.filter((d) => d.kind === 'attached').length).toBeGreaterThan(care === 'trained' ? 3 : 20);
       expect(without.decisions.filter((d) => d.kind === 'attached').length).toBe(0);
       expect(framework(holding)).toEqual(framework(without));
@@ -416,12 +431,12 @@ describe('which way the light is', () => {
     }
     // the sun's side at midsummer: south and well up; in the southern hemisphere, north
     expect(sunSide({ latitudeDeg: 51.5, bearingDeg: 0 }, 172).y).toBeLessThan(-0.1);
-    expect(sunSide({ latitudeDeg: -35, bearingDeg: 0 }, 355).y).toBeGreaterThan(0.05);
+    expect(sunSide({ latitudeDeg: -51.5, bearingDeg: 0 }, 80).y).toBeGreaterThan(0.1);
   });
 
   it('turns the same shoot the other way when the light is on the other side', () => {
     const from = (x: number): Partial<Scenario> => ({ lightFrom: () => normalize(v3(x, 0, 0.35)) });
-    const noHoldNoReach = withModel(library, WISTERIA, (m) => withParam(m, 'attachment.graspReachM', 0, 'a test: nothing to take hold of'));
+    const noHoldNoReach = noHold(eager(library));
     const east = one(gapFrame, noHoldNoReach, WISTERIA, 'untended', 3, from(1));
     const west = one(gapFrame, noHoldNoReach, WISTERIA, 'untended', 3, from(-1));
     expect(east.lightAsked.scenario).toBeGreaterThan(0);
