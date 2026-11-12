@@ -80,9 +80,9 @@ const C = {
   white: lin('#f6f1fd'),
   eye: lin('#efdc58'),
   // wings and keel violet-blue (Bean), "mauvish violet" (Lane): darker than the standard
-  wing: lin('#8d72d3'),
-  wingTip: lin('#7354c3'),
-  keel: lin('#6446b3'),
+  wing: lin('#9c86de'),
+  wingTip: lin('#8268cf'),
+  keel: lin('#7055bf'),
   calyxA: lin('#8d936b'),
   calyxB: lin('#7a6a96'),
   stalkA: lin('#a6b07c'),
@@ -160,7 +160,7 @@ function makeFlower(lod: number): THREE.BufferGeometry {
     let c = mix(C.standard, C.standardEdge, edge);
     // white about the eye, and the small yellow eye itself at the foot
     c = mix(c, C.white, Math.min(1, 1.1 * Math.exp(-((x * x) / 0.014 + (v - 0.24) ** 2 / 0.022))));
-    c = mix(c, C.eye, Math.min(1, 1.25 * Math.exp(-((x * x) / 0.0045 + (v - 0.15) ** 2 / 0.009))));
+    c = mix(c, C.eye, Math.min(1, 1.3 * Math.exp(-((x * x) / 0.007 + (v - 0.16) ** 2 / 0.013))));
     if (far) c = mix(C.standard, C.standardEdge, 0.3);
     return { p: [x, sp.y - dz * off + dy * notch, sp.z + dy * off + dz * notch], c };
   });
@@ -198,7 +198,7 @@ function makeFlower(lod: number): THREE.BufferGeometry {
     sb.surf(seg.blade[0], seg.blade[1], (s, t01) => {
       const t = t01 * 2 - 1;
       const half = WING_HALF_WIDTH * grow * (0.35 + 0.65 * Math.sin(Math.PI * (0.1 + 0.8 * s)));
-      return { p: [0.02 * t, -0.05 - 0.09 * s + t * half, Z0 + 0.1 + 0.92 * s], c: mix(C.wing, C.keel, 0.35 + 0.3 * s) };
+      return { p: [0.02 * t, -0.05 - 0.09 * s + t * half, Z0 + 0.1 + 0.92 * s], c: mix(C.wing, C.keel, 0.15 + 0.3 * s) };
     });
   }
 
@@ -599,8 +599,8 @@ const leaf: LeafAsset = {
     greenA: lin('#588737'),
     greenB: lin('#6a9742'),
     young: lin('#b3995a'),
-    autumnA: lin('#e0b92c'),
-    autumnB: lin('#c9952a'),
+    autumnA: lin('#e6c336'),
+    autumnB: lin('#d0a02c'),
   },
   roughness: 0.46,
   translucency: THIN_LEAF,
@@ -620,7 +620,7 @@ const raceme: FlowerAsset = {
   // a flower still shut is darker and bluer than one open
   budTint: [0.44, 0.36, 0.68],
   swing: 0.75,
-  translucency: 0.32,
+  translucency: 0.4,
   sheen: 0.08,
   detailAt: [2.4, 5, 10],
   detailCaps: [14, 80, 500],
@@ -658,7 +658,7 @@ const wood: WoodLook = {
   mature: lin('#8f7a62'),
   old: [0.76, 0.75, 0.72],
   woodyDays: [120, 480],
-  oldDays: [600, 2100],
+  oldDays: [540, 1900],
   furrowDays: [330, 2000],
   furrow: 0.85,
   stiffDays: [60, 600],
