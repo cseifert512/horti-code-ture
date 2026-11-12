@@ -28,6 +28,14 @@
  * None of them draws from a plant's three random streams: each is decided from
  * the place it happens (`placeRng`), so that switching one on, or cutting one
  * off, moves nothing else on the plant.
+ *
+ * Three things a taxon may or may not do are switched on in the same way, and
+ * decided in the same way:
+ *   keep leaves through winter   a share of them (`winterFate`)
+ *   flower again                 where a flower has gone over, in flushes (`flowerAgain`, `deadhead`)
+ *   grow its side shoots on      a little more each year, up to a length (`sideShootSeason`)
+ * A spur's leaf and a side shoot's leaf may have a size, spacing and lifespan
+ * of their own. Day-of-year windows may run through the new year (`windows.ts`).
  */
 import { assessAttachment } from '../attachment.ts';
 import type { SupportEdge } from '../bower/types.ts';
@@ -40,6 +48,7 @@ import { LightField } from './light.ts';
 import { type GrowthModel, type OptionalParamKey, genericShootKeys, known, listAt, param, shootParam } from './model.ts';
 import { Rng, placeRng } from './rng.ts';
 import { liePath, pathAt, pathLength, twinePath } from './stem-path.ts';
+import { nextWindow, unrolled, windowFrom, windowTo } from './windows.ts';
 import type { AppendageSite, Axis, AxisRole, Decision, DecisionKind, EventRecord, FloralBud, FruitSite, GardenerEvent, Intent, LeafSite, Plant, Planting, Run, Scenario, Spacing, Tip, YearSummary } from './types.ts';
 import { leafSilhouetteAreaM2 } from './view.ts';
 
@@ -55,6 +64,19 @@ const SALT = { fruit: 101, tendril: 211, leafStalk: 307, rootlets: 401, prickle:
 /** Everything fruit needs before any can set. */
 const FRUIT_KEYS = ['fruit.setShare', 'fruit.lengthM', 'fruit.swellDays', 'fruit.ripenDoy', 'fruit.fallDoy'] as const satisfies readonly OptionalParamKey[];
 const newSpacing = (): Spacing => ({ sinceM: 0, nextM: null, count: 0 });
+/**
+ * The same as `SALT`, for what a taxon may or may not do: keep a leaf through winter, flower again where a flower
+ * has gone over, grow a side shoot on in a later year.
+ */
+const SALT_DOES = { winterLeaf: 1103, repeat: 1201, sideShootGrowsOn: 1301 } as const;
+/**
+ * Length of a spur's leaf as a share of a shoot's, where a model gives no spur leaf length of its own
+ * (`organs.spurLeafLengthM`). The Wisteria prototype's figure, and not a measurement of any plant.
+ */
+const SPUR_LEAF_OF_SHOOT_LEAF = 0.9;
+/** Everything a place needs before it can flower again, and a side shoot before it can grow on. */
+const REPEAT_KEYS = ['flowering.repeatMaxPerSeason', 'flowering.repeatIntervalDays', 'flowering.repeatShare'] as const satisfies readonly OptionalParamKey[];
+const GROWS_ON_KEYS = ['sideShoots.extensionMPerYear', 'sideShoots.maxLengthM'] as const satisfies readonly OptionalParamKey[];
 
 export class Simulation {
   readonly scenario: Scenario;
@@ -90,6 +112,8 @@ export class Simulation {
   private readonly appendagesByAxis = new Map<string, AppendageSite[]>();
   /** Fruit still on each plant, waiting for its day to fall. */
   private readonly hanging = new Map<string, FruitSite[]>();
+  /** Leaves kept through a winter, by the day in the following spring on which each is to be shed. */
+  private readonly leafShedByDay = new Map<number, LeafSite[]>();
   private readonly topZ: number;
   private readonly routeTotalM: number;
   private serial = 0;
@@ -134,6 +158,8 @@ export class Simulation {
     const date = this.calendar.dateOf(day);
     for (const p of this.plantingsByDay.get(day) ?? []) this.plant(p, date);
     for (const e of this.eventsByDay.get(day) ?? []) this.applyEvent(e, date);
+    // leaves that were kept through the winter and whose day to be shed has come; a cut or a death may have taken them already
+    for (const leaf of this.leafShedByDay.get(day) ?? []) if (leaf.removedDay === null) leaf.removedDay = day;
     for (const plant of this.plants.values()) if (plant.status === 'alive') this.dayForPlant(plant, date);
     if (date.month === 12 && date.dayOfMonth === 31) this.closeYear(date);
   }
@@ -227,6 +253,15 @@ export class Simulation {
     if (mechanism === 'petiole_twining') say('coiled leaf stalks are', ['appendages.leafStalkCoilShare', 'appendages.leafStalkLengthM']);
     if (mechanism === 'aerial_root') say('clinging rootlets are', ['appendages.aerialRootPatchSpacingM', 'appendages.aerialRootLengthM']);
     if (mechanism === 'scramble_and_tie') say('prickles are', ['appendages.prickleSpacingM', 'appendages.prickleLengthM']);
+    // what a plant may or may not do is said only of a model that has begun to give its numbers and not finished:
+    // most climbers do neither, and a line for each would say nothing
+    const begun = (keys: readonly OptionalParamKey[]) => keys.some((k) => known(model, k) !== null);
+    if (begun(REPEAT_KEYS) && known(model, 'flowering.repeatMaxPerSeason') !== 0 && known(model, 'flowering.repeatShare') !== 0) say('flowering again in the same season is', REPEAT_KEYS);
+    if (begun(GROWS_ON_KEYS) && (known(model, 'sideShoots.extensionMPerYear')?.[1] ?? 1) > 0) say('growing on of flowering side shoots is', GROWS_ON_KEYS);
+    // a profile that says semi-evergreen has said the plant keeps some of its leaves: how many is the model's to give
+    if (profile.leafHabit.value === 'semi_evergreen' && known(model, 'organs.winterLeafShare') === null) {
+      this.note('part_not_modelled', plant, null, `no leaf is kept through winter by ${profile.names.label}, which its profile calls semi-evergreen: its growth model leaves organs.winterLeafShare unknown, so it is drawn bare in winter, as a deciduous plant`);
+    }
   }
 
   /** A random stream that belongs to one decision at one place on this plant, and to nothing else. */
@@ -513,10 +548,49 @@ export class Simulation {
     const evergreen = this.taxon(plant).profile.leafHabit.value === 'evergreen';
     const leaf: LeafSite = { plantId: plant.id, axisId: axis.id, pointIndex: i, position: axis.contact[i]!, direction, lengthM, firstYear, lastYear, evergreen, bornDay: this.day, removedDay: null };
     if (form !== undefined) leaf.form = form;
+    this.winterFate(plant, axis, leaf);
     this.leaves.push(leaf);
     const list = this.leavesByAxis.get(axis.id);
     if (list) list.push(leaf);
     else this.leavesByAxis.set(axis.id, [leaf]);
+  }
+
+  /**
+   * Whether a new leaf stays on through winter, for a taxon whose model gives
+   * the share that do (`organs.winterLeafShare`): a semi-evergreen plant, or
+   * an evergreen one that loses part of its foliage where it stands exposed.
+   * Decided once, where the leaf stands, and from none of the plant's streams.
+   *
+   * On a plant whose profile says evergreen, a leaf that is not kept becomes a
+   * deciduous one: it falls in the leaf fall of its first year. On any other
+   * plant, a leaf that is kept is marked as one that stays on in winter and is
+   * given one more year: it comes through the winter after its last season
+   * and is shed on a day of the next spring's leaf flush, as the new leaves
+   * open. A leaf position that is renewed every year (a spur's, a side
+   * shoot's) is, where it is kept, never bare.
+   */
+  private winterFate(plant: Plant, axis: Axis, leaf: LeafSite): void {
+    const { model } = this.taxon(plant);
+    const share = known(model, 'organs.winterLeafShare');
+    if (share === null) return;
+    // leaves that stand together at one point of a stem are told apart by how many the stem carries already
+    const rng = this.at(plant, leaf.position, SALT_DOES.winterLeaf + 7919 * (this.leavesByAxis.get(axis.id)?.length ?? 0));
+    const kept = rng.chance(share);
+    if (leaf.evergreen) {
+      if (kept) return;
+      leaf.evergreen = false;
+      if (leaf.lastYear !== null) leaf.lastYear = leaf.firstYear;
+      return;
+    }
+    if (!kept) return;
+    leaf.evergreen = true;
+    if (leaf.lastYear === null) return;
+    leaf.lastYear += 1;
+    const [first, last] = windowTo(this.calendar, param(model, 'phenology.leafFlushDoy'), leaf.lastYear);
+    leaf.shedPlannedDay = Math.max(this.day + 1, first + rng.int(0, Math.max(0, last - first)));
+    const due = this.leafShedByDay.get(leaf.shedPlannedDay);
+    if (due) due.push(leaf);
+    else this.leafShedByDay.set(leaf.shedPlannedDay, [leaf]);
   }
 
   // =========================================================================
@@ -1111,13 +1185,18 @@ export class Simulation {
     const year = date.year;
     const season = year - plant.plantedYear;
 
-    // last year's flower buds wake, each with its own day to open and to drop
+    // last year's flower buds wake, each with its own day to open and to drop. Either window may run through the new
+    // year; a petal fall whose first day is earlier in the year than the opening's is next year's, as for flowers along the shoots.
+    const opening = param(model, 'phenology.flowerOpenDoy');
+    const falling = param(model, 'phenology.petalFallDoy');
+    const fallYear = falling[0] >= opening[0] ? year : year + 1;
     for (const b of this.liveBuds(plant)) {
-      if (b.stage === 'dormant' && b.floweringYear === year) {
+      // a bud is dormant from the last day of leaf fall, which a leaf fall that runs through the new year may put after bud break
+      if ((b.stage === 'dormant' || b.stage === 'initiated') && b.floweringYear === year) {
         b.stage = 'developing';
         b.developDay = this.day;
-        b.openPlannedDay = this.calendar.dayOfYearDay(year, plant.rng.flower.int(...param(model, 'phenology.flowerOpenDoy')));
-        b.spentPlannedDay = this.calendar.dayOfYearDay(year, plant.rng.flower.int(...param(model, 'phenology.petalFallDoy')));
+        b.openPlannedDay = this.calendar.dayOfYearDay(year, plant.rng.flower.int(...unrolled(this.calendar, opening, year)));
+        b.spentPlannedDay = this.calendar.dayOfYearDay(fallYear, plant.rng.flower.int(...unrolled(this.calendar, falling, fallYear)));
       }
     }
 
@@ -1207,6 +1286,28 @@ export class Simulation {
   }
 
   /**
+   * The leaf of a flowering side shoot: its own numbers where the model gives
+   * them, the plant's ordinary leaf's where it does not. `seasons` null: the
+   * shoot is in leaf along its whole length every year it lives.
+   */
+  private sideShootLeaf(model: GrowthModel): { spacingM: [number, number]; lengthM: [number, number]; perNode: number; seasons: number | null } {
+    return {
+      spacingM: known(model, 'organs.sideShootLeafSpacingM') ?? param(model, 'organs.leafSpacingM'),
+      lengthM: known(model, 'organs.sideShootLeafLengthM') ?? param(model, 'organs.leafLengthM'),
+      perNode: known(model, 'organs.sideShootLeavesPerNode') ?? param(model, 'organs.leavesPerNode'),
+      seasons: known(model, 'organs.sideShootLeafLifespanYears'),
+    };
+  }
+
+  /** How a side shoot that is already there grows on in a later year, or null where the model does not say that it does. */
+  private sideShootGrowsOn(model: GrowthModel): { extensionM: [number, number]; maxLengthM: number } | null {
+    const extensionM = known(model, 'sideShoots.extensionMPerYear');
+    const maxLengthM = known(model, 'sideShoots.maxLengthM');
+    if (extensionM === null || maxLengthM === null || extensionM[1] <= 0) return null;
+    return { extensionM, maxLengthM };
+  }
+
+  /**
    * Once a stretch of framework stem is old enough it throws short shoots that
    * stand clear of the support, carry leaves and end in the inflorescence.
    * Each lives the seasons its model gives it and is then shed; while it lives,
@@ -1238,6 +1339,27 @@ export class Simulation {
     const open0 = param(model, 'phenology.flowerOpenDoy')[0];
     // a shoot that is to flower this season has made its length by the time the first flowers open
     const share = open0 > burst && open0 <= end ? Math.max(0.05, smoothstep(burst, end, open0)) : 1;
+
+    // those already there grow on, where the model says they do: so much in each later season, up to a length,
+    // along the line they ended on and by the same day of the year as a new shoot makes its length
+    const on = this.sideShootGrowsOn(model);
+    if (on) {
+      let grew = 0;
+      for (const id of plant.axisIds) {
+        const a = this.axes.get(id)!;
+        if (a.role !== 'side_shoot' || a.removedDay !== null || a.alive < 2 || a.bornYear >= year) continue;
+        const have = this.lengthOf(a);
+        const more = Math.min(on.maxLengthM - have, this.at(plant, a.contact[0]!, SALT_DOES.sideShootGrowsOn + year).range(...on.extensionM));
+        if (more <= 1e-6) continue;
+        a.targetLengthM = have + more;
+        a.ratePerSeasonM = more / share;
+        a.owedM = 0;
+        a.tip = { state: 'free', dir: a.tip.state === 'free' ? a.tip.dir : this.tangent(a, a.alive - 1), grownM: 0, planM: more };
+        grew++;
+      }
+      if (grew) this.note('side_shoots_grew_on', plant, null, `${grew} flowering side shoot${grew === 1 ? '' : 's'} of ${profile.names.label} from earlier years ${grew === 1 ? 'is' : 'are'} growing on, up to ${on.maxLengthM.toFixed(2)} m long`);
+    }
+
     let made = 0;
     for (const n of plant.leafNodes) {
       if (n.taken || year - n.year < rule.ageYears) continue;
@@ -1255,7 +1377,7 @@ export class Simulation {
       const planM = rng.range(...rule.lengthM);
       if (planM <= 0) continue;
 
-      const shoot = this.newAxis(plant, 'side_shoot', host.order + 1, { axisId: host.id, pointIndex: n.pointIndex }, planM, planM / share, { nextLeafM: rng.range(...param(model, 'organs.leafSpacingM')), leafSide: n.side });
+      const shoot = this.newAxis(plant, 'side_shoot', host.order + 1, { axisId: host.id, pointIndex: n.pointIndex }, planM, planM / share, { nextLeafM: rng.range(...this.sideShootLeaf(model).spacingM), leafSide: n.side });
       shoot.lastYear = year + rule.seasons - 1;
       n.sideShootId = shoot.id;
       // out from the support, to the side the leaf stood on, and up a little
@@ -1274,26 +1396,30 @@ export class Simulation {
 
   /**
    * Leaves along a side shoot. They are renewed every year the shoot lives,
-   * as a spur's are, and are of the form the model names for side shoots.
+   * as a spur's are, unless the model gives a side shoot's leaf a lifespan;
+   * they are of the form the model names for side shoots, and of that form's
+   * own size and spacing where the model gives them.
    * No bud, spur or shoot of the plant's ordinary kinds forms at them.
    */
   private sideShootLeaves(plant: Plant, axis: Axis, i: number, seg: number): void {
     axis.sinceLeafM += seg;
     if (axis.sinceLeafM < axis.nextLeafM) return;
     const { model } = this.taxon(plant);
+    const leaf = this.sideShootLeaf(model);
     const at = axis.contact[i]!;
     const rng = this.at(plant, at, SALT.sideShootLeaf);
     axis.sinceLeafM = 0;
-    axis.nextLeafM = rng.range(...param(model, 'organs.leafSpacingM'));
+    axis.nextLeafM = rng.range(...leaf.spacingM);
     axis.leafSide = axis.leafSide === 1 ? -1 : 1;
     const year = this.calendar.dateOf(this.day).year;
+    const lastYear = leaf.seasons === null ? null : year + leaf.seasons - 1;
     const t = this.tangent(axis, i);
     let side = cross(t, UP);
     side = length(side) > 1e-6 ? scale(normalize(side), axis.leafSide) : v3(axis.leafSide, 0, 0);
     const form = model.names.sideShootLeafForm ?? model.names.leafForm;
-    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...param(model, 'organs.leafLengthM')), year, null, form);
-    if (param(model, 'organs.leavesPerNode') >= 2) {
-      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...param(model, 'organs.leafLengthM')), year, null, form);
+    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...leaf.lengthM), year, lastYear, form);
+    if (leaf.perNode >= 2) {
+      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...leaf.lengthM), year, lastYear, form);
     }
   }
 
@@ -1308,12 +1434,15 @@ export class Simulation {
     const rule = this.sideShootRule(model);
     if (!rule || rule.terminalShare <= 0) return;
     const year = date.year;
-    const [open0, open1] = param(model, 'phenology.flowerOpenDoy');
-    const [fall0, fall1] = param(model, 'phenology.petalFallDoy');
+    const opening = param(model, 'phenology.flowerOpenDoy');
+    const falling = param(model, 'phenology.petalFallDoy');
     const lasts = param(model, 'phenology.flowerLastsDays');
     // an opening date earlier in the year than today means next year, as for flowers along the shoots
-    const openYear = open0 >= date.dayOfYear ? year : year + 1;
-    const fallYear = fall0 >= open0 ? openYear : openYear + 1;
+    const openYear = opening[0] >= date.dayOfYear ? year : year + 1;
+    const fallYear = falling[0] >= opening[0] ? openYear : openYear + 1;
+    // a window that runs through the new year is counted on past the end of the year it begins in
+    const [open0, open1] = unrolled(this.calendar, opening, openYear);
+    const [fall0, fall1] = unrolled(this.calendar, falling, fallYear);
     const ramp = openYear - plant.plantedYear - param(model, 'flowering.competenceYears');
     if (ramp < 0) return;
     const chance = Math.min(1, rule.terminalShare * listAt(model, 'flowering.maturityRamp', ramp));
@@ -1366,9 +1495,11 @@ export class Simulation {
     const { model } = this.taxon(plant);
     const n = plant.rng.organ.int(...param(model, 'organs.spurLeafCount'));
     const form = model.names.spurLeafForm ?? model.names.leafForm;
+    // a spur's leaf has a length of its own where the model gives one; either way it is one draw from the organ stream
+    const own = known(model, 'organs.spurLeafLengthM');
     for (let k = 0; k < n; k++) {
       const dir = normalize(v3(plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(0.45, 1)));
-      this.addLeaf(plant, spur, 0, dir, plant.rng.organ.range(...param(model, 'organs.leafLengthM')) * 0.9, fromYear, null, form);
+      this.addLeaf(plant, spur, 0, dir, own ? plant.rng.organ.range(...own) : plant.rng.organ.range(...param(model, 'organs.leafLengthM')) * SPUR_LEAF_OF_SHOOT_LEAF, fromYear, null, form);
     }
   }
 
@@ -1428,11 +1559,14 @@ export class Simulation {
   private budsAlongShoots(plant: Plant, date: CalendarDate, ripened: boolean, firstFlush = false): void {
     const { model } = this.taxon(plant);
     const year = date.year;
-    const [open0, open1] = param(model, 'phenology.flowerOpenDoy');
-    const [fall0, fall1] = param(model, 'phenology.petalFallDoy');
+    const opening = param(model, 'phenology.flowerOpenDoy');
+    const falling = param(model, 'phenology.petalFallDoy');
     // an opening date earlier in the year than today means next year; a fall date earlier than the opening means the year after it
-    const openYear = open0 >= date.dayOfYear ? year : year + 1;
-    const fallYear = fall0 >= open0 ? openYear : openYear + 1;
+    const openYear = opening[0] >= date.dayOfYear ? year : year + 1;
+    const fallYear = falling[0] >= opening[0] ? openYear : openYear + 1;
+    // a window that runs through the new year is counted on past the end of the year it begins in
+    const [open0, open1] = unrolled(this.calendar, opening, openYear);
+    const [fall0, fall1] = unrolled(this.calendar, falling, fallYear);
     const lasts = param(model, 'phenology.flowerLastsDays');
     const ramp = year - plant.plantedYear - param(model, 'flowering.competenceYears');
     if (ramp < 0) return;
@@ -1499,11 +1633,12 @@ export class Simulation {
     let first = axis.alive;
     while (first > 0 && axis.bornDayAt[first - 1]! >= f.jan1Day) first--;
     if (first >= axis.alive || axis.lengthAt[axis.alive - 1]! - axis.lengthAt[Math.max(0, first - 1)]! < f.minShootM) return;
-    const from = f.sameYear ? Math.max(f.firstOpenDoy, this.calendar.dateOf(this.day).dayOfYear + f.leadDays) : f.firstOpenDoy;
+    // today as a day of the year the buds formed in, counted on past its end where the opening window runs through the new year
+    const from = f.sameYear ? Math.max(f.firstOpenDoy, this.day - f.jan1Day + 1 + f.leadDays) : f.firstOpenDoy;
     if (from > f.lastOpenDoy) return;
     const { model } = this.taxon(plant);
     const lasts = param(model, 'phenology.flowerLastsDays');
-    const [fall0, fall1] = param(model, 'phenology.petalFallDoy');
+    const [fall0, fall1] = unrolled(this.calendar, param(model, 'phenology.petalFallDoy'), f.fallYear);
     const opens = this.calendar.dayOfYearDay(f.openYear, plant.rng.flower.int(from, f.lastOpenDoy));
     const drops = lasts[1] > 0 ? opens + plant.rng.flower.int(lasts[0], lasts[1]) : this.calendar.dayOfYearDay(f.fallYear, plant.rng.flower.int(fall0, fall1));
     this.newBud(plant, axis, pointIndex, 'developing', f.openYear, Math.max(this.day, opens - 30), opens, Math.max(opens + 1, drops), { form: model.names.flowerForm });
@@ -1512,12 +1647,15 @@ export class Simulation {
 
   /**
    * `given.lengthM` fixes the length of the inflorescence; left out, it is
-   * drawn from the plant's flower stream as it always was.
+   * drawn from the plant's flower stream as it always was. `given.id` names
+   * the bud; left out, it takes the next number, which stems share. A flower
+   * that follows another is named after it, so that flowering again changes
+   * no other name in the run.
    */
-  private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, developDay: number, openPlannedDay: number, spentPlannedDay: number, given: { lengthM?: number; form?: string | undefined } = {}): FloralBud {
+  private newBud(plant: Plant, bearer: Axis, pointIndex: number | null, stage: FloralBud['stage'], floweringYear: number, developDay: number, openPlannedDay: number, spentPlannedDay: number, given: { lengthM?: number; form?: string | undefined; id?: string; flush?: number } = {}): FloralBud {
     const { model } = this.taxon(plant);
     const bud: FloralBud = {
-      id: `${plant.id}/bud${this.serial++}`,
+      id: given.id ?? `${plant.id}/bud${this.serial++}`,
       plantId: plant.id,
       axisId: bearer.id,
       pointIndex,
@@ -1538,6 +1676,7 @@ export class Simulation {
       spentPlannedDay,
     };
     if (given.form !== undefined) bud.form = given.form;
+    if (given.flush !== undefined) bud.flush = given.flush;
     this.buds.push(bud);
     const list = this.budsByAxis.get(bearer.id);
     if (list) list.push(bud);
@@ -1589,9 +1728,107 @@ export class Simulation {
         b.stage = 'spent';
         b.spentDay = this.day;
         this.setFruit(plant, b, date);
+        const again = this.repeatRule(this.taxon(plant).model);
+        if (again) this.flowerAgain(plant, b, again, this.day, again.waitDays);
       }
     }
     if (opened) this.yearStats.get(plant.id)!.opened += opened;
+  }
+
+  // =========================================================================
+  // Seasonal: flowering again
+  // =========================================================================
+  /** The numbers flowering again needs, or null where the model leaves any of them unknown or says the plant flowers once. */
+  private repeatRule(model: GrowthModel): { max: number; share: number; waitDays: [number, number]; deadheadedDays: [number, number] | null } | null {
+    const max = known(model, 'flowering.repeatMaxPerSeason');
+    const share = known(model, 'flowering.repeatShare');
+    const waitDays = known(model, 'flowering.repeatIntervalDays');
+    if (!max || !share || !waitDays) return null;
+    return { max, share, waitDays, deadheadedDays: known(model, 'flowering.repeatIntervalDeadheadedDays') };
+  }
+
+  /**
+   * A flower that has gone over may be followed by another at the same place:
+   * at its node on a shoot, or at the end of its flowering side shoot. A
+   * spur's flower is not followed, nor one on short wood left by pruning.
+   *
+   * The next one opens `waitDays` after `fromDay`: the day the flower went
+   * over or, with the shorter wait a model may give for it, the day a
+   * gardener took the spent head off. It is a flower like the first: a bud of
+   * the plant's own, on its own wood, lost if that wood is cut before it
+   * opens. It opens only inside the flowering window of the season its
+   * predecessor belonged to, and a place flowers again no more often in a
+   * season than the model allows.
+   *
+   * Decided from the place and from none of the plant's streams, and with
+   * the same numbers whoever asks: deadheading brings a flower forward, or
+   * lets one in that would have come too late, and never rolls the dice again.
+   * True where a flower was set going or brought forward.
+   */
+  private flowerAgain(plant: Plant, spent: FloralBud, rule: { max: number; share: number }, fromDay: number, waitDays: readonly [number, number]): boolean {
+    if (spent.openDay === null || spent.spentDay === null || !spent.position) return false;
+    const bearer = this.axes.get(spent.axisId)!;
+    if (bearer.role === 'spur' || (spent.pointIndex === null && bearer.role !== 'side_shoot')) return false;
+    if (bearer.removedDay !== null || (spent.pointIndex !== null && spent.pointIndex >= bearer.alive)) return false;
+    const nth = (spent.flush ?? 0) + 1;
+    if (nth > rule.max) return false;
+    const { model } = this.taxon(plant);
+    const rng = this.at(plant, spent.position, SALT_DOES.repeat + spent.floweringYear + 7919 * nth);
+    if (!rng.chance(rule.share)) return false;
+    const opens = fromDay + rng.int(waitDays[0], waitDays[1]);
+    if (opens > windowFrom(this.calendar, param(model, 'phenology.flowerOpenDoy'), spent.floweringYear)[1]) return false;
+
+    const next = spent.followedBy === undefined ? undefined : this.budsByAxis.get(spent.axisId)?.find((b) => b.id === spent.followedBy);
+    if (next) {
+      // already on its way: it can only be brought forward, and only while it has not opened
+      if (next.end !== null || next.stage !== 'developing' || opens >= next.openPlannedDay) return false;
+      next.spentPlannedDay -= next.openPlannedDay - opens;
+      next.openPlannedDay = opens;
+      next.developDay = Math.min(next.developDay, Math.max(this.day, opens - 30));
+      return true;
+    }
+    // it lasts as long as a flower of this plant lasts or, where the model has the whole display fall together, as long as the one before it did
+    const lasts = param(model, 'phenology.flowerLastsDays');
+    const days = lasts[1] > 0 ? rng.int(lasts[0], lasts[1]) : spent.spentDay - spent.openDay;
+    const made = this.newBud(plant, bearer, spent.pointIndex, 'developing', spent.floweringYear, Math.max(this.day, opens - 30), opens, opens + Math.max(1, days), { lengthM: rng.range(...param(model, 'organs.racemeLengthM')), form: spent.form, id: `${spent.id}+`, flush: nth });
+    spent.followedBy = made.id;
+    this.yearStats.get(plant.id)!.initiated++;
+    return true;
+  }
+
+  /**
+   * Deadheading. The spent flowers come off, each with the fruit that had
+   * begun to form behind it, and the places that can flower again do so
+   * sooner. A spent flower is there to take off while its fruit is still
+   * unripe, or while the season it flowered in lasts.
+   *
+   * Acted on only for a plant whose model says how soon it flowers again
+   * after it (`flowering.repeatIntervalDeadheadedDays`). Null for any other:
+   * the event is then recorded without effect, as it always was.
+   */
+  private deadhead(plant: Plant, e: GardenerEvent): string | null {
+    const { model } = this.taxon(plant);
+    const rule = this.repeatRule(model);
+    if (!rule || !rule.deadheadedDays) return null;
+    const opening = param(model, 'phenology.flowerOpenDoy');
+    let heads = 0;
+    let fruit = 0;
+    let sooner = 0;
+    for (const b of [...this.buds]) {
+      if (b.plantId !== plant.id || b.stage !== 'spent' || b.end !== null || b.deadheadedBy !== undefined) continue;
+      const young = b.fruitId === undefined ? undefined : this.fruitsByAxis.get(b.axisId)?.find((f) => f.id === b.fruitId && f.removedDay === null && this.day < f.ripen[0]);
+      if (!young && this.day > windowFrom(this.calendar, opening, b.floweringYear)[1]) continue;
+      b.deadheadedBy = e.id;
+      heads++;
+      if (young) {
+        young.removedDay = this.day;
+        young.removedBy = e.id;
+        fruit++;
+      }
+      if (this.flowerAgain(plant, b, rule, this.day, rule.deadheadedDays)) sooner++;
+    }
+    if (!heads) return 'nothing to take off: no spent flowers on the plant';
+    return `deadheaded: ${heads} spent flower${heads === 1 ? '' : 's'} taken off${fruit ? `, ${fruit} of them with unripe fruit behind` : ''}; ${sooner} place${sooner === 1 ? '' : 's'} will flower again sooner for it`;
   }
 
   /**
@@ -1642,19 +1879,15 @@ export class Simulation {
     const bearer = this.axes.get(bud.axisId)!;
     const cal = this.calendar;
     const full = this.day + Math.max(1, rng.int(...rule.swellDays));
-    // ripening: the first window that is still open once the fruit is full grown
-    const [r0, r1] = rule.ripenDoy;
-    let ry = cal.dateOf(full).year;
-    if (cal.dayOfYearDay(ry, r1) <= full) ry++;
-    const w0 = Math.max(full, cal.dayOfYearDay(ry, r0));
-    const w1 = Math.max(w0 + 1, cal.dayOfYearDay(ry, r1));
+    // ripening: the first window that is still open once the fruit is full grown. It may run through the new year.
+    const [r0, r1] = nextWindow(cal, rule.ripenDoy, full);
+    const w0 = Math.max(full, r0);
+    const w1 = Math.max(w0 + 1, r1);
     const ripens = rng.int(w0, w1 - 1);
     const ripe = rng.int(ripens + 1, w1);
     // falling: a day in the first window after that
-    const [f0, f1] = rule.fallDoy;
-    let fy = cal.dateOf(ripe).year;
-    if (cal.dayOfYearDay(fy, f1) <= ripe) fy++;
-    const falls = rng.int(Math.max(ripe + 1, cal.dayOfYearDay(fy, f0)), Math.max(ripe + 1, cal.dayOfYearDay(fy, f1)));
+    const [f0, f1] = nextWindow(cal, rule.fallDoy, ripe);
+    const falls = rng.int(Math.max(ripe + 1, f0), Math.max(ripe + 1, f1));
     const fruit: FruitSite = {
       // numbered apart from stems and buds, so that fruit setting changes no other name in the run
       id: `${plant.id}/fruit${this.fruits.length}`,
@@ -1672,6 +1905,7 @@ export class Simulation {
       removedBy: null,
     };
     if (model.names.fruitForm !== undefined) fruit.form = model.names.fruitForm;
+    bud.fruitId = fruit.id;
     this.fruits.push(fruit);
     const onAxis = this.fruitsByAxis.get(bearer.id);
     if (onAxis) onAxis.push(fruit);
@@ -1728,6 +1962,15 @@ export class Simulation {
     const { model } = this.taxon(plant);
     const fx: EventRecord['effects'] = { axesCut: 0, axesRemoved: 0, stemRemovedM: 0, floralBudsRemoved: 0, leafSitesRemoved: 0 };
     const spacing = mid(param(model, 'organs.leafSpacingM'));
+
+    // deadheading acts on a plant whose model says what follows it; for any other it falls through and is recorded only
+    if (e.type === 'deadhead_or_select_flowers') {
+      const outcome = this.deadhead(plant, e);
+      if (outcome !== null) {
+        this.events.push(this.record(e, date, outcome, true, fx));
+        return;
+      }
+    }
 
     switch (e.type) {
       case 'train_leader': {

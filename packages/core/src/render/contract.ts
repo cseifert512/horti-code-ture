@@ -23,6 +23,11 @@ import type { AppendageKind, EvidenceStatus, LeafHabit } from '../vocab.ts';
  * 2: adds fruit, appendages (tendrils, coiled leaf stalks, clinging rootlets, prickles), and the optional
  *    `form` of a leaf, flower or fruit for taxa that have more than one. A reader of contract 1 data may
  *    treat the two new lists as empty.
+ *    Still 2, and nothing changes in the data of a taxon that does not use them: a season entry may carry
+ *    `autumnColourBefore`, `leafFallBefore` and `leafFlushAfter` where a taxon's leaf dates run through the new
+ *    year; `evergreen` is said leaf by leaf, so that a plant which keeps part of its foliage has both kinds; and
+ *    one place may bear several flowers in a season, one after another. A reader that asks `presence.ts` needs
+ *    no change for any of them.
  */
 export const RENDER_CONTRACT = 2;
 
@@ -83,6 +88,11 @@ export interface RenderLeaf {
   /**
    * False: in leaf only between that year's leaf flush and leaf fall (see `seasons`).
    * True: kept through winter, from the flush of its first year to the end of its last.
+   *
+   * This is said of the leaf, not of the plant. A plant that keeps part of its foliage (a semi-evergreen one, or
+   * an evergreen one that thins where it stands exposed) has leaves of both kinds. On a plant that is not
+   * evergreen, a leaf that is kept has the spring after its last season as its last year, and `removedDay` is
+   * the day of that spring's flush on which it was shed.
    */
   evergreen: boolean;
   bornDay: number;
@@ -106,6 +116,7 @@ export interface RenderFlower {
   /** Where it is attached. */
   position: Triple;
   lengthM: number;
+  /** The year its flowering season began in: a display that runs through the new year keeps the year it started. */
   year: number;
   /** Day the bud began to lengthen, the day it opened, and the day its petals had fallen (-1 if not yet). */
   developDay: number;
@@ -188,17 +199,37 @@ export interface RenderAppendage {
   removedDay: number;
 }
 
-/** The dates one plant kept in one calendar year, as day indices. A viewer drives leaf display from these. */
+/**
+ * The dates one plant kept in one calendar year, as day indices. A viewer drives leaf display from these, by
+ * asking `presence.ts` and handing it the entry for the calendar year the day falls in.
+ *
+ * A taxon's leaf dates may run through the new year. The days are then still in order, first before second,
+ * and one of them lies outside the year of the entry; the three optional fields carry into this year's entry
+ * what a reader would otherwise have to fetch from the year before or after. They are absent for a taxon whose
+ * dates stay inside the year.
+ */
 export interface RenderSeason {
   plantId: string;
   year: number;
   budburstDay: number;
   growthEndDay: number;
-  /** Leaves expand from the first day to the second. */
+  /** Leaves expand from the first day to the second. The first day is in the year before where the flush runs through the new year. */
   leafFlush: [number, number];
+  /** The second day is in the year after where the colouring runs through the new year. */
   autumnColour: [number, number];
-  /** Leaves drop from the first day to the second; none remain after it on a deciduous plant. */
+  /**
+   * Leaves drop from the first day to the second; none remain after it on a deciduous plant.
+   * The second day is in the year after where the fall runs through the new year.
+   */
   leafFall: [number, number];
+  /**
+   * Where the fall runs through the new year: the colouring and the fall of the year before, by which that
+   * year's leaves go on dropping in this one.
+   */
+  autumnColourBefore?: [number, number];
+  leafFallBefore?: [number, number];
+  /** Where the flush runs through the new year: next year's flush, which begins in this one. */
+  leafFlushAfter?: [number, number];
 }
 
 export interface RenderEvent {

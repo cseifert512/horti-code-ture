@@ -31,6 +31,7 @@ import { mixLight } from './light-from.ts';
 import { param } from './model.ts';
 import type { Plant } from './types.ts';
 import { leafSilhouetteAreaM2 } from './view.ts';
+import { middle } from './windows.ts';
 
 /** One plant's light in one year, and what was made of it. */
 export interface PlantLight extends MonthlyLight {
@@ -128,8 +129,9 @@ export class LightField {
     let total = 0;
     for (const [plantId, a] of area) {
       const { model } = sim.scenario.taxa.get(sim.plants.get(plantId)!.taxonId)!;
-      const flush = mean(param(model, 'phenology.leafFlushDoy'));
-      const fall = mean(param(model, 'phenology.leafFallDoy'));
+      // either may run through the new year: a flush that does is centred before 1 January, a fall that does after 31 December
+      const flush = middle(param(model, 'phenology.leafFlushDoy'), 'start');
+      const fall = middle(param(model, 'phenology.leafFallDoy'), 'end');
       for (let m = 0; m < 12; m++) if (MID_MONTH_DOY[m]! >= flush && MID_MONTH_DOY[m]! <= fall) out[m]! += a;
       total += a;
     }

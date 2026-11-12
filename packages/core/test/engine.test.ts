@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { loadGrowable, loadTaxa } from '../src/node/load-taxa.ts';
 import { RENDER_CONTRACT } from '../src/render/contract.ts';
 import { Simulation } from '../src/sim/engine.ts';
-import { GROWTH_PARAMS, type GrowthModel, parseGrowthModel } from '../src/sim/model.ts';
+import { GROWTH_PARAMS, GROWTH_PARAMS_OPTIONAL, type GrowthModel, parseGrowthModel } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
 import { wisteriaOnVault } from '../src/sim/scenarios.ts';
 import { type StemPath, turnsOf } from '../src/sim/stem-path.ts';
@@ -24,6 +24,12 @@ const yearOf = (sim: Simulation, day: number) => sim.calendar.dateOf(day).year;
 const summary = (sim: Simulation, plantId: string, year: number) => sim.summaries.find((s) => s.plantId === plantId && s.year === year)!;
 const livingAxes = (sim: Simulation, plantId?: string) => [...sim.axes.values()].filter((a) => a.removedDay === null && (!plantId || a.plantId === plantId));
 const lengthOf = (a: Axis) => (a.alive ? a.lengthAt[a.alive - 1]! : 0);
+/** The parameters a model leaves unknown, which it may only where the engine can leave the part out. */
+const leftUnknown = (model: GrowthModel): string[] => {
+  const left = Object.keys(GROWTH_PARAMS).filter((k) => model.params[k as keyof typeof GROWTH_PARAMS].status === 'unknown');
+  for (const key of left) expect(GROWTH_PARAMS_OPTIONAL as readonly string[], key).toContain(key);
+  return left;
+};
 
 // SIMULATION_KEY.md section 9 "Wisteria continuity"; DEVELOPMENT_GUIDE.md stage 2 exit check.
 describe('the plant persists', () => {
@@ -454,7 +460,10 @@ describe('render data', () => {
     expect(data.assumptions.measured).toBe(0);
     expect(data.assumptions.calibrated).toBe(0);
     expect(data.assumptions.provisional_design_assumption).toBeGreaterThan(45);
-    expect(data.assumptions.provisional_design_assumption + data.assumptions.published_plant_profile).toBe(Object.keys(GROWTH_PARAMS).length);
+    // every parameter is accounted for: labelled or, where a model may leave it out (GROWTH_PARAMS_OPTIONAL), unknown and so not in the run
+    const left = leftUnknown(taxa.get('wisteria-sinensis')!.model);
+    expect(data.assumptions.unknown).toBe(left.length);
+    expect(data.assumptions.provisional_design_assumption + data.assumptions.published_plant_profile).toBe(Object.keys(GROWTH_PARAMS).length - left.length);
   });
 });
 
@@ -462,7 +471,12 @@ describe('growth model file', () => {
   const model = taxa.get('wisteria-sinensis')!.model;
 
   it('labels every number the engine uses, and claims no measurement', () => {
+    const left = leftUnknown(model);
+    // what the plant has (pods) and what it has not (tendrils, prickles, side shoots) it still says outright
+    for (const key of ['fruit.setShare', 'appendages.tendrilNodePattern', 'appendages.prickleSpacingM', 'sideShoots.perMetrePerYear']) expect(left, key).not.toContain(key);
     for (const key of Object.keys(GROWTH_PARAMS)) {
+      // a parameter the model may leave out holds no number where it does, so there is nothing to label: the engine leaves that part out
+      if (left.includes(key)) continue;
       const p = model.params[key as keyof typeof GROWTH_PARAMS];
       expect(p.value, key).not.toBeNull();
       expect(['provisional_design_assumption', 'published_plant_profile'], key).toContain(p.status);
