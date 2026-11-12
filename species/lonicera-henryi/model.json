@@ -316,7 +316,7 @@
     "organs.whipShareOfNodes": {
       "value": 0.12,
       "status": "provisional_design_assumption",
-      "basis": "Share of the older leaf nodes of the framework that throw a long shoot in a year. No source counts them. Chosen with organs.whipsPerYearMax and the short shoots (sideShoots.*) against the one count there is: Weber (2005) found 128 to 366 shoots or stems to the square metre of an established mat. A trained plant on the specimen frame comes to about 150 long and short shoots to the square metre of trellis at six years and about 290 from its eighth."
+      "basis": "Share of the older leaf nodes of the framework that throw a long shoot in a year. No source counts them. Chosen with organs.whipsPerYearMax and the short shoots (sideShoots.*) against the one count there is: Weber (2005) found 128 to 366 shoots or stems to the square metre of an established mat. A trained plant on the specimen frame comes to about 120 long and short shoots to the square metre of trellis at six years and about 280 at ten, the older long shoots among them bare."
     },
     "organs.whipsPerYearMax": {
       "value": 110,
