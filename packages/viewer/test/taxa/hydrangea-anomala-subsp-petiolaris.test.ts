@@ -326,6 +326,34 @@ describe('every organ model of the climbing hydrangea', () => {
     }
   });
 
+  // TAXON_LOOKS.md section 2, "Frames and units": a leaf and an appendage are one unit long along +Z; a held flower or fruit stands along +Y.
+  it('is authored in the frame the viewer expects, in every posture of the leaf', () => {
+    for (let v = 0; v < leaf.variants; v++) {
+      for (let lod = 0; lod < leaf.lods; lod++) {
+        const g = leaf.make(v, lod);
+        g.computeBoundingBox();
+        // however the blade hangs and turns on its stalk, the leaf is its length from stem to tip
+        expect(g.boundingBox!.max.z, `leaf ${v}/${lod}`).toBeGreaterThan(0.9);
+        expect(g.boundingBox!.max.z, `leaf ${v}/${lod}`).toBeLessThan(1.05);
+        expect(g.boundingBox!.min.z, `leaf ${v}/${lod}`).toBeGreaterThan(-0.05);
+      }
+    }
+    for (let v = 0; v < rootlets.variants; v++) {
+      const g = rootlets.make(v, 0);
+      g.computeBoundingBox();
+      expect(g.boundingBox!.max.z).toBeGreaterThan(0.8);
+      expect(g.boundingBox!.max.z).toBeLessThan(1.15);
+      expect(g.boundingBox!.min.z).toBeGreaterThan(-0.2);
+    }
+    for (const organ of [lacecap, dryHead]) {
+      expect(organ.poise).toBe('held');
+      const g = organ.make(0, 0);
+      g.computeBoundingBox();
+      expect(g.boundingBox!.max.y).toBeGreaterThan(-g.boundingBox!.min.y);
+      expect(g.boundingBox!.min.y).toBeGreaterThan(-0.2);
+    }
+  });
+
   it('is the plant\'s own: the look is not the stand-in, and borrows no other taxon\'s module', () => {
     expect(look.provisional).toBe(false);
     const source = readFileSync(fileURLToPath(new URL(`../../src/plant/taxa/${ID}.ts`, import.meta.url)), 'utf8');

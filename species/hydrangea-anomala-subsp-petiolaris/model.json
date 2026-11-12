@@ -266,7 +266,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "No flora read gives the internode. Two US plant patents of sports of this plant, each measured on the plant, give about 2.5 cm on lateral branches (PP11,038) and 4 cm on average (PP13,845). Both are variegated and less vigorous than the plain plant, so the range is carried a little above them. One spacing serves every kind of shoot; the far-creeping extension shoots must in life be longer-jointed than the side shoots."
+      "basis": "No flora read gives the internode. Two US plant patents of sports of this plant, each measured on the plant, give about 2.5 cm on lateral branches (PP11,038) and 4 cm on average (PP13,845); those two figures are the range. Both sports are variegated and less vigorous than the plain plant, and one spacing serves every kind of shoot, though the far-creeping extension shoots must in life be longer-jointed than the side shoots. The engine sets leaf nodes only on its stem points, 4 cm apart, so in a run every node is 4 cm from the next."
     },
     "organs.leafLengthM": {
       "value": [
@@ -512,7 +512,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The rootlets stand in close rows along the side of an extension shoot that lies against the support, not in separate tufts. A patch every 1.5 to 3 cm, about twice the length of a rootlet, draws that as an unbroken fringe. Read from photographs; no source gives a spacing."
+      "basis": "The rootlets stand in close rows along the side of an extension shoot that lies against the support, not in separate tufts. A patch every 1 to 2 cm, about twice the length of a rootlet, draws that as an unbroken fringe. Read from photographs; no source gives a spacing."
     },
     "appendages.aerialRootLengthM": {
       "value": [
@@ -521,7 +521,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short rootlets, a few millimetres to about a centimetre where they lie on the surface they hold; a photograph caption of a one-year stem standing off a wall gives roots about 2 cm long where they had a gap to cross. Read from photographs; not measured."
+      "basis": "Short rootlets, a few millimetres to about a centimetre where they lie on the surface they hold; a photograph caption (seen as a search summary only) gives roots about 2 cm long on a one-year stem standing off a wall, where they had a gap to cross. Read from photographs; not measured."
     },
     "appendages.prickleSpacingM": {
       "value": [
@@ -551,7 +551,7 @@
       "value": 5,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "Chosen so that old framework comes to carry a side branch about every 10 to 15 cm, which is what makes the plant 'almost shrub-like' (NC State Extension) and lets the side shoots carry 'most of the flowers and leaves' (Trees and Shrubs Online). Not counted on a plant."
+      "basis": "Chosen so that old framework comes to carry a side branch at about half its nodes, one every 7 or 8 cm, which is what makes the plant 'almost shrub-like' (NC State Extension) and lets the side shoots carry 'most of the flowers and leaves' (Trees and Shrubs Online). On the specimen frame it gives a ten-year-old plant about 430 side branches and 7,000 leaves on 63 m of clinging stem. Not counted on a plant."
     },
     "sideShoots.lengthM": {
       "value": [
@@ -560,18 +560,18 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "In life a side branch adds a short leafy length each year (two or three pairs of leaves, Trees and Shrubs Online), forks, and can become well over 1 m long given time. The engine makes a side shoot its whole length in its first season and does not fork it, so each is given the reach of a branch a few years old: 12 to 50 cm out from the support."
+      "basis": "In life a side branch adds a short leafy length each year (two or three pairs of leaves, Trees and Shrubs Online), forks, and 'can become well over 1 m long given time'; unsupported plants make a shrub 1 to 2 m high (lve-baumschule.com, clematis.com.pl), so the wood is stiff enough to stand that far. The engine makes a side shoot its whole length in its first season and neither lengthens nor forks it, so each is given the reach of a branch up to about a decade old: 12 to 60 cm out from the support. The published 'well over 1 m' is for older plants than a ten-year run grows."
     },
     "sideShoots.lifespanYears": {
       "value": 8,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "The side branches are permanent wood. Ten seasons stands for that within a run of ten or twelve years; after it the node may bear another."
+      "basis": "The side branches are permanent wood in life. In the engine a side shoot cannot grow on, so each is kept eight seasons and then shed, and its node may bear another: this keeps the number on old framework near one to every other node instead of one to every node. A device of the model, not an observation."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.2,
       "status": "provisional_design_assumption",
-      "basis": "Not every side branch flowers in a year: a shaded wall 'flowered only moderately' and flowering is most abundant in sun (Trees and Shrubs Online). About three in ten, chosen to give a mature plant some tens of heads for each square metre of old framework or fewer. Not counted on a plant."
+      "basis": "Not every side branch flowers in a year: a shaded wall 'flowered only moderately' and flowering is most abundant in sun (Trees and Shrubs Online). One in five, which gives the ten-year-old specimen 56 heads, about seven to each square metre of frame. Not counted on a plant; the engine has no light to make it depend on."
     }
   }
 }

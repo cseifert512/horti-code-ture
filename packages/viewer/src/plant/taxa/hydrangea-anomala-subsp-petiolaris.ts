@@ -113,11 +113,12 @@ interface Posture {
 }
 
 const LEAF_FORMS: readonly Posture[] = [
-  { blade: 0, swing: 0.35, back: -0.25, pitch: 0.38, roll: 0.45, rise: 0.035, tone: 0.3 },
+  // the pitch is as much as a leaf may hang and still be, from stem to tip, the length the data gives it
+  { blade: 0, swing: 0.35, back: -0.25, pitch: 0.34, roll: 0.45, rise: 0.035, tone: 0.3 },
   { blade: 1, swing: -0.3, back: 0.2, pitch: 0.3, roll: -0.5, rise: 0.05, tone: 0.65 },
-  { blade: 2, swing: 0, back: 0, pitch: 0.5, roll: 0.15, rise: 0.02, tone: 0.9 },
+  { blade: 2, swing: 0, back: 0, pitch: 0.4, roll: 0.15, rise: 0.02, tone: 0.9 },
   { blade: 0, swing: -0.4, back: 0.3, pitch: 0.25, roll: -0.35, rise: 0.06, tone: 0.45 },
-  { blade: 1, swing: 0.2, back: -0.1, pitch: 0.42, roll: 0.55, rise: 0.025, tone: 0.8 },
+  { blade: 1, swing: 0.2, back: -0.1, pitch: 0.36, roll: 0.55, rise: 0.025, tone: 0.8 },
   { blade: 2, swing: 0.3, back: -0.35, pitch: 0.3, roll: -0.2, rise: 0.045, tone: 0.15 },
 ];
 
@@ -781,7 +782,7 @@ function makeRootletsGeometry(variant: number, lod: number): THREE.BufferGeometr
         .multiplyScalar(0.05 + (length - 0.05) * t)
         .addScaledVector(side, (kink * Math.sin(t * 4 + phase) + 0.06 * Math.sin(t * 11 + phase)) * t)
         // off the underside of the stem, then pressed to the timber
-        .add(new V3(0, 0, -0.22 * (1 - t) * (1 - t) - 0.035)),
+        .add(new V3(0, 0, -0.1 * (1 - t) * (1 - t) - 0.03)),
     );
     mg.tube(
       pts,
