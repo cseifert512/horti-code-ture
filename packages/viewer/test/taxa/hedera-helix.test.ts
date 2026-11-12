@@ -176,9 +176,11 @@ describe('the climbing leaf', () => {
       const blade = vertices(g).filter((x) => x.t >= 0);
       const pivot = blade[0]!.pivot;
       const tip = blade.reduce((far, x) => (x.p.distanceTo(pivot) > far.p.distanceTo(pivot) ? x : far)).p;
-      // the tip is lower than where the stalk ends, and farther from the stem
-      expect(tip.y).toBeLessThan(pivot.y - 0.3);
-      expect(tip.z).toBeGreaterThan(pivot.z + 0.2);
+      // the tip hangs well below where the stalk ends and only a little farther from the stem, the blade nearly square
+      // to its stalk, face out, as the leaves of a wall of ivy hang (the photographs are named in the module)
+      expect(tip.y).toBeLessThan(pivot.y - 0.45);
+      expect(tip.z).toBeGreaterThan(pivot.z + 0.05);
+      expect(tip.z).toBeLessThan(pivot.z + 0.4);
     }
   });
 });
@@ -469,6 +471,15 @@ describe('a specimen of common ivy, twelve years on the frame', () => {
     expect(below).toBeGreaterThan(free.length / 3);
     rises.sort((a, b) => a - b);
     expect(rises[Math.floor(rises.length / 2)]!).toBeLessThan(0.15);
+    // above the top of the frame what stands is adult growth: hardly a juvenile shoot stands up there
+    let top = 0;
+    for (const s of data.stems) if (s.role === 'leader' || s.role === 'lateral') for (let i = 2; i < s.contact.length; i += 3) top = Math.max(top, s.contact[i]!);
+    const standing = free.filter((s) => {
+      let high = 0;
+      for (let i = 2; i < s.contact.length; i += 3) high = Math.max(high, s.contact[i]!);
+      return s.removedDay[0]! < 0 && high > top + 0.3;
+    });
+    expect(standing.length).toBeLessThan(free.length / 50);
     // every leaf is kept through the winter: the model says so, rather than leaving it to the profile
     expect(known(model, 'organs.winterLeafShare')).toBe(1);
   });

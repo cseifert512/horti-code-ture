@@ -418,10 +418,10 @@
       "basis": "RHS ivy guide: an overgrown ivy can be hard pruned, as it regenerates readily from old wood. The number of shoots from a cut is chosen."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 1.5625,
+      "value": 1,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "A climbing shoot of the year taken to be 2.5 mm thick (radius 1.25 mm). No measurement of a juvenile ivy shoot was found that could be opened: the Virginia Tech factsheet calls the twig \"slender\" and the US Forest Service review says \"branches are typically slender on low-growing plants\". The first pass took 3 mm; adult branches are stouter (sideShoots.baseDiameterMm). Stiffness goes as the fourth power of the radius: at 2.5 mm a shoot with its leaves holds itself out for a few tenths of a metre and then bows, as ivy shoots off a wall do."
+      "basis": "A climbing shoot of the year taken to be 2 mm thick (radius 1 mm). No measurement of a juvenile ivy shoot was found that could be opened: the Virginia Tech factsheet calls the twig \"slender\" and the US Forest Service review says \"branches are typically slender on low-growing plants\". The first pass took 3 mm and the second 2.5 mm; at 2.5 mm the render data showed 77 juvenile free shoots standing 0.15 to 0.42 m upright above the top beam of the specimen frame, which is Greenhill's height for such a rod with its leaves: a juvenile ivy shoot does not stand so. Adult branches are stouter (sideShoots.baseDiameterMm). Stiffness goes as the fourth power of the radius."
     },
     "thickening.radiusSquaredPerMetreMm2": {
       "value": 2.2,
@@ -583,11 +583,11 @@
       "basis": "Share of adult shoots that end in an inflorescence in a year, once the plant flowers. Adult ivy in the light flowers freely (Metcalfe 2005); the share is chosen."
     },
     "mechanics.woodModulusMPa": {
-      "value": 1000,
+      "value": 600,
       "unit": "MPa",
       "status": "provisional_design_assumption",
       "source": "https://doi.org/10.3389/ffgc.2022.836247",
-      "basis": "Structural bending modulus of a set juvenile shoot. Not measured for ivy in any source that could be opened. Hattermann et al. 2022 found ivy's stems to have the smallest share of mechanical tissue of their 29 climbers (\"from 18% (Hedera helix)\"), measured stiffness at searcher bases from 213 MN/m2 up, and found about 3000 MN/m2 needed to span more than about 0.8 m. A third of the generic 3000 is taken. Tried at 1500 in the second pass: four free shoots in five then still ended above where they left the timber."
+      "basis": "Structural bending modulus of a set juvenile shoot. Not measured for ivy in any source that could be opened. Hattermann et al. 2022 found ivy's stems to have the smallest share of mechanical tissue of their 29 climbers (\"from 18% (Hedera helix)\") and measured stiffness at searcher bases from 213 MN/m2 up; about 3000 MN/m2 was needed to span more than about 0.8 m. A fifth of the generic 3000 is taken, within that range. Tried at 1500 and then 1000 in the second pass: free shoots that start upwards from the top of a level member then stood upright to 0.4 m."
     },
     "mechanics.leafFreshMassPerAreaKgM2": {
       "value": 0.3,
@@ -715,10 +715,10 @@
       "basis": "Every leaf stays on through the winter: ivy is evergreen and its leaves live 3 to 4 years (Metcalfe 2005). Given so that the model says so rather than leaving it to the profile. What this cannot say: an evergreen leaf at the end of its life is dropped by the engine at the end of the calendar year, all on one day, whereas the main fall of ivy leaves is in late spring (US Forest Service review: \"The main period of litterfall occurs in late spring\")."
     },
     "mechanics.greenShootModulusMPa": {
-      "value": 100,
+      "value": 60,
       "unit": "MPa",
       "status": "provisional_design_assumption",
-      "basis": "Bending modulus of the soft growing end of a juvenile shoot on the day it is laid. Not measured. Below the generic 300 in the proportion taken for the set wood (mechanics.woodModulusMPa): a third."
+      "basis": "Bending modulus of the soft growing end of a juvenile shoot on the day it is laid. Not measured. A tenth of the set wood (mechanics.woodModulusMPa), the proportion the generic values have."
     },
     "mechanics.woodSetDays": {
       "value": 60,
