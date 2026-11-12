@@ -26,6 +26,9 @@ const TIMBER = {
 export interface StructureMaterials {
   glulam: THREE.Material;
   larch: THREE.Material;
+  /** The cut ends of the timber, showing end grain. Left out, an end is drawn in the material of its sides. */
+  glulamEnd?: THREE.Material;
+  larchEnd?: THREE.Material;
   steel: THREE.Material;
   stone: THREE.Material;
 }
@@ -189,6 +192,27 @@ export function buildStructure(bower: Bower, mats: StructureMaterials): BuiltStr
     mesh.name = mat === mats.glulam ? 'glulam' : 'timber sub-lattice';
     mesh.castShadow = mesh.receiveShadow = true;
     group.add(mesh);
+
+    // the cut ends, in a geometry of their own so that they can show end grain
+    const cp: number[] = [];
+    const cn: number[] = [];
+    const cu: number[] = [];
+    const ci: number[] = [];
+    const capOffset = pair.rect.appendCapsTo(cp, cn, cu, ci, 0);
+    pair.round.appendCapsTo(cp, cn, cu, ci, capOffset);
+    if (ci.length) {
+      const caps = new THREE.BufferGeometry();
+      caps.setAttribute('position', new THREE.Float32BufferAttribute(cp, 3));
+      caps.setAttribute('normal', new THREE.Float32BufferAttribute(cn, 3));
+      caps.setAttribute('uv', new THREE.Float32BufferAttribute(cu, 2));
+      caps.setIndex(ci);
+      geometries.push(caps);
+      triangles += ci.length / 3;
+      const ends = new THREE.Mesh(caps, (mat === mats.glulam ? mats.glulamEnd : mats.larchEnd) ?? mat);
+      ends.name = `${mesh.name}: cut ends`;
+      ends.castShadow = ends.receiveShadow = true;
+      group.add(ends);
+    }
   }
 
   // ---- steel cables: one unit cylinder, instanced per straight run --------------

@@ -77,6 +77,16 @@ export class Calendar {
 export const inMonths = (month: number, months: readonly number[]): boolean => months.includes(month);
 
 /**
+ * The sun's declination on a day of the year, in radians: how far north of
+ * the equator it stands overhead. Cooper's formula, good to about a degree.
+ * Day length and the sun's place in the sky (`light/sun.ts`) are both worked
+ * out from this one value, so they cannot disagree.
+ */
+export function solarDeclinationRad(dayOfYear: number): number {
+  return ((23.44 * Math.PI) / 180) * Math.sin((2 * Math.PI * (284 + dayOfYear)) / 365);
+}
+
+/**
  * Hours between sunrise and sunset for a latitude and day of year.
  *
  * Geometry only: solar declination from Cooper's formula and the sunrise hour
@@ -87,7 +97,7 @@ export const inMonths = (month: number, months: readonly number[]): boolean => m
  */
 export function dayLengthHours(latitudeDeg: number, dayOfYear: number): number {
   const rad = Math.PI / 180;
-  const declination = 23.44 * rad * Math.sin((2 * Math.PI * (284 + dayOfYear)) / 365);
+  const declination = solarDeclinationRad(dayOfYear);
   const x = -Math.tan(latitudeDeg * rad) * Math.tan(declination);
   if (x >= 1) return 0; // polar night
   if (x <= -1) return 24; // midnight sun

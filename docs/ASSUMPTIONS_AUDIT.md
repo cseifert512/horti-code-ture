@@ -381,3 +381,32 @@ The share that sets (8%), the swelling time and the ripening and fall windows ar
 ### 7.4 What a run now says about gaps
 
 A plant whose model leaves any `fruit.*` number unknown sets no fruit, and the run says so once on planting day (`part_not_modelled`); so does a plant whose way of climbing has an appendage (a tendril climber, a leaf-stalk climber, a clinger, a scrambler) and whose model gives no numbers for it. Fifteen of the sixteen growth models are in that state on this date, so a mixed run lists one or two such lines for every plant that is not *Wisteria sinensis*. Unknown side-shoot numbers are not reported: most climbers make none, and a line for each would say nothing.
+
+## 8. Light and aspect: what was added, and what it rests on
+
+Added later on 11 November 2026. Until then aspect changed nothing in a run. It now does, through light alone.
+
+**What is computed.** For each stretch of route and each root station, and for the 15th of each month: the hours of direct sun a clear day allows, and the light received as a share of what an open site at the same spot would have (direct beam weighted by its clear-sky strength through the day, and light from the whole sky, mixed in a stated proportion). Shade comes from the Bower's own members and cables, from walls, buildings and trees a description declares in its `site` section, and from the leaf other plants carried the season before. Light is read a little way off the face a route lies on, on a small sphere, so that low light from one side counts as much as light from above.
+
+**What is published.** The RHS's definitions of full sun (more than six hours of direct sun a day at midsummer), partial shade (three to six), moderate shade (two or three) and deep shade (fewer than two): https://www.rhs.org.uk/garden-design/shade-gardening. These are the words the taxon profiles use, so a place is classed by its midsummer hours and compared with the classes a profile names. Direct sun through the crown of a single tree, 1.3 to 5.3% in leaf and 40.2 to 51.9% bare, from measurements on street trees in Gothenburg (Konarska et al. 2014, https://doi.org/10.1007/s00704-013-1000-3); the middle of each range is used, and using the in-leaf figure all year for an evergreen tree is this project's reading, not the paper's. The sun's position, the equation of time and the clear-sky beam are textbook approximations, good to about a degree.
+
+**What is assumed, each labelled `provisional_design_assumption` in `packages/core/src/light/model.ts`.**
+
+| Assumption | Value | Why it matters |
+|---|---|---|
+| Share of light that is diffuse | 0.55 | Sets how much a place that loses its direct sun still has. A round figure for southern England's cloud; a site should give its own. |
+| Light needed by a plant whose profile accepts only full sun | all of an open site's | Makes such a plant's growth fall in proportion to any shade at all. This is the assumption that makes north differ from south on an open lattice. With it set at the light of a place that only just counts as full sun, nothing on the reference shells would be held back. |
+| Light needed where a profile accepts partial shade | 0.4 of an open site's | Below it growth falls in proportion. Nothing on the open reference shells comes near it. |
+| Light needed where a profile accepts shade | 0.15 | The same, for ivy and the shrub. |
+| Flowering where a profile ties flowers to sun | in proportion to light | Applied to *Wisteria sinensis* and the rose only: the two profiles that say so. |
+| Leaf as shade | half its area in the way from any direction | The neutral assumption of canopy light models. Leaf area itself is the unmeasured stand-in of the coverage figures. |
+| Where light is read | 0.15 m off the face of the member; 0.5 m above a root station | Sampling choices. |
+| Months a declared deciduous tree is in leaf | May to October | A round figure; a description cannot yet say what kind of tree it is. |
+
+**The reading of the profiles is itself an interpretation.** `taxon.json` records light, aspect and shelter as one sentence (`site.aspect`). `light/tolerance.ts` reads the classes, the compass quarters and the shelter it names, and nothing else; a test checks that all seventeen sentences can be read. The reading carries the status of an assumption, with the sentence as its basis.
+
+**What the taxon files do not hold, and the light model would use.** A structured, sourced statement of the light classes each taxon accepts, in place of a sentence to be parsed. Whether an aspect is asked for light, for warmth or for shelter: the sentences run them together ("south or west facing, sheltered"), and only light is modelled. Any figure for how much growth or flowering falls with shade, for any taxon: the profiles give a direction at most. What too much sun does, and on what condition (the hydrangea: "full sun only where the soil stays moist"). Winter light needs of the evergreens. For *Campsis*, that it is heat and not light that its flowering answers to is in the sentence, and there is no heat in the model.
+
+**Findings.** On an open lattice in an open site every station is in full sun by the RHS's definition: the 15 m hemisphere's north stations have about 14 hours of direct sun on a clear midsummer day. The north side has 85% of an open site's light over the summer half of the year and 79% in December; the south side 89% and 93%. The reference palette puts the climbing hydrangea on the north side for shade, and it is not in shade there: the report flags it. The difference aspect makes to growth is confined to the taxa whose profiles ask for sun, and is of the order of a tenth in the early years.
+
+**Not verified.** None of the light figures has been compared with a measurement on a structure. The shares assume a flat horizon and no cloud. Shade from foliage rests on leaf areas that are stand-ins. The response to light has not been compared with any plant.

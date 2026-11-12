@@ -5,6 +5,7 @@
  */
 import { z } from 'zod';
 import type { Bower } from '../bower/types.ts';
+import type { Site } from '../light/site.ts';
 import { type Growable, annualRoutine, groupThreeRoutine, wisteriaRoutine } from './scenarios.ts';
 import type { GardenerEvent, Planting, Scenario } from './types.ts';
 import type { Viewpoint } from './view.ts';
@@ -55,11 +56,13 @@ export interface PlantingOptions {
   /** `trained`: growth is tied in, and each plant gets the routine the model can act on. `untended`: planted and left. */
   care?: 'trained' | 'untended';
   viewpoints?: readonly Viewpoint[];
+  /** Where the Bower stands, if not where its own description says. */
+  site?: Site;
 }
 
 /** A scenario from a Bower and a planting plan. Perennials go in on 12 March, annuals on 20 May. */
 export function plantingOn(bower: Bower, plan: PlantingPlan, options: PlantingOptions): Scenario {
-  const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained', viewpoints = [] } = options;
+  const { taxa, plantingYear = 2027, years = 12, seed = 7, care = 'trained', viewpoints = [], site } = options;
   const seen = new Set<string>();
   const plantings: Planting[] = [];
   const events: GardenerEvent[] = [];
@@ -79,5 +82,5 @@ export function plantingOn(bower: Bower, plan: PlantingPlan, options: PlantingOp
     if (routine === 'cut_down_each_february') events.push(...groupThreeRoutine(p.plantId, plantingYear, years));
     if (annual) events.push(...annualRoutine(p.plantId, plantingYear, years));
   }
-  return { name: `${plan.name} on ${bower.name}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: [...viewpoints] };
+  return { name: `${plan.name} on ${bower.name}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: [...viewpoints], ...(site ? { site } : {}) };
 }

@@ -135,8 +135,24 @@ describe('pruning has consequences', () => {
     expect(before - after).toBeGreaterThanOrEqual(stripped.events.find((e) => e.eventId === 'strip-spurs')!.effects.floralBudsRemoved * 0.9);
   });
 
-  it('does not touch the neighbouring plant', () => {
-    for (let y = 2027; y <= 2035; y++) expect(summary(stripped, 'wisteria.1', y)).toEqual(summary(trained, 'wisteria.1', y));
+  // Each plant draws from its own random streams, so a cut on one cannot reroute or reflower another by chance.
+  // What does pass between them is light: the spurs cut off one plant carried leaves that shaded its neighbour.
+  it('does not touch the neighbouring plant, but for the light the cut lets through to it', () => {
+    const still = (s: Scenario): Scenario => ({ ...s, lightResponse: false });
+    const strippedStill = run(still(stripped.scenario));
+    const trainedStill = run(still(trained.scenario));
+    for (let y = 2027; y <= 2035; y++) expect(summary(strippedStill, 'wisteria.1', y)).toEqual(summary(trainedStill, 'wisteria.1', y));
+    // with light acting, the neighbour's framework is still the same: it had more light than its profile asks for either way
+    for (let y = 2027; y <= 2035; y++) {
+      const a = summary(stripped, 'wisteria.1', y);
+      const b = summary(trained, 'wisteria.1', y);
+      expect(a.frameworkM).toBe(b.frameworkM);
+      expect(a.routeShare).toBe(b.routeShare);
+      expect(a.highestM).toBe(b.highestM);
+    }
+    // its flowering answers to light (its profile: "full sun matters for profuse flowering"), and it has no less of it for the cut
+    const light = (sim: Simulation, y: number) => sim.light.of(sim.plants.get('wisteria.1')!, y).seasonShare;
+    for (let y = 2033; y <= 2035; y++) expect(light(stripped, y)).toBeGreaterThanOrEqual(light(trained, y));
   });
 
   it('changes the flowers and nothing else: the framework the plant builds is the same', () => {

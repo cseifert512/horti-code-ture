@@ -39,9 +39,11 @@ describe('how far the readings move when unmeasured densities are multiplied', (
     }
   });
 
-  it('changes nothing but the leaves when only their size is varied', () => {
+  // larger leaves shade a neighbour more, which is all that reaches the rest of the run (sim/light.ts):
+  // the framework is the same, and the flowers move by a count or two
+  it('changes the leaves, and through their shade almost nothing else, when only their size is varied', () => {
     for (const id of ['leaf_area_x2', 'leaf_area_x4']) {
-      expect(row(id).flowersOpened, id).toBe(row('as_modelled').flowersOpened);
+      expect(Math.abs(row(id).flowersOpened - row('as_modelled').flowersOpened), id).toBeLessThanOrEqual(0.02 * row('as_modelled').flowersOpened);
       expect(row(id).routeHeldShare, id).toBe(row('as_modelled').routeHeldShare);
     }
   });

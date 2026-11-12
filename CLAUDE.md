@@ -7,7 +7,7 @@ Bower builds timber lattices that plants and gardeners finish. This repository i
 - Root `*.md` — the specification. `README.md` gives the reading order.
 - `docs/ASSUMPTIONS_AUDIT.md` — tested state of the spec and prototype, with the prototype model map.
 - `species/<id>/` — per taxon: `SPECIES_PROFILE.md` (prose), `taxon.json` (validated data), `model.json` (the numbers its growth assumes) and `morphology.json` (the shape numbers its drawing uses, each with its evidence).
-- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/sim/report.ts` turns a run into the design report; `src/render/contract.ts` is what a viewer draws from and `src/render/presence.ts` says what is on the plant on a given day (use it; do not re-derive seasons); `src/targets.ts` holds the design targets a run is read against; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
+- `packages/core/` — `@horti/core`, the simulation core. TypeScript, no rendering dependencies. `src/sim/engine.ts` is the daily-step engine; `src/sim/report.ts` turns a run into the design report; `src/render/contract.ts` is what a viewer draws from and `src/render/presence.ts` says what is on the plant on a given day (use it; do not re-derive seasons); `src/light/` works out where the sun is, how much light each stretch of route and root station has, and what each taxon's profile says it needs (`model.ts` holds its assumptions); `src/sim/light.ts` is the only place the engine asks about light; `src/targets.ts` holds the design targets a run is read against; `species/<id>/model.json` holds the numbers a taxon's growth assumes.
 - `examples/` — Bower descriptions and planting plans. `src/bower/description.ts` reads a designed structure from centre lines and works out its routes; `src/sim/planting.ts` turns it and a planting plan into a scenario.
 - `packages/viewer/` — `@horti/viewer`, the three.js viewer. It draws what the core gives it and holds no growth logic; `src/plant/adapter.ts` is the only file where days become what is drawn, and it asks `presence.ts`. What a taxon looks like is one module, `src/plant/taxa/<id>.ts`, which imports no other taxon's; `TAXON_LOOKS.md` says how one is made.
 - `Wisteria/` — the original three.js prototype. Reference only; it has its own `node_modules`.
@@ -27,7 +27,7 @@ npm run prototype:audit         # prototype interference audit
 npm run prototype:assumptions   # prototype behaviour baseline
 ```
 
-The prototype's dev server is pinned to port 5173, which another session may hold. `.claude/launch.json` starts it on 5183 instead, and the viewer (`bower-viewer`) on 5193. `npm run portrait` starts a viewer of its own on 5197 (`bower-viewer-portraits`) and leaves it running.
+The prototype's dev server is pinned to port 5173, which another session may hold. `.claude/launch.json` starts it on 5183 instead, and the viewer (`bower-viewer`) on 5193. `npm run portrait` starts a viewer of its own on 5197 (`bower-viewer-portraits`) and leaves it running. A further entry (`bower-viewer-light`) is on 5196, for a session working beside another.
 
 ## Rules that are easy to break
 
@@ -38,6 +38,7 @@ The prototype's dev server is pinned to port 5173, which another session may hol
 - **Height is not route length.** Reach is computed on the support graph.
 - **Pruning removes lineage**, not mesh: descendants, buds, organs and contacts go with the cut stem.
 - **A flowering month is an envelope, not a trigger.** Never show flowers because the calendar says so.
+- **Light is not warmth.** The light model shades and nothing else. A profile's "south or west facing, sheltered" is mostly about warmth and wind, which are not modelled: report it, do not fold it into light.
 - **Mechanism traits do not transfer.** Spurs, handedness and old-wood flowering are wisteria's; each mechanism and flowering class is implemented separately.
 - Vocabulary comes from `packages/core/src/vocab.ts`. Add a term there, with its mapping, before using it anywhere else.
 

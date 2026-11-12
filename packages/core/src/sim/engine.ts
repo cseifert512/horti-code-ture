@@ -34,6 +34,7 @@ import type { SupportEdge } from '../bower/types.ts';
 import { Calendar, type CalendarDate } from '../calendar.ts';
 import { type Vec3, UP, ZERO, add, addScaled, anyPerpendicular, cross, distance, dot, length, lerp, normalize, scale, smoothstep, sub, v3 } from '../math/vec3.ts';
 import type { AppendageKind, GardenerEventType, MemberTier, OrganHeld } from '../vocab.ts';
+import { LightField } from './light.ts';
 import { type GrowthModel, type OptionalParamKey, known, listAt, param } from './model.ts';
 import { Rng, placeRng } from './rng.ts';
 import { liePath, pathAt, pathLength, twinePath } from './stem-path.ts';
@@ -66,6 +67,8 @@ export class Simulation {
   readonly events: EventRecord[] = [];
   readonly decisions: Decision[] = [];
   readonly summaries: YearSummary[] = [];
+  /** The light each plant gets on this site, and what its profile makes of it: see `light.ts`. */
+  readonly light: LightField;
 
   /** Axis ids on each edge, in the order they arrived. */
   private readonly occupancy = new Map<string, string[]>();
@@ -93,6 +96,7 @@ export class Simulation {
     for (const n of scenario.bower.graph.nodes.values()) top = Math.max(top, n.position.z);
     this.topZ = top;
     this.routeTotalM = scenario.bower.graph.totalLength;
+    this.light = new LightField(this);
   }
 
   private push<T>(map: Map<number, T[]>, day: number, item: T): void {
@@ -302,12 +306,14 @@ export class Simulation {
     const share = smoothstep(burst, end, doy + 1) - smoothstep(burst, end, doy);
     if (share <= 0) return;
     const est = date.year - plant.plantedYear < param(model, 'extension.establishmentFactorByYear').length ? listAt(model, 'extension.establishmentFactorByYear', date.year - plant.plantedYear) : 1;
+    // light: 1 where the plant has as much as its profile asks for, less where it is shaded below that
+    const lit = this.light.growthFactor(plant, date);
     for (const id of [...plant.axisIds]) {
       const axis = this.axes.get(id)!;
       if (axis.removedDay !== null || axis.tip.state === 'stopped') continue;
       // a whip grows at its own pace: it is the plant's vigour looking for somewhere to go.
       // So does a flowering side shoot, which only an established stem throws.
-      let delta = axis.ratePerSeasonM * share * (axis.role === 'whip' || axis.role === 'side_shoot' ? 1 : est);
+      let delta = axis.ratePerSeasonM * share * (axis.role === 'whip' || axis.role === 'side_shoot' ? 1 : est) * lit;
       if (axis.role === 'side_shoot') {
         // it lengthens by millimetres a day: lay the stem down a step at a time, not a point a day
         axis.owedM += delta;
@@ -1071,7 +1077,7 @@ export class Simulation {
     const lasts = param(model, 'phenology.flowerLastsDays');
     const ramp = year - plant.plantedYear - param(model, 'flowering.competenceYears');
     if (ramp < 0) return;
-    const chance = Math.min(1, param(model, 'flowering.currentSeasonFlowersPerM') * listAt(model, 'flowering.maturityRamp', ramp) * mid(param(model, 'organs.leafSpacingM')));
+    const chance = Math.min(1, param(model, 'flowering.currentSeasonFlowersPerM') * listAt(model, 'flowering.maturityRamp', ramp) * mid(param(model, 'organs.leafSpacingM'))) * this.light.floweringFactor(plant, date);
     const minShoot = param(model, 'flowering.currentSeasonMinShootM');
     const jan1 = this.calendar.dayOfYearDay(year, 1);
     // how much of each axis was laid down this year
@@ -1190,7 +1196,7 @@ export class Simulation {
     const ramp = year + 1 - plant.plantedYear - param(model, 'flowering.competenceYears');
     if (ramp < 0) return;
     const pruned = plant.summerPrunedYear === year;
-    const chance = listAt(model, 'flowering.maturityRamp', ramp) * param(model, 'flowering.spurFloralChance') * (pruned ? 1 : param(model, 'flowering.unprunedFactor'));
+    const chance = listAt(model, 'flowering.maturityRamp', ramp) * param(model, 'flowering.spurFloralChance') * (pruned ? 1 : param(model, 'flowering.unprunedFactor')) * this.light.floweringFactor(plant, date);
     let made = 0;
     let sites = 0;
     for (const id of plant.axisIds) {

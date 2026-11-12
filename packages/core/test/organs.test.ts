@@ -295,9 +295,16 @@ describe('fruit: Wisteria sinensis pods on the vault segment', () => {
       }
     });
 
-    it('does not touch the neighbouring plant’s fruit', () => {
+    // Each plant draws from its own random streams, so a cut on one cannot change another's fruit by chance. What does
+    // pass between them is light (sim/light.ts): the spurs cut off one plant carried leaves that shaded its neighbour,
+    // whose flowering answers to light. So the claim is tested with light told not to act.
+    it('does not touch the neighbouring plant’s fruit, light apart', () => {
       const mine = (s: Simulation) => s.fruits.filter((f) => f.plantId === 'wisteria.1').map((f) => [f.axisId, f.swell, f.ripen, f.removedDay]);
-      expect(mine(stripped)).toEqual(mine(sim));
+      const still = (s: Simulation) => run({ ...s.scenario, lightResponse: false }, END);
+      expect(mine(still(stripped))).toEqual(mine(still(sim)));
+      // with light acting the neighbour's fruit follows its flowers, and it never has less light for the cut
+      const light = (s: Simulation) => s.light.of(s.plants.get('wisteria.1')!, 2034).seasonShare;
+      expect(light(stripped)).toBeGreaterThanOrEqual(light(sim));
     });
   });
 
