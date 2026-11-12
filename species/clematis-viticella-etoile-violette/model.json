@@ -486,12 +486,12 @@
     },
     "appendages.leafStalkLengthM": {
       "value": [
-        0.03,
-        0.05
+        0.007,
+        0.0076
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of the stalk that clasps, from the stem round the support. No measurement was found; set at about a third of the leaf (10 to 13 cm, Bean)."
+      "basis": "Not the length of the stalk, which no source gives, but the reach of its clasp: from the stem round the far side of the 5 mm cable it holds, with the stalk's own thickness and a little play. The engine puts a clasping stalk where the stem lies against the cable, so this is the length that can be drawn there; the rest of the stalk is the stalk of the leaf at the same node. The same figure as hold.claspReachM in morphology.json. Worked out from the cable, not measured on a plant."
     },
     "appendages.aerialRootPatchSpacingM": {
       "value": [

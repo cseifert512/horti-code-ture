@@ -245,10 +245,10 @@
       "basis": "Bean, of C. viticella: 'seed-vessels broad and short' with 'very small tails devoid of the feathery covering'. The Manual of the Alien Plants of Belgium tells the species by its glabrous styles. Of the species; nothing was found on the seed heads of the cultivar."
     },
     "fruit.headWidthM": {
-      "value": [0.015, 0.022],
+      "value": [0.018, 0.026],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "No measurement was found. A head of 'broad and short' achenes (Bean) is drawn 15 to 22 mm across, tails included."
+      "basis": "No measurement was found. A head of 'broad and short' achenes (Bean) is drawn 18 to 26 mm across, tails included."
     },
     "fruit.acheneCount": {
       "value": null,
@@ -274,6 +274,24 @@
       "value": null,
       "unit": "m",
       "status": "unknown"
+    },
+    "hold.heldDiameterMm": {
+      "value": 5,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "The thickness of the support a clasp is drawn round: the 5 mm cable of the specimen frame and the example Bowers, which is the only thing in them this plant can hold by itself (the growth model takes 8 mm as the stoutest it can grasp). A choice about the drawing, not a fact about the plant."
+    },
+    "hold.stalkThicknessMm": {
+      "value": 1,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "Thickness of a leaf stalk where it has clasped. No measurement was found: a wiry stalk about a millimetre thick."
+    },
+    "hold.claspReachM": {
+      "value": [0.007, 0.0076],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The reach of a clasp, from the stem round the far side of what it holds: the 5 mm cable, the stalk's own millimetre on each side, and a little play. This, not the length of the stalk, is what the growth model gives as appendages.leafStalkLengthM and what RenderAppendage.lengthM carries, because the engine puts a clasping stalk where the stem lies against the cable: the rest of the stalk is the stalk of the leaf drawn at the same node. Worked out from the cable, not measured on a plant."
     }
   }
 }

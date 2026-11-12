@@ -637,7 +637,7 @@ function addSeedHead(mg: Merge, seat: FlowerSeat, lod: number, seed: number): vo
       .addScaledVector(E2, Math.sin(tilt) * Math.sin(turn));
     q.setFromUnitVectors(AY, dir);
     q.multiply(new THREE.Quaternion().setFromAxisAngle(AY, hash2(seed, 50 + i) * TAU));
-    const s = radius * (lod === 2 ? 1.05 : 0.86) * (0.9 + 0.2 * hash2(seed, 80 + i));
+    const s = radius * (lod === 2 ? 1.1 : 0.95) * (0.9 + 0.2 * hash2(seed, 80 + i));
     const from = seat.at.clone().addScaledVector(dir, radius * 0.12);
     const tone = 0.9 + 0.2 * hash2(seed, 120 + i);
     mg.add(achene, new THREE.Matrix4().compose(from, q, new V3(s, s, s)), [tone, tone, tone], from, 0);
@@ -670,57 +670,51 @@ function makeSeedGeometry(variant: number, lod: number): THREE.BufferGeometry {
 const COIL_LODS = 2;
 const COIL = { green: lin('#74813f'), flushed: lin('#7a5a44') };
 /**
- * The engine gives a clasping stalk its length and the thickness of what it
- * holds, and places it where the stem lies against that support, pointing
- * into it. So the support stands a few millimetres in front of the origin,
- * and here it is taken to stand along +Y, as a cable a stem climbs does: the
- * render data does not say which way the thing held runs.
- * The model is drawn for a stalk of this length; its coil is sized to the
- * support in these units.
+ * Where the engine puts a clasping stalk: at the point where the stem lies
+ * against the cable it holds, reaching into the cable. So the cable stands
+ * just in front of the origin, and the unit here is the reach of the clasp:
+ * from the stem round the far side of the cable. The length in the render data
+ * is that reach (the growth model's appendages.leafStalkLengthM); the rest of
+ * the stalk is the stalk of the leaf drawn at the same node.
  */
-const COIL_STALK_M = 0.04;
-/** Thickness of the stalk itself, in the same units: a little over a millimetre. */
-const COIL_THICK = 0.016;
-/** The slender stem the stalk belongs to lies against the support too, and the stalk passes over it. */
-const COIL_STEM = 0.045;
+const CLASP_REACH_M = mid(characterRange(morphology, 'hold.claspReachM'));
+/** The cable the clasp is drawn round, and the stalk's own thickness, in units of the reach. */
+const HELD = characterNumber(morphology, 'hold.heldDiameterMm') / 1000 / 2 / CLASP_REACH_M;
+const STALK = characterNumber(morphology, 'hold.stalkThicknessMm') / 1000 / 2 / CLASP_REACH_M;
 
 /**
- * Variant 0 and 1 are wound round a support of 5 mm and of 8 mm; variant 2
- * found nothing, and is the hooked stalk Darwin describes.
+ * Variant 0 is wound round its support; variant 1 found nothing, and is the
+ * hooked stalk Darwin describes. The render data does not say which way the
+ * thing held runs: it is taken to stand along +Y, as a cable that a stem
+ * climbs does. Where the coil comes round to the near side it passes within
+ * the thickness of the stem, which lies against the cable there.
  */
 function makeStalkCoilGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const mg = new Merge(false);
-  const n = [26, 10][lod]!;
+  const n = [26, 9][lod]!;
   let pts: V3[];
-  if (variant < 2) {
-    const held = ([5, 8] as const)[variant]! / 1000 / 2 / COIL_STALK_M;
-    const r = held + COIL_THICK * 0.9;
-    const turns = 1.3;
-    // round the support from the near side, where the stem is, over the stem once, and off on the far side
-    const winding = Math.round(n * 0.62);
-    pts = path(winding, (t) => {
-      const phi = 0.5 + t * turns * TAU;
-      // it bulges over the stem each time it comes round to the near side
-      const near = Math.pow(0.5 + 0.5 * Math.cos(phi), 6);
-      const rr = r + (COIL_STEM + COIL_THICK) * near * smoothstep(0.25, 0.5, t);
-      return new V3(rr * Math.sin(phi), -0.05 + 0.2 * t, held * 0.95 - rr * Math.cos(phi));
+  if (variant === 0) {
+    const r = HELD + STALK * 1.25;
+    // the middle of the cable: the stalk starts on its near face
+    const z0 = HELD * 0.94;
+    const turns = 1.42;
+    const winding = Math.round(n * 0.86);
+    const coil = path(winding, (t) => {
+      const phi = 0.55 + t * turns * TAU;
+      return new V3(r * Math.sin(phi), -0.16 + 0.42 * t, z0 - r * Math.cos(phi));
     });
-    // then on, as the stalk runs out to its leaflets: outwards, lifting a little
-    const last = pts[pts.length - 1]!;
-    const before = pts[pts.length - 2]!;
-    const go = last.clone().sub(before).normalize();
-    const rest = path(n - winding, (t) => {
-      const ahead = last.clone().addScaledVector(go, 0.2 * t * (1 - t));
-      return ahead.lerp(new V3(last.x * (1 - t) + 0.05 * t, last.y + 0.12 * Math.sin(Math.PI * t * 0.8) + 0.06 * t, 1), t * t * (3 - 2 * t));
-    });
-    pts.push(...rest.slice(1));
+    // out of the stem and on to the cable, round it, and off on the far side as the stalk runs on
+    const last = coil[coil.length - 1]!;
+    const go = last.clone().sub(coil[coil.length - 2]!).normalize();
+    const tail = path(n - winding, (t) => last.clone().addScaledVector(go, 0.22 * t).add(new V3(0, 0.08 * t * t, (1 - last.z) * t * t)));
+    pts = [new V3(0, -0.2, 0), ...coil, ...tail.slice(1)];
   } else {
     // nothing caught: out along +Z, the end bent down at a right angle
     pts = path(n, (t) => (t < 0.72 ? new V3(0, 0.05 * Math.sin((Math.PI * t) / 0.72), (t / 0.72) * 0.94) : new V3(0, -0.2 * smoothstep(0.72, 1, t), 0.94 + 0.06 * Math.sin(((t - 0.72) / 0.28) * Math.PI * 0.5))));
   }
-  mg.tube(pts, pts.map((_, i) => COIL_THICK * (1 - 0.35 * (i / (pts.length - 1)))), [5, 3][lod]!, COIL.green, COIL.flushed);
+  mg.tube(pts, pts.map((_, i) => STALK * (1.1 - 0.4 * (i / (pts.length - 1)))), [5, 3][lod]!, COIL.green, COIL.flushed);
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.7);
+  g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.8);
   return g;
 }
 
@@ -782,11 +776,11 @@ const seedHeads: FruitAsset = {
 
 const stalkCoil: AppendageAsset = {
   key: 'clematis-viticella-etoile-violette/leaf-stalk-coil',
-  variants: 3,
+  variants: 2,
   lods: COIL_LODS,
   make: makeStalkCoilGeometry,
   budget: [280, 64],
-  pick: (_r, holding, heldDiameterMm) => (!holding ? 2 : (heldDiameterMm ?? 5) > 6.5 ? 1 : 0),
+  pick: (_r, holding) => (holding ? 0 : 1),
   // Darwin: a clasped stalk thickens and hardens; it browns and outlasts its leaf
   aged: lin('#6a4a30'),
   agedDays: [50, 200],
@@ -804,7 +798,7 @@ const stalkCoil: AppendageAsset = {
  */
 const wood: WoodLook = {
   young: lin('#7a7a44'),
-  mature: lin('#8a6a48'),
+  mature: lin('#6f5338'),
   old: [0.95, 0.83, 0.66],
   woodyDays: [50, 170],
   oldDays: [320, 900],
