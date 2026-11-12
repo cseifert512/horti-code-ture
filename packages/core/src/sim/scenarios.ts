@@ -75,6 +75,32 @@ export function groupThreeRoutine(plantId: string, plantingYear: number, years: 
   return events;
 }
 
+/**
+ * A climbing rose's routine (RHS pruning group 17, and the breeder's advice), from the second year on:
+ *   winter, 8 January   every flowered side shoot shortened, keeping a third (RHS: "Prune any flowered side shoots
+ *                       back by two thirds of their length") to a half (David Austin: "reduced by around half their
+ *                       length"); where more than six canes rise from the base, the oldest beyond six cut out low
+ *                       (RHS: "if heavily congested, cut out any really old branches from the base", and in renovation
+ *                       "a maximum of six young, vigorous stems"). The RHS prunes between December and February, the
+ *                       breeder in January and February; early January is inside both.
+ *   summer, fortnightly from late June to late August: deadheading (RHS: "deadhead during the flowering season to
+ *                       encourage further flowering"). It stops there, so that the last flush sets hips (David Austin:
+ *                       "Do not deadhead roses renowned for their autumn fruit after the second flush"; the RHS stops in
+ *                       midsummer where hips are wanted).
+ * Sources: https://www.rhs.org.uk/plants/roses/climbing/pruning-guide ,
+ * https://www.davidaustinroses.co.uk/blogs/news/pruning-english-climbing-roses ,
+ * https://davidaustinroses.co.uk/blogs/rose-care/how-to-deadhead-a-rose
+ */
+export function climbingRoseRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+  const events: GardenerEvent[] = [];
+  for (let y = 1; y < years; y++) {
+    const year = plantingYear + y;
+    events.push({ id: `rose-winter-${year}-${plantId}`, date: `${year}-01-08`, type: 'shorten_side_shoots', plantId, keepShare: [0.33, 0.5], renewCanes: { keep: 6, stubM: 0.3 }, author: 'gardener', reason: 'RHS pruning group 17: flowered side shoots back by two thirds (the breeder: by about half); old canes out at the base where congested, keeping six' });
+    for (const d of ['06-28', '07-12', '07-26', '08-09', '08-23']) events.push({ id: `rose-deadhead-${year}-${d}-${plantId}`, date: `${year}-${d}`, type: 'deadhead_or_select_flowers', plantId, author: 'gardener', reason: 'RHS: deadhead during the flowering season; stopped after August so that the last flush sets hips' });
+  }
+  return events;
+}
+
 /** An annual is set out again each year in late spring (RHS: once the risk of frost has passed). */
 export function annualRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
   const events: GardenerEvent[] = [];
@@ -229,7 +255,7 @@ export function referencePalette(options: PaletteOptions): Scenario {
   need(taxa, ...plan.map((p) => p.taxonId));
   const bower = makeHemisphereBower({ diameterM: 15, stations: plan.length });
   const plantings: Planting[] = plan.map((p) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[p.meridian]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
-  // only the routines the model acts on: the wisterias' two prunes a year and the summer clematis's cut-down
-  const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('summer-clematis', plantingYear, years)] : [];
+  // only the routines the model acts on: the wisterias' two prunes a year, the summer clematis's cut-down and the rose's
+  const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('summer-clematis', plantingYear, years), ...climbingRoseRoutine('rose', plantingYear, years)] : [];
   return { name: `The reference palette on the 15 m hemisphere${ivy ? ', with ivy' : ''}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS, ...placed(options) };
 }

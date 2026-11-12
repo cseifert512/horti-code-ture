@@ -63,7 +63,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "6 June to 20 October. The breeder: \"Repeat flowering\", in flushes \"from late spring to early winter\" (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose). Repeat-flowering roses give \"a main flush in June\" with \"five to six weeks between flushes\" and \"a late flourish in October, or even November\" (https://www.crocus.co.uk/features/_/articleid.1321/); David Austin: \"By late June, many varieties are producing an abundance of blooms\" (https://eu.davidaustinroses.com/blogs/news/what-the-longest-day-reveals-about-roses); the RHS: \"repeat-flowering from midsummer to autumn\" (https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details). The engine opens one spray on each flowering side shoot on a day drawn evenly from this window, so it shows a steady succession and not a June flush followed by lesser ones: growers of this cultivar report later bloom as \"sporadic, into September and October, but nothing like the main flush\" (https://www.helpmefind.com/gardening/l.php?l=2.37005&tab=32)."
+      "basis": "6 June to 20 October: the envelope inside which any flower of the plant opens. The breeder: \"Repeat flowering\", in flushes \"from late spring to early winter\" (https://www.davidaustinroses.co.uk/products/the-generous-gardener-climbing-rose). Repeat-flowering roses give \"a main flush in June\" with \"five to six weeks between flushes\" and \"a late flourish in October, or even November\" (https://www.crocus.co.uk/features/_/articleid.1321/); David Austin: \"By late June, many varieties are producing an abundance of blooms\" (https://eu.davidaustinroses.com/blogs/news/what-the-longest-day-reveals-about-roses); the RHS: \"repeat-flowering from midsummer to autumn\" (https://www.rhs.org.uk/plants/196207/rosa-the-generous-gardener-ausdrawn-cl/details). The first flowers open in the June flush (flowering.firstFlushDays) and the later ones follow the flowers before them (flowering.repeat*), so the window bounds the season and does not spread the flowers over it."
     },
     "phenology.petalFallDoy": {
       "value": [
@@ -425,7 +425,7 @@
     "fruit.setShare": {
       "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "The share of sprays that leave hips. The cultivar sets them where the spent flowers are left: \"lovely orange hips in the autumn\" (https://www.provendernurseries.co.uk/factsheets/rosa-the-generous-gardener-ausdrawn); a vase of its hips, \"rather fat and rosy orange\", was picked in late December (https://teddingtongardener.com/2013/12/22). How freely it sets them has not been counted. The RHS has climbing roses deadheaded through the season, and stops in midsummer only where hips are wanted (https://www.rhs.org.uk/plants/roses/growing-guide). The engine cannot deadhead by date, so one share stands for both: about a third of sprays are taken to be left and to set."
+      "basis": "The share of sprays left on the plant that leave hips. The cultivar sets them where the spent flowers are left: \"lovely orange hips in the autumn\" (https://www.provendernurseries.co.uk/factsheets/rosa-the-generous-gardener-ausdrawn); a vase of its hips, \"rather fat and rosy orange\", was picked in late December (https://teddingtongardener.com/2013/12/22). How freely it sets them has not been counted. A spray the gardener deadheads leaves none (the routine deadheads until late August)."
     },
     "fruit.lengthM": {
       "value": [
@@ -554,12 +554,74 @@
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "A side shoot flowers in the summer it grows and is gone before the next: the RHS cuts flowered side shoots back by two thirds in winter (https://www.rhs.org.uk/plants/roses/climbing/pruning-guide), and new ones break from what is left. The engine sheds the whole shoot at the next budburst and starts another from the cane."
+      "basis": "A side shoot flowers in the summer it grows. Left alone, the engine sheds it at the next budburst and starts another from the cane. Where the gardener has shortened it in winter (the RHS cuts flowered side shoots back by two thirds, https://www.rhs.org.uk/plants/roses/climbing/pruning-guide, and new ones break from what is left) the stub stays, and the next side shoot breaks from its top."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.75,
       "status": "provisional_design_assumption",
       "basis": "Three side shoots in four end in a spray; the rest are blind. Not counted on a plant."
+    },
+    "flowering.firstFlushDays": {
+      "value": [
+        0,
+        24
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "source": "https://www.crocus.co.uk/features/_/articleid.1321/",
+      "basis": "The first flowers at the ends of the side shoots open from 6 to 30 June: \"a main flush in June\" (https://www.crocus.co.uk/features/_/articleid.1321/); the breeder's main flush is in June (SPECIES_PROFILE.md, flowering season). How many days the flush is spread over was not found for this cultivar; three and a half weeks is a choice."
+    },
+    "flowering.repeatMaxPerSeason": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "source": "https://www.crocus.co.uk/features/_/articleid.1321/",
+      "basis": "A June flush, then flushes \"five to six weeks\" apart to \"a late flourish in October, or even November\" (https://www.crocus.co.uk/features/_/articleid.1321/): from late June to October that is three more at most. Not counted on this cultivar."
+    },
+    "flowering.repeatIntervalDays": {
+      "value": [
+        28,
+        42
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "source": "https://davidaustinroses.co.uk/blogs/rose-care/how-to-deadhead-a-rose",
+      "basis": "From a spray going over, left on the plant, to the next flower at the same place: two weeks longer than after deadheading. The breeder deadheads repeat-flowering climbers so that \"they never stall\" (https://davidaustinroses.co.uk/blogs/rose-care/how-to-deadhead-a-rose), and a spray left to set hips is taken to hold the next back. How much is a choice; no interval was found measured."
+    },
+    "flowering.repeatIntervalDeadheadedDays": {
+      "value": [
+        14,
+        28
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "source": "https://www.crocus.co.uk/features/_/articleid.1321/",
+      "basis": "\"Five to six weeks between flushes\" (https://www.crocus.co.uk/features/_/articleid.1321/), read as from the opening of one flush to the opening of the next. A spray of this rose is in flower for 16 to 26 days (phenology.flowerLastsDays), so from the deadheading of a spray that has gone over to the next flower at the same place is about two to four weeks. Read instead as from the end of one flush to the next it would be three weeks longer; the source does not say which it means. Not measured on this cultivar."
+    },
+    "flowering.repeatShare": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "source": "https://www.helpmefind.com/gardening/l.php?l=2.37005&tab=32",
+      "basis": "Each flush lesser than the last: half the places that flowered flower again, so the flushes go one, a half, a quarter, an eighth. Growers of this cultivar find later bloom \"sporadic, into September and October, but nothing like the main flush\" (https://www.helpmefind.com/gardening/l.php?l=2.37005&tab=32). The share is a choice, not a count."
+    },
+    "sideShoots.baseDiameterMm": {
+      "value": 6,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "A flowering side shoot of 0.6 m, the longest the model makes, 6 mm thick at its foot while it grows, tapering to the 3.2 mm of a new tip (thickening.tipRadiusSquaredMm2): about the thickness of a pencil, which is the size of flowering wood a rose gardener keeps. No measurement of a side shoot of this or any climbing rose was found; a choice."
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.012,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/fpls.2023.1226713",
+      "basis": "A spray of one to three open flowers and a bud or two (SPECIES_PROFILE.md). Worked out, not weighed: whole flowers of small-flowered diploid roses with 14 to 22 petals weighed 0.2 to 0.3 g fresh (Rawandoozi and others 2023, https://doi.org/10.3389/fpls.2023.1226713); a flower of this rose has 40 to 50 petals and is 5 to 9 cm across, about twice the petals and four times the petal area, which puts a flower at about 4 to 6 g with its receptacle and stalk, and a spray of two open flowers and one and a half buds at about 12 g. Rain on the petals, which can double it, is not a load in the model."
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.012,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "source": "https://hrcak.srce.hr/clanak/123964",
+      "basis": "A cluster of one to three hips (SPECIES_PROFILE.md), two on average. Worked out, not weighed: hips of Rosa canina weighed 1.9 to 3.0 g fresh, plant by plant (Sindrak and others 2012, https://hrcak.srce.hr/clanak/123964), at about 13 to 17 mm across; a hip of this rose is 18 to 26 mm and \"rather fat\", about two and a half times the volume, so about 5 to 6 g, and a cluster of two about 12 g with its stalks. No hip of this cultivar was weighed."
     }
   }
 }

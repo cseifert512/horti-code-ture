@@ -259,6 +259,14 @@ export const GARDENER_EVENT = [
   'untie_or_reposition',
   'spur_prune',
   'hard_prune',
+  /**
+   * Flowered side shoots cut back to a share of their length, everything beyond the cut going with it, and old canes
+   * taken out at the base where too many rise from it. Maps the RHS's routine pruning of climbing roses (pruning group
+   * 17: "Prune any flowered side shoots back by two thirds of their length"; "if heavily congested, cut out any really
+   * old branches from the base"; https://www.rhs.org.uk/plants/roses/climbing/pruning-guide). Not `spur_prune`, which
+   * is wisteria's cut to two or three buds, and not `hard_prune`, which takes whole axes or the whole plant down.
+   */
+  'shorten_side_shoots',
   'thin_canopy',
   'deadhead_or_select_flowers',
   'water',

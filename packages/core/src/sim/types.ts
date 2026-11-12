@@ -107,6 +107,12 @@ export interface Axis {
   lastYear: number | null;
   /** Growth a side shoot has made but not yet laid down as stem: it lengthens by millimetres a day and is stored a step at a time. */
   owedM: number;
+  /** For a flowering side shoot: the day its bud breaks. It does not grow before then. */
+  breaksDay?: number;
+  /** For a flowering side shoot: the length it is to make, which sets how thick it is along its length as it grows. */
+  plannedM?: number;
+  /** For a flowering side shoot shortened by a gardener (`shorten_side_shoots`): the growing season the cut was made for. */
+  shortenedYear?: number;
 }
 
 /** Progress along a stem towards the next of something set at intervals. */
@@ -129,6 +135,8 @@ export interface LeafNode {
   taken: boolean;
   /** The flowering side shoot growing from it, while there is one. */
   sideShootId: string | null;
+  /** How many leaf nodes its axis had laid before it: its place in the turn of the leaves round the stem. */
+  ordinal?: number;
 }
 
 export interface LeafSite {
@@ -334,7 +342,12 @@ export type GardenerAction =
   | { type: 'spur_prune'; plantId: string; season: 'summer' | 'winter' }
   | { type: 'hard_prune'; plantId: string; target: { axisId: string } | { leader: number } | { allSpursOn: { leader: number } } | { allStems: true }; keepM: number }
   | { type: 'monitor'; plantId: string }
-  | { type: Exclude<GardenerEventType, 'train_leader' | 'spur_prune' | 'hard_prune' | 'monitor' | 'plant'>; plantId: string; note?: string };
+  /**
+   * Flowered side shoots shortened so that a share of each is kept, drawn for each shoot from `keepShare`; and, with
+   * `renewCanes`, where more than that many canes rise from the base, the oldest beyond it cut out low down to shoot again.
+   */
+  | { type: 'shorten_side_shoots'; plantId: string; keepShare: [number, number]; renewCanes?: { keep: number; stubM: number } }
+  | { type: Exclude<GardenerEventType, 'train_leader' | 'spur_prune' | 'hard_prune' | 'monitor' | 'plant' | 'shorten_side_shoots'>; plantId: string; note?: string };
 
 export type GardenerEvent = GardenerAction & {
   id: string;

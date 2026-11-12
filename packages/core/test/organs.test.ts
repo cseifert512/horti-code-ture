@@ -288,9 +288,10 @@ describe('fruit: Wisteria sinensis pods on the vault segment', () => {
 
     it('goes with its stem on the day of the cut, and never falls afterwards', () => {
       const taken = stripped.fruits.filter((f) => f.removedBy === 'strip-in-autumn');
-      // more than one pod. Three hung on these spurs until the plant's shoots in the air were laid by their mechanics,
-      // and two since: which spurs flower, and so which set a pod, follows the order the plant's leaves are made in
-      expect(taken.length).toBeGreaterThanOrEqual(2);
+      // at least one pod. Three hung on these spurs until the plant's shoots in the air were laid by their mechanics, two
+      // until the light a shoot reads stopped depending on which shoot asked first from its place, and one since: which
+      // spurs flower, and so which set a pod, follows the order the plant's leaves are made in
+      expect(taken.length).toBeGreaterThanOrEqual(1);
       for (const f of taken) {
         expect(f.removedDay).toBe(day);
         expect(f.fallPlannedDay).toBeGreaterThan(day);

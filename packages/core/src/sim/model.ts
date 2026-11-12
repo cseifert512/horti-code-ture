@@ -26,7 +26,7 @@
 import { z } from 'zod';
 import { type ProvenanceEntry, type Sourced, sourced } from '../provenance.ts';
 import { ORGAN_HELD } from '../vocab.ts';
-import { GENERIC_SHOOT, type ShootParamKey } from './generic-shoot.ts';
+import { GENERIC_SHOOT, GENERIC_SIDE_SHOOT, type ShootParamKey, type SideShootParamKey } from './generic-shoot.ts';
 
 /**
  * Every parameter, with the shape of its value. `range` is [low, high]; `list` is indexed as its name says.
@@ -287,6 +287,28 @@ export const GROWTH_PARAMS = {
   'sideShoots.extensionMPerYear': 'range',
   /** The length beyond which a side shoot adds no more. */
   'sideShoots.maxLengthM': 'number',
+  // How a side shoot leaves its bearing stem. Unknown: the generic side shoot (sim/generic-shoot.ts), said once for the plant.
+  /** Angle between the bearing stem, base to tip, and a side shoot as it sets out. */
+  'sideShoots.branchAngleDeg': 'range',
+  /** Days after bud burst over which a season's side shoots break, each on a day of its own. */
+  'sideShoots.breakSpreadDays': 'range',
+  /** Share, 0 to 1, by which a side shoot's first heading is turned from its place round the stem towards up and the light. */
+  'sideShoots.startTowardsLight': 'number',
+  /** Angle round the stem from one leaf node to the next where leaves stand singly. */
+  'organs.alternateDivergenceDeg': 'number',
+  /**
+   * Diameter at its base of a side shoot of the longest length `sideShoots.lengthM` gives, as it grows; it tapers to the
+   * tip the plant's other shoots have (`thickening.tipRadiusSquaredMm2`), and a shorter shoot is as thick, at each
+   * distance from its tip, as a longer one. Unknown: the plant's own pipe model (`thickening.radiusSquaredPerMetreMm2`)
+   * on the length the shoot is to make.
+   */
+  'sideShoots.baseDiameterMm': 'number',
+  /**
+   * For a plant that flowers again in flushes: the days, counted from the first day of `phenology.flowerOpenDoy`, in
+   * which the first flowers at the ends of side shoots open, the first flush. Unknown: they open on days spread over
+   * the whole window.
+   */
+  'flowering.firstFlushDays': 'range',
 } as const;
 
 export type GrowthParamKey = keyof typeof GROWTH_PARAMS;
@@ -339,6 +361,12 @@ export const GROWTH_PARAMS_OPTIONAL = [
   'flowering.repeatIntervalDeadheadedDays',
   'sideShoots.extensionMPerYear',
   'sideShoots.maxLengthM',
+  'sideShoots.branchAngleDeg',
+  'sideShoots.breakSpreadDays',
+  'sideShoots.startTowardsLight',
+  'organs.alternateDivergenceDeg',
+  'sideShoots.baseDiameterMm',
+  'flowering.firstFlushDays',
 ] as const satisfies readonly GrowthParamKey[];
 export type OptionalParamKey = (typeof GROWTH_PARAMS_OPTIONAL)[number];
 export type RequiredParamKey = Exclude<GrowthParamKey, OptionalParamKey>;
@@ -404,6 +432,12 @@ const optionalShapes: { [K in OptionalParamKey]: z.ZodType } = {
   'flowering.repeatIntervalDeadheadedDays': waits,
   'sideShoots.extensionMPerYear': lengths,
   'sideShoots.maxLengthM': z.number().nonnegative(),
+  'sideShoots.branchAngleDeg': z.tuple([z.number().min(0).max(180), z.number().min(0).max(180)]).refine(([a, b]) => a <= b, 'a range is [low, high]'),
+  'sideShoots.breakSpreadDays': lengths,
+  'sideShoots.startTowardsLight': share,
+  'organs.alternateDivergenceDeg': z.number().min(0).max(360),
+  'sideShoots.baseDiameterMm': positive,
+  'flowering.firstFlushDays': lengths,
 };
 
 const paramShape = Object.fromEntries(
@@ -499,6 +533,16 @@ export function shootParam(model: GrowthModel, key: ShootParamKey): number {
   return model.params[key].value ?? GENERIC_SHOOT[key].value;
 }
 
+/** The value of a parameter of how a side shoot sets out: the taxon's own, or the generic side shoot's. */
+export function sideShootParam<K extends SideShootParamKey>(model: GrowthModel, key: K): (typeof GENERIC_SIDE_SHOOT)[K]['value'] {
+  return (model.params[key].value ?? GENERIC_SIDE_SHOOT[key].value) as (typeof GENERIC_SIDE_SHOOT)[K]['value'];
+}
+
+/** The side-shoot parameters a model leaves to the generic side shoot. */
+export function genericSideShootKeys(model: GrowthModel): SideShootParamKey[] {
+  return (Object.keys(GENERIC_SIDE_SHOOT) as SideShootParamKey[]).filter((k) => model.params[k].value === null);
+}
+
 /** The shoot parameters a model leaves to the generic set. */
 export function genericShootKeys(model: GrowthModel): ShootParamKey[] {
   return (Object.keys(GENERIC_SHOOT) as ShootParamKey[]).filter((k) => model.params[k].value === null);
@@ -537,6 +581,11 @@ export function modelProvenance(model: GrowthModel): ProvenanceEntry[] {
     if (p.value === null && k in GENERIC_SHOOT) {
       const g: Sourced<number> = GENERIC_SHOOT[k as ShootParamKey];
       return { owner: `${model.taxonId} growth model (generic shoot)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
+    }
+    // the same for how a side shoot sets out, on a plant that makes side shoots
+    if (p.value === null && k in GENERIC_SIDE_SHOOT && model.params['sideShoots.perMetrePerYear'].value) {
+      const g: Sourced<number | [number, number]> = GENERIC_SIDE_SHOOT[k as SideShootParamKey];
+      return { owner: `${model.taxonId} growth model (generic side shoot)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
     }
     return { owner: `${model.taxonId} growth model`, path: k, value: p.value, unit: p.unit, status: p.status, source: p.source, basis: p.basis };
   });
