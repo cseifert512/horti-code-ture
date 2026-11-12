@@ -98,9 +98,10 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
   const surface = (u: number, v: number): [number, number, number] => {
     const w = halfAt(v);
     let x = u * w;
-    // each half swells a little between the midrib, which lies in a shallow groove, and the margin, which rolls under
-    let y = fold * Math.abs(x) + 0.05 * w * Math.sin(Math.PI * Math.abs(u)) - roll * Math.pow(Math.abs(u), 3) * (w / halfWidth) - arch * v * v - 0.05 * smoothstep(0.7, 1, v);
-    y -= 0.002 * Math.exp(-Math.pow(x / 0.02, 2)) * (1 - 0.6 * v);
+    // the margin rolls under; on the finest model each half also swells a little between the midrib, which lies in
+    // a shallow groove, and the margin (a coarser sheet would show the swelling as stripes of gloss)
+    let y = fold * Math.abs(x) - roll * Math.pow(Math.abs(u), 3) * (w / halfWidth) - arch * v * v - 0.05 * smoothstep(0.7, 1, v);
+    if (lod === 0) y += 0.05 * w * Math.sin(Math.PI * Math.abs(u)) - 0.002 * Math.exp(-Math.pow(x / 0.02, 2)) * (1 - 0.6 * v);
     if (lod <= 1) y += 0.01 * Math.sin(v * 8 + wavePhase) * u * Math.abs(u);
     // a leaf is seldom flat: it turns a little about its midrib towards the tip
     const turn = twist * v;
@@ -120,8 +121,8 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
     }
   };
   const patch = (u: number, v: number): readonly [number, number] => [lerp(TEX.blade.u[0], TEX.blade.u[1], u), lerp(TEX.blade.v[0], TEX.blade.v[1], v)];
-  if (lod === 2) {
-    // seen from across a garden: one sheet, the midrib too fine to show
+  if (lod > 0) {
+    // seen from a few metres or from across a garden: one smooth sheet, the midrib too fine to show
     sb.surf(nu, nv, (u01, v) => ({ p: surface(u01 * 2 - 1, v) }));
     sample(0, patch);
   } else {
@@ -133,7 +134,7 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
       sample(from, patch);
     }
     const from = sb.n;
-    sb.surf(lod === 0 ? 2 : 1, nv, (s, v) => ({ p: surface((s * 2 - 1) * ribAt(v), v) }));
+    sb.surf(2, nv, (s, v) => ({ p: surface((s * 2 - 1) * ribAt(v), v) }));
     sample(from, () => TEX.midrib);
   }
   const blade = sb.build();
@@ -503,7 +504,7 @@ const leaf: LeafAsset = {
   variants: LEAF_VARIANTS,
   lods: LEAF_LODS,
   make: makeLeaf,
-  budget: [520, 72, 12],
+  budget: [520, 64, 12],
   // short leaves are more often the broad ones, long leaves the narrow: Bean notes shorter, broader leaves on some plants
   pick: (lengthM, r) => {
     const long = smoothstep(LEAF_LENGTH[0], LEAF_LENGTH[1], lengthM);

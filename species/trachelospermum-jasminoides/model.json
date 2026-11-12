@@ -283,7 +283,7 @@
       "value": 2,
       "status": "published_plant_profile",
       "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
-      "basis": "NC State Extension plant record: leaf arrangement 'opposite'. The Belgrade study says the same of the leaves it measured."
+      "basis": "NC State Extension plant record: leaf arrangement 'Opposite'. The Belgrade study says the same of the leaves it measured."
     },
     "organs.spurChance": {
       "value": 0,
@@ -315,7 +315,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The width of the cluster of flowers at the end of a cyme's stalk, which is what the flower model is authored to. Two to nine flowers (counted in Belgrade, Ocokoljic et al. 2026), each 1.7 to 2.3 cm across (measured there), standing loosely on forks 1 to 2 cm long, make a cluster two to four flowers wide. No source measures the cluster itself; Bean's cymes '1 1/2 to 2 in. long' and Flora of China's stalk of 2 to 6 cm are lengths, not widths."
+      "basis": "The width of the cluster of flowers at the end of a cyme's stalk, which is what the flower model is authored to. Two to nine flowers (counted in Belgrade, Ocokoljic et al. 2026), each 1.7 to 2.3 cm across (measured there), standing loosely on forks 1 to 2 cm long, make a cluster two to four flowers wide. No source measures the cluster itself; Bean's cymes of 1 1/2 to 2 in. and Flora of China's stalk of 2 to 6 cm are lengths, not widths."
     },
     "organs.whipShareOfNodes": {
       "value": 0.03,
@@ -430,9 +430,9 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": 0.02,
+      "value": 0.008,
       "status": "provisional_design_assumption",
-      "basis": "RHS guide: 'fruits (and seeds) are rarely produced in UK gardens'; in Belgrade none set in three years (Ocokoljic et al. 2026). One cyme in fifty is this model's reading of 'rarely': a handful of pods on an established plant in a year, a young plant often having none."
+      "basis": "RHS guide: 'fruits (and seeds) are rarely produced in UK gardens'; in Belgrade none set in three years (Ocokoljic et al. 2026). One cyme in a hundred and twenty-five is this model's reading of 'rarely': two or three pairs of pods in a year on a plant that covers a fence panel, a dozen or so on one that covers a wall, a young plant usually having none."
     },
     "fruit.lengthM": {
       "value": [
@@ -545,9 +545,9 @@
       "basis": "The short shoots are woody and stay: on the plant they branch again and flower from their own side shoots in later years, which this model shows as the same shoot flowering again. Four seasons is a choice, a little longer than a leaf is taken to last."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": 0.5,
+      "value": 0.75,
       "status": "provisional_design_assumption",
-      "basis": "Half the short shoots of an established plant end in a cyme in a year. In photographs of plants in full flower in Mediterranean gardens nearly every shoot has one; half is a cautious reading for Britain, where it flowers less freely, and gives a covered lattice some hundred and fifty cymes to the square metre. It takes no account of shade, which the profiles say reduces flowering. Not counted on plants."
+      "basis": "Three in four of the short shoots of an established plant end in a cyme in a year. In photographs of plants in full flower nearly every shoot has one, a plant in a London garden among them (Wikimedia Commons, 'Star Jasmine Trachelospermum Jasminoides Capel Manor College Gardens Enfield London England 01'); three in four leaves some shoots leafy only. The share is a choice, and takes no account of shade, which the profiles say reduces flowering. Not counted on plants."
     }
   }
 }
