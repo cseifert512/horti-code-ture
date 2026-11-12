@@ -5,7 +5,7 @@
   "names": {
     "flowerHeld": "facing_out",
     "fruitHeld": "facing_out",
-    "basis": "Flowers stand clear of the leaves on long stalks from the leaf axils and face outwards, half nodding (HelpMeFind: 'semi-nodding'; Bean: 'opening flat'; RBG Victoria for C. viticella: 'nodding'). The seed heads stay on the same stalks. One leaf form, one flower form and one fruit form are named: the differences between leaves are drawn as variants."
+    "basis": "Flowers stand clear of the leaves on long stalks from the leaf axils and face outwards, half nodding (HelpMeFind: 'semi-nodding'; Bean: 'opening flat'; RBG Victoria for C. viticella: 'nodding'). The seed heads stay on the same stalks, so they are held the same way. No forms are named: the plant has one kind of leaf, of cyme and of seed head, and the differences between its leaves are drawn as variants."
   },
   "params": {
     "phenology.budburstDoy": {
@@ -18,7 +18,7 @@
       "value": 210,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Shoots are taken to stop lengthening on 20 August, once the plant is in full flower. No dated source."
+      "basis": "Shoots are taken to stop lengthening on 29 July, as the plant comes into full flower: a stem is then at the height the descriptions give by the time it flowers. No dated source."
     },
     "phenology.leafFlushDoy": {
       "value": [
@@ -103,7 +103,7 @@
       "value": 2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Only on an unpruned plant: the rate of the long new shoots its old stems throw, set a little under the rate of a stem from the base. A placeholder."
+      "basis": "Not used while organs.whipShareOfNodes is nothing. Present because every model carries every parameter."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -194,7 +194,7 @@
     "routing.occupancyCost": {
       "value": 3.3,
       "status": "provisional_design_assumption",
-      "basis": "How much a shoot is put off a lath or wire by each stem already on it. Set so that the stems of a plant fan out over a lattice instead of bunching (RHS: 'guide stems so they spread evenly, which improves flowering and avoids a tangled mass'). A tuning value, not a measurement."
+      "basis": "How much a shoot is put off a lath or wire by each stem already on it. Set high, so that the stems of a plant fan out over a lattice instead of bunching, as a gardener lays them (RHS: 'guide stems so they spread evenly, which improves flowering and avoids a tangled mass'), and so that the stems from the base start on different members. A tuning value, not a measurement."
     },
     "routing.downhillCostPerM": {
       "value": 5,
@@ -204,7 +204,7 @@
     "routing.uphillBonusPerM": {
       "value": 1,
       "status": "provisional_design_assumption",
-      "basis": "How strongly a shoot prefers a rising member. Set higher than the engine's general value because this plant is all new shoots racing upward each year: 2.5 to 4 m of height in a season (RHS). A tuning value, not a measurement."
+      "basis": "How strongly a shoot prefers a rising member. Kept modest, so that a stem led up a lath that is already taken turns along a rail to the next one: with routing.occupancyCost this is what fans the stems out. A tuning value, not a measurement."
     },
     "routing.straightOnBonus": {
       "value": 0.5,
@@ -310,14 +310,14 @@
       "basis": "What one flowering node carries is drawn as one cyme of three flowers (Flora Europaea: flowers solitary or up to three in the leaf axils; Bean: 'solitary ... or several on a branched stalk'), and this is its length from the leaf axil to the face of its end flower. A flower is half as wide as that: 6.5 to 9.5 cm, inside the 5-10 cm of Clematis on the Web (RHS to 10 cm; Bean about 4 in). Bean gives flower stalks of 2 to 4 in for C. viticella; no stalk length was found for the cultivar, so the length itself is an assumption."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.06,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Only on an unpruned plant: the share of the nodes of its old stems, above the bare base, that throw a long new shoot in a year. A placeholder."
+      "basis": "None. Bean, of C. viticella: the summer growth 'dies back in winter nearly to the older stem'. The engine's long free shoots never die back, so on an unpruned plant they would stand as bare stems for good; its new growth is given instead as shoots that last one season (sideShoots). On a plant cut down each February there is no old wood to throw them."
     },
     "organs.whipsPerYearMax": {
       "value": 12,
       "status": "provisional_design_assumption",
-      "basis": "A cap on those long new shoots in a year. A placeholder."
+      "basis": "Not used while organs.whipShareOfNodes is nothing. Present because every model carries every parameter."
     },
     "organs.whipLengthM": {
       "value": [
@@ -326,7 +326,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Only on an unpruned plant: the long new shoots of its old stems, which find no hold and hang free. International Clematis Society: stems that outgrow their supports 'bend and trail' their flowers downwards. No length was found; a placeholder."
+      "basis": "Not used while organs.whipShareOfNodes is nothing. Present because every model carries every parameter."
     },
     "organs.leafLifespanYears": {
       "value": 1,
@@ -536,25 +536,25 @@
       "basis": "Only an unpruned plant has stems a year old. RHS: left unpruned, growth 'continues from where it ended the previous season'. Last year's stems, and older ones, are taken to break into short leafy flowering shoots each spring."
     },
     "sideShoots.perMetrePerYear": {
-      "value": 3,
+      "value": 6,
       "unit": "per m per year",
       "status": "provisional_design_assumption",
-      "basis": "Only on an unpruned plant: about one node in three of its old stems, above the bare base, breaks in a year. A placeholder."
+      "basis": "Only on an unpruned plant: about two nodes in three of its old stems, above the bare base, break in a year (RHS: left unpruned, growth 'continues from where it ended the previous season', and the plant still flowers, 'well above eye level'). A placeholder: not counted."
     },
     "sideShoots.lengthM": {
       "value": [
-        0.2,
-        0.6
+        0.3,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Only on an unpruned plant: the leafy flowering shoots its old stems throw. No length was found in any source; set at what a flowering side branch of a clematis of this group commonly makes. Such a shoot is lax: it leans out a hand's length and then arches and hangs with the weight of its flowers. The engine draws it stiff, which is the engine's fault and not a claim about the plant."
+      "basis": "Only on an unpruned plant: the new shoots its old stems throw each spring, leafy and ending in flower. No length was found in any source; set at what such a shoot commonly makes where it has to share the plant's vigour with many others. A real one is lax: it leans out a hand's length, then arches and hangs, or clasps whatever it meets (International Clematis Society: stems that outgrow their supports 'bend and trail' their flowers downwards). The engine draws it standing stiff and free, which is the engine's fault and not a claim about the plant; the length is not shortened to hide it."
     },
     "sideShoots.lifespanYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Bean, of C. viticella: the summer growth 'dies back in winter nearly to the older stem'. A short shoot is taken to last the one season."
+      "basis": "Bean, of C. viticella: the summer growth 'dies back in winter nearly to the older stem'. A shoot of the year is taken to last the one season."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.8,

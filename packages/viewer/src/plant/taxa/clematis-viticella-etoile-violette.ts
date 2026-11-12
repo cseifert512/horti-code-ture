@@ -798,7 +798,7 @@ const stalkCoil: AppendageAsset = {
  */
 const wood: WoodLook = {
   young: lin('#7a7a44'),
-  mature: lin('#6f5338'),
+  mature: lin('#7c6044'),
   old: [0.95, 0.83, 0.66],
   woodyDays: [50, 170],
   oldDays: [320, 900],
