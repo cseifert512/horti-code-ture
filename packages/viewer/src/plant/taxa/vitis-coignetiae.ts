@@ -494,7 +494,7 @@ function layOutPanicle(variant: number): { spine: (f: number) => V3; branches: {
   const down = new V3(0, -1, 0);
   const put = (from: V3, heading: V3, f: number) => {
     const axis = heading.clone().add(new V3(rng.range(-0.7, 0.7), rng.range(-0.5, 0.7), rng.range(-0.7, 0.7))).normalize();
-    flowers.push({ from, at: from.clone().addScaledVector(axis, FLOWER_WIDTH * rng.range(0.6, 1)), axis, size: FLOWER_WIDTH * rng.range(0.88, 1.1), t: Math.min(1, Math.max(0, 0.08 + 0.78 * f + rng.range(-0.12, 0.12))) });
+    flowers.push({ from, at: from.clone().addScaledVector(axis, FLOWER_WIDTH * rng.range(0.6, 1)), axis, size: FLOWER_WIDTH * rng.range(0.88, 1.1), t: Math.min(1, Math.max(0, 0.03 + (0.9 * (f - 0.27)) / 0.73 + rng.range(-0.1, 0.1))) });
   };
   for (let i = 0; i < count; i++) {
     const f = lerp(0.27, 0.92, i / (count - 1));
@@ -774,7 +774,7 @@ const leaf: LeafAsset = {
     // "dark green and glabrous above"
     greenA: lin('#42702b'),
     // "covered beneath with a thick rusty brown felt": the under side, and a breath of it along the veins above
-    greenB: lin('#7b6f4c'),
+    greenB: lin('#766e48'),
     // unfolding under its felt
     young: lin('#a98a60'),
     // "turning scarlet and crimson in autumn"; the under side pales to a ruddy rose
