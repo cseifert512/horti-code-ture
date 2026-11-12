@@ -17,8 +17,20 @@
 //   thin tissue   a leaf or a petal is lit on whichever face the sun is on, and
 //                 shows the sun's light through it on the other. Both are the
 //                 sun's light, so both are shadowed by what stands in its way
-//                 (timber, a stem, another leaf), and neither by the leaf itself
-//   gloss         from the roughness the taxon's look gives a surface
+//                 (timber, a stem, another leaf), and neither by the leaf
+//                 itself: its shadow is looked up on the side the sun is on,
+//                 decided at each pixel
+//   held light    thin tissue shaded by more of the same close by (a petal deep
+//                 in a rose, a leaf under a leaf) is not in the dark: if the
+//                 sun reaches the organ at all, a share of it comes through,
+//                 coloured by the tissue. The share is the look's translucency
+//   soft shade    thin tissue scatters light within itself: the edge of its
+//                 shade is soft, more so the more light the look says comes
+//                 through, so relief between a leaf's veins does not show as
+//                 black dashes when the sun is low across the blade
+//   gloss         from the roughness the taxon's look gives a surface. A leaf's
+//                 underside is matt whatever its upper side is, and no leaf is
+//                 a mirror at a grazing angle
 //   wood          a stem is shaded where it lies against its support
 // How much light comes through is the look's `translucency`; nothing else
 // about a taxon is known here.
@@ -316,14 +328,61 @@ const DEFAULT_WOOD: WoodLook = { young: [0.21, 0.3, 0.085], mature: [0.3, 0.2, 0
 
 /** The organs that are thin and seen from both sides. */
 const THIN: readonly ProgramKind[] = ['leaf', 'flower', 'appendage', 'litter'];
-/** The lines of three.js's own shaders that the light on thin tissue is hung on. If a release moves them, the old ways are used. */
-const SHADOW_VERTEX = THREE.ShaderChunk.shadowmap_vertex;
-const SHADOW_NORMAL = 'vec3 shadowWorldNormal = transformNormalByInverseViewMatrix( transformedNormal, viewMatrix );';
+/**
+ * The lines of three.js's own shaders that the light on thin tissue is hung on. If a release moves them, the stock
+ * lighting is used for that part (and `THIN_TISSUE_LIGHT` says so).
+ */
 const DIRECT_LIGHT = THREE.ShaderChunk.lights_physical_pars_fragment;
 const DIRECT_IRRADIANCE = 'vec3 irradiance = dotNL * directLight.color;';
 const inDirectLight = DIRECT_LIGHT.split(DIRECT_IRRADIANCE).length === 2 && DIRECT_LIGHT.includes('material.diffuseContribution');
+const LIGHTS_BEGIN = THREE.ShaderChunk.lights_fragment_begin;
+/** Where three.js shadows the light of a directional light: the whole statement, and what it hands `getShadow` between the map and the place looked up. */
+const SUN_SHADOW = /directLight\.color \*= \( directLight\.visible && receiveShadow \) \? getShadow\( directionalShadowMap\[ i \], ([^;]*?), vDirectionalShadowCoord\[ i \] \) : 1\.0;/.exec(LIGHTS_BEGIN);
 /** Whether this three.js lets the light through thin tissue take the sun's shadow, and thin tissue be shadowed from the sun's side. */
-export const THIN_TISSUE_LIGHT = { shadowed: inDirectLight, fromTheSunSide: SHADOW_VERTEX.includes(SHADOW_NORMAL) };
+export const THIN_TISSUE_LIGHT = { shadowed: inDirectLight, fromTheSunSide: SUN_SHADOW !== null };
+
+const THIN_VARYINGS = /* glsl */ `
+varying vec3 vHortiNormalW;     // the surface normal in the world, as the mesh has it (not turned to face the eye)
+varying vec4 vHortiShadowBack;  // where to look the sun's shadow up for the face the normal points away from
+varying vec4 vHortiShadowFar;   // and from a little way towards the sun, clear of the organ itself
+`;
+
+const THIN_VERTEX = /* glsl */ `
+#if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0
+  vHortiNormalW = shadowWorldNormal;
+  vHortiShadowBack = directionalShadowMatrix[ 0 ] * ( worldPosition - vec4( shadowWorldNormal * directionalLightShadows[ 0 ].shadowNormalBias, 0 ) );
+  vHortiShadowFar = directionalShadowMatrix[ 0 ] * ( worldPosition + vec4( uSunDirWorld * uHortiReach, 0 ) );
+#endif
+`;
+
+/** The sun's shadow on thin tissue, in place of three.js's own statement. `how` is what three.js hands `getShadow` besides the map and the place. */
+const THIN_SHADOW = (how: string) => /* glsl */ `
+		if ( directLight.visible && receiveShadow ) {
+			// lit from either side: the shadow is looked up on the side of the surface the sun is on. Deciding that here, at
+			// the pixel, keeps a blade whose surface turns through edge-on to the sun from being looked up inside itself.
+			vec4 hortiNear = dot( vHortiNormalW, uSunDirWorld ) < 0.0 ? vHortiShadowBack : vDirectionalShadowCoord[ i ];
+			float hortiLit = getShadow( directionalShadowMap[ i ], ${how}, hortiNear );
+			vec3 hortiLight = vec3( hortiLit );
+			if ( uHeld > 0.0 && hortiLit < 0.98 ) {
+				// Shaded by something close. If the sun reaches the organ at all, what shades it is mostly more of the same thin
+				// tissue, and a share of the light comes through it, taking its colour: the heart of a pale flower glows.
+				float hortiReached = getShadow( directionalShadowMap[ i ], ${how}, vHortiShadowFar );
+				vec3 hortiTint = diffuseColor.rgb / max( max( diffuseColor.r, max( diffuseColor.g, diffuseColor.b ) ), 0.001 );
+				hortiLight = max( hortiLight, uHeld * hortiReached * mix( vec3( 1.0 ), hortiTint, 0.7 ) );
+			}
+			directLight.color *= hortiLight;
+		}
+`;
+
+/** A leaf's two faces: the upper as glossy as its look says, the underside matt; neither a mirror for the sky at a grazing angle. */
+const LEAF_GLOSS = /* glsl */ `
+{
+  float hortiUnder = step( dot( normalize( vNormal ), normalize( vViewPosition ) ), 0.0 );
+  float hortiGloss = 1.0 - material.roughness;
+  material.roughness = mix( material.roughness, max( material.roughness, 0.9 ), hortiUnder );
+  material.specularF90 = mix( mix( 0.12, 0.7, hortiGloss ), 0.04, hortiUnder );
+}
+`;
 
 /** How much litter lies on the ground, shared by every litter material. */
 export const litter = { uLitter: { value: new THREE.Vector2(0, 0) } };
@@ -379,25 +438,49 @@ export function patch<M extends THREE.Material>(
       .replace('#include <project_vertex>', PROJECT(prog.world))
       .replace('#include <worldpos_vertex>', WORLDPOS);
     // A leaf or a petal is lit from either side. three.js looks its shadow up a little way off the surface along the
-    // normal, which for the face turned from the sun is a step into the leaf's own shadow: lean the step towards the sun.
-    if (THIN.includes(kind) && SHADOW_VERTEX.includes(SHADOW_NORMAL)) {
-      vs = vs.replace('#include <shadowmap_vertex>', SHADOW_VERTEX.replace(SHADOW_NORMAL, SHADOW_NORMAL + '\n\t\tshadowWorldNormal *= dot( shadowWorldNormal, uSunDirWorld ) < 0.0 ? -1.0 : 1.0;'));
+    // normal, which for the face turned from the sun is a step into the leaf's own shadow. The same step the other
+    // way, and a longer one straight towards the sun, are worked out here; which is used is decided at each pixel.
+    const thin = THIN.includes(kind) && SUN_SHADOW !== null;
+    if (thin) {
+      shader.uniforms['uHortiReach'] = { value: kind === 'flower' ? 0.08 : 0.05 };
+      vs = vs.replace('#include <common>', '#include <common>\n' + THIN_VARYINGS + '\nuniform float uHortiReach;').replace('#include <shadowmap_vertex>', '#include <shadowmap_vertex>\n' + THIN_VERTEX);
     }
     shader.vertexShader = vs;
     if ((material as THREE.Material & { isMeshDepthMaterial?: boolean }).isMeshDepthMaterial) return;
     let fs = shader.fragmentShader;
     let head = prog.fragHead ?? '';
     if (prog.fragColor) fs = fs.replace('#include <color_fragment>', '#include <color_fragment>\n' + prog.fragColor);
+    if (thin) {
+      // how much of the sun's light the tissue holds when it is shaded by more of its own kind
+      shader.uniforms['uHeld'] = { value: Math.min(0.85, Math.max(0, translucency)) };
+      head += '\n' + THIN_VARYINGS + '\nuniform vec3 uSunDirWorld;\nuniform float uHeld;';
+      fs = fs.replace('#include <lights_fragment_begin>', LIGHTS_BEGIN.replace(SUN_SHADOW![0], THIN_SHADOW(SUN_SHADOW![1]!)));
+    }
+    if (kind === 'leaf') fs = fs.replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\n' + LEAF_GLOSS);
     if (translucency > 0) {
       // light through the tissue, warmed by it where it is a leaf: as strong as the old glow where nothing shades it
       const tint = sheen > 0 ? [1, 1, 1] : [1.25, 1.2, 0.7];
       shader.uniforms['uThrough'] = { value: new THREE.Vector3(...tint).multiplyScalar(translucency * 0.32 * Math.PI) };
       head += '\nuniform vec3 uThrough;';
       if (inDirectLight) {
-        // added where three.js adds each light's own diffuse light, so that it is the light's colour and takes its shadow
+        // Added where three.js adds each light's own diffuse light, so that it is the light's colour and takes its shadow.
+        // Thin tissue scatters light within itself, so the edge of its shade is soft: a part of a blade turned a little
+        // from the sun is not black beside a part turned a little towards it, and what comes through from behind
+        // begins before the surface is edge-on. Without this the relief modelled between a leaf's veins, lit at a
+        // grazing angle, shows as rows of dark dashes.
+        shader.uniforms['uWrap'] = { value: Math.min(0.5, 0.15 + 0.6 * translucency) };
+        head += '\nuniform float uWrap;';
         fs = fs.replace(
           '#include <lights_physical_pars_fragment>',
-          DIRECT_LIGHT.replace(DIRECT_IRRADIANCE, DIRECT_IRRADIANCE + '\n\treflectedLight.directDiffuse += uThrough * saturate( dot( -geometryNormal, directLight.direction ) ) * directLight.color * BRDF_Lambert( material.diffuseContribution );'),
+          DIRECT_LIGHT.replace(
+            DIRECT_IRRADIANCE,
+            DIRECT_IRRADIANCE +
+              `
+	float hortiNL = dot( geometryNormal, directLight.direction );
+	float hortiFront = saturate( ( hortiNL + uWrap ) / ( 1.0 + uWrap ) );
+	float hortiBack = saturate( ( uWrap - hortiNL ) / ( 1.0 + uWrap ) );
+	reflectedLight.directDiffuse += ( vec3( hortiFront - dotNL ) + uThrough * hortiBack ) * directLight.color * BRDF_Lambert( material.diffuseContribution );`,
+          ),
         );
       } else {
         // a three.js whose lighting code is laid out otherwise: the glow as it was, unshadowed
@@ -422,7 +505,7 @@ export function patch<M extends THREE.Material>(
     }
     shader.fragmentShader = fs.replace('#include <common>', '#include <common>\n' + head);
   };
-  material.customProgramCacheKey = () => `horti-${kind}-${translucency > 0 ? 'through' : 'opaque'}-${sheen}`;
+  material.customProgramCacheKey = () => `horti3-${kind}-${translucency > 0 ? 'through' : 'opaque'}-${sheen}`;
   return material;
 }
 
