@@ -1,66 +1,71 @@
 {
   "schemaVersion": 1,
   "taxonId": "clematis-cirrhosa-freckles",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one. The sizes of its leaf, flower, leaf stalk and seed head, the length of its stems and the months it flowers in are from floras and plant records of Clematis cirrhosa and of this cultivar; its rates of growth, how freely it branches and flowers, how much seed it sets and every date inside those months are assumptions chosen to agree with what those records say of a plant’s size and season. How a shoot chooses its way over a structure is still thinner than the wisteria model those nine numbers are copied from. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "leafForm": "long_shoot",
+    "sideShootLeafForm": "short_shoot",
+    "flowerHeld": "hanging",
+    "fruitHeld": "hanging",
+    "basis": "Two leaf forms, from Flora of Turkey (as reproduced at https://turkiyebitkileri.com/): long shoots usually bear ternate leaves, whose stalks twine; short-shoot leaves are simple, deeply toothed to almost entire. The flowers are \"nodding\" (https://www.cretanflora.com/clematis_cirrhosa_text.html; Clematis on the Web), so they hang. That the seed head hangs on the same stalk is assumed: no source says how it is held."
+  },
   "params": {
     "phenology.budburstDoy": {
       "value": 75,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Shoots are taken to start in mid March, as the flowers finish. No dated source."
+      "basis": "New shoots are taken to start in mid March, as the flowers finish (RHS: flowers late autumn to early spring). No dated source for the start of growth."
     },
     "phenology.growthEndDoy": {
-      "value": 250,
+      "value": 288,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Extension is taken to end in early September. No dated source."
+      "basis": "Extension is taken to end in mid October. A nursery that grows it says it rests in summer heat, browning or dropping some leaves in July and August of a hot dry year, and that fresh growth returns in September (https://www.ashridgetrees.co.uk/clematis-cirrhosa-freckles). The engine spreads a season’s growth as one hump between two dates, so the rest itself is not modelled; the date only lets autumn growth happen. Not measured."
     },
     "phenology.leafFlushDoy": {
       "value": [
         80,
-        130
+        125
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Follows bud break. A placeholder."
+      "basis": "New leaves open with the new shoots, from late March. Placed after bud break; no dated source."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        283,
-        310
+        335,
+        365
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable to this plant: it is evergreen (RHS) and no leaf of it reads these days. Its leaves are \"tinged bronze in winter\" (RHS), which the model cannot yet show; the days stand where that bronzing would begin."
     },
     "phenology.leafFallDoy": {
       "value": [
-        310,
-        344
+        350,
+        365
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable to this plant: it is evergreen (RHS) and no leaf of it reads these days; a leaf goes when its seasons are up (organs.leafLifespanYears). Present because every model carries every parameter."
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        213,
-        244
-      ],
-      "unit": "day of year",
-      "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide",
-      "basis": "RHS pruning group 1: flowers on shoots produced in the previous summer. Bud formation is taken as August; the dates are not from the source."
-    },
-    "phenology.flowerOpenDoy": {
-      "value": [
-        320,
-        350
+        244,
+        258
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of late autumn to early spring (16 November to 16 December)."
+      "basis": "RHS pruning group 1: it flowers \"on shoots produced the previous summer\" (https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide). Buds are taken to form in the first half of September, when growth picks up after the summer rest, so that they show in October. The dates are not from a source."
+    },
+    "phenology.flowerOpenDoy": {
+      "value": [
+        306,
+        365
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "Flowers open from the first days of November to 31 December. Sources: \"most flowers start in November\" (https://internationalclematissociety.org/?p=742); starts November, peaks around Christmas, ends February, with early blooms in late October on a good south wall (https://www.ashridgetrees.co.uk/clematis-cirrhosa-freckles); late autumn to early spring (RHS). The plant goes on opening flowers in January and February; the engine’s opening window is two days of one calendar year, so here none opens after 31 December and the later part of the display is carried by how long a flower record lasts."
     },
     "phenology.petalFallDoy": {
       "value": [
@@ -69,123 +74,127 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed at the end of the RHS flowering envelope, in the following year (14 February to 21 March)."
+      "basis": "The end of the RHS flowering envelope, in the following year (14 February to 21 March). Not read while phenology.flowerLastsDays is set, which gives each flower its own last day."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        0,
-        0
+        28,
+        80
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No source gives how long one flower lasts. A flower record here stands for the flowers of one leaf axil, which are \"solitary or in pairs\" (https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/) and follow one another, so it is given four to eleven weeks: with openings in November and December that carries the display to late February, as the sources have it (RHS: to early spring; Ashridge: ends February). The tepals are drawn for about the first two thirds of that time."
     },
     "extension.leaderMPerSeason": {
-      "value": 1.5,
+      "value": 1.6,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: reaches its 2.5 to 4 m size band in 2 to 5 years. A size band is not a growth rate; 1.5 m a season is a placeholder of that order."
+      "basis": "RHS: 2.5 to 4 m in 2 to 5 years; Bean: vigorous, \"needs ample space\"; rate of growth \"average\" in the trade. A size band is not a growth rate: 1.6 m a season, with the slower first two seasons below, brings a stem to 2.5 m in its second year and to its length in its third, inside the RHS band. Not measured."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        1,
-        0.7,
-        0.5
+        1.2,
+        0.9,
+        0.6
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate. Not measured."
+      "basis": "Scaled down from the leader rate by branch order. Not measured."
     },
     "extension.whipMPerSeason": {
       "value": 1.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and next winter’s flowers. Rate is a placeholder."
+      "basis": "Every year the older stems throw long new shoots from their nodes; these carry the leaves and next winter’s flowers. As fast as a first-order branch. Not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
-        0.6,
-        0.9
+        0.5,
+        0.8
       ],
       "status": "provisional_design_assumption",
-      "basis": "Slower while it roots in. A placeholder."
+      "basis": "Slower while it roots in: half speed in the planting year, four fifths in the next. Assumed; no source."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
-        0
+        0,
+        1,
+        2,
+        3
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Two stems from the base in the first season. A placeholder."
+      "basis": "Two stems from the nursery plant in the first season, and one more from the base in each of the next three: an established clematis is many-stemmed from the ground. The number and the years are assumed."
     },
     "architecture.nurseryCaneM": {
-      "value": 0.4,
+      "value": 0.6,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant on a short cane. Not measured."
+      "basis": "Sold in 3-litre pots (https://www.ashridgetrees.co.uk/clematis-cirrhosa-freckles); such a plant is commonly tied to a cane of about 0.6 m. Not measured."
     },
     "architecture.maxBranchOrder": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Clematis branch freely from the opposite buds at each node; three orders of branch above the main stems are allowed. A limit of the model, not an observation."
     },
     "architecture.leaderLengthM": {
       "value": [
-        2.5,
+        3,
         4
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "The RHS ultimate-size band used as a cap on stem length measured from the ground. A height band is not a route length, so this is a placeholder."
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "International Clematis Society: a vigorous evergreen climber that \"grows 3-4 metres long\". Used as the length a main stem reaches, measured along the stem. RHS gives a height of 2.5 to 4 m; Clematis on the Web 4 to 5 m."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
+        2,
         1.2,
-        0.7,
-        0.4
+        0.7
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader. Not measured."
+      "basis": "Scaled down from the main stems by branch order. Not measured."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Branches of one order are taken to vary by three tenths either way in length. Assumed; no source."
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
-        0.7,
-        0.4,
-        0.2
+        0.8,
+        0.5,
+        0.3
       ],
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "A clematis stem that is trained along a support breaks into side stems at most of the places where the support forks, less readily on higher orders. Assumed; no count on a plant."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.5,
+      "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "About a third of the buds that will make a side stem wait a year or two before they break, so the framework fills in over several years and not all at once. Assumed."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
         1,
-        3
+        2
       ],
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "See architecture.budExtraDormancyChance. Assumed."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
-    },
-    "architecture.maxStemsPerPrimaryMember": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The stems are slender and wiry (a few millimetres thick for years) and run several together along one wire or lath, clasping one another: three are let share a member before the next looks elsewhere. Assumed."
+    },
+    "architecture.maxStemsPerPrimaryMember": {
+      "value": 4,
+      "status": "provisional_design_assumption",
+      "basis": "One more than on a lath or cable: a glulam member is wide enough to tie more of these slender stems to. Assumed."
     },
     "routing.occupancyCost": {
       "value": 1.6,
@@ -236,46 +245,47 @@
       "value": 8,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. A leaf stalk a few centimetres long is taken to clasp nothing stouter than this: a cable qualifies, timber of any size here does not, and the plant has to be tied to it."
+      "basis": "No measurement exists. The leaf stalk that does the clasping is 13 to 38 mm long in the species (Bean), and a stalk has to go once round what it holds: that is a support 4 to 12 mm thick, taken here as 8 mm. A 5 mm cable qualifies, a 40 mm lath does not, and on timber the plant has to be tied."
     },
     "attachment.minPitchM": {
       "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable to this plant: its stems do not twine, they lie along the support and the leaf stalks hold it. Present because every model carries every parameter."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable to this plant: see attachment.minPitchM."
     },
     "organs.leafSpacingM": {
       "value": [
-        0.06,
-        0.1
+        0.05,
+        0.09
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Distance between the pairs of leaves on a long shoot. No flora gives it; 5 to 9 cm is an estimate for a slender shoot with leaves of this size. To be measured on a plant."
     },
     "organs.leafLengthM": {
       "value": [
-        0.04,
-        0.08
+        0.045,
+        0.085
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Small divided evergreen leaves. A placeholder."
+      "basis": "Stalk and blade together. For the species Bean gives the blade as 3/4 to 2 in. long and the stalk as 1/2 to 1 1/2 in. (https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/); Flora Europaea gives leaves of 2 to 5.5 cm. The sum of the two is 3.2 to 8.9 cm, of which the middle is used. The cultivar’s own leaf has not been measured: the RHS describes it only as \"divided, lobed and toothed\"."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Clematis bear their leaves in opposite pairs. A character of the genus, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://www.cretanflora.com/clematis_cirrhosa_text.html",
+      "basis": "Leaves opposite: in pairs at each node, as in all clematis."
     },
     "organs.spurChance": {
       "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "No spurs: this plant flowers along last summer’s shoots, not on short spurs."
+      "basis": "No spurs: this plant flowers from the leaf axils of last summer’s shoots, not on short woody spurs of the wisteria kind."
     },
     "organs.spurLengthM": {
       "value": [
@@ -297,57 +307,59 @@
     },
     "organs.racemeLengthM": {
       "value": [
-        0.04,
-        0.06
+        0.05,
+        0.075
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Width of a single bell-shaped flower. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=742",
+      "basis": "The width of one open flower. International Clematis Society, of this cultivar: flowers \"5-7.5 cm across\", the four sepals \"3-4 cm long and 2-2.5 cm wide\". Flora Europaea gives 4 to 7 cm for the species. The RHS record’s \"to 10cm in width\" and its Award of Garden Merit description’s \"5cm wide\" disagree with each other; the Society’s figure lies between them and agrees with the sepal length."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.06,
+      "value": 0.04,
       "status": "provisional_design_assumption",
-      "basis": "The share of older nodes that throw a side shoot each year. A placeholder."
+      "basis": "One older node in twenty-five throws a long shoot each year. Assumed: chosen with organs.whipsPerYearMax so that an established plant makes a few tens of long shoots a year, which is what a plant that covers 4 m by 1.5 m (Crocus) and is \"vigorous\" (Bean) must do."
     },
     "organs.whipsPerYearMax": {
-      "value": 30,
+      "value": 18,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "A cap on new long shoots a year. Assumed; see organs.whipShareOfNodes."
     },
     "organs.whipLengthM": {
       "value": [
-        0.3,
-        0.7
+        0.4,
+        1.1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a year’s side shoot. A placeholder."
+      "basis": "Length of a year’s long shoot that finds no support: it stands out a little and then hangs. Assumed; the plant is described as making curtains of hanging growth, but no length is published."
     },
     "organs.leafLifespanYears": {
       "value": 2,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Evergreen (RHS), but may be less so in a hard winter. Leaves are taken to last two seasons."
+      "basis": "Evergreen (RHS). How long a leaf lives is not published; two growing seasons is assumed. In a hot dry summer some leaves brown and drop (Ashridge; Bean: it \"aestivates\"), which is not modelled."
     },
     "organs.clearStemHeightM": {
-      "value": 0.3,
+      "value": 0.25,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Clothed nearly to the ground. A placeholder."
+      "basis": "The lowest quarter metre of the stems is taken to carry no side growth: old evergreen clematis are bare at the base. Assumed."
     },
     "flowering.competenceYears": {
-      "value": 1,
+      "value": 0,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its second winter. A placeholder."
+      "basis": "A nursery plant of this size is of flowering age and is taken to flower, lightly, in its first winter after a spring planting. Assumed."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.5,
+        0.4,
+        0.8,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Half strength in its first flowering winter. A placeholder."
+      "basis": "Fewer flowers while it establishes: four tenths of full in the first winter, eight tenths in the second. Assumed."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
@@ -360,16 +372,16 @@
       "basis": "Not applicable to this plant; present because every model carries every parameter."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 6,
+      "value": 10,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flowers per metre of the summer’s growth, opening the following winter. A placeholder."
+      "basis": "Flower sites for each metre of the summer’s growth, opening the following winter: with pairs of leaves 7 cm apart this is a flower site at seven nodes in ten. The flowers are borne in the leaf axils, \"solitary or in pairs\" (Bean), and the cultivar \"blooms freely\" (Bean), with \"hundreds of flowers and buds\" on a wall plant in December (https://fobssheffield.co.uk/plant-of-the-month/clematis-cirrhosa-freckles). The rate itself is not from a count."
     },
     "flowering.currentSeasonMinShootM": {
-      "value": 0.2,
+      "value": 0.15,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot shorter than this is taken not to flower. A placeholder."
+      "basis": "A shoot that has made less than 15 cm in the year is taken not to flower. Assumed."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -396,19 +408,19 @@
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A cut clematis stem shoots from the pair of buds at the node below the cut: one or two shoots. It \"can be cut back to 1 metre\" after flowering (https://internationalclematissociety.org/?p=742). The number is assumed."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 1,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A young shoot about 2 mm thick (radius 1 mm): the stems are \"woody, slender\" (https://www.cretanflora.com/clematis_cirrhosa_text.html). An estimate, not a measurement."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 2,
+      "value": 1.2,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Thin, wiry stems. A placeholder."
+      "basis": "Thin, wiry stems that thicken slowly: with this a main stem that carries 40 m of growth is about 14 mm thick at the base. No measurement of an old plant was found."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -416,90 +428,145 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Six flower sites in ten are taken to leave a seed head. The cultivar is described as having \"good silky seed-heads\" (RHS Award of Garden Merit description) that \"remain on the plant for long periods\" (https://www.plantdelights.com/products/clematis-cirrhosa-freckles), and its flowers are visited by bees in winter (RHS Plants for Pollinators); how many set in Britain is not published."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.041,
+        0.055
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "One achene with its feathered tail, which is what the model’s unit of length is: the head is a ball of them. Bean: seed-vessels \"terminated by plumose styles 1 1/2 to 2 in. long, forming large, beautifully silky tassels\" (3.8 to 5.1 cm); the achene itself is 3 to 5 mm (https://www.cretanflora.com/clematis_cirrhosa_text.html). The two added."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        25,
+        45
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The styles lengthen into tails in the weeks after the tepals fall: four to six weeks is assumed. No dated source."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        75,
+        135
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The heads are taken to dry from silky green-silver to pale fluff between mid March and mid May. The sources say only that silky seedheads follow the flowers (RHS). No dated source."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        140,
+        200
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The feathered achenes are taken to blow away between late May and mid July: the seed heads \"remain on the plant for long periods after flowering\" (Plant Delights). No dated source."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "No tendrils: it climbs \"by twining leaf-stalks\" (RHS, of the genus), and the floras describe none."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.tendrilNodePattern."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "On a stretch the plant holds by itself, six nodes in ten are taken to have a leaf stalk wound round the support. That the stalks do this is published (\"petioles twining\" on long shoots, Flora of Turkey; old petioles \"indurate, twisting and clasping\", https://www.cretanflora.com/clematis_cirrhosa_text.html); the share is not."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0.013,
+        0.038
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
+      "basis": "Bean, of the species: leaf \"stalks 1/2 to 1 1/2 in. long\". In metres. The cultivar’s own has not been measured."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No clinging rootlets: it climbs by its leaf stalks, and the floras describe none."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.aerialRootPatchSpacingM."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: no flora or plant record read describes prickles or thorns on it."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.prickleSpacingM."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Stems made last year and earlier bear short shoots in their leaf axils. Flora of Turkey distinguishes the long shoots, with ternate leaves and twining stalks, from short shoots with simple leaves (as reproduced at https://turkiyebitkileri.com/); the flowers stand \"in the axils of clustered leaves\" (https://www.cretanflora.com/clematis_cirrhosa_text.html). That a short shoot appears in the spring after its node was made is assumed."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 7,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "With leaf pairs 7 cm apart, about one free node in two throws a short shoot each year, so that after two years most nodes of an older stem carry one. Assumed: no count exists."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.09,
+        0.17
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Longer than on the plant, where a short shoot is a cluster of leaves a few centimetres long. The engine spaces leaves on a short shoot as on a long one (organs.leafSpacingM), so a shorter shoot would carry none: 9 to 17 cm gives each one or two pairs of leaves. A limit of the model, stated in the species profile."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 3,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A short shoot is taken to stay, in leaf, for three growing seasons before it is shed. Assumed."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Short shoots on older wood are leafy only here. RHS pruning group 1 says the flowers come \"on shoots produced the previous summer\", and those are modelled along the year’s long shoots (flowering.currentSeasonFlowersPerM). Whether short shoots on wood older than that flower again is not established."
     }
   }
 }
