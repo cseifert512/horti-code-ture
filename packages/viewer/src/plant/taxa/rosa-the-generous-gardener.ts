@@ -60,7 +60,7 @@ const LEAF_VARIANTS: readonly number[] = [LEAFLETS_UNDER_FLOWER, LEAFLETS_USUAL[
 const LEAFLET_WIDTH = characterNumber(morphology, 'leaf.leafletWidthToLength');
 const LEAF_LODS = 3;
 const LEAFLET_SEGS: Segs[] = [
-  [6, 18],
+  [4, 28],
   [4, 6],
   [2, 3],
 ];
@@ -81,8 +81,8 @@ function leafletBlade(lod: number): THREE.BufferGeometry {
     let z = v;
     if (fine && Math.abs(u) > 0.999 && v > 0.04 && v < 0.98) {
       // serrate: every other point of the margin is a notch, and the tooth between leans towards the tip
-      if (Math.round(v * nv) % 2 === 0) half *= 0.84;
-      else z += 0.42 / nv;
+      if (Math.round(v * nv) % 2 === 0) half *= 0.88;
+      else z += 0.5 / nv;
     }
     const x = u * half;
     let y = 0.2 * Math.abs(x) - 0.1 * v * v;
@@ -571,7 +571,7 @@ const HIP = {
   body: lin('#86a548'),
   shade: lin('#6c8a3a'),
   sun: lin('#9cb552'),
-  stalk: lin('#2f3a1c'),
+  stalk: lin('#415226'),
   crown: lin('#4a5428'),
 };
 

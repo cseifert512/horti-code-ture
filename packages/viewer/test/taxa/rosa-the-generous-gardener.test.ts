@@ -103,7 +103,8 @@ describe("the leaf of Rosa 'The Generous Gardener'", () => {
     // along a toothed margin the outline goes in and out; along a plain one it swells once and narrows
     const turns = (lod: number): number => {
       const points = [...parts(leaf.make(1, lod)).values()][0]!;
-      const edge = points.filter((_p, i) => i % (lod === 0 ? 7 : 5) === 0).map((p) => Math.abs(p.x));
+      // a leaflet is five points across at both levels: every fifth point is on one margin
+      const edge = points.filter((_p, i) => i % 5 === 0).map((p) => Math.abs(p.x));
       let n = 0;
       for (let i = 2; i < edge.length; i++) if ((edge[i]! - edge[i - 1]!) * (edge[i - 1]! - edge[i - 2]!) < 0) n++;
       return n;
