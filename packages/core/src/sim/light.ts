@@ -20,7 +20,7 @@
  * are not modelled; where a profile asks for them the report says so.
  */
 import type { CalendarDate } from '../calendar.ts';
-import { type Foliage, LightGeometry, type MonthlyLight, clumpLeaves, foliageOf } from '../light/exposure.ts';
+import { type Foliage, LightGeometry, type MonthlyLight, clumpLeaves, foliageOf, midsummerMonth } from '../light/exposure.ts';
 import { LIGHT_MODEL } from '../light/model.ts';
 import { DEFAULT_SITE, type Site } from '../light/site.ts';
 import { MID_MONTH_DOY } from '../light/sun.ts';
@@ -76,8 +76,8 @@ export class LightField {
   private readonly plantNumber = new Map<string, number>();
   private canopyOf = NaN;
   private canopyNow: Foliage | undefined;
-  /** Which way the light comes from, by place read, year, month and plant; null where none arrives. */
-  private readonly directions = new Map<string, Vec3 | null>();
+  /** Which way the light comes from, by place read, year and plant; null where none arrives. */
+  private readonly directions = new Map<number, Vec3 | null>();
 
   constructor(sim: Simulation) {
     this.sim = sim;
@@ -209,8 +209,9 @@ export class LightField {
    * vector towards it, or null where this model cannot say. It can say within
    * `DIRECTION_REACH_M` of a place it reads light at (the middle of a stretch
    * of route, or a root station): the answer is the sky as seen from there in
-   * the month, behind the timber, what the site declares and last season's
-   * leaf of the other plants. It cannot say where no such place is near,
+   * the middle of the growing season (the month of midsummer, read once a
+   * year as a plant's own light is), behind the timber, what the site
+   * declares and last season's leaf of the other plants. It cannot say where no such place is near,
    * where next to no light arrives, or where the scenario asks for light not
    * to be acted on; the engine then falls back on the open sky of the site.
    */
@@ -229,10 +230,10 @@ export class LightField {
     }
     if (nearest < 0) return null;
     const me = this.numberOf(plant.id);
-    const key = `${nearest}|${date.year}|${date.month}|${me}`;
+    const key = nearest + 4096 * (me + 256 * (date.year % 512));
     let known = this.directions.get(key);
     if (known === undefined) {
-      const { sky, sun } = g.direction(nearest, date.month - 1, this.canopy(date.year - 1), me);
+      const { sky, sun } = g.direction(nearest, midsummerMonth(this.site.latitudeDeg), this.canopy(date.year - 1), me);
       this.directions.set(key, (known = mixLight(sky, sun)));
     }
     return known;

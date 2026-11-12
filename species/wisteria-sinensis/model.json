@@ -562,6 +562,122 @@
       "value": 0,
       "status": "provisional_design_assumption",
       "basis": "Not applicable: see sideShoots.perMetrePerYear."
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 300,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "No measurement on Wisteria was found. The growing end of a shoot of the year, before its wood has set. Taken as a tenth of the set value below, and near the least stiff searcher base that Hattermann et al. 2022 measured in 29 other climbers (213 MN/m2).",
+      "range": [
+        10,
+        3000
+      ]
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 3000,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "No measurement on Wisteria was found. Hattermann et al. 2022 measured stiffness in bending at the base of the searcher shoots of 29 other climbing species (213 to 15 479 MN/m2) and found that about 3000 MN/m2 was needed for a searcher to span more than about 0.8 m. A reading across species for a woody stem twiner, to be replaced by a bending test on wisteria shoots.",
+      "range": [
+        213,
+        15479
+      ]
+    },
+    "mechanics.woodSetDays": {
+      "value": 30,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "No measurement on Wisteria was found. How long a new stretch of shoot takes to stiffen behind the growing tip. A month, as a round figure: the RHS calls the shoots of the year \"whippy\" and green in July and August, when the pruning guide has them cut.",
+      "range": [
+        10,
+        90
+      ]
+    },
+    "mechanics.stemFreshDensityKgM3": {
+      "value": 1000,
+      "unit": "kg/m3",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1098/rsif.2017.0001",
+      "basis": "No measurement on Wisteria was found. A fresh green shoot is mostly water; 1000 kg/m3 is the figure Chelakkot and Mahadevan 2017 take for a young shoot. Not weighed.",
+      "range": [
+        800,
+        1200
+      ]
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.2,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "No measurement on Wisteria was found. A thin pinnate leaf with its stalk, taken as a sheet of water a fifth of a millimetre thick over its outline. Weigh a few leaves to replace it: the leaves are most of what a long shoot carries.",
+      "range": [
+        0.1,
+        0.4
+      ]
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.03,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "No measurement on Wisteria was found. A raceme of about 30 cm carrying some scores of pea flowers, taken as 30 g. The racemes hang from spurs on the framework, so this bears on a shoot in the air only where one flowers.",
+      "range": [
+        0.01,
+        0.08
+      ]
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.02,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-sinensis/",
+      "basis": "Not weighed. Worked out from Bean's dimensions of the pod (5 or 6 in. long, 3/4 in. wide towards the end): about 14 cm by 19 mm, taken as a centimetre thick on average and as dense as water, which is some 20 g.",
+      "range": [
+        0.01,
+        0.04
+      ]
+    },
+    "mechanics.searcherReachM": {
+      "value": 1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "No measurement on Wisteria was found. Hattermann et al. 2022 measured how far the longest self-supporting searcher shoots of 29 other climbers reached, base to tip: 0.10 to 2.25 m among the stem twiners, and about half of all the species up to 1 m. One metre is taken for wisteria, a vigorous woody twiner; measure the longest shoots that still hold themselves level on a real plant.",
+      "range": [
+        0.1,
+        2.25
+      ]
+    },
+    "tropism.turnPerM": {
+      "value": 1.5,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "source": "https://www.gutenberg.org/ebooks/2485",
+      "basis": "No measurement on Wisteria was found. Chosen: a shoot lying across the direction it seeks turns through about a right angle in a metre of growth. A weak pull, because a twiner's searching shoot leans out and sweeps round instead of standing plumb. Darwin 1875 timed the revolutions of wisteria shoots at 2 h 5 min to 3 h 21 min; he gives no figure for how they hold themselves.",
+      "range": [
+        0.5,
+        20
+      ]
+    },
+    "tropism.lightShare": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "No measurement on Wisteria was found. Chosen: a shoot is taken to seek the direction half way between plumb and the light.",
+      "range": [
+        0,
+        1
+      ]
+    },
+    "attachment.graspReachM": {
+      "value": 0.12,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://www.gutenberg.org/ebooks/2485",
+      "basis": "No measurement on Wisteria was found. How near the revolving tip must come to a support to take hold of it. Darwin 1875 timed the revolutions of wisteria shoots but gives no width for their sweep; he gives 19 inches (0.48 m) across for a hop's and more than 5 feet for Ceropegia's. Half the radius of the hop's sweep is taken.",
+      "range": [
+        0.03,
+        0.75
+      ]
     }
   }
 }

@@ -53,7 +53,7 @@ const acted = sim.events.filter((e) => e.type !== 'monitor');
 console.log(`\ngardener's log: ${sim.events.length} entries${acted.length > 12 ? ', the last 12 actions shown' : ''}`);
 for (const e of acted.slice(-12)) console.log(`  ${e.date}  ${e.plantId}  ${e.type}: ${e.outcome}`);
 
-const notes = sim.decisions.filter((d) => d.kind === 'not_modelled' || d.kind === 'part_not_modelled' || d.kind === 'assumed');
+const notes = sim.decisions.filter((d) => d.kind === 'not_modelled' || d.kind === 'part_not_modelled' || d.kind === 'assumed' || d.kind === 'generic_shoot');
 if (notes.length) {
   console.log('\nnot modelled, or assumed, in this run:');
   for (const n of notes) console.log(`  ${n.plantId}: ${n.text}`);

@@ -382,8 +382,12 @@ export interface EventRecord {
  * out, because the growth model leaves its numbers unknown. Kept apart from `not_modelled` because readers of
  * that kind take it to mean that the plant has no flowers in the run.
  * `side_shoots_broke`, `shed`: flowering side shoots started from established stems, or had lived out their time.
+ * `generic_shoot`: the plant's unsupported shoots are drawn with the generic shoot of a woody climber for the numbers
+ * its growth model does not give. Said once for each plant. Kept apart from `assumed`, which is about the plant's own
+ * record (which way it twines), not about the mechanics of every shoot.
+ * `attached`: a shoot in the air came within reach of a support it can grasp, and took hold.
  */
-export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'side_shoots_broke' | 'shed' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'died' | 'replanted';
+export type DecisionKind = 'route_chosen' | 'no_route' | 'attached' | 'tied' | 'lateral_broke' | 'side_shoots_broke' | 'shed' | 'regrew' | 'stopped' | 'floral_initiated' | 'flowered' | 'bud_lost' | 'not_modelled' | 'part_not_modelled' | 'assumed' | 'generic_shoot' | 'died' | 'replanted';
 
 /** Why the plant did what it did: the trace asked for by PROJECT_CONTEXT.md section 7.6. */
 export interface Decision {

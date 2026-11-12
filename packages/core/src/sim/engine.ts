@@ -34,7 +34,7 @@ import type { SupportEdge } from '../bower/types.ts';
 import { Calendar, type CalendarDate } from '../calendar.ts';
 import { type Vec3, UP, ZERO, add, addScaled, anyPerpendicular, cross, distance, dot, length, lerp, normalize, scale, smoothstep, sub, v3 } from '../math/vec3.ts';
 import type { AppendageKind, GardenerEventType, MemberTier, OrganHeld } from '../vocab.ts';
-import { type FreeShoot, GRAVITY, PLUMB_RAD, type Rod, Surroundings, directionAt, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
+import { type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, type Rod, Surroundings, directionAt, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
 import { type LightFrom, openSkyLight } from './light-from.ts';
 import { LightField } from './light.ts';
 import { type GrowthModel, type OptionalParamKey, genericShootKeys, known, listAt, param, shootParam } from './model.ts';
@@ -98,6 +98,12 @@ export class Simulation {
   private openSky: LightFrom | null = null;
   /** Shoots that have taken hold of a support and not yet laid a coil's length along it. */
   private readonly newHolds = new Set<string>();
+  /**
+   * Shoots that took hold of a support from the air, and the stretches of route they hold, in the order they came.
+   * Kept apart from `occupancy`, which is the framework's: see `stemsOn`.
+   */
+  private readonly tookHold = new Set<string>();
+  private readonly holds = new Map<string, string[]>();
   private yearStats = new Map<string, { initiated: number; opened: number; lost: number; fruits: number }>();
 
   constructor(scenario: Scenario) {
@@ -655,7 +661,7 @@ export class Simulation {
         refuse('taken by the shoot that bears this one');
         continue;
       }
-      const n = this.occupancy.get(edge.id)?.length ?? 0;
+      const n = this.stemsOn(edge.id, axis);
       if (n >= this.capacity(edge, model)) {
         refuse('already full of stems');
         continue;
@@ -700,7 +706,7 @@ export class Simulation {
 
     const { edge, mode, tied } = best;
     const reverse = edge.from !== nodeId;
-    const lane = best.n;
+    const lane = this.laneOn(edge, axis, model, best.n);
     const path =
       mode === 'twine'
         ? twinePath(edge, {
@@ -717,9 +723,7 @@ export class Simulation {
     const toNode = graph.otherEnd(edge, nodeId);
     axis.runs.push({ edgeId: edge.id, fromNode: nodeId, toNode, mode, status: tied ? 'trained_by_human' : 'grasped', by: tied ? (plant.training.by ?? 'gardener') : 'plant', day: this.day, firstPoint: axis.contact.length - 1, lastPoint: axis.contact.length - 1 });
     axis.used.add(edge.id);
-    const occ = this.occupancy.get(edge.id);
-    if (occ) occ.push(axis.id);
-    else this.occupancy.set(edge.id, [axis.id]);
+    this.enter(edge.id, axis);
     axis.tip = { state: 'on_route', edgeId: edge.id, toNode, path, d: 0, emitted: 0, run: axis.runs.length - 1 };
 
     const what = edge.kind === 'cable' ? 'cable' : this.tierOf.get(edge.host.id) === 'primary' ? 'glulam' : 'timber lattice';
@@ -760,7 +764,7 @@ export class Simulation {
     const { profile, model } = this.taxon(plant);
     const generic = genericShootKeys(model);
     if (!generic.length) return;
-    this.note('assumed', plant, null, `the shoots of ${profile.names.label} that stand clear of the structure are drawn with the generic shoot of a woody climber, not its own: its growth model gives no value for ${generic.join(', ')}. How far they stand out, where they droop and what they reach are not findings about this plant`);
+    this.note('generic_shoot', plant, null, `the shoots of ${profile.names.label} that stand clear of the structure are drawn with the generic shoot of a woody climber, not its own: its growth model gives no value for ${generic.join(', ')}. How far they stand out, where they droop and what they reach are not findings about this plant`);
   }
 
   /**
@@ -858,7 +862,13 @@ export class Simulation {
     else {
       // while it holds itself up, its growing end steers towards up and the light
       let heading = tip.dir;
-      if (shoot.posture === 'self_supporting') heading = steer(heading, seekDirection(this.lightFor(plant, last), shootParam(model, 'tropism.lightShare')), shootParam(model, 'tropism.turnPerM'), go);
+      if (shoot.posture === 'self_supporting') {
+        if (!shoot.light || tip.grownM - shoot.lightAskedAtM >= LIGHT_EVERY_M) {
+          shoot.light = this.lightFor(plant, last);
+          shoot.lightAskedAtM = tip.grownM;
+        }
+        heading = steer(heading, seekDirection(shoot.light, shootParam(model, 'tropism.lightShare')), shootParam(model, 'tropism.turnPerM'), go);
+      }
       const turned = replane(normalize(add(heading, wander)), shoot.plane);
       shoot.plane = turned.plane;
       shoot.lengthM.push(go);
@@ -933,7 +943,8 @@ export class Simulation {
    * reach where the shoot set out does not count: whether a bud at a node
    * takes a member beside it is the framework's decision (`chooseNext`), not
    * this one. A shoot in the air is never tied in; what it cannot grasp
-   * unaided it passes. Nothing here is drawn from a random stream.
+   * unaided it passes, and a member that is full (`stemsOn`) it passes too.
+   * Nothing here is drawn from a random stream.
    */
   private takeHold(plant: Plant, axis: Axis, shoot: FreeShoot, tipAt: Vec3, heading: Vec3): boolean {
     const { profile, model } = this.taxon(plant);
@@ -946,9 +957,11 @@ export class Simulation {
     const behind = (shoot.leftBehind ??= new Set(this.surroundings.routesNear(axis.contact[shoot.basePoint]!, reach).map((r) => r.edge.id)));
     for (const { edge, along } of near) {
       if (axis.used.has(edge.id) || behind.has(edge.id)) continue;
-      const lane = this.occupancy.get(edge.id)?.length ?? 0;
-      if (lane >= this.capacity(edge, model)) continue;
+      const already = (this.occupancy.get(edge.id)?.length ?? 0) + (this.holds.get(edge.id)?.length ?? 0);
+      if (already >= this.capacity(edge, model)) continue;
       if (assessAttachment(mechanism, edge, limit).outcome !== 'self') continue;
+      this.tookHold.add(axis.id);
+      const lane = this.laneOn(edge, axis, model, already);
 
       // which way along it: the way the shoot is heading, and upwards where that does not decide
       const reverse = dot(heading, along) * 0.5 + along.z < 0;
@@ -973,16 +986,57 @@ export class Simulation {
       const at = axis.contact.length - 1;
       axis.runs.push({ edgeId: edge.id, fromNode: reverse ? edge.to : edge.from, toNode, mode, status: 'contacted', by: 'plant', day: this.day, firstPoint: at, lastPoint: at });
       axis.used.add(edge.id);
-      const occ = this.occupancy.get(edge.id);
-      if (occ) occ.push(axis.id);
-      else this.occupancy.set(edge.id, [axis.id]);
+      this.enter(edge.id, axis);
       axis.tip = { state: 'on_route', edgeId: edge.id, toNode, path, d: d0, emitted: d0, run: axis.runs.length - 1 };
       this.newHolds.add(axis.id);
       const what = edge.kind === 'cable' ? 'cable' : this.tierOf.get(edge.host.id) === 'primary' ? 'glulam' : 'timber lattice';
-      this.note('attached', plant, axis, `a shoot in the air, ${this.lengthOf(axis).toFixed(2)} m long, came within ${reach.toFixed(2)} m of ${edge.id} (${what}, ${lane} stem${lane === 1 ? '' : 's'} already on it) and took hold, ${mode === 'twine' ? 'twining it' : 'holding it'} unaided`);
+      this.note('attached', plant, axis, `a shoot in the air, ${this.lengthOf(axis).toFixed(2)} m long, came within ${reach.toFixed(2)} m of ${edge.id} (${what}, ${already} stem${already === 1 ? '' : 's'} already on it) and took hold, ${mode === 'twine' ? 'twining it' : 'holding it'} unaided`);
       return true;
     }
     return false;
+  }
+
+  /**
+   * How many stems a shoot finds on a stretch of route when it comes to it.
+   *
+   * The framework counts the framework: leaders and laterals, which came on
+   * to their supports from nodes. A shoot that took hold from the air counts
+   * everything, itself and its like included, so it never takes a member that
+   * is full. The two are kept apart on purpose. A shoot of the year is not
+   * framework: were its holds to use up the framework's room, more or longer
+   * shoots of the year would reroute the framework, and two runs could no
+   * longer be compared for what a cut or a change of leaf did. The price is
+   * that a member can carry, for as long as such a shoot lasts, a stem more
+   * than its stated capacity where framework arrives after it.
+   */
+  private stemsOn(edgeId: string, axis: Axis): number {
+    const framework = this.occupancy.get(edgeId)?.length ?? 0;
+    return this.tookHold.has(axis.id) ? framework + (this.holds.get(edgeId)?.length ?? 0) : framework;
+  }
+
+  /** The lane a stem takes on a stretch of route: the framework's lanes first, shoots from the air beyond them, so that no two share one. */
+  private laneOn(edge: SupportEdge, axis: Axis, model: GrowthModel, counted: number): number {
+    return this.tookHold.has(axis.id) ? this.capacity(edge, model) + (this.holds.get(edge.id)?.length ?? 0) : counted;
+  }
+
+  /** Enter a stem on a stretch of route it has just taken. */
+  private enter(edgeId: string, axis: Axis): void {
+    const map = this.tookHold.has(axis.id) ? this.holds : this.occupancy;
+    const on = map.get(edgeId);
+    if (on) on.push(axis.id);
+    else map.set(edgeId, [axis.id]);
+  }
+
+  /**
+   * Whether a cut has left a hold that a shoot took from the air with less
+   * than a coil of stem on the support: such a stub holds nothing, and gives
+   * the member's room back. A stem that grew on to the support from a node,
+   * as all framework does, keeps its place however short it is cut.
+   */
+  private barelyHeld(axis: Axis, run: Run): boolean {
+    if (run.firstPoint === 0 || length(axis.away[run.firstPoint - 1]!) > 0.5) return false;
+    const coil = param(this.taxon(this.plants.get(axis.plantId)!).model, 'attachment.minPitchM');
+    return axis.lengthAt[run.lastPoint]! - axis.lengthAt[run.firstPoint]! < coil;
   }
 
   /**
@@ -1823,7 +1877,10 @@ export class Simulation {
     for (const run of axis.runs) {
       if (run.status === 'detached') continue;
       if (run.firstPoint >= keep - 1) this.release(axis, run);
-      else if (run.lastPoint >= keep) run.lastPoint = keep - 1;
+      else if (run.lastPoint >= keep) {
+        run.lastPoint = keep - 1;
+        if (this.barelyHeld(axis, run)) this.release(axis, run);
+      }
     }
     for (const id of axis.children) {
       const c = this.axes.get(id)!;
@@ -1870,7 +1927,7 @@ export class Simulation {
   /** A stretch of stem that has been cut away no longer holds, or occupies, its route. */
   private release(axis: Axis, run: Run): void {
     run.status = 'detached';
-    const occ = this.occupancy.get(run.edgeId);
+    const occ = (this.tookHold.has(axis.id) ? this.holds : this.occupancy).get(run.edgeId);
     const at = occ ? occ.indexOf(axis.id) : -1;
     if (occ && at >= 0) occ.splice(at, 1);
   }

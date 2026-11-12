@@ -274,6 +274,8 @@ describe('two gardening calendars, two outcomes', () => {
 // KEY.md section 5: the timber is the growing surface. CONSTRAINTS section 2: handedness.
 describe('how the plant holds the structure', () => {
   const pathOf = (a: Axis, from: number, to: number): StemPath => ({ points: a.contact.slice(from, to + 1), away: a.away.slice(from, to + 1), cumulative: a.lengthAt.slice(from, to + 1) });
+  /** True where a run began with a shoot in the air taking hold: the point before it stands on nothing. */
+  const fromTheAir = (a: Axis, firstPoint: number): boolean => firstPoint > 0 && Math.hypot(a.away[firstPoint - 1]!.x, a.away[firstPoint - 1]!.y, a.away[firstPoint - 1]!.z) < 0.5;
 
   it('starts every trunk stem up a glulam rib leg, twining it', () => {
     for (const sim of [trained, untended]) {
@@ -293,7 +295,9 @@ describe('how the plant holds the structure', () => {
         if (r.mode !== 'twine' || r.status === 'detached' || r.lastPoint - r.firstPoint < 12) continue;
         // A run the shoot has finished is a whole turn or more. The one it is still on has only to turn the
         // right way: round a rib a coil is most of a metre long, and the shoot may be part of the way round.
-        expect(turnsOf(pathOf(a, r.firstPoint, r.lastPoint)), `${a.id} on ${r.edgeId}`).toBeGreaterThan(i < a.runs.length - 1 ? 0.5 : 0);
+        // So has one that a shoot took hold of from the air, part-way along (the point before it is unsupported).
+        const whole = i < a.runs.length - 1 && !fromTheAir(a, r.firstPoint);
+        expect(turnsOf(pathOf(a, r.firstPoint, r.lastPoint)), `${a.id} on ${r.edgeId}`).toBeGreaterThan(whole ? 0.5 : 0);
         checked++;
       }
     }
@@ -311,6 +315,14 @@ describe('how the plant holds the structure', () => {
           expect(r.by).toBe('plant');
           cables++;
         } else if (/^[TE]\./.test(edge.id)) {
+          // a shoot of the year that took hold of a lath from the air is not framework and nobody ties it in:
+          // it twines by itself (SIMULATION_KEY.md section 4.3, "Unsupported shoots"), and goes with the summer and winter cuts
+          if (a.role !== 'leader' && a.role !== 'lateral') {
+            expect(a.runs.some((first) => fromTheAir(a, first.firstPoint)), a.id).toBe(true);
+            expect(r.mode).toBe('twine');
+            expect(r.by).toBe('plant');
+            continue;
+          }
           expect(r.mode).toBe('along');
           expect(r.status === 'trained_by_human' || r.status === 'detached').toBe(true);
           tied++;

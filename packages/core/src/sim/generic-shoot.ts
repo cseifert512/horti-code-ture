@@ -44,7 +44,7 @@ export const GENERIC_SHOOT = {
   'mechanics.woodModulusMPa': {
     value: 3000,
     unit: 'MPa',
-    status: 'peer_reviewed',
+    status: 'provisional_design_assumption',
     source: SEARCHERS,
     basis: 'Generic, not this taxon\'s. Hattermann et al. 2022 measured stiffness in bending at the base of the searcher shoots of 29 climbing species, 213 to 15 479 MN/m2, and found that about 3000 MN/m2 was needed to span more than about 0.8 m; Vecchiato et al. 2023 give about the same at the base of Trachelospermum jasminoides searchers. Taken for any woody climber: a reading across species, which the papers do not claim.',
     range: [213, 15479],

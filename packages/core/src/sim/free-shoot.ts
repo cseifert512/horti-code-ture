@@ -60,6 +60,8 @@ import type { ShootPosture } from '../vocab.ts';
 export const GRAVITY = 9.80665;
 /** Greenhill's constant: an upright uniform rod buckles under its own weight at this many elasto-gravity lengths. */
 export const GREENHILL = 1.986;
+/** How much a shoot grows between one asking of which way the light is and the next, m: light changes slowly along a shoot. */
+export const LIGHT_EVERY_M = 0.2;
 /** A shoot whose tip is within this of straight down is hanging plumb, and is not solved for any more. */
 export const PLUMB_RAD = (172 * Math.PI) / 180;
 
@@ -178,12 +180,13 @@ export function solveRod(rod: Rod, near = 0): RodSolution {
       step *= 1.5;
     }
     if (!bracketed) return { tipIncline: tip, unloadedIncline: unloaded, baseMoment: start, found: false };
-    // close in: false position with the Illinois correction, which cannot leave the bracket
+    // close in: false position with the Illinois correction, which cannot leave the bracket. A moment known to a
+    // part in a thousand million of the most it could be turns the tip by far less than can be drawn.
     let side = 0;
-    for (let i = 0; i < 100 && Math.abs(b - a) > 1e-12 * most; i++) {
+    for (let i = 0; i < 60 && Math.abs(b - a) > 1e-9 * most; i++) {
       const c = fb === fa ? (a + b) / 2 : b - (fb * (b - a)) / (fb - fa);
       const fc = left(c);
-      if (fc === 0) {
+      if (Math.abs(fc) <= 1e-12 * most) {
         a = b = c;
         fa = fb = 0;
         break;
@@ -227,6 +230,9 @@ export interface FreeShoot {
   posture: ShootPosture;
   /** The stretches of route that were within its grasp where it set out, which are not ones it has found; null until asked. */
   leftBehind: Set<string> | null;
+  /** Which way the light was when it last asked, and how long it was then: it asks again every `LIGHT_EVERY_M` of growth. */
+  light: Vec3 | null;
+  lightAskedAtM: number;
 }
 
 /** The level direction a vector leans in, or `fallback` where it stands plumb. Kept on the same side as `fallback`. */
@@ -247,7 +253,7 @@ export function startFreeShoot(basePoint: number, dir: Vec3): FreeShoot {
   const d = normalize(dir);
   const plane = levelOf(d, v3(1, 0, 0));
   const incline = inclineOf(d, plane);
-  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null };
+  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null, light: null, lightAskedAtM: 0 };
 }
 
 /**
