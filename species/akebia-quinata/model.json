@@ -22,21 +22,21 @@
     },
     "phenology.leafFlushDoy": {
       "value": [
-        64,
-        108
+        68,
+        124
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Leaves on wood of earlier years open from 5 March to 18 April, so that the racemes of late March and April open among young leaves, as Virginia Tech describes (flowers \"with or just after the leaves\"). Not a recorded date."
+      "basis": "Leaves on wood of earlier years open from 9 March to 4 May, so that the racemes of late March and April open among leaves that are still unfolding and still purple-tinged, as Virginia Tech describes (flowers \"with or just after the leaves\"). Not a recorded date."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        298,
-        338
+        292,
+        326
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "The plant has no autumn colour of note (Purdue Arboretum); what this dates is the purple tint the RHS record gives the foliage in winter, taken to come with the first cold, from late October to early December."
+      "basis": "The plant has no autumn colour of note (Purdue Arboretum); what this dates is the purple tint the RHS record gives the foliage in winter, taken to come with the first cold, between 19 October and 22 November. Not a recorded date."
     },
     "phenology.leafFallDoy": {
       "value": [
@@ -296,12 +296,12 @@
     },
     "organs.spurLeafCount": {
       "value": [
-        3,
-        5
+        4,
+        7
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Leaves \"clustered on short branches\" (Flora of China): three to five to a cluster is a choice, no source read giving a number."
+      "basis": "Leaves \"clustered on short branches\" (Flora of China): four to seven to a cluster is a choice, no source read giving a number. Chosen with the other counts here so that a ten-year-old plant hides most of a trellis it has covered, as a plant that makes \"dense masses of growth\" (Bean) does."
     },
     "organs.racemeLengthM": {
       "value": [
@@ -314,19 +314,19 @@
       "basis": "Flora of China: racemes 6 to 12 cm. RHS: \"racemes to 12cm long\". The length of the whole raceme, stalk included, which is what the viewer's raceme is authored to."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.03,
+      "value": 0.08,
       "status": "provisional_design_assumption",
-      "basis": "Each year old stems throw new long shoots that reach out for something to twine. The share of old nodes that do so is a choice."
+      "basis": "Each year old stems throw new long shoots that reach out for something to twine: it is these that fill the spaces between supports. The share of old nodes that do so is a choice, made so that an established plant throws about one for every metre or two of old stem."
     },
     "organs.whipsPerYearMax": {
-      "value": 30,
+      "value": 90,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new long shoots a year, so that an old plant does not throw them without limit. A choice."
+      "basis": "A cap on new long shoots a year, so that an old plant does not throw them without limit. A choice. The engine never sheds or twines in a long shoot that found no hold, so they add up over the years as bare sticks: a fault of the model, not a habit of the plant."
     },
     "organs.whipLengthM": {
       "value": [
-        0.4,
-        1.2
+        0.3,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
@@ -363,7 +363,7 @@
     "flowering.spurFloralChance": {
       "value": 0.22,
       "status": "provisional_design_assumption",
-      "basis": "The share of short branches that carry a raceme in a year. One plant can carry \"hundreds\" of flowers at once (University of Michigan CLIMBERS, https://climbers.lsa.umich.edu/akebia-quinata/), at five to twelve flowers to a raceme: chosen so that a specimen that has covered a 6 m2 trellis carries between one and two hundred racemes. Not a count made on a plant."
+      "basis": "The share of short branches that carry a raceme in a year. One plant can carry \"hundreds\" of flowers at once (University of Michigan CLIMBERS, https://climbers.lsa.umich.edu/akebia-quinata/), at five to twelve flowers to a raceme: chosen so that a specimen that has covered a 6 m2 trellis carries some two hundred racemes, which is one to two thousand flowers. Not a count made on a plant."
     },
     "flowering.unprunedFactor": {
       "value": 1,

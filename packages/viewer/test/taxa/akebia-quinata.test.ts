@@ -43,8 +43,9 @@ function across(points: THREE.Vector3[]): number {
   return widest;
 }
 
-// species/akebia-quinata/SPECIES_PROFILE.md, "Form: what the model draws": "a hand of five leaflets ... on a stalk
-// longer than the leaflets"; TAXON_LOOKS.md section 8: "counts and measured sizes ... come from the file".
+// species/akebia-quinata/SPECIES_PROFILE.md, "Form: what the model draws": "A hand of five leaflets (now and then
+// four) on a slender stalk longer than the leaflets ... rounded and notched at the tip"; TAXON_LOOKS.md section 8:
+// "counts and measured sizes (leaflets, tepals, the length of a leaflet for its width) come from the file".
 describe('the leaf of Akebia quinata agrees with its morphology file', () => {
   const leaf = look.leaves.default;
   const whole = mid('leaf.petioleLengthM') + mid('leaf.terminalPetioluleLengthM') + mid('leaf.terminalLeafletLengthM');
@@ -125,8 +126,9 @@ describe('the leaf of Akebia quinata agrees with its morphology file', () => {
   });
 });
 
-// SPECIES_PROFILE.md, "Form: what the model draws": "one or two female flowers at the foot of the raceme ... four
-// to ten male flowers towards its tip"; TAXON_LOOKS.md section 2: a flower's authoredSize is what lengthM measures.
+// SPECIES_PROFILE.md, "Form: what the model draws": "Where the bare stalk ends stand one or two female flowers ...
+// Below them, towards the tip, are four to ten male flowers ... The female flowers open first and the male ones
+// after them, base to tip"; TAXON_LOOKS.md section 2: a flower's authoredSize is in the units of RenderFlower.lengthM.
 describe('the raceme of Akebia quinata agrees with its morphology file', () => {
   const raceme = look.flowers!.default;
   const [femaleFew, femaleMany] = characterRange(morphology, 'inflorescence.femaleFlowerCount');
@@ -235,8 +237,8 @@ describe('the raceme of Akebia quinata agrees with its morphology file', () => {
   });
 });
 
-// SPECIES_PROFILE.md, "Form: what the model draws": "sausage-shaped ... 5 to 8 cm long and 3 to 4 cm thick, one to
-// a few from a flower".
+// SPECIES_PROFILE.md, "Form: what the model draws": "sausage-shaped, 5 to 8 cm long and 3 to 4 cm thick, hanging by
+// the stalk the flower had, singly or two or three together".
 describe('the fruit of Akebia quinata agrees with its morphology file', () => {
   const fruit = look.fruits!.default;
 
@@ -320,7 +322,8 @@ describe('every organ model of Akebia quinata', () => {
 });
 
 // CLAUDE.md: "A flowering month is an envelope, not a trigger. Never show flowers because the calendar says so."
-// SPECIES_PROFILE.md, "Form: what the model draws", gives the months; render/presence.ts answers what is on the plant.
+// SPECIES_PROFILE.md, "Form: what the model draws", "Through the year, as the model shows it", gives the months;
+// the core's render/presence.ts answers what is on the plant on a day, and nothing here works out a season.
 describe('a specimen of Akebia quinata through its eighth year', () => {
   const years = 8;
   const frame = readBower(read('examples/specimen-frame.bower.json'), 'examples/specimen-frame.bower.json');
@@ -418,24 +421,5 @@ describe('a specimen of Akebia quinata through its eighth year', () => {
     expect(new Set(data.leaves.map((l) => l.form))).toEqual(new Set([undefined]));
     expect(new Set(data.flowers.map((f) => f.form))).toEqual(new Set([undefined]));
     expect(new Set(data.fruits.map((f) => f.form))).toEqual(new Set([undefined]));
-  });
-});
-
-// TEMPORARY-DEBUG
-describe('debug print', () => {
-  it('prints', () => {
-    const box = (g: THREE.BufferGeometry) => {
-      g.computeBoundingBox();
-      const { min, max } = g.boundingBox!;
-      const f = (n: number) => n.toFixed(3);
-      return `x ${f(min.x)}..${f(max.x)} y ${f(min.y)}..${f(max.y)} z ${f(min.z)}..${f(max.z)}`;
-    };
-    for (const { kind, asset } of assetsOf(look)) {
-      for (let v = 0; v < asset.variants; v++) {
-        const g = asset.make(v, 0);
-        const ps = kind === 'fruit' ? [] : parts(g);
-        console.log(`${asset.key} v${v}: tris ${Array.from({ length: asset.lods }, (_, l) => triangles(asset.make(v, l))).join('/')} budget ${asset.budget.join('/')} ${box(g)} parts ${ps.length} ${kind === 'flower' ? `reach ${across(ps.flatMap((p) => p.points)).toFixed(4)} flowers across ${ps.map((p) => across(p.points).toFixed(4)).join(' ')}` : ''}${kind === 'leaf' ? ` leaflet reach ${ps.map((p) => reachOf(p).toFixed(3)).join(' ')} pivots ${ps.map((p) => p.pivot.length().toFixed(3)).join(' ')}` : ''}`);
-      }
-    }
   });
 });

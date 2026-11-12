@@ -231,7 +231,8 @@ const FEMALE_SEPAL = mid('flower.female.sepalLengthM');
 const FEMALE_SEPAL_HALF_WIDTH = mid('flower.female.sepalWidthM') / 2;
 const FEMALE_PEDICEL = mid('flower.female.pedicelLengthM');
 const CARPELS = characterRange(morphology, 'flower.female.carpelCount');
-const CARPEL = mid('flower.female.carpelLengthM');
+/** Drawn towards the upper end of its range: the carpels are what marks the female flower. */
+const CARPEL = lerp(...characterRange(morphology, 'flower.female.carpelLengthM'), 0.75);
 const MALE_SEPALS = characterNumber(morphology, 'flower.male.sepalCount');
 const MALE_SEPAL = mid('flower.male.sepalLengthM');
 const MALE_SEPAL_HALF_WIDTH = mid('flower.male.sepalWidthM') / 2;
@@ -247,14 +248,14 @@ const C = {
   female: lin('#6b2740'),
   femaleInner: lin('#8a3a55'),
   femaleEdge: lin('#55202f'),
-  carpel: lin('#3a1426'),
-  stigma: lin('#d9b3c4'),
+  carpel: lin('#4a2046'),
+  stigma: lin('#e3c8d6'),
   // male: "pale purple" (Flora of China, Bean), "rose-purple" (Purdue)
-  male: lin('#b98aa9'),
-  malePale: lin('#d4b2c8'),
-  maleBase: lin('#9a6788'),
-  filament: lin('#b693ad'),
-  anther: lin('#4d2a4f'),
+  male: lin('#c495a6'),
+  malePale: lin('#dcbcc6'),
+  maleBase: lin('#a66a84'),
+  filament: lin('#8a4a6c'),
+  anther: lin('#43203c'),
   // stalks: pale green, flushed with the purple of the flowers
   stalk: lin('#8f9a66'),
   stalkFlushed: lin('#8a6a72'),
@@ -345,9 +346,10 @@ function makeFemaleFlower(lod: number, carpels: number, seed: number): THREE.Buf
   const shape: SepalShape = {
     length: FEMALE_SEPAL,
     halfWidth: FEMALE_SEPAL_HALF_WIDTH * 1.12,
-    from: 0.95,
-    to: -0.05,
-    cup: 0.55,
+    // spread wide, the tips turned a little back: the flower is open like a shallow three-bladed bowl
+    from: 0.7,
+    to: -0.25,
+    cup: 0.85,
     widest: 0.95,
     full: 0.5,
     base: C.femaleInner,
@@ -372,7 +374,7 @@ function makeFemaleFlower(lod: number, carpels: number, seed: number): THREE.Buf
       const lean = rng.range(0.75, 1.0);
       const dir = new V3(Math.sin(lean) * Math.cos(a), Math.cos(lean), Math.sin(lean) * Math.sin(a));
       const length = CARPEL * rng.range(0.9, 1.1) * (lod >= 2 ? 1.15 : 1);
-      const r = CARPEL * 0.11 * (lod >= 2 ? 1.5 : 1);
+      const r = CARPEL * 0.14 * (lod >= 2 ? 1.5 : 1);
       const pts: V3[] = [];
       const radii: number[] = [];
       for (let i = 0; i <= rings; i++) {
@@ -530,7 +532,7 @@ function makeRacemeGeometry(variant: number, lod: number): THREE.BufferGeometry 
       ppts.push(p.clone().multiplyScalar((1 - t) * (1 - t)).addScaledVector(knee, 2 * t * (1 - t)).addScaledVector(end, t * t));
     }
     mg.tube(ppts, ppts.map((_, i) => lerp(0.0006, 0.00075, i / NP)), radial, C.stalk, C.stalkFlushed);
-    const face = out.clone().multiplyScalar(rng.range(0.45, 0.75)).addScaledVector(down, 1).normalize();
+    const face = out.clone().multiplyScalar(rng.range(0.85, 1.25)).addScaledVector(down, 1).normalize();
     const tone = rng.range(0.92, 1.08);
     mg.add(makeFemaleFlower(lod, carpels, variant * 3 + k), facing(end, face, rng.range(0, TAU), rng.range(0.94, 1.08)), [tone, tone, tone * rng.range(0.96, 1.04)], end, 0.05 * k);
   });
@@ -599,10 +601,12 @@ function makeFollicle(lod: number, seed: number): THREE.BufferGeometry {
   const rng = new RNG(5200 + seed * 29);
   const curve = rng.range(0.03, 0.09) * FRUIT_LEN;
   const fat = rng.range(0.93, 1.07);
-  sb.surf(around, along, (u, v) => {
+  sb.surf(around, along, (u, v01) => {
     const th = u * TAU;
+    // rings crowded towards the two ends, where the surface turns fastest
+    const v = 0.5 - 0.5 * Math.cos(Math.PI * v01);
     // blunt at both ends, a little fuller below the middle
-    const body = Math.pow(Math.max(0, 1 - Math.pow(Math.abs(2 * v - 1), 2.6)), 0.5);
+    const body = Math.pow(Math.max(0, 1 - Math.pow(Math.abs(2 * v - 1), 3.6)), 0.5);
     const r = FRUIT_HALF_WIDTH * fat * body * (0.94 + 0.1 * v);
     // the seam: a shallow groove down the inner side
     const toSeam = Math.cos(th - Math.PI / 2);
@@ -638,14 +642,17 @@ function makeFruitGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const turn = new THREE.Matrix4();
   const spin0 = rng.range(0, TAU);
   for (let k = 0; k < count; k++) {
-    // a single one hangs plumb; two or three spread from the end of the stalk like the fingers of a hand, seams inwards
-    const spread = count === 1 ? rng.range(0, 0.12) : rng.range(0.3, 0.5);
+    // a single one hangs plumb; two or three hang side by side from the end of the stalk like the fingers of a
+    // hand, a little apart where they join and parting a little more as they go, seams inwards
+    const spread = count === 1 ? rng.range(0, 0.12) : rng.range(0.2, 0.32);
+    const apart = count === 1 ? 0 : FRUIT_HALF_WIDTH * rng.range(0.55, 0.7);
     const spin = spin0 + (k / count) * TAU;
-    const size = (k === 0 ? 1 : rng.range(0.72, 0.95)) * (lod === 2 ? 1.04 : 1);
+    const size = (k === 0 ? 1 : rng.range(0.75, 0.95)) * (lod === 2 ? 1.04 : 1);
     m.makeRotationY(spin);
     m.multiply(turn.makeRotationX(spread));
     m.scale(new V3(size, size, size));
-    m.setPosition(end);
+    // rotating about Y by `spin` carries -Z to the side the follicle leans to
+    m.setPosition(end.x - Math.sin(spin) * apart, end.y, end.z - Math.cos(spin) * apart);
     const tone = rng.range(0.94, 1.06);
     mg.add(makeFollicle(lod, variant * 7 + k), m, [tone, tone, tone], end, 0);
   }
@@ -667,7 +674,7 @@ const leaf: LeafAsset = {
   pick: (_lengthM, r) => (r < 0.1 ? 3 : r < 0.45 ? 0 : r < 0.75 ? 1 : 2),
   // "dark green" (RHS), "bright blue-green above" (NC State); young leaves "purple-tinged" (Purdue);
   // "tinted purple in winter" (RHS), with no autumn colour of note
-  palette: { greenA: lin('#517c5a'), greenB: lin('#628c5d'), young: lin('#8f7a58'), autumnA: lin('#6e5560'), autumnB: lin('#5d7a55') },
+  palette: { greenA: lin('#436f42'), greenB: lin('#58834a'), young: lin('#8a6c5a'), autumnA: lin('#66535c'), autumnB: lin('#4b6c47') },
   // papery, matt, with a faint bloom
   roughness: 0.62,
   translucency: 0.42,
@@ -706,7 +713,7 @@ const fruit: FruitAsset = {
   poise: 'hangs',
   centreAlong: (FRUIT_STALK + FRUIT_LEN / 2) / FRUIT_LEN,
   // "greyish violet or purplish" (Bean), glaucous (Flora of North America); the seam brightens as it nears splitting
-  ripe: lin('#8d76a6'),
+  ripe: lin('#957fa6'),
   ripeShade: [0.5, 1.15],
   roughness: 0.78,
   swing: 0.45,
@@ -721,8 +728,8 @@ const fruit: FruitAsset = {
  * Tech). The ages over which it turns are a choice: no source read gives them.
  */
 const wood: WoodLook = {
-  young: lin('#7f9450'),
-  mature: lin('#9a6248'),
+  young: lin('#76864f'),
+  mature: lin('#7a5644'),
   old: [0.8, 0.72, 0.62],
   woodyDays: [90, 330],
   oldDays: [800, 2600],
