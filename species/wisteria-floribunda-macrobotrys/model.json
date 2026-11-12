@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
   "taxonId": "wisteria-floribunda-macrobotrys",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: the numbers that shape its framework, its routes, its spurs and its thickening are still copied from Wisteria sinensis, there being no prototype or measurement of this plant to take them from. What is this plant's own rests on published descriptions (Bean, the RHS, Royal Botanic Gardens Victoria, Compton and others 2019): the length of its leaves, racemes and pods, that it sets pods more freely, the spacing of its leaves from the RHS pruning measure, and dates placed inside published seasons. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
   "names": {
     "flowerHeld": "hanging",
-    "basis": "The racemes hang: this taxon’s species profile records pendulous racemes that can reach 1 m or more."
+    "fruitHeld": "hanging",
+    "basis": "The racemes hang: the RHS record describes \"drooping racemes to 1m or more in length\" (https://www.rhs.org.uk/plants/372711/wisteria-floribunda-f-multijuga-kyushaku/details). The pods hang as well: the RHS growing guide calls wisteria seedpods \"pendant\" (https://www.rhs.org.uk/plants/wisteria/growing-guide), and they are borne on the stalk of the raceme that set them."
   },
   "params": {
     "phenology.budburstDoy": {
@@ -21,12 +22,12 @@
     },
     "phenology.leafFlushDoy": {
       "value": [
-        100,
-        155
+        105,
+        160
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "RHS growing guide: Japanese wisteria \"bears flowers and leaves at the same time\"; Ohio State University plant facts: wisteria flowers open before the leaves are fully expanded. So the leaves are set to unfold from 15 April to 9 June, across the flowering window below, which leaves them part open and still bronze when the racemes open. No dated source."
     },
     "phenology.autumnColourDoy": {
       "value": [
@@ -53,7 +54,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "RHS wisteria questions page: flower buds form in the late summer of the year before, and dry soil from July to September makes them fail; a Japanese planting guide (Sekisui House) puts flower-bud formation from July. Taken as 1 August to 15 September, as in the W. sinensis model; no dated source."
     },
     "phenology.flowerOpenDoy": {
       "value": [
@@ -62,7 +63,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of late spring to early summer, a fortnight after W. sinensis. No dated source."
+      "basis": "Placed inside published seasons: 15 to 30 May, a fortnight after the W. sinensis model. RHS record: flowers \"produced in late spring\"; Bean has the species flower \"two or three weeks later\" than W. sinensis. Chris Lane (The Garden, May 2019) has other W. floribunda cultivars flower in mid to late May and 'Kyushaku' itself from mid April to late May in his collection, where W. sinensis flowers in early to mid April: a month ahead of both models, and noted here, not followed, so that the two wisterias keep their order. No dated observation in a design's own climate."
     },
     "phenology.petalFallDoy": {
       "value": [
@@ -71,7 +72,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope (9 to 29 June). No dated source."
+      "basis": "Placed inside published seasons: 9 to 29 June. RHS growing guide: f. multijuga flowers \"in early summer\". A raceme opens flower by flower from its base (Bean), so it stays in flower longer than a W. sinensis raceme: with the window above, the plant is in flower for about six weeks, the length of season Chris Lane gives 'Kyushaku' (mid April to late May). How long one raceme lasts is not dated anywhere read."
     },
     "phenology.flowerLastsDays": {
       "value": [
@@ -80,13 +81,13 @@
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used: a raceme opens and falls within the two windows above."
     },
     "extension.leaderMPerSeason": {
       "value": 2.6,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Ohio State University plant facts (genus Wisteria): current-season shoots grow 2 to 10 ft, and a plant up to 10 ft (3 m) a year in the best conditions. 2.6 m is the W. sinensis model's figure and lies inside that envelope; it is kept so that the two wisterias can be compared. No rate has been measured on this plant, and nothing read says by how much it is the less vigorous of the two."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
@@ -96,13 +97,13 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Inside the envelope Ohio State University gives for wisteria (current-season shoots of 2 to 10 ft): the W. sinensis model's figures, kept so that the two wisterias can be compared. Not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 3.2,
+      "value": 3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Ohio State University plant facts (genus Wisteria): growth of up to 10 ft (3 m) a year in the best conditions. The long shoots of the year are the plant at its fastest, so they are given that figure. Not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -110,7 +111,7 @@
         0.8
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Ohio State University plant facts: wisteria grows slowly for the first one to two years after planting, then very fast. The two factors are the W. sinensis model's; the size of the check is not given anywhere."
     },
     "architecture.trunkStemStartYears": {
       "value": [
@@ -140,7 +141,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "RHS record: \"about 9m tall\", ultimate height 8 to 12 m in 10 to 20 years. The W. sinensis model's range of 7 to 8.6 m of stem for a leader is kept: it stays under that height on a tall structure, and height is not route length. Not measured."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
@@ -254,26 +255,28 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.075,
-        0.11
+        0.05,
+        0.08
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "RHS growing guide: the summer cut to \"five to six leaves\" leaves \"about 30cm\", which is 5 to 6 cm of stem to a leaf at the base of the year's shoots. That is the lower figure; 8 cm allows for the longer internodes further along a strong shoot, which no source measures. Not measured on this plant."
     },
     "organs.leafLengthM": {
       "value": [
-        0.16,
-        0.28
+        0.254,
+        0.381
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/wisteria/wisteria-floribunda/",
+      "basis": "Bean (Trees and Shrubs Online): \"Leaves 10 to 15 in. long\", the whole compound leaf, in metres. Japanese floras give 20 to 30 cm."
     },
     "organs.leavesPerNode": {
       "value": 1,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/wisteria-floribunda",
+      "basis": "NC State Extension plant record: the compound leaves are alternate, one to a node."
     },
     "organs.spurChance": {
       "value": 0.62,
@@ -304,7 +307,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: racemes to 1 m or more. The lower figure is a placeholder."
+      "basis": "Between published figures for this cultivar: the lower end is the 2 ft of NC State Extension (racemes of 2 to 4 ft) and of the University of Connecticut (typically just under 2 ft), 0.6 m; the upper lies between the RHS record's \"to 1m or more\" and the \"up to 1.2m\" of the RHS growing guide. Royal Botanic Gardens Victoria gives 0.5 to 1 m, \"occasionally more\", and notes that the length varies with season and place. Not measured on a plant in Britain."
     },
     "organs.whipShareOfNodes": {
       "value": 0.022,
@@ -318,30 +321,30 @@
     },
     "organs.whipLengthM": {
       "value": [
-        0.9,
-        2
+        0.6,
+        3
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Ohio State University plant facts (genus Wisteria): current-season shoots are almost unbranched and often grow 2 to 10 ft (0.6 to 3 m). Not measured on this plant."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Deciduous (RHS record): a leaf lasts the season it grew in."
     },
     "organs.clearStemHeightM": {
       "value": 2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A training choice, not a trait of the plant. Spurs lower than about 1.2 m would lay racemes of 0.6 to 1.1 m on the ground, and the long-racemed forms are grown overhead, on pergolas and arches (Chris Lane, The Garden, May 2019). 2 m is the W. sinensis model's figure, kept so that the two wisterias can be compared."
     },
     "flowering.competenceYears": {
       "value": 3,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "RHS growing guide: most wisterias \"begin flowering within three to four years of planting\" (named, grafted plants; seedlings take far longer). Three full seasons, so that the first racemes open in the fourth year."
     },
     "flowering.maturityRamp": {
       "value": [
@@ -362,19 +365,19 @@
     "flowering.unprunedFactor": {
       "value": 0.5,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "RHS wisteria questions page: regular pruning builds \"a framework of flower spurs\". The size of the effect is not given anywhere; one half is the W. sinensis model's placeholder, chosen so that the difference shows."
     },
     "flowering.currentSeasonFlowersPerM": {
       "value": 0,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable: this wisteria flowers from buds formed the previous year (RHS), on short leafy shoots (Bean), not along the year's long growth."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable: see flowering.currentSeasonFlowersPerM."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -382,8 +385,9 @@
         6
       ],
       "unit": "leaves",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "RHS growing guide: in July or August shorten the whippy growth of the year \"to five to six leaves\"."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -391,8 +395,9 @@
         3
       ],
       "unit": "buds",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/wisteria/growing-guide",
+      "basis": "RHS growing guide: in late winter shorten the same shoots \"to two to three buds\"."
     },
     "regrowth.shootsPerCut": {
       "value": [
@@ -401,7 +406,7 @@
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A stem cut hard is taken to break from one or two buds below the cut, as in the W. sinensis model. Useful Temperate Plants records that wisterias tolerate \"even the most drastic pruning\"; no count has been made on real plants."
     },
     "thickening.tipRadiusSquaredMm2": {
       "value": 4,
@@ -421,90 +426,144 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.15,
+      "status": "provisional_design_assumption",
+      "basis": "Bean: unlike W. sinensis it \"produces fertile seed fairly regularly\" in Britain; the RHS record has the flowers \"often followed\" by pods. No source gives the share of racemes that set: 0.15, about twice the W. sinensis model's 0.08, is chosen so that the difference between the two shows."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.11,
+        0.2
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://hortflora.rbg.vic.gov.au/taxon/f659be88-5340-11e7-b82b-005056b0018f",
+      "basis": "Royal Botanic Gardens Victoria, HortFlora, of this cultivar: pods 11 to 20 cm long. One pod's length: a raceme that sets is given one cluster, drawn as one to three pods on what is left of its stalk."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        75,
+        95
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "No source dates the swelling of the pods. NC State Extension has them ripen from midsummer into autumn. 75 to 95 days after petal fall, the W. sinensis model's figure, brings them to full size between late August and early October."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        263,
+        314
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "University of Connecticut plant database: the pods turn brown in October; Kwantlen Polytechnic University: ripe September to October. Taken as 20 September to 10 November. No date from Britain."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        15,
+        75
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The pods stay on the bare plant: Kwantlen Polytechnic University has them persist through winter, and Japanese floras (as compiled on ja.wikipedia) have them split in the dry air of winter, the two halves twisting and throwing the seed. Taken as 15 January to 16 March of the year after they ripen. No date from Britain."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria climbs by twining its stems and has no tendrils."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.tendrilNodePattern."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria climbs by twining its stems; its leaf stalks do not coil round a support."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.leafStalkCoilShare."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: wisteria climbs by twining its stems and makes no clinging rootlets."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.aerialRootPatchSpacingM."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: none of Bean, the RHS record or Compton and others (2019) describes prickles or thorns on any wisteria."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.prickleSpacingM."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 0,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 0,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: the \"short leafy shoots\" on which Bean has the racemes borne are the spurs this model already grows (organs.spurChance). It throws no separate flowering side shoots."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 0,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see sideShoots.perMetrePerYear."
     }
   }
 }
