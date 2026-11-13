@@ -1,0 +1,436 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "campsis-x-tagliabueana-madame-galen",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "large vigorous deciduous climber clinging by aerial roots",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details",
+      "basis": "RHS plant record: \"A large, vigorous deciduous climber clinging with aerial roots\"."
+    },
+    "habit.heightM": {
+      "value": [
+        8,
+        12
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details",
+      "basis": "RHS plant record: ultimate height 8 to 12 m, in 5 to 10 years."
+    },
+    "habit.parentage": {
+      "value": "Campsis radicans x Campsis grandiflora",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-x-tagliabueana/",
+      "basis": "Trees and Shrubs Online: the name covers hybrids between C. radicans and C. grandiflora; 'Mme Galen' was put into commerce in 1889."
+    },
+    "stem.youngSurface": {
+      "value": "green, hairless",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of the parent C. radicans: \"Young growth is green and hairless\". Bean, of the same: young stems glabrous. Nothing read describes the young shoot of this cultivar."
+    },
+    "stem.winterTwigColour": {
+      "value": "straw-coloured",
+      "status": "published_plant_profile",
+      "source": "https://weedguide.cfaes.osu.edu/singlerecord.asp?id=105",
+      "basis": "Ohio State weed guide, of C. radicans: recognised in winter by \"straw-colored branches\"."
+    },
+    "stem.oldBark": {
+      "value": "light tan to yellowish brown, peeling in thin strips",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: older stems \"woody with yellowish-brown bark that peels in thin strips\". University of Connecticut: bark \"light tan\", \"slightly exfoliating on old trunks\"."
+    },
+    "stem.youngDiameterM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "stem.internodeLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "holdfast.kind": {
+      "value": "aerial rootlets",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/campsis/growing-guide",
+      "basis": "RHS campsis growing guide: self-clinging, \"using aerial roots along its stems\". Trees and Shrubs Online, of 'Mme Galen': \"not a climber that can be left to look after itself\", so the hold is weak."
+    },
+    "holdfast.rows": {
+      "value": 2,
+      "status": "published_plant_profile",
+      "source": "https://weedguide.cfaes.osu.edu/singlerecord.asp?id=105",
+      "basis": "Ohio State weed guide, of the parent C. radicans: aerial roots \"are formed in 2 rows below nodes on the stem\". The other parent has few or none (Burras and Griffiths); nothing read describes them on this cultivar."
+    },
+    "holdfast.position": {
+      "value": "in a band below each node, on the side against the support",
+      "status": "published_plant_profile",
+      "source": "https://weedguide.cfaes.osu.edu/singlerecord.asp?id=105",
+      "basis": "Ohio State weed guide, of C. radicans: \"in bands below the leaf nodes on woody stems\"."
+    },
+    "holdfast.rootletLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "holdfast.rootletsPerRow": {
+      "value": 7,
+      "status": "provisional_design_assumption",
+      "basis": "How many rootlets are drawn in each of the two rows of a tuft. Nobody has counted; a short dense row is drawn."
+    },
+    "leaf.arrangement": {
+      "value": "opposite",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: \"Opposite, petiolate, odd-pinnate\". NC State Extension gives the hybrid's leaves as opposite."
+    },
+    "leaf.division": {
+      "value": "odd-pinnate",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/campsis-x-tagliabueana/",
+      "basis": "NC State Extension, of the hybrid: \"compound, odd-pinnate, with 7 to 11 leaflets\"."
+    },
+    "leaf.lengthM": {
+      "value": [
+        0.2,
+        0.35
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"Leaves 20-35cm\". Burncoose Nurseries, of this cultivar: \"up to 30cm (12in) long\"."
+    },
+    "leaf.leafletCount": {
+      "value": [
+        7,
+        11
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: pinnae \"7-11\". Burncoose, of this cultivar: \"7-11 ovate leaflets\". NC State: 7 to 11. The RHS record says \"up to 15\", which no other source repeats."
+    },
+    "leaf.leafletCountUsual": {
+      "value": 9,
+      "status": "provisional_design_assumption",
+      "basis": "The middle of the published range of 7 to 11; the leaf has an odd number. No source says which is commonest on this cultivar."
+    },
+    "leaf.leafletLengthMaxM": {
+      "value": 0.08,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"pinnae to 8x4.5cm\"."
+    },
+    "leaf.leafletWidthMaxM": {
+      "value": 0.045,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"pinnae to 8x4.5cm\"."
+    },
+    "leaf.widthShareOfLength": {
+      "value": 0.43,
+      "status": "provisional_design_assumption",
+      "basis": "Width of the whole leaf for its length. Oates et al. (HortScience 49: 343-345, 2014, Table 1) measured leaf length and width on four other Campsis: 0.41 for the hybrid 'Kudian', 0.40 for the hybrid 'Chastity', 0.45 for C. grandiflora. 'Madame Galen' was grown in that trial and not measured; a value among its relatives is taken."
+    },
+    "leaf.leafletShape": {
+      "value": "ovate, long-pointed",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.21273/HORTSCI.49.3.343",
+      "basis": "Oates et al. 2014, of the genus: \"Each leaflet is ovate with an attenuate apex and a coarsely dentate margin\". Bean, of C. radicans: \"ending in a long, often tail-like point\"."
+    },
+    "leaf.leafletMargin": {
+      "value": "coarsely toothed",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.21273/HORTSCI.49.3.343",
+      "basis": "Oates et al. 2014: \"a coarsely dentate margin\". Burras and Griffiths, of the hybrid: \"serrate\". Bean, of C. radicans: \"coarsely and angularly toothed\"."
+    },
+    "leaf.leafletTeethPerSide": {
+      "value": 6,
+      "status": "provisional_design_assumption",
+      "basis": "Teeth drawn on each side of a leaflet. Floras say only that the teeth are coarse; nobody gives a count. Six coarse forward-pointing teeth on a leaflet of 6 to 8 cm."
+    },
+    "leaf.leafletLateralVeinPairs": {
+      "value": 6,
+      "status": "provisional_design_assumption",
+      "basis": "Flora of China gives 6 or 7 pairs of lateral veins for the parent C. grandiflora (as reported by Wikipedia; the flora itself could not be opened). Taken for the hybrid."
+    },
+    "leaf.leafletStalkLengthM": {
+      "value": 0.003,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Between the parents: about 0.5 mm in C. radicans, \"longer on basal leaflets\" (Gentry 1992), and 5 mm in C. grandiflora (Flora of China, as reported). Not measured on this cultivar."
+    },
+    "leaf.stalkShareOfLength": {
+      "value": 0.2,
+      "status": "provisional_design_assumption",
+      "basis": "The leaf stalk below the first pair of leaflets, as a share of the leaf. No source measures it."
+    },
+    "leaf.rachis": {
+      "value": "grooved above, hairy",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: rachis \"with a narrow groove on the upper (adaxial) side\". Burras and Griffiths, of the hybrid: \"rachis pilose\"."
+    },
+    "leaf.surfaceAbove": {
+      "value": "dark green, somewhat shiny",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/campsis-x-tagliabueana/",
+      "basis": "NC State Extension, of the hybrid: \"shiny green above\". Burncoose, of this cultivar: \"dark green\"."
+    },
+    "leaf.surfaceBeneath": {
+      "value": "paler, downy on the veins",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-x-tagliabueana/",
+      "basis": "Trees and Shrubs Online: the leaves of 'Mme Galen' are downy beneath, like those of C. radicans. Burras and Griffiths: \"light pubescent above and on veins beneath\". (NC State calls the hybrid hairless beneath; the account of the cultivar is followed.)"
+    },
+    "leaf.colourYoung": {
+      "value": "bronze-tinged green",
+      "status": "provisional_design_assumption",
+      "basis": "How the unfolding leaf is coloured in the drawing. No source read describes the young foliage of this cultivar; a bronze flush on new growth is the modeller's recollection of the plant and has not been checked against a description."
+    },
+    "leaf.autumnColour": {
+      "value": "yellow-green",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.uconn.edu/detail.php?pid=79",
+      "basis": "University of Connecticut plant database, of C. radicans: \"Poor fall colour, yellow-green\". Ohio State: leaves \"turn yellowish before dropping in autumn\"."
+    },
+    "inflorescence.type": {
+      "value": "terminal panicle, a lax truss",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-x-tagliabueana/",
+      "basis": "Trees and Shrubs Online: the inflorescence of 'Mme Galen' is \"a lax truss\", like that of C. grandiflora. Burncoose: \"terminal panicles of 6-12 flowers\". NC State: \"loose, somewhat drooping clusters\"."
+    },
+    "inflorescence.position": {
+      "value": "at the end of a shoot of the current year",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-radicans/",
+      "basis": "Bean, of C. radicans: \"borne in a terminal cluster on the current season's growth\"; of C. grandiflora: \"produced at the end of the current season's growth\"."
+    },
+    "inflorescence.flowerCount": {
+      "value": [
+        6,
+        12
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.burncoose.co.uk/site/plants.cfm?pl_id=889",
+      "basis": "Burncoose Nurseries, of this cultivar: \"terminal panicles of 6-12 flowers\". The RHS A-Z Encyclopedia, as cited by Wikipedia: \"loose clusters of 6 to 12\"."
+    },
+    "inflorescence.branching": {
+      "value": "branches in opposite pairs, the lower three-flowered, the upper one-flowered",
+      "status": "provisional_design_assumption",
+      "basis": "How the truss is drawn. That a panicle of the family is built of opposite cymes is general knowledge of Bignoniaceae and was not read in a description of this plant."
+    },
+    "inflorescence.lengthM": {
+      "value": [
+        0.2,
+        0.26
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "What RenderFlower.lengthM measures for this taxon, and what the model of the truss is authored to: the length of a truss from where it leaves the shoot to the mouths of its end flowers. The same range as organs.racemeLengthM in the growth model, where its basis is given. No source measures a truss of this cultivar."
+    },
+    "inflorescence.axisLengthM": {
+      "value": [
+        0.15,
+        0.2
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The stalk and axis of the truss. Flora of China gives 15 to 20 cm for the parent C. grandiflora (as reported by Wikipedia; the flora itself could not be opened)."
+    },
+    "inflorescence.flowerStalkLengthM": {
+      "value": 0.017,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: \"Pedicels: up to 1.7 cm long\". Not given for the hybrid."
+    },
+    "inflorescence.opening": {
+      "value": "a few flowers at a time, from the base of the truss",
+      "status": "provisional_design_assumption",
+      "basis": "University of Michigan climbers database, of C. radicans: \"Not all flowers bloom at once\". That the lowest open first is how the truss is drawn and was not read anywhere."
+    },
+    "flower.shape": {
+      "value": "trumpet: a tube narrow at the base, widening to a flared limb of five rounded lobes",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"corolla tubular-campanulate ... base narrow, widening to 3 cm across at throat\". Bean, of C. radicans: \"five broad, short, rounded lobes\"."
+    },
+    "flower.lengthM": {
+      "value": 0.08,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://en.wikipedia.org/wiki/Campsis_%C3%97_tagliabuana",
+      "basis": "The RHS A-Z Encyclopedia of Garden Plants, as cited by Wikipedia, of this cultivar: flowers \"up to 3 in (8 cm) long\". NC State: \"about 3 inches long\"."
+    },
+    "flower.tubeLengthM": {
+      "value": 0.065,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"tube to 6.5cm\"."
+    },
+    "flower.throatWidthM": {
+      "value": 0.03,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"widening to 3 cm across at throat\"."
+    },
+    "flower.tubeBaseWidthM": {
+      "value": 0.008,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Width of the tube where it leaves the calyx. Oates et al. 2014 measured the narrow end of the corolla at 6 mm on the hybrid 'Kudian' and 10 mm on 'Chastity'; 'Madame Galen' was not measured."
+    },
+    "flower.limbWidthM": {
+      "value": [
+        0.065,
+        0.08
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/97959/campsis-%C3%97-tagliabueana-madame-galen/details",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"limb to 6.5 cm diameter\". RHS plant record, of this cultivar: \"flowers with limb up to 8cm wide\". Havlis: \"7-9 cm wide\"."
+    },
+    "flower.lobeCount": {
+      "value": 5,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-radicans/",
+      "basis": "Bean, of C. radicans: \"its mouth has five broad, short, rounded lobes\". Bailey, of the genus: corolla \"5-lobed, with spreading lobes, slightly 2-lipped\"."
+    },
+    "flower.lobeLengthM": {
+      "value": 0.024,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"lobes to 3.8 x 2.4 cm\". Read as 2.4 cm long and 3.8 cm wide, which is what a limb 6.5 cm across with five broad lobes allows; the source does not say which figure is which."
+    },
+    "flower.lobeWidthM": {
+      "value": 0.038,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"lobes to 3.8 x 2.4 cm\". See flower.lobeLengthM."
+    },
+    "flower.symmetry": {
+      "value": "slightly two-lipped: the two upper lobes a little smaller",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: lobes \"slightly 2-lipped ... the upper 2 lobes are slightly smaller than the others\"."
+    },
+    "flower.colourLimb": {
+      "value": "salmon-red",
+      "status": "published_plant_profile",
+      "source": "https://www.burncoose.co.uk/site/plants.cfm?pl_id=889",
+      "basis": "Burncoose, of this cultivar: \"Salmon-red, trumpet-shaped flowers\". NC State: \"cantaloupe-orange to salmon-red\". RHS plant record: \"reddish-orange\"."
+    },
+    "flower.colourTubeOutside": {
+      "value": "orange",
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid, as quoted by Discover Life: \"orange outside, scarlet inside\"."
+    },
+    "flower.colourThroat": {
+      "value": "apricot-orange, with darker red lines",
+      "status": "provisional_design_assumption",
+      "basis": "Havlis nursery catalogue, of this cultivar: \"orange-red with an apricot-orange throat\". The red lines running into the throat are from Oates et al. 2014, who describe them on the hybrid 'Chastity' (\"red striping\"); they were not read of 'Madame Galen'."
+    },
+    "flower.calyxLengthM": {
+      "value": 0.025,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Between the parents: 12 to 25 mm in C. radicans (Gentry 1992), about 30 mm in C. grandiflora (Bean: 1 1/4 in.). Not measured on this cultivar."
+    },
+    "flower.calyxLobing": {
+      "value": 0.4,
+      "status": "provisional_design_assumption",
+      "basis": "How far the calyx is cut into its five teeth, as a share of its length. Between the parents: short triangular teeth in C. radicans (Bean), cut to the middle in C. grandiflora (Bean: lobes 1/2 in. of 1 1/4 in.)."
+    },
+    "flower.calyxColour": {
+      "value": "orange, greenish towards the base",
+      "status": "provisional_design_assumption",
+      "basis": "Missouri Plants gives the calyx of C. radicans as \"reddish green or orange\", leathery. No source read gives the colour on this cultivar."
+    },
+    "flower.stamenCount": {
+      "value": 4,
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: \"Number: 4, included\". Gentry 1992: \"didynamous and included\", the anthers \"held not far below the tube mouth\"."
+    },
+    "flower.antherLengthM": {
+      "value": 0.004,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://sweetgum.nybg.org/science/vh/monographs-details/?irn=10665",
+      "basis": "Gentry 1992, of C. radicans: anther thecae 3 to 4 mm long."
+    },
+    "flower.styleLengthM": {
+      "value": 0.048,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: style 4.8 cm long, the stigma \"flattened, spatulate\"."
+    },
+    "flower.lastsDays": {
+      "value": null,
+      "unit": "days",
+      "status": "unknown"
+    },
+    "fruit.type": {
+      "value": "two-valved woody capsule, a pod",
+      "status": "published_plant_profile",
+      "source": "https://sweetgum.nybg.org/science/vh/monographs-details/?irn=10665",
+      "basis": "Gentry 1992, of C. radicans: capsule with \"valves smooth and subwoody\". NC State, of the hybrid: \"bean-like seed pod\"."
+    },
+    "fruit.shape": {
+      "value": "spindle-shaped, stalked, pointed, ridged along the two seams",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-radicans/",
+      "basis": "Bean, of C. radicans: \"Pod is spindle-shaped and stout\". Missouri Plants: \"slightly flattened, with noticeable ridges along the sutures\", \"beaked\". Gentry: \"stalked, acuminate at the apex\"."
+    },
+    "fruit.lengthM": {
+      "value": [
+        0.08,
+        0.13
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "From the parents: C. radicans in Britain \"5 in. long\" (Bean), C. grandiflora 7 to 12 cm (Flora of China, as reported by Wikipedia). No source measures a pod of this cultivar."
+    },
+    "fruit.widthM": {
+      "value": 0.019,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-radicans/",
+      "basis": "Bean, of C. radicans: pod \"3/4 in. wide at the middle\". Not given for the hybrid."
+    },
+    "fruit.colourUnripe": {
+      "value": "green",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.uconn.edu/detail.php?pid=79",
+      "basis": "University of Connecticut, of C. radicans: capsule \"changes from green to tan\"."
+    },
+    "fruit.colourRipe": {
+      "value": "tan to brown",
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Missouri Plants, of C. radicans: valves \"tan to brown at maturity\". Bean: pods brown."
+    },
+    "fruit.setInBritain": {
+      "value": "rare",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-radicans/",
+      "basis": "Bean, of C. radicans: pods form rarely, sometimes after unusually hot summers."
+    },
+    "fruit.seed": {
+      "value": "flat, with two papery wings",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/campsis/campsis-radicans/",
+      "basis": "Bean, of C. radicans: \"flattened seeds with silvery, transparent wings\"."
+    }
+  }
+}

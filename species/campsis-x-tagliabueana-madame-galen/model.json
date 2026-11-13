@@ -1,105 +1,109 @@
 {
   "schemaVersion": 1,
   "taxonId": "campsis-x-tagliabueana-madame-galen",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model: there was no prototype of this plant to carry numbers over from. The size and arrangement of the leaves, the length a shoot makes before it flowers, the first-year cut and the pruning rule are from published descriptions; node spacing, dates, how many shoots break and how many of them flower are choices tied to what those descriptions say; the routing preferences are still the wisteria model's. None has been measured on a plant. All its flowers are at the ends of side shoots of the year, as the plant's are. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "facing_out",
+    "fruitHeld": "hanging",
+    "basis": "The truss ends a shoot of the year and carries on its line (\"borne in a terminal cluster on the current season's growth\", Bean of C. radicans, https://www.treesandshrubsonline.org/articles/campsis/campsis-radicans/). It is a \"lax truss\" (Trees and Shrubs Online, of 'Mme Galen') in \"loose, somewhat drooping clusters\" (NC State Extension): the droop is drawn in the model of the truss and is not given as a direction. That the pods hang is assumed from their weight; no source read says how they are held."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 110,
+      "value": 102,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Late into leaf. A placeholder."
+      "basis": "Late into leaf: \"Late to leaf out in spring\" (University of Connecticut plant database, of the parent C. radicans); \"among the last woody plants to leaf out\" (White Flower Farm growing guide). No source gives a date for Britain. Buds are taken to break on 12 April; the engine shows a leaf only once its shoot has grown past its first node, so the first leaves are out in the second week of May."
     },
     "phenology.growthEndDoy": {
-      "value": 280,
+      "value": 205,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "A shoot of the year stops lengthening when its truss forms at its tip (\"New twigs grow about 60-80 cm before flower buds appear\", Havlis nursery catalogue); that is taken as 24 July, a few days before the first trusses open, and the framework is taken to stop with it. The engine stands a truss at the tip its shoot has reached on the day the truss opens, so a shoot must have stopped by then. No dated source."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        115,
-        165
+        106,
+        150
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not what times this plant's leaves: every leaf is on a shoot of the year and opens as that shoot is made. The window follows budburst for any leaf on older wood. No dated source."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        283,
-        310
+        288,
+        312
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The leaves yellow a little before they drop (\"Poor fall colour, yellow-green\", University of Connecticut; \"turn yellowish before dropping\", Ohio State weed guide, both of C. radicans). Taken as mid October to early November; no dated source."
     },
     "phenology.leafFallDoy": {
       "value": [
-        310,
-        344
+        300,
+        330
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Leaves are taken to fall with the first frosts, from late October, and to be gone by late November. No dated source for Britain."
     },
     "phenology.floralInitiationDoy": {
       "value": [
         190,
-        210
+        196
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers on the growth of the year (NC State Extension). Buds are taken to form in July. No dated source."
+      "basis": "The truss forms at the tip of a shoot of the year once the shoot has made its length (\"New twigs grow about 60-80 cm before flower buds appear\", Havlis nursery catalogue). The engine forms the buds of side shoots on the second day given here, 15 July, when the shoots have all but stopped; the first trusses then show as buds for two weeks before they open and the later ones for a month."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        220,
-        285
+        210,
+        275
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers open in succession across the RHS envelope of late summer and autumn (8 August to 12 October)."
+      "basis": "The day a truss opens its first flower, 29 July to 2 October. RHS: flowers \"from late summer until the first frosts\"; Bean, of C. radicans at Kew: \"August and September\"; Trees and Shrubs Online shows 'Mme Galen' in flower at Wisley and at Kew in July. With the days a truss lasts, the display runs to the end of October."
     },
     "phenology.petalFallDoy": {
       "value": [
-        146,
-        166
+        240,
+        305
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used while phenology.flowerLastsDays is set: each truss goes over its own number of days after it opens."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        7,
-        14
+        14,
+        24
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "How long one flower lasts. A placeholder."
+      "basis": "How long one truss is in flower, from its first trumpet opening to its last corolla dropping. A truss has six to twelve flowers that open a few at a time; a flower of C. radicans stops giving nectar 20 to 30 hours after it opens and its corolla stays on for several days (Bertin 1982, Amer. J. Bot. 69: 122-134, from the abstract). The number of days is a choice; nobody has timed a truss of this cultivar."
     },
     "extension.leaderMPerSeason": {
       "value": 2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: vigorous, reaching its 8 to 12 m size band in 5 to 10 years. A size band is not a growth rate; a placeholder."
+      "basis": "RHS: \"fast growing\", 8 to 12 m in 5 to 10 years, and of the genus \"up to 10m after ten years\" given free range. Two metres of stem a season, with the slow start below, reaches the 10 m middle of that band in about six seasons. A size band is not a growth rate: a choice."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
+        1.2,
         0.8,
-        0.6,
-        0.4
+        0.5
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate. Not measured."
+      "basis": "Branches of the framework, taken as slower than the main stems by steps. Not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 0.8,
+      "value": 1.5,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+      "basis": "Not used while organs.whipShareOfNodes is 0. Kept for a scenario that switches long shoots on."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -107,7 +111,7 @@
         0.8
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A slow start: the RHS has every stem cut to 15 cm after planting and says the plant flowers once a woody framework has formed, in two to three years. The two factors are a choice."
     },
     "architecture.trunkStemStartYears": {
       "value": [
@@ -117,18 +121,19 @@
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Three stems from the base in the first season. A placeholder."
+      "basis": "Three main stems from the base in the first season. RHS: after cutting back at planting, \"train the strongest new shoots to fill the space\" and remove the weaker; three is a choice."
     },
     "architecture.nurseryCaneM": {
-      "value": 0.3,
+      "value": 0.15,
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant. Not measured."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/campsis/growing-guide",
+      "basis": "RHS campsis growing guide: after planting, cut all stems back to 15 cm from the ground."
     },
     "architecture.maxBranchOrder": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Main stems, their branches and one more order make the framework; everything beyond is a shoot of the year. A choice."
     },
     "architecture.leaderLengthM": {
       "value": [
@@ -137,17 +142,17 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The RHS ultimate-size band used as a cap on stem length. A height band is not a route length, so this is a placeholder."
+      "basis": "The RHS ultimate-height band used as a cap on the length of a main stem. A height band is not a route length, so this is a stand-in."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        3,
-        1.5,
-        0.8
+        4,
+        2,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader. Not measured."
+      "basis": "Framework branches shorter than the main stems by halves. Not measured."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
@@ -178,14 +183,14 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 3,
+      "value": 1,
       "status": "provisional_design_assumption",
-      "basis": "Ivy stems are slender and lie side by side. A placeholder."
+      "basis": "One framework stem to a lath or cable. The framework is kept spaced (\"young growths should be carefully spaced and tied in\", Trees and Shrubs Online; \"train the strongest new shoots to fill the space\", RHS), and its stems grow stout. A choice."
     },
     "architecture.maxStemsPerPrimaryMember": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The three main stems may go up one glulam member side by side before they part. A choice."
     },
     "routing.occupancyCost": {
       "value": 1.6,
@@ -236,46 +241,48 @@
       "value": 1,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "Not used: ivy holds by aerial roots, not by passing round its support."
+      "basis": "Not used: the plant clings by aerial rootlets and does not pass round its support, so no grasp limit is asked for."
     },
     "attachment.minPitchM": {
       "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which does not twine; present because every model carries every parameter."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which does not twine; present because every model carries every parameter."
     },
     "organs.leafSpacingM": {
       "value": [
-        0.1,
-        0.16
+        0.07,
+        0.12
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Stem between one pair of leaves and the next. No flora gives it; the University of Michigan climbers database says only that the internodes of C. radicans are long. Chosen so that a flowering shoot of 60 to 80 cm carries six to nine pairs of leaves below its truss."
     },
     "organs.leafLengthM": {
       "value": [
-        0.15,
-        0.25
+        0.2,
+        0.32
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Large pinnate leaves. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.discoverlife.org/nh/tx/Plantae/Dicotyledoneae/Bignoniaceae/Campsis",
+      "basis": "The whole pinnate leaf. Burras and Griffiths, Manual of Climbers and Wall Plants (1994), of the hybrid: \"Leaves 20-35cm\", as quoted by Discover Life; Burncoose Nurseries, of this cultivar: \"up to 30cm\". Oates et al. (HortScience 49: 343-345, 2014) measured means of 262 to 396 mm on four other Campsis cultivars. The top of the range is drawn in a little because every leaf in a run is drawn from this one range."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Leaves in opposite pairs. A character of the family, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://www.missouriplants.com/Campsis_radicans_page.html",
+      "basis": "Leaves opposite: \"Opposite, petiolate, odd-pinnate\" (Missouri Plants, of C. radicans); NC State Extension gives the hybrid's leaf arrangement as opposite."
     },
     "organs.spurChance": {
       "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "No spurs are modelled for this plant."
+      "basis": "No spurs are grown. The short wood of this plant is the stub a late-winter prune leaves of last year's flowering shoot, and the flowering side shoots below stand for what breaks from it."
     },
     "organs.spurLengthM": {
       "value": [
@@ -284,7 +291,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short leafy side shoots. A placeholder."
+      "basis": "Not used while organs.spurChance is 0."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -293,35 +300,35 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used while organs.spurChance is 0."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.06,
-        0.08
+        0.2,
+        0.26
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a single trumpet flower. A placeholder."
+      "basis": "The length of a truss, from where it leaves the shoot to the mouths of its end flowers. Built from its parts: six to twelve flowers (Burncoose; RHS A-Z as cited by Wikipedia) each up to 8 cm long, on an axis that in the parent C. grandiflora is 15 to 20 cm (Flora of China, as reported by Wikipedia; the flora itself could not be opened). No source gives the length of a truss of this cultivar."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.06,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+      "basis": "No long non-flowering shoots are grown. The plant does make them (Bean, of C. radicans: \"its long growths make it ungainly\"), but the engine keeps a long shoot for ever unless a pruning routine cuts it, and none is modelled for this plant, so they would pile up year on year as bare sticks. The year's free growth is all in the flowering side shoots."
     },
     "organs.whipsPerYearMax": {
-      "value": 60,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "See organs.whipShareOfNodes."
     },
     "organs.whipLengthM": {
       "value": [
-        0.2,
-        0.5
+        1,
+        2
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a side shoot of the year. A placeholder."
+      "basis": "Not used while organs.whipShareOfNodes is 0."
     },
     "organs.leafLifespanYears": {
       "value": 1,
@@ -333,13 +340,13 @@
       "value": 0,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Clothed to the ground."
+      "basis": "Shoots break down to the ground: the plant \"frequently sprouts from the base\" (Oates et al. 2014, of C. radicans)."
     },
     "flowering.competenceYears": {
-      "value": 3,
+      "value": 2,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its fourth season. A placeholder."
+      "basis": "RHS campsis growing guide: it flowers once a strong woody framework has formed, after about two to three years. Taken to flower first in its third season."
     },
     "flowering.maturityRamp": {
       "value": [
@@ -348,29 +355,29 @@
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Few trusses in the first flowering year, more in the second, all the plant can carry from the third. A choice."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which has no flowering spurs; present because every model carries every parameter."
     },
     "flowering.unprunedFactor": {
       "value": 0.5,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which is not summer pruned; present because every model carries every parameter."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 3,
+      "value": 0,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flowers per metre of the growth of the year. A placeholder."
+      "basis": "None: the flowers are in a terminal truss at the end of a shoot of the year, never at the leaf nodes along it (\"borne in a terminal cluster on the current season's growth\", Bean of C. radicans; \"few-flowered terminal panicle\", Gentry 1992). All flowering is at the ends of side shoots (sideShoots.terminalFlowerShare)."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.15,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used while flowering.currentSeasonFlowersPerM is 0."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -379,7 +386,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which is not summer pruned; present because every model carries every parameter."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -387,8 +394,9 @@
         3
       ],
       "unit": "buds",
-      "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/campsis/growing-guide",
+      "basis": "RHS campsis growing guide: in late winter spur-prune the side shoots to within two or three buds of the main stems. No routine in the model makes this cut for this plant yet; the side shoots are shed after one season instead."
     },
     "regrowth.shootsPerCut": {
       "value": [
@@ -397,19 +405,19 @@
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A stem cut hard is taken to break from one or two buds below the cut (RHS renovation: cut to within 30 cm of the base and train the strongest new shoots). The count is a choice."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 6.25,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A young shoot about 5 mm through. Not measured; the shoots are stout for a climber."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 8,
+      "value": 20,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Chosen so that the main stem of a plant that has filled the specimen frame is about 5 cm through at the ground after ten years (\"a stout main stem\", Bean of C. radicans). Not measured."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -417,90 +425,144 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.04,
+      "status": "provisional_design_assumption",
+      "basis": "Share of trusses that leave a pod. Pods are rare in Britain: \"Pods form rarely, sometimes after unusually hot summers\" (Bean, of C. radicans). The engine has no hot summers, so a small share is set every year: one truss in twenty-five. A choice."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.08,
+        0.13
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "From the parents: C. radicans in Britain \"5 in. long and 3/4 in. wide\" (Bean), C. grandiflora 7 to 12 cm (as reported by Wikipedia). No source measures a pod of this cultivar."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        35,
+        50
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Days from the last corolla dropping to a full-length green pod. A choice; not timed."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        290,
+        350
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The pod turns from green to tan and dries from mid October to mid December (\"Changes from green to tan\", University of Connecticut, of C. radicans). Dates are a choice."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        32,
+        95
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A window early in the year, so the dry pods hang through winter (\"The cigar-like fruit may be considered decorative during winter\", USDA NRCS plant guide, of C. radicans) and are gone before the plant comes into leaf. Dates are a choice."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "No tendrils (\"Unarmed, no tendrils\", Missouri Plants, of C. radicans)."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.tendrilNodePattern."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "The leaf stalks do not coil: the plant holds on by rootlets alone (\"the roots are the vine's only means of support\", Ohio State weed guide, of C. radicans)."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.leafStalkCoilShare."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0.12,
+        0.3
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Stem between one tuft of rootlets and the next. In C. radicans they form \"in 2 rows below the stem nodes\" (Ohio State weed guide), which would be a tuft at every node; C. grandiflora has few or none (Burras and Griffiths), and this hybrid clings weakly (RHS; Trees and Shrubs Online), so fewer than one a node are drawn. A choice."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0.005,
+        0.012
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Length of one rootlet. No source measures them; short, a centimetre at most."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed (\"Unarmed, no tendrils\", Missouri Plants, of C. radicans)."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: see appendages.prickleSpacingM."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The shoots of the year break from wood made in an earlier year: from the two or three buds a late-winter prune leaves at the base of last year's shoot (RHS)."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 6,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Shoots of the year for each metre of framework. With a pair of buds at every node, about 0.095 m apart, a metre has some twenty buds, and a spur cut to two or three buds (RHS) breaks more than one; about one bud in three is taken to make a shoot. Set so that a plant of six years clothes the specimen frame in summer, which is well inside the 2.5 to 4 m spread the RHS gives it at five to ten years. A choice; nobody has counted."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.6,
+        0.8
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.havlis.cz/catalogue/campsis-x-tagliabuana-madame-galen-trumpet-vine1",
+      "basis": "Havlis nursery catalogue, of this cultivar: \"New twigs grow about 60-80 cm before flower buds appear\"."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 1,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A shoot of the year is shed before the next spring. On a pruned plant that is the late-winter spur prune (RHS); on an unpruned one the shoot would stay as wood and branch, which the engine cannot do."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Share of the year's shoots that end in a truss on a plant in sun in a warm place. \"It flowers best in full sun, in a warm sheltered spot\" and \"low temperatures or dry soil can cause flower buds to be shed\" (RHS). The share is a choice; in a cool summer it would be less."
     }
   }
 }
