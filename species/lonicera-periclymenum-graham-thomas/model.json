@@ -1,105 +1,112 @@
 {
   "schemaVersion": 1,
   "taxonId": "lonicera-periclymenum-graham-thomas",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one. Its leaf season, leaf size, the wood that flowers, the thickest support it has been seen to twine and the size of flower and berry behind its head and cluster come from published descriptions of the species or of this cultivar. Its rates, counts and chances are this project’s choices, set so that a plant ten years old on the specimen frame reads as the plant those descriptions describe; none has been measured on a plant. It is still thinner than the wisteria model in one respect: how a shoot chooses its way at a junction is copied from it. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "sideShootLeafForm": "flowering_shoot_leaf",
+    "flowerHeld": "facing_out",
+    "fruitHeld": "facing_out",
+    "basis": "Two leaf forms, after Bean: \"lower pairs of leaves stalked, uppermost ones almost or quite stalkless\". The stalked leaf is the ordinary one, of the climbing and long shoots, and needs no name; the stalkless one is named for the flowering side shoots. The head is terminal and stalked (Bean: \"at the end of the shoot, forming a terminal stalked inflorescence\"), so it carries on the line of its shoot: facing out. The berries sit stalkless in the place of the flowers (BSBI account of the species), so the cluster is held as the head was."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 95,
+      "value": 60,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The day shoots begin to lengthen, not the day leaves appear: the leaves of this species start to open in January (phenology.leafFlushDoy). Lengthening is taken to begin on 1 March. No dated source."
     },
     "phenology.growthEndDoy": {
-      "value": 270,
+      "value": 273,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Bean says this cultivar flowers into October on growth made after a winter cut, so shoots are taken to go on lengthening to the end of September. No dated source."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        100,
-        155
+        20,
+        105
       ],
       "unit": "day of year",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://temperate.theferns.info/plant/Lonicera+periclymenum",
+      "basis": "Of the species. Beckett and Beckett, Planting Native Trees and Shrubs (1979), as given by the Useful Temperate Plants database: new leaves often start to open in January and are well grown in April. The BSBI account of the species in Fermanagh (after Lang 1987): \"New leaves open in December and January from bluish-green buds\". Taken as 20 January to 15 April. The day in January is a choice, and is put after the middle of the month on purpose: the design report reads winter cover on 15 January and counts any leaf that has begun to open, and buds that have only just broken are not cover."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        283,
-        310
+        288,
+        312
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "It has no autumn colour to speak of: the University of Connecticut plant database says of the species that it has no autumn colour and that its leaves drop while still green. A dulling and slight yellowing over the three weeks before the fall is assumed, so that the plant is seen to go over. No dated source."
     },
     "phenology.leafFallDoy": {
       "value": [
-        310,
-        344
+        305,
+        334
       ],
       "unit": "day of year",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://temperate.theferns.info/plant/Lonicera+periclymenum",
+      "basis": "Of the species. Beckett and Beckett (1979), as given by the Useful Temperate Plants database: the leaves fall in November. In sheltered places some stay green through the winter (Grime and others, in the BSBI account of the species in Fermanagh), which the engine cannot yet show: every leaf here is off by the end of November."
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        150,
-        165
+        121,
+        130
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers on the year’s own growth (itself an inference for this species), so buds are taken to form on that growth about a fortnight before flowering. No dated source."
+      "basis": "Flower buds are taken to show about four weeks before the first heads open. No dated source."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        166,
-        228
+        158,
+        265
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers open in succession over a long period in summer (RHS): 15 June to 16 August."
+      "basis": "Bean’s supplement says of this cultivar that it \"will flower from June to October\"; nurseries give July to September; the BSBI account has the wild plant flowering from May to late September with peaks in early June and in September. Heads open from 7 June to 22 September here, and the last go over in mid October. The days within the months are a choice."
     },
     "phenology.petalFallDoy": {
       "value": [
-        213,
-        243
+        172,
+        289
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of June to August (1 to 31 August)."
+      "basis": "Not used for this plant while each head has its own length of life (phenology.flowerLastsDays). Kept inside the flowering months."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        10,
+        12,
         20
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "How long one flower cluster lasts. A placeholder."
+      "basis": "How long one head is in flower, first flower to last. Each flower lasts two or three days, white on its first evening and yellow from the next (BSBI account of the species, after Knight 1996), and the flowers of a head open on successive evenings; the US plant patent of the most similar cultivar, ‘Scentsation’ (PP16,240), gives about two weeks. Not measured on this cultivar."
     },
     "extension.leaderMPerSeason": {
-      "value": 1.4,
+      "value": 1.5,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: reaches its 4 to 8 m size band in 5 to 10 years. A size band is not a growth rate; a placeholder of that order."
+      "basis": "Bean calls this cultivar \"exceptionally vigorous\"; the US plant patent of the most similar cultivar, ‘Scentsation’ (PP16,240), gives a growth rate of 1 to 2 m a year; the RHS gives 4 to 8 m in 5 to 10 years. The middle of the patent’s figure. Not measured on this cultivar."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        1.3,
-        1,
-        0.8
+        1.2,
+        0.9,
+        0.6
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate as in the wisteria model. Not measured."
+      "basis": "Scaled down from the leader by the order of the branch. Not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 1,
+      "value": 1.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+      "basis": "The long shoots of the year that stand clear of the support (the RHS honeysuckle guide’s \"wayward long shoots\"), taken to grow a little slower than a leader. Not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -112,22 +119,24 @@
     "architecture.trunkStemStartYears": {
       "value": [
         0,
-        0
+        0,
+        1,
+        2
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Two stems from the base, both from the first season. A placeholder."
+      "basis": "Stems from the base: two in the first season and one more in each of the next two. The RHS honeysuckle guide has the shoots cut back by two thirds at planting to make a framework of several stems. How many is a choice."
     },
     "architecture.nurseryCaneM": {
       "value": 0.6,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant on a short cane. Not measured."
+      "basis": "A nursery plant on a short cane, as climbers are sold. Not measured."
     },
     "architecture.maxBranchOrder": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A stem from the base, its branches, and two further orders of branch. The species is described as much-branched (BSBI account). The number is a choice."
     },
     "architecture.leaderLengthM": {
       "value": [
@@ -136,17 +145,17 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The RHS ultimate-size band used as a cap on stem length. A height band is not a route length, so this is a placeholder."
+      "basis": "The RHS ultimate-height band of this cultivar (4 to 8 m) used as a cap on the length of a stem. A height band is not a route length, so this is a stand-in."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        2,
-        1.2,
-        0.7
+        2.5,
+        1.5,
+        0.8
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader as in the wisteria model. Not measured."
+      "basis": "Scaled down from the leader by the order of the branch. The RHS gives an ultimate spread of 1 to 1.5 m and a nursery 2 m; a branch follows the lattice and so is longer than the spread it makes. Not measured."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
@@ -156,35 +165,35 @@
     "architecture.lateralChanceByParentOrder": {
       "value": [
         0.9,
-        0.75,
-        0.55
+        0.8,
+        0.6
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A branch at most of the junctions a stem passes: the buds stand in pairs at every node and the species is described as much-branched (BSBI account). The chances are a choice."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.5,
+      "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "About a third of the buds that will make a branch wait a year or two first. A choice, lower than the wisteria model’s half because this plant leafs and branches from old wood readily."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
         1,
-        3
+        2
       ],
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "See architecture.budExtraDormancyChance. A choice."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
-    },
-    "architecture.maxStemsPerPrimaryMember": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The stems of this species wrap round their support and round each other (BSBI account: they twine \"tightly around supporting stems (or around itself)\"), so one lath or cable carries several. Three is a choice."
+    },
+    "architecture.maxStemsPerPrimaryMember": {
+      "value": 4,
+      "status": "provisional_design_assumption",
+      "basis": "See architecture.maxStemsPerRoute: one more on a stout member. A choice."
     },
     "routing.occupancyCost": {
       "value": 1.6,
@@ -232,49 +241,52 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "attachment.maxGraspDiameterMm": {
-      "value": 40,
+      "value": 114,
       "unit": "mm",
-      "status": "provisional_design_assumption",
-      "basis": "No measurement exists. Taken as well below the timber lattice (76 mm round) and above a cable, so that this plant twines cables unaided and has to be tied to glulam. The whole difference between it and wisteria on the structure rests on this number."
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Of the species. Darwin, The Movements and Habits of Climbing Plants (1875): \"Our English twiners, as far as I have seen, never twine round trees, excepting the honeysuckle (Lonicera periclymenum), which I have observed twining up a young beech-tree nearly 4 1/2 inches in diameter\". One observation of a support the plant did hold, used here as its limit: the true limit is not known and may be greater. The taxon profile leaves the limit unknown."
     },
     "attachment.minPitchM": {
-      "value": 0.3,
+      "value": 0.24,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The rise of one turn of the coil on a slender support. This species coils closely enough to distort the young stems it climbs (BSBI account), and no measurement of its coil was found. 0.24 m is a choice, and a loose one: the engine stores a stem as points 40 mm apart, so a closer coil would be drawn as a zigzag."
     },
     "attachment.pitchPerCircumference": {
-      "value": 1.46,
+      "value": 1.2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The rise of one turn on a stout support, in circumferences of that support. No measurement was found; a little closer than the wisteria model’s 1.46, as a choice."
     },
     "organs.leafSpacingM": {
       "value": [
-        0.05,
-        0.09
+        0.03,
+        0.07
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Leaves in opposite pairs on short internodes. Not measured."
+      "basis": "Stem between one pair of leaves and the next. No flora read gives an internode length. Chosen so that a flowering side shoot 0.12 to 0.45 m long carries two to eight pairs; the long shoots of the real plant have longer internodes than its side shoots, which one figure cannot show. The engine lays a stem down in steps of 40 mm, so pairs stand 40 or 80 mm apart."
     },
     "organs.leafLengthM": {
       "value": [
-        0.05,
-        0.1
+        0.038,
+        0.064
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Of the order given in descriptions of the species. Not checked against a source here."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean (Trees and Shrubs Online): leaves \"1 1/2 to 2 1/2 in. long\", in metres. The Flora of the Burren gives 3 to 7 cm, the Flora of New Zealand 3 to 9 cm. No measurement of this cultivar was found."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Honeysuckles bear their leaves in opposite pairs. A character of the family, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: leaves \"in opposite pairs\", with \"each pair at right-angles to the next\". The engine sets every pair in the same plane."
     },
     "organs.spurChance": {
-      "value": 0.5,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Stands for the short leafy side shoots that keep old stems clothed. A placeholder."
+      "basis": "Not used for this plant: its short leafy shoots are grown as flowering side shoots (sideShoots), which carry their leaves in pairs and end in the flower head. A spur here would be a tuft of leaves with no flower."
     },
     "organs.spurLengthM": {
       "value": [
@@ -283,7 +295,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short leafy side shoots. A placeholder."
+      "basis": "Not used for this plant: see organs.spurChance."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -292,83 +304,85 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not used for this plant: see organs.spurChance."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.04,
-        0.06
+        0.08,
+        0.11
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Size of a flower cluster. A placeholder."
+      "basis": "The width of a flower head, tip of one flower to tip of the one opposite. The flowers are 40 to 50 mm long (BSBI account, after Sell and Murrell; Bean: 1 1/2 to 2 in.) and stand out all round the end of the stalk, so a head is about twice that across. The US plant patent of the most similar cultivar, ‘Scentsation’ (PP16,240), gives 100 to 120 mm. Worked out from the flower, not measured on this cultivar."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.08,
+      "value": 0.03,
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+      "basis": "The share of older leaf nodes that throw a long shoot in a year. A choice. Kept low because the engine neither sheds a long shoot nor lets it bear side shoots in later years, so each stays as a bare stem."
     },
     "organs.whipsPerYearMax": {
-      "value": 60,
+      "value": 10,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "A cap on new long shoots a year. A choice: see organs.whipShareOfNodes."
     },
     "organs.whipLengthM": {
       "value": [
-        0.2,
-        0.5
+        0.4,
+        1.1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a year’s side shoot. A placeholder."
+      "basis": "Length of a long shoot of the year. The RHS honeysuckle guide speaks of \"wayward long shoots\" without a length; the growth of a year is 1 to 2 m (extension.leaderMPerSeason) and a shoot with nothing to hold is taken to stop sooner. A choice."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
-      "status": "provisional_design_assumption",
-      "basis": "Deciduous: a leaf lasts the season it grew in."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "Deciduous (RHS record of this cultivar): a leaf lasts the season it grew in."
     },
     "organs.clearStemHeightM": {
-      "value": 0.3,
+      "value": 0.4,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Clothed nearly to the ground. A placeholder."
+      "basis": "The RHS honeysuckle guide describes established plants as \"congested and bare at the bottom\". How much stem is bare is a choice."
     },
     "flowering.competenceYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its second season. A placeholder."
+      "basis": "Taken to flower from its second season. No source read states an age."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.5,
+        0.4,
+        0.75,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Half strength in its first flowering year. A placeholder."
+      "basis": "Fewer heads in its first two flowering years. A choice."
     },
     "flowering.spurFloralChance": {
-      "value": 0.85,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not used for this plant: it has no spurs (organs.spurChance)."
     },
     "flowering.unprunedFactor": {
-      "value": 0.5,
+      "value": 1,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not used for this plant: it applies to flower buds on spurs, and this plant has none."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 5,
+      "value": 2.5,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flower clusters per metre of the year’s growth. A placeholder chosen to read as present but not profuse."
+      "basis": "Heads borne directly at the nodes of a stem, for each metre of it: on the growth of the year, which is what lets this cultivar flower after a winter cut (Bean), and on last year’s stems, where they stand for the shortest flowering shoots. Most heads are borne at the ends of side shoots (sideShoots). A choice."
     },
     "flowering.currentSeasonMinShootM": {
-      "value": 0.15,
+      "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot shorter than this is taken not to flower. A placeholder."
+      "basis": "A shoot that has made less than this in the year is taken not to flower along its length. A choice."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -377,7 +391,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not used for this plant: the summer cut to five or six leaves is the wisteria routine. The RHS prunes this plant after flowering, by a third (pruning group 11), which the engine does not yet act on."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -386,28 +400,28 @@
       ],
       "unit": "buds",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not used for this plant: see pruning.summerLeavesKept."
     },
     "regrowth.shootsPerCut": {
       "value": [
-        1,
-        2
+        2,
+        3
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "New shoots from a stem cut hard back. The RHS guide renovates an old plant by cutting every stem to 60 cm and choosing among the new shoots that follow, so a stub is taken to throw two or three. The number is a choice."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 1.6,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A young shoot about 2.5 mm thick. The species is described as having thin stems (University of Connecticut plant database); no flora read gives a thickness."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 6,
+      "value": 4,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Stems much more slender than wisteria’s. A placeholder."
+      "basis": "Chosen so that a main stem carrying some 60 m of growth is about 30 mm thick at its base. No measurement of an old stem was found."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -415,90 +429,152 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.45,
+      "status": "provisional_design_assumption",
+      "basis": "The share of heads that leave a cluster of berries. The RHS record of this cultivar has \"Berries red\"; no source read says how freely. Under half, as a choice."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.021,
+        0.026
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The width of a cluster of berries. A berry is 8 mm across and the berries sit stalkless \"in tight clusters\" (BSBI account); a head of 6 to 20 flowers is taken to leave a cluster about three berries across. Worked out from the berry, not measured. The range is kept narrow because the cluster is drawn to this size whatever its number of berries, and a berry should stay near 8 mm."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        12,
+        20
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Days from the last flower of a head to full-sized green berries. No source read gives it. Flowers of June give ripe berries by mid to late August (BSBI account); two to three weeks is taken for swelling, and kept short so that the berries of the last heads are full grown inside the ripening window."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        227,
+        306
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Berries \"are ripe from mid- to late-August onwards\" (BSBI account). The window runs from 15 August to 2 November so that the berries of the last heads still ripen in their own year: the engine holds fruit that is full grown after the window green until the next one. The engine also spreads ripening to the end of the window, so most clusters here are red in October, later than the real plant; a real berry ripens some weeks after its own flower, which a window of dates cannot say."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        250,
+        330
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Birds take the berries through the autumn, some fruit \"remaining on the plant until October or even early November\" (BSBI account). From 7 September to 26 November, the later end allowing for the berries of the last heads."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "A stem twiner (RHS record: \"A large twining deciduous climber\"): it has no tendrils."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "See appendages.tendrilNodePattern."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "A stem twiner (RHS record): its leaf stalks do not coil. The upper leaves have almost no stalk (Bean)."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "See appendages.leafStalkCoilShare."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "A stem twiner (RHS record): it has no clinging rootlets. Stems that lie on the ground root at intervals (BSBI account), which is not climbing."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "See appendages.aerialRootPatchSpacingM."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://gobotany.nativeplanttrust.org/species/lonicera/periclymenum/",
+      "basis": "Unarmed: Go Botany records the twigs of the species as without spines, prickles or thorns."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://gobotany.nativeplanttrust.org/species/lonicera/periclymenum/",
+      "basis": "See appendages.prickleSpacingM."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/honeysuckle/climbing/growing-guide",
+      "basis": "RHS honeysuckle guide: honeysuckles of this pruning group flower \"on short sideshoots on the previous season’s growth\". Wood a year old or more bears them."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 15,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "New side shoots a year on each metre of stem old enough to bear them. Buds stand in pairs at every node, so a metre of stem with some fourteen nodes could throw twice that; the engine lets a node bear one shoot at a time, and this rate gives three free nodes in four a shoot each year. A choice, set so that a plant six to ten years old clothes its frame, as the RHS describes an established plant (\"congested\", \"overgrown thickets\" if left); no count was found."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.12,
+        0.45
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The RHS calls them short. Taken to be a hand to a forearm long, which is short beside a long shoot of one or two metres; no flora read gives a figure. A choice."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 5,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "A side shoot is taken to leaf and flower for five seasons before it is shaded out or replaced. On the real plant it branches and becomes part of the tangle; the engine keeps it as it was in its first year. A choice: the longer it lives, the more of the plant is already in leaf when the leaves open in spring, which is when this species is at its most forward."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.45,
+      "status": "provisional_design_assumption",
+      "basis": "The share of side shoots that end in a flower head in a year. The inflorescence is terminal (Bean: \"at the end of the shoot, forming a terminal stalked inflorescence\") and UConn says this cultivar \"reliably produces ample quantities\" of flowers; the share is a choice."
     }
   }
 }
