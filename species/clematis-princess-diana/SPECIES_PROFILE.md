@@ -23,7 +23,7 @@
 
 ## Form: what the model draws
 
-Through the year. In February the gardener cuts every stem to a stub 15–30 cm long (RHS group 3), and what is left is a small woody base, grey-brown and stringy. From mid March the stubs and the crown throw new shoots: thin, ridged, wiry, green and flushed maroon on the sunny side, with a pair of leaves at every joint, 8 to 16 cm apart. A leaf is 11 to 17 cm long: a stalk, then three leaflets, or five on the longer leaves, each on a stalk of its own; a leaflet is broadly ovate with a rounded to heart-shaped base and a short point, entire, 4 to 7.5 cm long and about three quarters as wide, light to mid green, with three main veins from its base, and now and then lobed on one side like a mitten. The plant holds on by its leaf stalks, which take a turn round anything thin enough: here the 5 mm cable, and each other. By July the stems are 2 to 2.6 m long and the flowers begin: each stands up and out on a stalk about two flower-lengths long that carries a pair of small leafy bracts. The bud is egg-shaped, pointed, ribbed and downy, green and then pink. The flower is a tulip of four thick pointed tepals 5 to 6 cm long, held together as a swollen tube for a little under half their length and turned back above; as it ages it flares to a trumpet 5 to 7 cm across. Inside it is a luminous deep pink, slightly mauve, with a deeper bar down each tepal; outside, pinkish red along three ribs with a pale margin. A boss of thirty to forty cream stamens, the outermost flushed maroon, stands in the tube. Flowers come in succession into October. When the tepals drop the stamens and styles are left as a brush, and where the flower set, the styles lengthen into the tails of a seed head: a ball of twenty to thirty achenes 5 to 7 cm across, green and silky at first, drying to silver-gold fluff that stays on the dead stalks into winter. In October and November the leaves yellow, brown and fall, the stems ripen to a pale stringy brown, and the whole top stands dead until it is cut down again.
+Through the year. In February the gardener cuts every stem to a stub 15–30 cm long (RHS group 3), and what is left is a small woody base, grey-brown and stringy. From mid March the stubs and the crown throw new shoots: thin, ridged, wiry, green and flushed maroon on the sunny side, with a pair of leaves at every joint, 6 to 12 cm apart. A leaf is 11 to 17 cm long: a stalk, then three leaflets, or five on the longer leaves, each on a stalk of its own; a leaflet is heart-shaped, broadest in its lower third with a narrow notch at the base and a blunt end with a short point, entire, 4 to 7.5 cm long and 0.65 to 0.85 as wide, mid green with a faint grey cast and a soft sheen, with three faint veins from its base and a fainter net, hanging from its stalk face out, and now and then lobed on one side like a mitten. The plant holds on by its leaf stalks, which take a turn round anything thin enough: here the 5 mm cable, and each other. By July the stems are 2 to 2.6 m long and the flowers begin: each stands up and out on a stalk about two flower-lengths long that carries a pair of small leafy bracts. The bud is egg-shaped, pointed, ribbed and downy, green and then pink. The flower is a tulip of four thick pointed tepals 5 to 6 cm long, held together as a swollen tube for a little under half their length and turned back above; as it ages it flares to a trumpet 5 to 7 cm across. Inside it is a luminous deep pink, slightly mauve, with a deeper bar down each tepal; outside, pinkish red along three ribs with a pale margin. A boss of thirty to forty cream stamens, the outermost flushed maroon, stands in the tube. Flowers come in succession into October. When the tepals drop the stamens and styles are left as a brush, and where the flower set, the styles lengthen into the tails of a seed head: a ball of twenty to thirty achenes 5 to 7 cm across, green and silky at first, drying to silver-gold fluff that stays on the dead stalks into winter. In October and November the leaves yellow, brown and fall, the stems ripen to a pale stringy brown, and the whole top stands dead until it is cut down again.
 
 Where the model simplifies.
 
@@ -31,6 +31,7 @@ Where the model simplifies.
 - **Opening wider with age.** The flower model cannot change its shape while it is open, so each flower is drawn in one of four states, from just open to flared wide, and a plant shows all four at once.
 - **The bud.** An unopened flower is drawn as the open one at three tenths of its size (the organ program's rule). The real bud is two thirds as long as the open flower.
 - **One leaf size.** The engine gives a taxon one range of leaf length, so the small leaves and bracts near the flowers are full-size leaves in the model; only the pair of bracts on each flower stalk is small.
+- **Where on a stem the flowers are.** The engine places current-season flowers at any joint of the year's growth once the shoot is 0.4 m long, so the model has flowers 20 cm above the ground; on the plant the lower part of a stem carries leaves only and the flowers are on the upper two thirds (Gibson's cymes on axillary shoots; photographs).
 - **Stems lie where the structure is.** Stems follow members and cables exactly, in straight parallel lines 22 mm apart where several share one; on the plant they wander, cross and bundle together.
 - **Leaf stalks.** The stalk of a leaf is drawn green; on the plant it is often maroon. A clasping stalk is drawn as a separate coil beside its leaf, and is drawn right only round an upright wire: the data does not say which way the thing it holds runs.
 - **Untended.** Left unpruned, the plant in the model keeps every old stem alive and makes its new growth as shoots from the upper joints of those stems, hanging free in the air. On the plant most of the top dies back in winter and new shoots come from the base as well, climbing through the dead growth and clasping it.
@@ -49,13 +50,19 @@ Where the model simplifies.
 
 On the specimen frame, trained and cut down each February (`npm run simulate -- design examples/specimen-frame.bower.json <plan>`):
 
-| Year | Stems | Stem made | Highest | Leaves in July | Flowers in the year | Seed heads |
+| Year | Stubs / stems | Stem made | Highest | Leaves in the year | Flowers in the year | Seed heads set |
 |---|---|---|---|---|---|---|
-| 1 (planted March) | 2 | about 3 m | 1.8 m | about 35 | under 10 | a few |
-| 2 | 9 to 11 | about 20 m | 2.5 m | about 220 | about 120 | about 55 |
-| 3 to 10 | 15 to 18 | 32 to 38 m | 2.4 to 2.6 m | 430 to 520 | 200 to 250, up to 60 open at once in August | 100 to 130 |
+| 1 (planted March) | 2 | 3.3 m | 1.8 m | about 60 | 7 | 3 |
+| 2 | 9 stubs | 28 m | 2.4 m | about 470 | 149 | 82 |
+| 3 to 10 | 9 stubs, about 23 stems in August | 42 to 46 m | 2.4 to 2.55 m | about 750 | 247 to 297, about 65 open at once at the height of it | 102 to 146 |
 
-Compared with: "a wispy habit when first planted ... more robust with age" (Hawke, Chicago Botanic Garden); 2–5 years to ultimate height (RHS); height 2.0–2.5 m (Clematis on the Web); "profuse flowers once established" (RHS); July to October. No source counts stems, leaves or flowers, so the totals rest on the assumption stated with `architecture.trunkStemStartYears` in `model.json`: enough leaf to cover the RHS's spread of 0.5–1 m to 2.5 m about two leaves deep.
+(Run of 13 November 2026, `npm run simulate -- design examples/specimen-frame.bower.json <plan>` and the portrait run, which grew 3744 leaves, 1257 flowers and 609 seed heads in six years.)
+
+Compared with: "a wispy habit when first planted ... more robust with age" (Hawke, Chicago Botanic Garden); 2–5 years to ultimate height (RHS); height 2.0–2.5 m (Clematis on the Web); "profuse flowers once established" (RHS); July to October. No source counts stems, leaves or flowers, so the totals rest on the assumptions stated with `architecture.trunkStemStartYears` and `organs.leafSpacingM` in `model.json`: enough leaf to cover the RHS's spread of 0.5–1 m to 2.5 m about two leaves deep (some 750 leaves of 0.0076 m2 each is 5.7 m2 of blade over 2.5 m2).
+
+### A shoot in the air
+
+The trained plant is tied in and has almost no free shoot. Left untended, the shoots that break from the old stems above 1.2 m stand out from the cable and, under the free-shoot mechanics, lean and hang down. That is how the RHS describes a neglected group 3 plant ("top heavy ... with a bare base"). The numbers behind it are in `model.json` under `mechanics.*`: the stiffness of a set stem is the only clematis measured, *C. flammula* var. *maritima*, 1.6 GN/m2 in its aerial shoots and 0.86 in its emergent axes (Isnard, Rowe and Speck 2003); the reach of a searcher, 0.5 m, is taken from the tendril and petiole climbers measured by Hattermann et al. 2022 (0.14–0.91 m, *C. vitalba* among them, no per-species figure given). The shoots are 2 mm through at the tip and up to 3.5 mm at the base (Gibson, of the parent species), so they are soft and short-reaching. No source describes how far a shoot of this cultivar stands out before it droops.
 
 Left untended on the same frame it holds only the 5 mm cable: two stems climb it in the first year and stay; from then on about seven new shoots a year, 0.4 to 1.2 m long, break from those stems above 1.2 m and carry 50 to 90 leaves and 15 to 40 flowers. This agrees in kind with the RHS's account of an unpruned group 3 clematis ("top heavy, flowering well above eye level, and with a bare base") and is thinner than a real neglected plant, for the reasons given under "Untended" above.
 
@@ -71,9 +78,15 @@ Something thin to clasp: cable, wire or rods no thicker than about 12 mm (publis
 
 Visitor-level colour as an alternative or companion to *Étoile Violette*; use discrete colour fields rather than chaotic co-mingling. Its flowers stand up and out on long stalks, so they show best from the side and from a little above, at or below eye level.
 
-## Gardener intervention / pruning
+## Care: what the gardener does
 
-Hard prune in February or March to the lowest pair of healthy buds, 15–30 cm above the soil (RHS group 3), then tie in the new growth, spacing the stems evenly.
+- **February (to March), every year from the second:** cut every stem back to the lowest pair of healthy buds 15–30 cm above the soil, "when buds show signs of growth" (RHS group 3 pruning guide). Modelled: `cut_down_each_february` in `MODELLED_ROUTINE` (`hard_prune`, all stems, keep 0.25 m, 20 February).
+- **The first spring:** cut a newly planted plant back to a strong pair of buds about 30 cm above the soil (RHS); recorded as `architecture.nurseryCaneM` and acted on when the plant goes in.
+- **March to July, every few weeks:** tie in the new growth, "spacing stems evenly on the support" (RHS). Modelled as the tying-in of a trained planting (`tieToTimber`).
+- **Not done by the RHS routine:** no summer pruning or deadheading is asked for; the seed heads are wanted ("gorgeous and persistent", International Clematis Society), so the dead top stands until February.
+- **Water and mulch:** keep the base cool and shaded, plant 5–8 cm deep (RHS); a gravel mulch on a hot site (Rogerson). Not modelled.
+
+Nothing in this routine needs a new event: the routine that is modelled is the routine the RHS gives.
 
 ## Interactions with the broader palette
 
@@ -101,6 +114,8 @@ Stems from the crown at each age; stem length and joint spacing through a season
 - Richard Hawke, Chicago Botanic Garden clematis trial (Fine Gardening, 2012): https://www.chicagobotanic.org/sites/default/files/pdf/plantinfo/clematisfinegardening2012_0.pdf
 - Bean, *Clematis texensis* (Trees and Shrubs Online): https://www.treesandshrubsonline.org/articles/clematis/clematis-texensis/
 - A. C. Gibson, *Clematis texensis*, Vascular Plants of Williamson County: https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis
-- Photographs looked at for form and colour (not copied): Wikimedia Commons, Category:Clematis 'Princess Diana'.
+- Isnard, Rowe and Speck 2003, mechanical architecture of *Clematis flammula* var. *maritima*, Annals of Botany 91:407-417: https://doi.org/10.1093/aob/mcg044 (abstract read)
+- Hattermann et al. 2022, reach of searcher shoots: https://doi.org/10.3389/ffgc.2022.836247
+- Photographs looked at for form and colour (not copied): Wikimedia Commons, Category:Clematis 'Princess Diana', and of 'Duchess of Albany' and *C. texensis* for habit in spring.
 
 **Status:** form, growth model and look written from published descriptions and photographs; no measurement on a plant, no calibration.

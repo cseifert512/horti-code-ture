@@ -133,7 +133,6 @@ describe("Clematis 'Princess Diana': the models agree with its morphology file",
       }
       spans.push(widestApart(tips));
     }
-    console.log('spans', spans);
     // the first variant has just opened and is the narrowest; the last is flared wide
     expect(spans[0]).toBe(Math.min(...spans));
     expect(spans.at(-1)).toBe(Math.max(...spans));
@@ -315,9 +314,9 @@ describe("Clematis 'Princess Diana' on the specimen frame, six years, trained", 
     // Clematis on the Web: 2.0-2.5 m
     expect(top).toBeGreaterThan(2);
     expect(top).toBeLessThan(3);
-    // growth model, architecture.trunkStemStartYears: seven stubs, two or three shoots from each
-    expect(on('2032-08-15').stems).toBeGreaterThanOrEqual(12);
-    expect(on('2032-08-15').stems).toBeLessThanOrEqual(21);
+    // growth model, architecture.trunkStemStartYears and regrowth.shootsPerCut: nine stubs, two or three shoots from each
+    expect(on('2032-08-15').stems).toBeGreaterThanOrEqual(15);
+    expect(on('2032-08-15').stems).toBeLessThanOrEqual(27);
     // wispy when first planted (Hawke): far fewer stems and flowers in the first summer
     expect(on('2027-08-15').stems).toBeLessThanOrEqual(3);
     expect(on('2027-08-15').open).toBeLessThan(on('2032-08-15').open / 4);

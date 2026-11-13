@@ -29,7 +29,7 @@ import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/clematis-princess-diana/morphology.json';
 import { RNG, clamp, hash2, lerp, smoothstep } from '../../util.ts';
-import { MIDRIB, Merge, type RGB, Surf, WHITE, lin, mix, palmateBlade, path } from '../kit.ts';
+import { GROUND, Merge, type PalmateVeins, type RGB, Surf, WHITE, lin, mix, palmateBlade, palmateTexture, path, veinUv } from '../kit.ts';
 import { type AppendageAsset, type FlowerAsset, type FruitAsset, type LeafAsset, THIN_LEAF, type TaxonLook, type WoodLook } from '../look.ts';
 
 const morphology = parseMorphology(morphologyJson, 'species/clematis-princess-diana/morphology.json');
@@ -77,16 +77,49 @@ const LEAFLET_SEGS: [number, number][] = [
  * afterwards (leafletBlade).
  */
 const leafletShape = (lobe: -1 | 0 | 1) => ({
-  body: 0.4,
+  // a broad body, a blunt end (a wide forward lobe) with a short point on it, and two rounded lobes either side of a
+  // narrow notch at the base: the heart of photographs 06 and 10, not the spade of an ovate-acute leaflet
+  body: 0.46,
   lobes: [
-    { angle: 0, reach: 0.6, width: 0.5 },
-    { angle: 0, reach: 0.09, width: 0.17 },
-    ...(lobe === 0 ? [] : [{ angle: lobe * 1.25, reach: 0.17, width: 0.2 }]),
+    { angle: 0, reach: 0.4, width: 0.95 },
+    { angle: 0, reach: 0.07, width: 0.12 },
+    { angle: 2.45, reach: 0.06, width: 0.35 },
+    { angle: -2.45, reach: 0.06, width: 0.35 },
+    ...(lobe === 0 ? [] : [{ angle: lobe * 1.35, reach: 0.2, width: 0.22 }]),
   ],
-  sinus: { depth: 0.95, width: 1.2 },
+  sinus: { depth: 0.96, width: 0.42 },
   fold: 0,
   arch: 0,
 });
+
+/**
+ * The veins of a leaflet: three from its base (Gibson, of the parent C. texensis: "3 veined at base"; morphology:
+ * leaf.mainVeinsFromBase), the midrib and two that curve up towards the tip, with a fainter pair into the basal lobes;
+ * secondaries off the midrib, and a fine net between, all faint: the photographs show a smooth blade on which the
+ * veins are barely paler than the blade (06, 07, 10).
+ */
+const VEIN_ANGLE = characterNumber(morphology, 'leaf.mainVeinAngleDeg');
+const VEIN_RAD = (VEIN_ANGLE * Math.PI) / 180;
+const LEAFLET_VEINS: PalmateVeins = {
+  origin: 0.2,
+  span: 1.25,
+  main: [
+    { deg: 0, length: 0.95 },
+    { deg: -VEIN_ANGLE, length: 0.62 },
+    { deg: VEIN_ANGLE, length: 0.62 },
+    { deg: -2.3 * VEIN_ANGLE, length: 0.26 },
+    { deg: 2.3 * VEIN_ANGLE, length: 0.26 },
+  ],
+  secondary: { angle: 48, spacing: 0.13, first: 0.2, reach: 0.28, curve: 18 },
+  net: { cell: 0.055, jitter: 0.85 },
+  width: { main: 0.02, secondary: 0.009, net: 0.0035 },
+  ground: 0.74,
+  pale: { main: 0.16, secondary: 0.09, net: 0.035 },
+  tint: { main: 0.5, secondary: 0.35, net: 0.15 },
+  relief: { vein: 0.45, pucker: 0.25 },
+  seed: 31,
+};
+if (LEAFLET_VEINS.main.length - 2 !== characterNumber(morphology, 'leaf.mainVeinsFromBase')) throw new Error('the leaflet texture is drawn with a different number of strong veins from the base from its morphology');
 
 /** How wide the unlobed outline comes out for a length of one, so that it can be brought to the width the morphology file gives. */
 const LEAFLET_WIDTH_AS_BUILT = (() => {
@@ -96,29 +129,30 @@ const LEAFLET_WIDTH_AS_BUILT = (() => {
 })();
 
 const leafletCache = new Map<string, THREE.BufferGeometry>();
-function leafletBlade(lod: number, lobe: -1 | 0 | 1): THREE.BufferGeometry {
-  const key = `${lod}/${lobe}`;
+/** `widen`: this leaflet's width for its length against the file's, so that leaflets differ as they do in the photographs. */
+function leafletBlade(lod: number, lobe: -1 | 0 | 1, widen = 1): THREE.BufferGeometry {
+  const key = `${lod}/${lobe}/${widen.toFixed(3)}`;
   let g = leafletCache.get(key);
   if (!g) {
     g = palmateBlade(leafletShape(lod === 2 ? 0 : lobe), LEAFLET_SEGS[lod]!, lod === 0);
-    g.scale(LEAFLET_ASPECT / LEAFLET_WIDTH_AS_BUILT, 1, 1);
+    const aspect = LEAFLET_ASPECT * widen;
+    g.scale(aspect / LEAFLET_WIDTH_AS_BUILT, 1, 1);
     // The surface: nearly flat, the two halves lifted a little from a sunken midrib, the tip turned down, the margin
     // gently waved; close to, the three main veins that leave the base together are pressed into it.
     const pos = g.getAttribute('position');
     const uv = g.getAttribute('uv');
-    const half = LEAFLET_ASPECT / 2;
+    const half = aspect / 2;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const z = pos.getZ(i);
       const across = x / half;
-      // The shared leaf texture has many side veins set square to the midrib of a narrow leaflet. On this broad one
-      // they are laid to rise steeply from the midrib and curve in towards the tip, and fewer of them are used.
-      uv.setXY(i, 0.5 + 0.5 * clamp(across, -1, 1), clamp(0.07 + 0.42 * (z - 0.85 * Math.abs(x) - 0.5 * x * x), 0.01, 0.99));
+      // the leaflet's own texture, laid on the flat blade from the point where its veins meet (its stalk's end)
+      uv.setXY(i, ...veinUv(LEAFLET_VEINS, x, z));
       let y = 0.03 * Math.abs(x) + 0.035 * (1 - across * across) * Math.sin(Math.PI * clamp(z, 0, 1)) - 0.13 * Math.max(0, z) ** 2.4 - 0.05 * across * across * Math.max(0, z) ** 2;
       if (lod === 0) {
         const out = Math.hypot(x, z);
         const theta = Math.atan2(x, z + 0.04);
-        const veins = bump(theta, 0, 0.06) + 0.8 * (bump(theta, 0.58, 0.07) + bump(theta, -0.58, 0.07)) * smoothstep(0.02, 0.2, out) * (1 - smoothstep(0.45, 0.8, out));
+        const veins = bump(theta, 0, 0.06) + 0.8 * (bump(theta, VEIN_RAD, 0.07) + bump(theta, -VEIN_RAD, 0.07)) * smoothstep(0.02, 0.2, out) * (1 - smoothstep(0.45, 0.8, out));
         y += -0.012 * veins * smoothstep(0, 0.08, out) + 0.014 * Math.sin(z * 12 + across * 1.7) * across * across;
       } else if (lod === 1) {
         y += 0.01 * Math.sin(z * 12) * across * across;
@@ -136,12 +170,15 @@ interface LeafPlan {
   leaflets: number;
   lobed: number;
   seed: number;
+  /** The leaflets' width for their length against the file's (morphology: leaf.leafletWidthSpread). */
+  widen: number;
 }
+const [WIDEN_LOW, WIDEN_HIGH] = characterRange(morphology, 'leaf.leafletWidthSpread');
 const LEAF_PLANS: readonly LeafPlan[] = [
-  { leaflets: FEW_LEAFLETS, lobed: -1, seed: 3 },
-  { leaflets: FEW_LEAFLETS, lobed: 1, seed: 17 },
-  { leaflets: MANY_LEAFLETS, lobed: -1, seed: 29 },
-  { leaflets: MANY_LEAFLETS, lobed: 2, seed: 41 },
+  { leaflets: FEW_LEAFLETS, lobed: -1, seed: 3, widen: WIDEN_HIGH },
+  { leaflets: FEW_LEAFLETS, lobed: 1, seed: 17, widen: WIDEN_LOW },
+  { leaflets: MANY_LEAFLETS, lobed: -1, seed: 29, widen: 1 },
+  { leaflets: MANY_LEAFLETS, lobed: 2, seed: 41, widen: (1 + WIDEN_HIGH) / 2 },
 ];
 
 function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
@@ -167,7 +204,7 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
     radial,
     WHITE,
     WHITE,
-    MIDRIB,
+    GROUND,
   );
 
   const q = new THREE.Quaternion();
@@ -177,20 +214,21 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
   const put = (z: number, side: -1 | 0 | 1, ownStalk: number, length: number): void => {
     const from = at(z);
     const yaw = side === 0 ? rng.range(-0.18, 0.18) : side * rng.range(0.95, 1.3);
-    const dip = rng.range(0.02, 0.28);
+    // leaflets hang from their stalks, faces turned out and down, not held as level plates (photographs 05, 06)
+    const dip = rng.range(0.12, 0.5);
     const out = new V3(Math.sin(yaw) * Math.cos(dip), -Math.sin(dip), Math.cos(yaw) * Math.cos(dip));
     const base = from.clone().addScaledVector(out, ownStalk);
-    if (lod < 2) mg.tube([from, from.clone().lerp(base, 0.5).add(new V3(0, 0.006, 0)), base], [0.0065, 0.0058, 0.0052], radial, WHITE, WHITE, MIDRIB);
+    if (lod < 2) mg.tube([from, from.clone().lerp(base, 0.5).add(new V3(0, 0.006, 0)), base], [0.0065, 0.0058, 0.0052], radial, WHITE, WHITE, GROUND);
     const lobe: -1 | 0 | 1 = side !== 0 && sideLeaflet === plan.lobed ? side : 0;
     if (side !== 0) sideLeaflet++;
     // the blade carries on from its stalk, turned a little forward, hanging a little, rolled a little
     q.setFromAxisAngle(AY, yaw - side * rng.range(0.0, 0.3));
-    q.multiply(q2.setFromAxisAngle(AX, dip + rng.range(0.05, 0.3)));
+    q.multiply(q2.setFromAxisAngle(AX, dip + rng.range(0.15, 0.5)));
     q.multiply(q2.setFromAxisAngle(AZ, rng.range(-0.3, 0.3) - side * 0.18));
     const s = length * rng.range(0.94, 1.06);
     m.compose(base, q, new V3(s, s, s));
     const tone = rng.range(0.92, 1.08);
-    mg.add(leafletBlade(lod, lobe), m, [tone, tone, tone], base, rng.f());
+    mg.add(leafletBlade(lod, lobe, plan.widen), m, [tone, tone, tone], base, rng.f());
   };
   for (let p = 0; p < pairs; p++) {
     const z = stalk + p * step;
@@ -202,6 +240,17 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
   // the end leaflet stands at the end of the axis, which is its stalk
   put(axisEnd, 0, 0, leafletLength);
   const g = mg.build();
+  // the leaflets hang from their stalks, which draws the leaf in: bring its farthest point back to one unit from the
+  // stem, so that the length in the data is the length drawn (TAXON_LOOKS.md section 2)
+  const pos = g.getAttribute('position');
+  const part = g.getAttribute('aPart');
+  let farthest = 0;
+  for (let i = 0; i < pos.count; i++) farthest = Math.max(farthest, pos.getZ(i));
+  const k = 0.98 / farthest;
+  for (let i = 0; i < pos.count; i++) {
+    pos.setXYZ(i, pos.getX(i) * k, pos.getY(i) * k, pos.getZ(i) * k);
+    part.setXYZ(i, part.getX(i) * k, part.getY(i) * k, part.getZ(i) * k);
+  }
   g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.85);
   return g;
 }
@@ -305,12 +354,12 @@ const STAMEN_IN_FLOWERS = STAMEN_M / FLOWER_M;
 
 const PINK = {
   // within: luminous deep pink, slightly mauve, with a deep pink bar; brighter at the margin, pale in the throat
-  inner: lin('#ee4f8c'),
-  innerEdge: lin('#f78cb8'),
-  bar: lin('#d92d6a'),
+  inner: lin('#d62a78'),
+  innerEdge: lin('#ec6aa6'),
+  bar: lin('#b9165c'),
   throat: lin('#f3c4cf'),
   // without: pinkish red along three ribs, a pale margin, green where it joins the stalk
-  rib: lin('#b61d50'),
+  rib: lin('#a3174e'),
   outerEdge: lin('#f1aec8'),
   joint: lin('#9aa860'),
   filament: lin('#f3ecca'),
@@ -325,16 +374,12 @@ interface Bloom extends Stance {
 }
 const BLOOMS: readonly Bloom[] = [
   { flare: 0.12, lean: 0.3, azimuth: 0.35, seed: 11 },
-  { flare: 0.45, lean: 0.8, azimuth: -0.5, seed: 23 },
-  { flare: 0.78, lean: 1.25, azimuth: 0.15, seed: 37 },
-  { flare: 1, lean: 0.95, azimuth: -0.3, seed: 51 },
+  { flare: 0.32, lean: 0.8, azimuth: -0.5, seed: 23 },
+  // flared wide, as in photograph 10: tip to tip within the 5-7 cm the file gives
+  { flare: 0.5, lean: 1.25, azimuth: 0.15, seed: 37 },
+  { flare: 0.66, lean: 0.95, azimuth: -0.3, seed: 51 },
 ];
 const FLOWER_LODS = 3;
-// TEMPORARY, for looking at one variant at a time while the model is made: ?pdv=<n>. To be removed.
-const DEBUG_VARIANT: number | null = (() => {
-  const v = new URLSearchParams((globalThis as { location?: { search: string } }).location?.search ?? '').get('pdv');
-  return v === null ? null : Number(v);
-})();
 /** Segments across and along one face of a tepal. */
 const TEPAL_SEGS: [number, number][] = [
   [14, 26],
@@ -570,9 +615,10 @@ interface Head extends Stance {
   achenes: number;
 }
 const HEADS: readonly Head[] = [
-  { achenes: ACHENES_FEW, lean: 0.3, azimuth: 0.4, seed: 61 },
-  { achenes: Math.round((ACHENES_FEW + ACHENES_MANY) / 2), lean: 0.7, azimuth: -0.4, seed: 67 },
-  { achenes: ACHENES_MANY, lean: 0.5, azimuth: 0.1, seed: 71 },
+  // leaning to one side or the other of where the flowers' stalks lean, so that a head and a flower from one joint stand apart as they do on the plant
+  { achenes: ACHENES_FEW, lean: 0.55, azimuth: 1.5, seed: 61 },
+  { achenes: Math.round((ACHENES_FEW + ACHENES_MANY) / 2), lean: 0.85, azimuth: -1.5, seed: 67 },
+  { achenes: ACHENES_MANY, lean: 0.7, azimuth: 1.75, seed: 71 },
 ];
 const HEAD_LODS = 3;
 /** Hairs drawn to a tail close to: enough to read as a feather, far fewer than the tail has. */
@@ -689,7 +735,7 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
     sb.surf(6, 4, (u, v) => {
       const th = u * TAU;
       const polar = v * Math.PI;
-      const r = 0.4 * (0.82 + 0.3 * hash2(head.seed + 7, Math.round(u * 6) % 6 * 7 + Math.round(v * 4)));
+      const r = 0.34 * (0.82 + 0.3 * hash2(head.seed + 7, Math.round(u * 6) % 6 * 7 + Math.round(v * 4)));
       const q = centre
         .clone()
         .addScaledVector(axis, 0.08 + r * Math.cos(polar))
@@ -768,9 +814,12 @@ const leaf: LeafAsset = {
   make: makeLeaf,
   budget: [2000, 360, 90],
   pick: (lengthM, r) => (lengthM < THREE_OR_FIVE_M ? 0 : 2) + (r < 0.7 ? 0 : 1),
-  // light to mid green with a faint grey cast; fresh yellow-green when young; yellowing, then brown, as the top growth dies back
-  palette: { greenA: lin('#467c3a'), greenB: lin('#5b9148'), young: lin('#93b653'), autumnA: lin('#b79f3c'), autumnB: lin('#7d5a2c') },
-  roughness: 0.5,
+  // mid green with a faint grey (glaucous) cast, darker and greyer than a first guess (photographs 06, 07, 10); fresh
+  // yellow-green when young (18, of 'Duchess of Albany'); yellowing, then brown, as the top growth dies back
+  palette: { greenA: lin('#4b6c40'), greenB: lin('#5d7f4f'), young: lin('#8fae55'), autumnA: lin('#b29a3e'), autumnB: lin('#77582f') },
+  texture: palmateTexture(LEAFLET_VEINS, 512, 0.8),
+  // smooth, a little waxy: a soft sheen in the photographs, not a gloss
+  roughness: 0.48,
   translucency: THIN_LEAF,
   detailReach: 0.8,
 };
@@ -782,7 +831,7 @@ const flower: FlowerAsset = {
   make: makeFlower,
   budget: [9000, 950, 120],
   // on a plant in flower: some just open, most half flared, some flared wide
-  pick: (r) => DEBUG_VARIANT ?? (r < 0.25 ? 0 : r < 0.6 ? 1 : r < 0.85 ? 2 : 3),
+  pick: (r) => (r < 0.25 ? 0 : r < 0.6 ? 1 : r < 0.85 ? 2 : 3),
   authoredSize: FLOWER_UNIT,
   poise: 'held',
   centreAlong: STALK_IN_FLOWERS * 0.9 + 0.5,
@@ -806,8 +855,8 @@ const seedHead: FruitAsset = {
   authoredSize: HEAD_UNIT,
   poise: 'held',
   centreAlong: STALK_IN_HEADS * 0.9 + 0.3,
-  // dry: silver-gold fluff round brown achenes
-  ripe: lin('#eadfbb'),
+  // dry: silver-buff fluff round brown achenes; from afar a soft grey-gold, not a white ball (photographs 09, 12 show the young head; no photograph of a ripe head of the cultivar was found)
+  ripe: lin('#d2c7a4'),
   ripeShade: [0.12, 1.1],
   roughness: 0.85,
   swing: 0.45,

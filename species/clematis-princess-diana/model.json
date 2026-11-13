@@ -127,7 +127,7 @@
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Shoots that rise from the crown itself: two on a newly planted clematis and five more in its second season, seven stubs in all once it is established. RHS has the crown planted 5-8 cm deep \"to encourage new shoots to grow from below ground level\", and the plant is \"wispy\" at first and \"more robust with age\" (Hawke). With the two or three shoots each cut stub gives, an established plant has fifteen to eighteen stems and makes 32 to 38 m of stem a year: enough leaf to cover the RHS's spread of 0.5-1 m to a height of 2.5 m about two leaves deep. These stems stand in the model for the plant's stems and their side branches together, because a stem here cannot branch in the season it is made. No source counts the stems of a plant; the numbers are assumed."
+      "basis": "Shoots that rise from the crown itself: two on a newly planted clematis and seven more in its second season, nine stubs in all once it is established. RHS has the crown planted 5-8 cm deep \"to encourage new shoots to grow from below ground level\", and the plant is \"wispy\" at first and \"more robust with age\" (Hawke). With the two or three shoots each cut stub gives (regrowth.shootsPerCut), an established plant has eighteen to twenty-seven stems and makes about 45 m of stem a year on the specimen frame. These stems stand in the model for the plant's stems and their side branches together, because a stem here cannot branch in the season it is made. No source counts the stems of a plant; the numbers are assumed, chosen so that the leaf covers the RHS's spread of 0.5-1 m to a height of 2.5 m about two leaves deep."
     },
     "architecture.nurseryCaneM": {
       "value": 0.3,
@@ -262,12 +262,12 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.08,
-        0.16
+        0.06,
+        0.12
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Stem length from one pair of leaves to the next. Not published for the cultivar. In the parent C. texensis the internodes are \"to 190 mm long\" (Gibson); the cultivar's are taken as somewhat shorter than that longest, 8 to 16 cm."
+      "basis": "Stem length from one pair of leaves to the next. Not published for the cultivar. In the parent C. texensis the internodes are \"to 190 mm long\" (Gibson), a longest. Photographs of the cultivar in flower (references 05-pd-habit-flowers-on-stalks.jpg and 06-pd-1-foliage-buds.jpg) show joints one to two leaflet lengths apart, 6 to 12 cm against leaflets of 4 to 7.5 cm; that is taken. Read from photographs, not measured."
     },
     "organs.leafLengthM": {
       "value": [
@@ -549,6 +549,145 @@
     "sideShoots.terminalFlowerShare": {
       "value": null,
       "status": "unknown"
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 1600,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1093/aob/mcg044",
+      "basis": "No bending test on this cultivar or on C. texensis was found. Isnard, Rowe and Speck 2003 (Annals of Botany 91:407-417) measured another clematis of semi-woody habit, C. flammula var. maritima: a structural Young's modulus of 1.619 +/- 0.492 GN/m2 in its aerial, trellis-forming shoots, 0.855 in its emergent axes and 0.470 in its underground stems (abstract). The aerial-shoot figure is taken for a season's stem of this plant once set: a genus value, not this plant's.",
+      "range": [
+        855,
+        3000
+      ]
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 500,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1093/aob/mcg044",
+      "basis": "Not measured on this plant. The emergent axes of C. flammula var. maritima, young shoots rising from the ground, have a structural modulus of 0.855 GN/m2 (Isnard, Rowe and Speck 2003); a growing tip is softer than that. 500 MPa is assumed, between that figure and the least stiff searcher base Hattermann et al. 2022 measured (213 MN/m2).",
+      "range": [
+        213,
+        855
+      ]
+    },
+    "mechanics.woodSetDays": {
+      "value": 45,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Not measured. The stems are thin and herbaceous in habit but \"tough\" (Gibson, of the parent C. texensis) and hold their flowers up on wiry stalks by midsummer; six or seven weeks from soft to set is assumed, longer than the generic month because the stem stays green and pliant through the season (photographs of the cultivar in flower show green and maroon stems that bend without breaking).",
+      "range": [
+        20,
+        90
+      ]
+    },
+    "mechanics.stemFreshDensityKgM3": {
+      "value": 1000,
+      "unit": "kg/m3",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1098/rsif.2017.0001",
+      "basis": "Not weighed. A fresh green shoot is mostly water; 1000 kg/m3, as Chelakkot and Mahadevan 2017 take for a young shoot.",
+      "range": [
+        800,
+        1200
+      ]
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.3,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. A thin, soft leaflet (light green, nearly hairless: International Clematis Society; Bean, of C. texensis) is taken at about 0.2 kg of fresh leaf to each square metre of blade, the generic thin leaf. The engine spreads that weight over a disc 0.56 of the leaf's length across; a leaf of three to five broad leaflets 4-7.5 cm long (morphology.json) has about one and a half times that area of blade, so 0.3 is given for the disc.",
+      "range": [
+        0.15,
+        0.5
+      ]
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.002,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. One flower of four thick tepals 5-6 cm long (RHS; Clematis on the Web) with its stalk of 10-15 cm and two small bracts (morphology.json): a couple of grams if as dense as water.",
+      "range": [
+        0.001,
+        0.005
+      ]
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.001,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "source": "https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis",
+      "basis": "Not weighed. A head of up to 30 achenes each 7.5-10 x 5-6 x 2 mm (Gibson, of the parent C. texensis) with their feathered tails: about a gram.",
+      "range": [
+        0.0005,
+        0.003
+      ]
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.5,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "Not measured on this plant. Hattermann et al. 2022 measured the longest self-supporting searcher shoots of 29 climbers; the one clematis among them, C. vitalba, is counted with the tendril climbers (attachment by twining petioles), whose reach together with the root climber ran from 0.14 to 0.91 m. The paper gives no figure for C. vitalba alone. This plant's shoots are thinner and softer than C. vitalba's (new growth to 3.5 mm: Gibson); half a metre is taken, below the middle of that range.",
+      "range": [
+        0.14,
+        0.91
+      ]
+    },
+    "tropism.turnPerM": {
+      "value": 1.5,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "basis": "Chosen, not measured: a shoot lying across the way it seeks turns through about a right angle in a metre of growth, the generic figure. RHS record: the plant needs tying in on its support; a free shoot of it leans and arches rather than standing plumb.",
+      "range": [
+        0.5,
+        5
+      ]
+    },
+    "tropism.lightShare": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Chosen, not measured: a little nearer the light than half way. Specialist growers ask full sun for the Texensis Group (Rogerson Clematis Garden; International Clematis Society recommended list), and photographs of the cultivar show its flowering shoots turned out to the light.",
+      "range": [
+        0,
+        1
+      ]
+    },
+    "attachment.graspReachM": {
+      "value": 0.1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis",
+      "basis": "How near a shoot must come to a support for a leaf stalk to catch it: about the reach of a leaf stalk and the axis of a leaf, a stalk to 55 mm and leaflet stalks to 40 mm (Gibson, of the parent C. texensis). 0.1 m is taken.",
+      "range": [
+        0.05,
+        0.2
+      ]
+    },
+    "organs.leafTurnToOpenShare": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Not measured. Photographs of the cultivar on a wall and on trellis (reference 06-pd-1-foliage-buds.jpg, 10-pd-geograph-1-6524519.jpg) show the leaflets turned out from the support to the open side, overlapping, each leaf still on its own side of the stem; a little more than the generic half way is taken.",
+      "range": [
+        0,
+        1
+      ]
+    },
+    "sideShoots.branchAngleDeg": {
+      "value": [
+        30,
+        60
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Only a plant left unpruned throws shoots from its kept stems (RHS group 3 guide: it will \"continue growing from where the growth ended the previous season\"). Photographs of Texensis Group plants in spring (18-duchess-of-albany-1.jpg, of 'Duchess of Albany', another of the group) show new shoots leaving the old stems at an acute angle and turning up. 30 to 60 degrees is read from that, not measured."
+    },
+    "organs.alternateDivergenceDeg": {
+      "value": 90,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Not used: the leaves stand in opposite pairs, each pair turned a right angle from the last (\"opposite decussate\": Gibson, of the parent C. texensis), which the engine does without this number. Given so that the run does not report the generic spiral for this plant."
     }
   }
 }

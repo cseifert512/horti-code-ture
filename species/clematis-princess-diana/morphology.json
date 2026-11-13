@@ -42,10 +42,10 @@
       "status": "unknown"
     },
     "stem.internodeLengthM": {
-      "value": [0.08, 0.16],
+      "value": [0.06, 0.12],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not published for the cultivar. In the parent C. texensis the internodes are \"to 190 mm long\" (Gibson); the cultivar's are taken as 8 to 16 cm. The same range as organs.leafSpacingM in the growth model."
+      "basis": "Not published for the cultivar. In the parent C. texensis the internodes are \"to 190 mm long\" (Gibson), a longest; photographs of the cultivar (references 05-pd-habit-flowers-on-stalks.jpg, 06-pd-1-foliage-buds.jpg) show joints one to two leaflet lengths apart, 6 to 12 cm. The same range as organs.leafSpacingM in the growth model."
     },
     "leaf.arrangement": {
       "value": "opposite",
@@ -88,6 +88,27 @@
       "value": 0.74,
       "status": "provisional_design_assumption",
       "basis": "Judged from photographs of the cultivar: a leaflet about 6 cm long is about 4.5 cm wide. Gibson's leaflets of the parent species are as wide as long or wider (25-55 x 35-65 mm)."
+    },
+    "leaf.leafletWidthSpread": {
+      "value": [0.88, 1.12],
+      "status": "provisional_design_assumption",
+      "basis": "How far a leaflet's width for its length differs from leaf.leafletWidthToLength, as a factor. Read from photographs of the cultivar (Wikimedia Commons: Clematis 'Princess Diana' 1.jpg, saved as reference 06-pd-1-foliage-buds.jpg): leaflets there run from about 0.65 to 0.9 times as wide as long. Not measured."
+    },
+    "leaf.leafletOutline": {
+      "value": "broadest in the lower third, base rounded to heart-shaped with a narrow notch, end blunt with a short point",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs of the cultivar (references 06-pd-1-foliage-buds.jpg, 07-pd-flower-1-front.jpg, 10-pd-geograph-1-6524519.jpg): the leaflets are blunter than an ovate-acute leaflet, many truly heart-shaped. Bean, of the parent C. texensis: \"ovate to roundish ... usually heart-shaped at the base\"."
+    },
+    "leaf.mainVeinsFromBase": {
+      "value": 3,
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: leaflets \"pinnately veined with 3 veined at base\" (https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis). Three faint veins from the base show in photograph 06-pd-1-foliage-buds.jpg."
+    },
+    "leaf.mainVeinAngleDeg": {
+      "value": 34,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The angle between the midrib and each of the two side veins where they leave the base of a leaflet, read from photograph 06-pd-1-foliage-buds.jpg (the large leaflets at upper centre): about a third of a right angle. Not measured."
     },
     "leaf.stalkLengthM": {
       "value": [0.03, 0.055],
