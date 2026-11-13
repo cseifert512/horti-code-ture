@@ -1,0 +1,481 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "lonicera-periclymenum-graham-thomas",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous twining climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: \"A large twining deciduous climber\". Bean, of the species: \"A twining shrub scrambling in the wild over bushes and hedgerows\"."
+    },
+    "habit.vigour": {
+      "value": "exceptionally vigorous",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Bean's supplement, of this cultivar: found in Warwickshire about 1960, \"exceptionally vigorous\"."
+    },
+    "habit.heightM": {
+      "value": [
+        4,
+        8
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: ultimate height 4 to 8 metres, reached in 5 to 10 years. A height band, not a route length."
+    },
+    "habit.spreadM": {
+      "value": [
+        1,
+        1.5
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: ultimate spread 1 to 1.5 metres."
+    },
+    "stem.twiningHandedness": {
+      "value": "left_handed",
+      "status": "published_plant_profile",
+      "source": "https://www.wildlifetrusts.org/wildlife-explorer/wildflowers/honeysuckle",
+      "basis": "As in taxon.json: climbs clockwise seen from above (Wildlife Trusts), a left-handed helix. First Nature also calls it a clockwise climber. No peer-reviewed species-level source was retrieved."
+    },
+    "stem.thickestSupportTwinedMm": {
+      "value": 114,
+      "unit": "mm",
+      "status": "published_plant_profile",
+      "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
+      "basis": "Of the species. Darwin, The Movements and Habits of Climbing Plants (1875): the honeysuckle \"which I have observed twining up a young beech-tree nearly 4 1/2 inches in diameter\". One support it did hold, not a measured limit."
+    },
+    "stem.young": {
+      "value": "hollow, downy or glabrous",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: young stems hollow, \"downy or glabrous\"."
+    },
+    "stem.youngColour": {
+      "value": [
+        "green",
+        "purplish where the sun reaches it"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.nzflora.info/factsheet/Taxon/Lonicera-periclymenum.html",
+      "basis": "Of the species. Flora of New Zealand, vol. IV (Webb, Sykes and Garnock-Jones 1988): stems glabrous except towards the inflorescence, more or less purplish where exposed to direct sun. The US plant patent of the similar cultivar 'Scentsation' gives the young stem as green (RHS 143A)."
+    },
+    "stem.matureColour": {
+      "value": "tan to grey-brown",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs: the twigs of a year or two are tan to brown, the older twined stems pale grey-buff (Commons, Lonicera periclymenum liana.JPG and Hazel and Honeysuckle.JPG, saved as reference stem-liana and stem-hazel). The University of Connecticut plant database gives the species \"twining, thin stems\" and no colour that could be confirmed when it was read again."
+    },
+    "stem.oldBark": {
+      "value": "pale grey-buff, fibrous, peeling in long strips",
+      "status": "provisional_design_assumption",
+      "basis": "No flora read describes the old bark. Photographs of old stems of the species show them pale grey-buff, twisted round one another, the bark lifting in long fibrous strips (Commons, Lonicera periclymenum liana.JPG, saved as reference stem-liana). Dormice strip honeysuckle bark for their nests (Woodland Trust), which fits."
+    },
+    "stem.youngDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "stem.oldDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "stem.internodeLengthM": {
+      "value": null,
+      "unit": "m",
+      "status": "unknown"
+    },
+    "leaf.arrangement": {
+      "value": "opposite, each pair at right angles to the next",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account of the species in Fermanagh: \"Leaves are sub-sessile, simple, lanceolate, entire, without stipules and in opposite pairs\", with \"each pair at right-angles to the next\"."
+    },
+    "leaf.division": {
+      "value": "simple",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: leaves simple."
+    },
+    "leaf.shape": {
+      "value": [
+        "ovate",
+        "oval",
+        "obovate"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: \"Leaves ovate, oval, or obovate\". The RHS record of this cultivar says oval; the BSBI account calls the leaf of the wild plant lanceolate."
+    },
+    "leaf.base": {
+      "value": "more or less tapered",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: \"more or less tapered at the base\"."
+    },
+    "leaf.tip": {
+      "value": [
+        "mostly pointed",
+        "sometimes blunt"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: \"mostly pointed, sometimes blunt\"."
+    },
+    "leaf.margin": {
+      "value": "entire",
+      "status": "published_plant_profile",
+      "source": "https://www.nzflora.info/factsheet/Taxon/Lonicera-periclymenum.html",
+      "basis": "Of the species. Flora of New Zealand: lamina glabrous, entire. The oak-lobed leaf is f. quercina (Bean), not this plant."
+    },
+    "leaf.lengthM": {
+      "value": [
+        0.038,
+        0.064
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: leaves \"1 1/2 to 2 1/2 in. long\", in metres. The growth model's organs.leafLengthM is the same figure. The Flora of the Burren gives 3 to 7 cm, the Flora of New Zealand 3 to 9 cm."
+    },
+    "leaf.widthM": {
+      "value": [
+        0.025,
+        0.038
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: leaves \"1 to 1 1/2 in. wide\", in metres."
+    },
+    "leaf.outlineWidthToLength": {
+      "value": [
+        0.47,
+        0.56
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Width for length of the blade, measured off photographs: three pressed leaves of the species 0.47, 0.50 and 0.52 (Commons, Lonicera peridymenum. Chuchamel.jpg, saved as reference leaves-chuchamel), and leaves of the similar cultivar Scentsation about 0.5 to 0.55 (Commons, Lonicera periclymenum Scentsation 1zz.jpg and 3zz.jpg). Bean gives 1 to 1 1/2 in. wide for 1 1/2 to 2 1/2 in. long, which at the middle of both ranges is 0.61: the photographs are narrower than that, and the model follows the photographs for the outline and Bean for the length."
+    },
+    "leaf.widestAt": {
+      "value": [
+        0.42,
+        0.58
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Where along the blade it is widest, from its base (0) to its tip (1), measured off the same photographs (leaves-chuchamel: about 0.45, 0.5 and 0.55). Bean has the leaf ovate, oval or obovate, which is this range read as words."
+    },
+    "leaf.sideVeinPairs": {
+      "value": [
+        5,
+        7
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Pairs of side veins counted on the pressed leaves in Commons, Lonicera peridymenum. Chuchamel.jpg (reference leaves-chuchamel): five to seven, arching forward and looping near the margin. No flora read gives a count."
+    },
+    "leaf.bladeBelowStalkDeg": {
+      "value": [
+        10,
+        30
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far the blade bends down from the line of its short stalk, read off photographs of flowering shoots (reference scentsation-3, habit-harlow). Used as the angle at which the leaf is measured for its length (the viewer's BladeHold.unitAt)."
+    },
+    "leaf.faceRiseDeg": {
+      "value": [
+        20,
+        55
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far above level the upper face of a leaf looks on a stem lying against a trellis or wall: in photographs of trained plants the pairs spread nearly level with their faces turned out and up (reference habit-harlow, habit-trellis-boreham). Read from photographs, not measured."
+    },
+    "leaf.faceRiseOpenDeg": {
+      "value": [
+        35,
+        70
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The same on a shoot out in the air: the leaves of free flowering shoots face the sky more than out (reference scentsation-3, habit-trellis-boreham). Read from photographs, not measured."
+    },
+    "leaf.stalk": {
+      "value": "lower pairs stalked, uppermost almost or quite stalkless, never joined round the stem",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: \"lower pairs of leaves stalked, uppermost ones almost or quite stalkless, but never united as in L. caprifolium\"."
+    },
+    "leaf.stalkLengthM": {
+      "value": [
+        0.001,
+        0.006
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Bean says the lower pairs are stalked and gives no length; the Flora of New Zealand says subsessile or very shortly petiolate; the US plant patent of the similar cultivar 'Scentsation' gives 1 to 1.5 mm. Up to 6 mm is assumed for the stalked leaves of the long shoots."
+    },
+    "leaf.colourAbove": {
+      "value": "dark green",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: \"A large twining deciduous climber with oval, dark green leaves whitish beneath\". A nursery (Ashridge) calls them mid-green."
+    },
+    "leaf.colourBeneath": {
+      "value": "whitish, glaucous",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: \"dark green leaves whitish beneath\". Bean, of the species: \"rather glaucous beneath\". The viewer's leaf program gives a leaf one colour on both faces, so this is recorded and not drawn."
+    },
+    "leaf.surface": {
+      "value": "slightly downy or glabrous",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: \"slightly downy or glabrous\". A soft, dull leaf, not a leathery one."
+    },
+    "leaf.youngColour": {
+      "value": "bluish green",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account, after Lang (1987): new leaves open in December and January \"from bluish-green buds\"."
+    },
+    "leaf.autumnColour": {
+      "value": "none to speak of",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.uconn.edu/detail.php?pid=266",
+      "basis": "Of the species. The University of Connecticut plant database: \"no fall color\". The model lets a leaf dull a little before it falls, staying green."
+    },
+    "leaf.belowHead": {
+      "value": "small, nearly circular, the pair free",
+      "status": "published_plant_profile",
+      "source": "https://www.nzflora.info/factsheet/Taxon/Lonicera-periclymenum.html",
+      "basis": "Of the species. Flora of New Zealand: the uppermost leaves just below the inflorescence are small and suborbicular, sometimes clasping; the pair below the peduncle is free. This is what tells the species from L. caprifolium, whose upper pairs are joined into a cup."
+    },
+    "inflorescence.type": {
+      "value": "terminal stalked head of close whorls",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: the flowers are in \"a series of close whorls\", \"at the end of the shoot, forming a terminal stalked inflorescence\". The RHS record of this cultivar: \"terminal clusters of fragrant white flowers\"."
+    },
+    "inflorescence.flowerCount": {
+      "value": [
+        6,
+        20
+      ],
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: \"in simple umbel clusters or whorls of 6-15, terminating the younger shoots\". The Flora of New Zealand: a head of up to 20, sometimes with a smaller whorl below. The US plant patent of the similar cultivar 'Scentsation' counts 23 to 25. No count for this cultivar was found."
+    },
+    "inflorescence.stalkLengthM": {
+      "value": [
+        0.001,
+        0.05
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.nzflora.info/factsheet/Taxon/Lonicera-periclymenum.html",
+      "basis": "Of the species. Flora of New Zealand: peduncles about 1 to 50 mm long. The patent of 'Scentsation' gives 15 to 20 mm."
+    },
+    "inflorescence.widthM": {
+      "value": [
+        0.08,
+        0.11
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The width of a head across the tips of opposite flowers. This is what the growth model's organs.racemeLengthM measures for this plant, and what the flower model's authored size is. Worked out from the flower: 40 to 50 mm long, standing out all round the end of the stalk. The patent of 'Scentsation' gives an umbel 100 to 120 mm across."
+    },
+    "inflorescence.openingOrder": {
+      "value": "the outer whorl first, the buds of the middle standing erect until their turn",
+      "status": "provisional_design_assumption",
+      "basis": "No source read gives the order. The BSBI account says only that fresh flowers of the cluster open on later evenings. Drawn as the plant is commonly seen, with open flowers round erect buds."
+    },
+    "flower.lengthM": {
+      "value": [
+        0.04,
+        0.05
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account (after Sell and Murrell 2006): flowers 40 to 50 mm long. Bean: corolla \"1 1/2 to 2 in. long\". The Flora of New Zealand gives 2.5 to 3.5 cm for plants naturalised there. NC State calls the flowers of this cultivar large."
+    },
+    "flower.shape": {
+      "value": "a slender tapering tube opening into two lips, the upper of four lobes, the lower single",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: the corolla \"has a long slender funnel-shaped tube and is 2-lipped\", \"the upper lip with four lobes, the lower lip solitary\". Bean: \"two-lipped, the tube slender, tapering\". The Flora of New Zealand: lobes becoming reflexed."
+    },
+    "flower.upperLipLobes": {
+      "value": 4,
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: \"the upper lip with four lobes, the lower lip solitary\"."
+    },
+    "flower.stamenCount": {
+      "value": 5,
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: \"Stamens are five; style and stigma are both solitary\". The Flora of New Zealand: stamens exserted, style often long-exserted."
+    },
+    "flower.tubeShareOfLength": {
+      "value": 0.55,
+      "status": "provisional_design_assumption",
+      "basis": "How much of the flower's length is tube. No flora read gives it. The patent of 'Scentsation' has a tube of 22 to 25 mm in a flower of 30 to 38 mm with lips of 20 mm and more; a little over half is assumed for this cultivar."
+    },
+    "flower.upperLipWidthM": {
+      "value": [
+        0.012,
+        0.015
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not of this cultivar: the patent of 'Scentsation', which it names as the most similar variety, gives an upper lip 12 to 15 mm wide and a lower lip about 5 mm wide."
+    },
+    "flower.lowerLipWidthM": {
+      "value": 0.005,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not of this cultivar: see flower.upperLipWidthM."
+    },
+    "flower.tubeWidthM": {
+      "value": [
+        0.002,
+        0.003
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not of this cultivar: the patent of 'Scentsation' gives the flower about 2 mm wide at its base and the tube about 3 mm wide."
+    },
+    "flower.stamenLengthM": {
+      "value": [
+        0.025,
+        0.03
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not of this cultivar: the patent of 'Scentsation' gives stamens 25 to 30 mm long, borne on the tube, and a style about 55 mm long."
+    },
+    "flower.styleLengthM": {
+      "value": 0.055,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not of this cultivar: see flower.stamenLengthM. Scaled in the model to the length of this plant's flower."
+    },
+    "flower.budLengthM": {
+      "value": 0.035,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not of this cultivar: the patent of 'Scentsation' describes the bud as tubular, inflated and curved, up to 35 mm long and 8 mm wide."
+    },
+    "flower.colourOpening": {
+      "value": "white",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: \"terminal clusters of fragrant white flowers which soon turn to buff-yellow\". Bean's supplement: they open pale whitish-cream."
+    },
+    "flower.colourAged": {
+      "value": "buff yellow",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: white flowers \"which soon turn to buff-yellow\". Bean's supplement: they darken to yellow. In the species, by the next evening \"the corolla colour has darkened to a golden yellow\" (BSBI account, after Knight 1996)."
+    },
+    "flower.redFlush": {
+      "value": "none",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Bean's supplement, of this cultivar: the flowers have no red. The wild plant is \"yellowish white and red in varying proportions\"."
+    },
+    "flower.colourSpent": {
+      "value": "dirty orange-brown",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: after fertilisation the corolla turns dirty orange-brown and loses its scent. Not drawn: a flower in the model drops as it is."
+    },
+    "flower.posture": {
+      "value": "erect in bud, level when open, the style curving down below the anthers",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account, after Knight (1996): buds erect in the evening; on opening \"The corolla then moves from the vertical to the horizontal\" and the style curves down past the lower lip and below the anthers."
+    },
+    "flower.surfaceOutside": {
+      "value": "glandular-downy",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
+      "basis": "Of the species. Bean: the tube \"glandular-downy outside\"."
+    },
+    "flower.calyxLobeLengthM": {
+      "value": [
+        0.001,
+        0.002
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.nzflora.info/factsheet/Taxon/Lonicera-periclymenum.html",
+      "basis": "Of the species. Flora of New Zealand: calyx lobes 1 to 2 mm, triangular-ovate, densely glandular; bracteoles 2 to 4 mm, shorter than the ovaries."
+    },
+    "flower.scent": {
+      "value": "fragrant, strongest in the evening",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: fragrant flowers. Of the species (BSBI account): the scent is strong from the evening the flower opens and faint by day."
+    },
+    "fruit.type": {
+      "value": "berry",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: \"Berries red\"."
+    },
+    "fruit.berryDiameterM": {
+      "value": 0.008,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: berries 8 mm in diameter, dark red, globose. The University of Connecticut plant database gives a quarter of an inch."
+    },
+    "fruit.arrangement": {
+      "value": "stalkless, in tight clusters",
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account: berries globose and stalkless, in tight clusters."
+    },
+    "fruit.colourRipe": {
+      "value": "red",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
+      "basis": "RHS record of this cultivar: \"Berries red\". Of the species: \"Berries, 8 mm diameter, dark red, globose and stalkless in tight clusters\" (BSBI account); glossy (RHS record of the species)."
+    },
+    "fruit.colourUnripe": {
+      "value": "green",
+      "status": "provisional_design_assumption",
+      "basis": "No source read gives the colour of the unripe berry. Green, passing through orange to red, is assumed."
+    },
+    "fruit.berriesPerCluster": {
+      "value": [
+        5,
+        20
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "No count was found in a flora. A photograph of a ripening cluster of the species holds about twenty berries (Commons, Honeysuckle (Lonicera periclymenun) ripe and unripe fruit, Chapeltoun, North Ayrshire.jpg, saved as reference fruit-ripe-unripe-chapeltoun), which is the most flowers a head has (inflorescence.flowerCount); not every flower sets, so five to twenty."
+    },
+    "fruit.clusterWidthM": {
+      "value": [
+        0.025,
+        0.034
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The width of a cluster of berries: what the growth model's fruit.lengthM measures for this plant, and the fruit model's authored size. Worked out from the berry (8 mm, BSBI account) and the photograph above, a dome about four berries across; not measured."
+    },
+    "fruit.seedCount": {
+      "value": [
+        5,
+        6
+      ],
+      "status": "published_plant_profile",
+      "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
+      "basis": "Of the species. BSBI account, after Lang (1987): each berry holds five or six yellow seeds, 4.0 by 2.5 mm."
+    }
+  }
+}
