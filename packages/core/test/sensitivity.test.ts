@@ -42,22 +42,44 @@ describe('how far the readings move when unmeasured densities are multiplied', (
 
   // Larger leaves reach the rest of the run in two ways. They shade a neighbour more (sim/light.ts). And they are
   // heavier, so the shoots that carry them in the air droop sooner, come near different members and bear a few leaf
-  // nodes more or fewer (sim/free-shoot.ts): the flowers of the plants that flower along those shoots move by a few
-  // in a hundred, and the route held by a stretch or two. The framework does not move at all.
-  it('changes the leaves, and through their shade and their weight little else, when only their size is varied', () => {
+  // nodes more or fewer (sim/free-shoot.ts). The route held moves by a stretch or two.
+  //
+  // Until 13 November 2026 the framework did not move at all, and the flowers by a few in a hundred (at most 6%). With
+  // the winter clematis and the honeysuckle modelled as the leafy evergreens they are, the shade moves more: the winter
+  // clematis, a plant that asks for sun, has its season's growth cut by light from 0.73 to 0.67 of what it would make when
+  // the leaves are twice the size, and light read through the larger leaves turns free shoots on to other members. On
+  // 2032 the flowers are 10.6% fewer with twice the leaf and 18.2% fewer with four times (mostly the winter clematis's:
+  // 581 to 443 and 373). The winter clematis's own framework falls from 48.0 m to 44.4 m and 37.3 m; the others' move by
+  // up to 6.3% either way (the first wisteria, 93.1 m to 87.3 m). Without light acting, larger leaves still move no
+  // framework and no height by a millimetre: the whole of that is the light.
+  it('changes the leaves, and through their shade and their weight the flowers and, through light, the framework, when only their size is varied', () => {
     const plain = new Simulation(make(taxa)).runUntil(END);
     for (const [id, factor] of [
       ['leaf_area_x2', 2],
       ['leaf_area_x4', 4],
     ] as const) {
-      expect(Math.abs(row(id).flowersOpened - row('as_modelled').flowersOpened), id).toBeLessThanOrEqual(0.06 * row('as_modelled').flowersOpened);
+      expect(Math.abs(row(id).flowersOpened - row('as_modelled').flowersOpened), id).toBeLessThanOrEqual(0.2 * row('as_modelled').flowersOpened);
+      // larger leaves shade more, so they never bring more flowers
+      expect(row(id).flowersOpened, id).toBeLessThan(row('as_modelled').flowersOpened);
       expect(Math.abs(row(id).routeHeldShare - row('as_modelled').routeHeldShare), id).toBeLessThan(0.02);
       const larger = new Simulation(make(leafArea(taxa, factor))).runUntil(END);
       for (const s of plain.summaries.filter((x) => x.year === 2032)) {
         const other = larger.summaries.find((x) => x.year === 2032 && x.plantId === s.plantId)!;
-        expect(other.frameworkM, `${id} ${s.plantId}`).toBe(s.frameworkM);
-        expect(other.highestM, `${id} ${s.plantId}`).toBe(s.highestM);
+        // the shaded plant that asks for sun makes less the larger the leaves, by up to a quarter; the rest move little
+        if (s.plantId === 'winter-clematis') {
+          expect(other.frameworkM, id).toBeLessThan(s.frameworkM);
+          expect(other.frameworkM, id).toBeGreaterThan(0.75 * s.frameworkM);
+        } else expect(Math.abs(other.frameworkM - s.frameworkM), `${id} ${s.plantId}`).toBeLessThan(0.07 * s.frameworkM);
       }
+    }
+    // with light left out, the framework and the height of every plant are the same to the millimetre
+    const dark = (t: Growable) => new Simulation({ ...make(t), lightResponse: false }).runUntil(END);
+    const plainDark = dark(taxa);
+    const largerDark = dark(leafArea(taxa, 2));
+    for (const s of plainDark.summaries.filter((x) => x.year === 2032)) {
+      const other = largerDark.summaries.find((x) => x.year === 2032 && x.plantId === s.plantId)!;
+      expect(other.frameworkM, s.plantId).toBe(s.frameworkM);
+      expect(other.highestM, s.plantId).toBe(s.highestM);
     }
   });
 
@@ -69,10 +91,20 @@ describe('how far the readings move when unmeasured densities are multiplied', (
     // framework, below, is the same to the metre
     expect(row('side_shoots_x3').routeHeldShare).toBeGreaterThanOrEqual(row('as_modelled').routeHeldShare);
     expect(row('side_shoots_x3').routeHeldShare - row('as_modelled').routeHeldShare).toBeLessThan(0.05);
+    // Until 13 November 2026 the framework was the same to the metre with light acting. The winter clematis now has side
+    // shoots of its own, and three times as many of them shade its neighbours and turn their free shoots: the frameworks
+    // move by up to 2.6% (the winter clematis, 48.0 m to 46.8 m; the first wisteria by 0.13 m). With light left out they
+    // are the same to the millimetre, as before.
     const plain = new Simulation(make(taxa)).runUntil(END);
     const more = new Simulation(make(sideShoots(taxa, 3))).runUntil(END);
     for (const s of plain.summaries.filter((x) => x.year === 2032)) {
-      expect(more.summaries.find((x) => x.year === 2032 && x.plantId === s.plantId)!.frameworkM, s.plantId).toBe(s.frameworkM);
+      expect(Math.abs(more.summaries.find((x) => x.year === 2032 && x.plantId === s.plantId)!.frameworkM - s.frameworkM), s.plantId).toBeLessThan(0.03 * s.frameworkM);
+    }
+    const dark = (t: Growable) => new Simulation({ ...make(t), lightResponse: false }).runUntil(END);
+    const plainDark = dark(taxa);
+    const moreDark = dark(sideShoots(taxa, 3));
+    for (const s of plainDark.summaries.filter((x) => x.year === 2032)) {
+      expect(moreDark.summaries.find((x) => x.year === 2032 && x.plantId === s.plantId)!.frameworkM, s.plantId).toBe(s.frameworkM);
     }
   });
 
@@ -101,12 +133,18 @@ describe('how far the readings move when unmeasured densities are multiplied', (
 
 // KEY.md section 6: the 25-40% winter evergreen target.
 describe('the winter evergreen target on the reference palette', () => {
-  it('is still missed as seen from every viewpoint with four times the leaf and three times the shoots', () => {
+  // Until 13 November 2026 this was "is still missed as seen from every viewpoint with four times the leaf and three
+  // times the shoots". With the evergreens modelled as themselves, from the approach it is no longer missed: on
+  // 15 January 2038 their leaf is 19.6% of that view as modelled and 50.2% with the generous densities, past the top of
+  // the target. From inside (7.0%) and from the rim (17.5%) it is still missed. So the approach's miss rests on the
+  // unmeasured leaf and shoot densities; the other two do not.
+  it('is still missed from inside and from the rim with four times the leaf and three times the shoots, and met from the approach', () => {
     const generous = STANDARD_VARIATIONS.filter((v) => v.id === 'both');
     const s = sensitivity((t) => referencePalette({ taxa: t }), taxa, '2038-12-31', generous);
     const [low] = WINTER_EVERGREEN_COVER.value!;
     for (const v of s.rows[0]!.winterEvergreen) {
-      expect(v.value, v.viewpointId).toBeLessThan(low);
+      if (v.viewpointId === 'approach') expect(v.value, v.viewpointId).toBeGreaterThan(low);
+      else expect(v.value, v.viewpointId).toBeLessThan(low);
       expect(v.value, v.viewpointId).toBeGreaterThan(0);
     }
     // nor is a quarter of the timber hidden from inside, though the evergreens hold a quarter of the route

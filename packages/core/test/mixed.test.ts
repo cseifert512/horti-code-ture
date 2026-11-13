@@ -105,23 +105,53 @@ describe('old wood and new wood answer hard pruning differently', () => {
 // shoot with overwintering flower buds, those buds cannot flower."
 describe('the winter clematis, which flowers on last summer’s shoots', () => {
   const opened = (sim: Simulation, winterOf: number) => sim.buds.filter((b) => b.plantId === 'winter-clematis' && b.floweringYear === winterOf && b.openDay !== null);
+  /** A flower at the end of a side shoot whose foot stands within the 0.25 m of stem, measured from the ground along the stem, that a cut to 0.25 m keeps. */
+  const onTheStub = (sim: Simulation, b: (typeof sim.buds)[number]) => {
+    const a = sim.axes.get(b.axisId)!;
+    if (b.pointIndex !== null || a.role !== 'side_shoot' || !a.parent) return false;
+    let along = 0;
+    for (let at: { axisId: string; pointIndex: number } | null = a.parent; at; ) {
+      const host: Axis = sim.axes.get(at.axisId)!;
+      along += host.lengthAt[at.pointIndex]!;
+      at = host.parent;
+    }
+    return along <= 0.25 + 1e-6;
+  };
 
-  it('opens in late autumn and finishes the following spring, on wood that is by then a year old', () => {
+  // Until 13 November 2026 every flower of the stand-in opened in November or December and fell in February or March.
+  // The plant's own model opens them from 25 October to 14 February (`phenology.flowerOpenDoy`, a nursery's November to
+  // February with first flowers some years in late October), and each lasts three to six weeks (`flowerLastsDays`): of
+  // the 620 of the winter of 2032, 43 open in October and 69 in February, and 38 are over in November. It also carries
+  // flowers at the ends of its side shoots (`sideShoots.*`), which the stand-in had none of: 222 of the 620, on side
+  // shoots of up to three seasons. What is held: a winter display, formed in late summer and opening on wood made that
+  // summer, from late autumn through the new year, over by the end of the following March.
+  it('opens from late autumn through the new year and finishes the following spring, on wood made the summer before', () => {
     const flowers = opened(trained, 2032);
     // a display and not a stray flower. It is a plant whose profile asks for sun, at the foot of a rib where it has
     // about four fifths of an open site's light, so it makes that much less growth to flower on (sim/light.ts)
-    expect(flowers.length).toBeGreaterThan(5);
+    expect(flowers.length).toBeGreaterThan(100);
+    const opens = flowers.map((b) => trained.calendar.dateOf(b.openDay!));
+    // inside the model's window, days 298 to 45 of the next year
+    const [from, to] = taxa.get('clematis-cirrhosa-freckles')!.model.params['phenology.flowerOpenDoy']!.value as [number, number];
+    for (const open of opens) expect(open.year === 2032 ? open.dayOfYear >= from : open.year === 2033 && open.dayOfYear <= to, open.iso).toBe(true);
+    // most of the display is open in the winter months, not in its autumn edge
+    expect(opens.filter((o) => o.month === 11 || o.month === 12 || o.month === 1).length).toBeGreaterThan(flowers.length * 0.6);
     for (const b of flowers) {
-      const open = trained.calendar.dateOf(b.openDay!);
-      expect(open.year).toBe(2032);
-      expect([11, 12]).toContain(open.month);
-      const done = trained.calendar.dateOf(b.spentDay!);
-      expect(done.year).toBe(2033);
-      expect([2, 3]).toContain(done.month);
-      const bearer = trained.axes.get(b.axisId)!;
-      expect(yearOf(trained, bearer.bornDayAt[b.pointIndex!]!)).toBe(2032);
       expect(yearOf(trained, b.initiatedDay)).toBe(2032);
+      // two that open in February stand on side shoots whose three seasons end at bud burst on 16 March, and go with them
+      if (b.spentDay === null) {
+        expect([b.end, b.endedBy]).toEqual(['aborted', 'shed:2033']);
+        continue;
+      }
+      const done = trained.calendar.dateOf(b.spentDay);
+      expect(b.spentDay).toBeGreaterThan(b.openDay!);
+      expect(done.year === 2032 || (done.year === 2033 && done.month <= 3), done.iso).toBe(true);
+      const bearer = trained.axes.get(b.axisId)!;
+      // along a shoot: at a node made that summer. At the end of a side shoot: on a side shoot of that summer or before
+      if (b.pointIndex !== null) expect(yearOf(trained, bearer.bornDayAt[b.pointIndex]!)).toBe(2032);
+      else expect(bearer.role === 'side_shoot' && bearer.bornYear <= 2032).toBe(true);
     }
+    expect(Math.max(...flowers.map((b) => b.spentDay ?? 0))).toBeGreaterThan(trained.calendar.dayOf('2033-02-01'));
   });
 
   it('loses the flowers it is carrying to the February cut that costs the summer clematis nothing', () => {
@@ -141,8 +171,13 @@ describe('the winter clematis, which flowers on last summer’s shoots', () => {
     const rec = sim.events.find((e) => e.eventId === 'autumn-tidy')!;
     // how many buds there were to take depends on its neighbours: beside a full-grown honeysuckle it forms fewer
     expect(rec.effects.floralBudsRemoved).toBeGreaterThan(5);
-    expect(opened(sim, 2032).length).toBe(0);
-    expect(opened(trained, 2032).length).toBeGreaterThan(5);
+    // Until 13 November 2026 not one flower opened. The plant's own model has side shoots, and one that stands on the
+    // quarter metre of stub the cut keeps keeps the bud at its end: 1 flower of the 620 opens. A cut takes lineage, so
+    // what stands below it stays; what is held is that the display above the cut is lost.
+    const left = opened(sim, 2032);
+    for (const b of left) expect(onTheStub(sim, b), b.axisId).toBe(true);
+    expect(left.length).toBeLessThan(opened(trained, 2032).length / 100);
+    expect(opened(trained, 2032).length).toBeGreaterThan(100);
     // and the run said, when the buds formed, that any cut before opening would take them
     const note = sim.decisions.find((d) => d.plantId === 'winter-clematis' && d.kind === 'floral_initiated' && yearOf(sim, d.day) === 2032)!;
     expect(note.text).toContain('any cut before then takes them');
@@ -151,7 +186,10 @@ describe('the winter clematis, which flowers on last summer’s shoots', () => {
   it('flowers again the winter after, on the shoots that regrew', () => {
     const cut: GardenerEvent = { id: 'autumn-tidy', date: '2031-10-05', type: 'hard_prune', plantId: 'winter-clematis', target: { allStems: true }, keepM: 0.25 };
     const sim = run(mixed('trained', [cut]), '2033-04-30');
-    expect(opened(sim, 2031).length).toBe(0);
+    // none of the winter's display but the ends of side shoots on the kept stubs (2 since 13 November 2026, where there were 0)
+    const left = opened(sim, 2031);
+    for (const b of left) expect(onTheStub(sim, b), b.axisId).toBe(true);
+    expect(left.length).toBeLessThan(5);
     expect(opened(sim, 2032).length).toBeGreaterThan(3);
   });
 });
