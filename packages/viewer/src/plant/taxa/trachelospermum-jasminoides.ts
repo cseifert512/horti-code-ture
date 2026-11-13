@@ -90,7 +90,7 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
   /** Half the blade's width at `v` along it: wedge-shaped at the base, drawn in to a short blunt point. */
   const halfAt = (v: number): number => {
     const body = Math.pow(Math.sin(Math.PI * Math.pow(Math.max(v, 1e-6), a)), outline.fullness);
-    return halfWidth * body * lerp(1, 0.8, smoothstep(0.8, 0.98, v)) + 0.004 * (1 - v);
+    return halfWidth * body * lerp(1, 0.7, smoothstep(0.82, 0.98, v)) + 0.004 * (1 - v);
   };
   /** The midrib's share of the half width at `v`: a millimetre or two wide at the base, a thread at the tip. */
   const ribAt = (v: number): number => Math.min(0.3, (0.016 * (1 - 0.7 * v)) / halfAt(v));
@@ -159,7 +159,7 @@ const LOBES = characterNumber(morphology, 'flower.lobeCount');
 const FLOWER_ACROSS = mid(characterRange(morphology, 'flower.diameterM'));
 /** "tube dilated at middle, 5-10 mm" (Flora of China). */
 const TUBE = mid(characterRange(morphology, 'flower.tubeLengthM'));
-/** "sepals narrowly oblong, 2-5 mm, spreading or reflexed" (Flora of China). */
+/** The sepals: narrow, 2 to 5 mm, spreading or turned back (Flora of China). */
 const SEPAL = mid(characterRange(morphology, 'flower.sepalLengthM'));
 /** Half the width of the throat, where the lobes part: appearance, about an eighth of the flower's width. */
 const THROAT = FLOWER_ACROSS * 0.065;
@@ -224,7 +224,8 @@ function makeCorolla(detail: FlowerDetail): THREE.BufferGeometry {
       let lift = acrossBy * Math.sin(twistBy) - reach * 0.1 * s * s;
       if (!coarse) {
         lift -= half * 0.5 * Math.pow(Math.max(0, -u), 3);
-        lift += half * 0.12 * Math.sin(u * 5 + k) * smoothstep(0.75, 1, s);
+        // the end of the lobe is crisped and curls back a little
+        lift += half * 0.24 * Math.sin(u * 5.5 + k * 1.7) * smoothstep(0.7, 1, s) - reach * 0.14 * Math.pow(smoothstep(0.75, 1, s), 2);
       }
       const p = out
         .clone()
@@ -307,7 +308,7 @@ function makeBud(detail: FlowerDetail): THREE.BufferGeometry | null {
 // ---------------------------------------------------------------------------
 /** "the number of flowers in the inflorescences ranged from 2 to 9" (Ocokoljic et al. 2026). */
 const FLOWER_COUNT = characterRange(morphology, 'inflorescence.flowerCount');
-/** "peduncle 2-6 cm" (Flora of China). */
+/** The cyme's stalk, 2 to 6 cm (Flora of China). */
 const CYME_STALK = mid(characterRange(morphology, 'inflorescence.stalkLengthM'));
 /** The width of the cluster of flowers: what the growth model's organs.racemeLengthM measures. */
 const CYME_WIDTH = mid(characterRange(morphology, 'inflorescence.widthM'));
@@ -346,10 +347,12 @@ function makeCyme(variant: number, lod: number): THREE.BufferGeometry {
   const places: Place[] = [];
   const stalks: { from: V3; to: V3; thick: number }[] = [];
 
-  // the common stalk: out along +Y, leaning a little to the sky side and bowed
-  const lean = rng.range(0.05, 0.2);
-  const top = new V3(rng.range(-0.004, 0.004), CYME_STALK, CYME_STALK * lean);
-  const bowed = new V3(top.x * 0.3, CYME_STALK * 0.5, CYME_STALK * lean * 0.2);
+  // the common stalk: out along +Y, then arching over under the weight of its flowers, away from the sky side
+  // (-Z), so that the cluster nods as it does on the plant. Its length along the curve is the stalk's.
+  const nod = rng.range(0.7, 1.25);
+  const sway = rng.range(-0.25, 0.25);
+  const bowed = new V3(0, CYME_STALK * 0.58, CYME_STALK * 0.04);
+  const top = bowed.clone().add(new V3(Math.sin(nod) * sway, Math.cos(nod), -Math.sin(nod)).multiplyScalar(CYME_STALK * 0.46));
   const axis = top.clone().sub(bowed).normalize();
   // away from an axis by `tilt`, round it by `turn`
   const off = (about: V3, tilt: number, turn: number): V3 => {
@@ -369,7 +372,7 @@ function makeCyme(variant: number, lod: number): THREE.BufferGeometry {
     const node = top.clone().addScaledVector(dir, fork1 * rng.range(0.85, 1.15));
     stalks.push({ from: top, to: node, thick: 0.8 });
     // each branch ends in a flower and forks again, crosswise to the first fork
-    const onward = dir.clone().addScaledVector(UP, 0.45).normalize();
+    const onward = dir.clone().addScaledVector(axis, 0.45).normalize();
     places.push({ from: node, at: node.clone().addScaledVector(onward, footstalk), order: 1 + side * 0.3 + rng.range(0, 0.2), thick: 0.75 });
     const turn2 = rng.range(0, TAU);
     [0, 1].forEach((side2) => {
@@ -410,9 +413,9 @@ function makeCyme(variant: number, lod: number): THREE.BufferGeometry {
   const spin = new THREE.Quaternion();
   const one = new V3(1, 1, 1);
   used.forEach((place, i) => {
-    // it faces the way its stalk runs, turned somewhat outwards and to the sky
+    // it faces the way its stalk runs, turned somewhat the way the whole cyme leans, and nods a little
     const along = place.at.clone().sub(place.from).normalize();
-    const facing = along.addScaledVector(axis, 0.35).add(new V3(rng.range(-0.25, 0.25), rng.range(-0.1, 0.3), rng.range(-0.25, 0.25))).normalize();
+    const facing = along.addScaledVector(axis, 0.35).add(new V3(rng.range(-0.25, 0.25), rng.range(-0.1, 0.25), rng.range(-0.4, 0.1))).normalize();
     q.setFromUnitVectors(UP, facing).multiply(spin.setFromAxisAngle(UP, rng.range(0, TAU)));
     const isBud = i >= flowers;
     const size = isBud ? rng.range(0.8, 1.0) : rng.range(0.92, 1.08);
@@ -428,7 +431,7 @@ function makeCyme(variant: number, lod: number): THREE.BufferGeometry {
     if (parts.calyx) mg.add(parts.calyx, m, [1, 1, 1], place.at, -1);
   });
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, CYME_STALK + CYME_WIDTH * 0.2, 0), CYME_STALK + CYME_WIDTH);
+  g.boundingSphere = new THREE.Sphere(new V3(0, CYME_STALK * 0.8, -CYME_STALK * 0.3), CYME_STALK + CYME_WIDTH);
   return g;
 }
 
@@ -513,7 +516,7 @@ const leaf: LeafAsset = {
   },
   // "glossy dark green"; pale green as it unfolds. The last two are its winter bronze and red (RHS: "often turn
   // deep bronze-red in winter"), which the data cannot ask for yet: an evergreen leaf is given no change of colour.
-  palette: { greenA: lin('#27481d'), greenB: lin('#365c24'), young: lin('#9db552'), autumnA: lin('#5a3a22'), autumnB: lin('#7c2a22') },
+  palette: { greenA: lin('#27481d'), greenB: lin('#365c24'), young: lin('#a8c256'), autumnA: lin('#5a3a22'), autumnB: lin('#7c2a22') },
   roughness: 0.3,
   // leathery: little light comes through
   translucency: 0.2,
@@ -529,7 +532,7 @@ const cyme: FlowerAsset = {
   pick: (r) => Math.min(CYME_VARIANTS.length - 1, Math.floor(r * CYME_VARIANTS.length)),
   authoredSize: CYME_WIDTH,
   poise: 'held',
-  centreAlong: (CYME_STALK + CYME_WIDTH * 0.2) / CYME_WIDTH,
+  centreAlong: (CYME_STALK * 0.85) / CYME_WIDTH,
   // unopened flowers are green-white
   budTint: [0.8, 0.9, 0.62],
   swing: 0.35,
@@ -549,8 +552,8 @@ const follicles: FruitAsset = {
   authoredSize: FOLLICLE_LENGTH,
   poise: 'hangs',
   centreAlong: 0.5,
-  // pale green, drying to a brown that is nearly black
-  ripe: lin('#3a2a1d'),
+  // pale green, drying to a dark brown: so in photographs of dry pods; NC State's record has the fruit black
+  ripe: lin('#4a3220'),
   ripeShade: [0.55, 1.1],
   roughness: 0.6,
   swing: 0.5,
@@ -560,21 +563,22 @@ const follicles: FruitAsset = {
 
 /**
  * Pale green shoots that stay green through their first summer and ripen to a smooth red-brown in their second year
- * ("Stem brownish, lenticellate", Flora of China; red-brown in the Chinese flora), greying slowly; the stems stay
- * slender and round. The ages are judged from photographs, not measured.
+ * ("Stem brownish, lenticellate", Flora of China; red-brown in the Chinese flora). Old stems are grey, rough and
+ * knobbly, as two photographs of an old pot-grown plant show; they stay slender. The ages are judged from
+ * photographs, not measured.
  */
 const wood: WoodLook = {
   young: lin('#93a352'),
   mature: lin('#5c3f2c'),
-  old: [0.6, 0.55, 0.5],
+  old: [0.62, 0.59, 0.55],
   woodyDays: [150, 520],
   oldDays: [1100, 3000],
   furrowDays: [900, 3000],
-  furrow: 0.18,
+  furrow: 0.35,
   stiffDays: [30, 260],
-  relief: 1.3,
+  relief: 2.4,
   roughness: 0.8,
-  grain: { streaks: 520, width: 2.4, wobble: 9 },
+  grain: { streaks: 320, width: 3.6, wobble: 14 },
 };
 
 export const look: TaxonLook = {

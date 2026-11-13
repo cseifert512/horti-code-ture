@@ -356,12 +356,12 @@
     },
     "flowering.maturityRamp": {
       "value": [
-        0.4,
-        0.7,
+        0.6,
+        0.85,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Flowering builds up while the plant establishes, which the RHS guide puts at two or three years. The steps are a choice."
+      "basis": "Flowering builds up while the plant establishes, which the RHS guide puts at two or three years; but it flowers freely young: nursery plants are sold in flower, and a plant about two metres tall is covered in it (photograph, Wikimedia Commons, 'Jasmin-rue-Judaique (1)'). The steps are a choice."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
@@ -374,10 +374,10 @@
       "basis": "Not applicable to this plant; present because every model carries every parameter."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 2,
+      "value": 5,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Cymes in the leaf axils of the year's long growth. Flora of China has the cymes 'terminal and axillary'; Bean has them 'usually on short lateral twigs', so the long shoots carry few. Two to the metre is a choice; most of the flowers are on the side shoots."
+      "basis": "Cymes in the leaf axils of the year's long growth. Flora of China has the cymes 'terminal and axillary', and photographs show them at several nodes in turn along a leafy shoot (Wikimedia Commons, 'Trachelospermum jasminoides RHu 01', 'Trachelospermum jasminoides 13zz'); Bean has them 'usually on short lateral twigs', so the long shoots carry fewer. Five to the metre, a cyme at one node in six, is a choice."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.15,
@@ -545,9 +545,9 @@
       "basis": "The short shoots are woody and stay: on the plant they branch again and flower from their own side shoots in later years, which this model shows as the same shoot flowering again. Four seasons is a choice, a little longer than a leaf is taken to last."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": 0.75,
+      "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "Three in four of the short shoots of an established plant end in a cyme in a year. In photographs of plants in full flower nearly every shoot has one, a plant in a London garden among them (Wikimedia Commons, 'Star Jasmine Trachelospermum Jasminoides Capel Manor College Gardens Enfield London England 01'); three in four leaves some shoots leafy only. The share is a choice, and takes no account of shade, which the profiles say reduces flowering. Not counted on plants."
+      "basis": "Nine in ten of the short shoots of an established plant end in a cyme in a year. In photographs of plants in full flower hardly a shoot is without one: a young plant two metres tall on a wall in Bordeaux (Wikimedia Commons, 'Jasmin-rue-Judaique (1)'), a plant in a London garden ('Star Jasmine Trachelospermum Jasminoides Capel Manor College Gardens Enfield London England 01') and a fence in New Orleans ('Jasmine covered fence, New Orleans April 2026') are white with them. The share is a choice read from those pictures, and takes no account of shade, which the profiles say reduces flowering. Not counted on plants."
     }
   }
 }
