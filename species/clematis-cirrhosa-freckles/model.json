@@ -119,6 +119,8 @@
         0,
         0,
         0,
+        0,
+        1,
         1,
         1,
         2,
@@ -127,7 +129,7 @@
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Three stems from the nursery plant in the first season, and more from the base in the next three: the RHS advises cutting a newly planted clematis to a strong pair of buds about 30 cm above the soil to make it throw several stems (https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide). Eight stems by the fourth season is chosen so that the plant covers its support in the two to five years the RHS gives for its full size (2.5 to 4 m, https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details). Not counted on a plant."
+      "basis": "Four stems from the nursery plant in the first season, and more from the base in each of the next three: the RHS advises cutting a newly planted clematis to a strong pair of buds about 30 cm above the soil to make it throw several stems (https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide). Ten stems by the fourth season is chosen so that a trained plant covers its support in the two to five years the RHS gives for its full size (2.5 to 4 m, https://www.rhs.org.uk/plants/89092/clematis-cirrhosa-var-purpurascens-freckles-c/details). Not counted on a plant."
     },
     "architecture.nurseryCaneM": {
       "value": 0.6,
@@ -340,7 +342,7 @@
       "value": 2,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Evergreen (RHS). How long a leaf lives is not published. A leaf is taken to live through the season it is made in and the next, through two winters, and to fall in the summer rest of the year after (phenology.evergreenLeafFallDoy): in the wild the species \"aestivates\" in hot dry summers by shedding its leaves (Bean, https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/), and in British gardens leaves may brown or partly drop in July and August of a hot dry year (https://www.ashridgetrees.co.uk/clematis-cirrhosa-freckles), which in an ordinary British summer is taken to take only the oldest. One season was tried and left the plant much thinner in winter than an evergreen described as glossy and dense. Not measured."
+      "basis": "Evergreen (RHS). How long a leaf lives is not published. A leaf is taken to live through the season it is made in and the next, through two winters, and to fall in the summer rest of the year after (phenology.evergreenLeafFallDoy): in the wild the species \"can aestivate through hot dry summers by shedding its foliage\" (Bean, https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/), and in British gardens leaves may brown or partly drop in July and August of a hot dry year (https://www.ashridgetrees.co.uk/clematis-cirrhosa-freckles), which in an ordinary British summer is taken to take only the oldest. One season was tried and left the plant much thinner in winter than an evergreen described as glossy and dense. Not measured."
     },
     "organs.clearStemHeightM": {
       "value": 0.25,

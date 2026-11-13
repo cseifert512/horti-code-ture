@@ -52,7 +52,7 @@
       "value": "ternate",
       "status": "published_plant_profile",
       "source": "https://turkiyebitkileri.com/foto%C4%9Fraf-galerisi/ranunculaceae-du%C4%9Funcice%C4%9Figiller/clematis-akasma/clematis-cirrhosa.html",
-      "basis": "Flora of Turkey, as reproduced on the page cited: \"long shoots usually bear ternate leaves\". Flora Europaea: leaves \"simple, dentate or 3-lobed, or 1- to 2-ternate with dentate or lobed leaflets\". RHS, of the cultivar: \"divided, lobed and toothed\". Bean and the International Clematis Society call the cultivar's leaves finely divided or \"fern-leafed\", as of var. balearica; the photographs of the cultivar read here (Wikimedia Commons \"Clematis cirrhosa var. purpurascens 'Freckles' (54136866406).jpg\" (the cultivar); Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar)) show broad, toothed and shallowly lobed leaflets and simple leaves instead, and that is what is drawn."
+      "basis": "Flora of Turkey, as reproduced on the page cited: \"long shoots usually bear ternate leaves\". Flora Europaea: leaves \"simple, dentate or 3-lobed, or 1- to 2-ternate with dentate or lobed leaflets\". RHS, of the cultivar: \"divided, lobed and toothed\". The International Clematis Society calls the cultivar \"fern-leafed\" and a nursery (https://www.ashridgetrees.co.uk/clematis-cirrhosa-freckles) its foliage finely divided and fern-like, as Bean describes var. balearica, from whose seed it was raised; the photographs of the cultivar read here (Wikimedia Commons \"Clematis cirrhosa var. purpurascens 'Freckles' (54136866406).jpg\" (the cultivar); Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar)) show broad, toothed and shallowly lobed leaflets and simple leaves instead, and that is what is drawn."
     },
     "leaf.leafletCount": {
       "value": 3,
@@ -172,7 +172,7 @@
       "value": "flowers solitary or in pairs in the leaf axils",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
-      "basis": "Bean: \"Flowers solitary or in pairs\". Flora of Turkey: \"singly or in axillary fascicles\". Cretan Flora: \"in the axils of clustered leaves, solitary or paired\"."
+      "basis": "Bean: \"Flower solitary or in pairs\". Flora of Turkey: \"singly or in axillary fascicles\". Cretan Flora: \"in the axils of clustered leaves, solitary or paired\"."
     },
     "inflorescence.flowersPerAxil": {
       "value": [
@@ -258,7 +258,7 @@
       "value": "downy",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
-      "basis": "Bean: sepals \"downy on the outside\". Cretan Flora: \"densely short-pubescent beneath\". Flora of Turkey: \"sericeous on the back\" (silky)."
+      "basis": "Bean: sepals \"downy outside\". Cretan Flora: \"densely short-pubescent beneath\". Flora of Turkey: \"sericeous on the back\" (silky)."
     },
     "flower.stalkLengthM": {
       "value": [
@@ -274,7 +274,7 @@
       "value": "two bracts united into a cup just beneath the flower",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-cirrhosa/",
-      "basis": "Bean: two bracts beneath the flower \"united into a cup-shaped involucre\". Flora of Turkey: \"2 connate calyciform bracteoles just beneath the flower\". Flora Europaea: \"a 2-lipped involucre beneath the flower\"."
+      "basis": "Bean: two bracts beneath the flower \"united so as to form a cup-shaped involucre\". Flora of Turkey: \"2 connate calyciform bracteoles just beneath the flower\". Flora Europaea: \"a 2-lipped involucre beneath the flower\"."
     },
     "flower.bractCupAlongStalk": {
       "value": 0.97,

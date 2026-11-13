@@ -126,8 +126,8 @@ describe('the flower', () => {
   it('has four tepals that open and fall, round stamens that fall with them, on a stalk, cup and carpels that stay', () => {
     const vs = vertices(flower.make(0, 0));
     const axis = vs.filter((x) => x.t < 0);
-    const tepals = vs.filter((x) => x.t >= 0 && x.t < 0.2);
-    const stamens = vs.filter((x) => x.t >= 0.2);
+    const tepals = vs.filter((x) => x.t >= 0 && x.t < 0.075);
+    const stamens = vs.filter((x) => x.t >= 0.075);
     expect(axis.length).toBeGreaterThan(0);
     expect(stamens.length).toBeGreaterThan(0);
     // at the coarsest level each tepal is one sheet: count the separate sheets of the parts that open first
@@ -139,7 +139,7 @@ describe('the flower', () => {
       while (parent.get(x) !== x) x = parent.get(x)!;
       return x;
     };
-    for (let i = 0; i < part.count; i++) if (part.getW(i) >= 0 && part.getW(i) < 0.2) parent.set(i, i);
+    for (let i = 0; i < part.count; i++) if (part.getW(i) >= 0 && part.getW(i) < 0.075) parent.set(i, i);
     for (let i = 0; i < index.count; i += 3) {
       const [p, q, r] = [index.getX(i), index.getX(i + 1), index.getX(i + 2)];
       if (!parent.has(p) || !parent.has(q) || !parent.has(r)) continue;
@@ -152,7 +152,7 @@ describe('the flower', () => {
   });
 
   it('is a wide bell whose mouth is what the morphology file reads off the photographs', () => {
-    const vs = vertices(flower.make(0, 0)).filter((x) => x.t >= 0 && x.t < 0.2);
+    const vs = vertices(flower.make(0, 0)).filter((x) => x.t >= 0 && x.t < 0.075);
     const top = vs[0]!.pivot;
     const centre = vs.reduce((s, x) => s.add(x.p), new V3()).multiplyScalar(1 / vs.length);
     const down = centre.clone().sub(top).normalize();

@@ -714,7 +714,7 @@ function makeFlower(variant: number, lod: number): THREE.BufferGeometry {
       const from = top.clone().addScaledVector(dir, 0.03);
       basis.makeBasis(side, dir, face).scale(new V3(length * (lod === 1 ? 2 : 1), length, length)).setPosition(from);
       const tone = 0.92 + 0.16 * hash2(i, 77);
-      mg.add(one, basis, [tone, tone, tone * 0.96], top, 0.22 + 0.08 * hash2(i, 5));
+      mg.add(one, basis, [tone, tone, tone * 0.96], top, 0.08 + 0.04 * hash2(i, 5));
     }
   }
 
@@ -937,7 +937,7 @@ const seedHead: FruitAsset = {
   poise: 'hangs',
   centreAlong: 0.9,
   // the tails dry from silky green-white to pale fluff, the achenes to brown
-  ripe: lin('#e8dec4'),
+  ripe: lin('#d9cdae'),
   ripeShade: [0.2, 0.9],
   // the stalk and the cup of bracts stay green while the head dries
   stalkKeepsColour: true,

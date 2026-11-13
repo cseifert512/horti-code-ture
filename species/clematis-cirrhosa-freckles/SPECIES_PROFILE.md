@@ -67,7 +67,7 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 - **Light classes accepted.** The RHS record gives full sun only. Growers are broader: Thorncroft and Crocus give sun to part or light shade; Plant Delights sun to part sun, with a sunny western exposure best. Full shade is given by no source.
 - **What the recommended aspect is for.** The RHS asks for a south- or west-facing, sheltered site and calls it "a cultivar for a warm, sheltered position". That is mostly warmth and shelter, not light: the plant is H4 (hardy to about -10 to -5 degC), Ashridge says it is hardy to about -10 degC with drainage and shelter, that cold north or east winds can damage the buds, and that a sharp December frost can damage the open flowers (the plant makes more). The light model shades and nothing else; warmth, wind and frost are not modelled and are reported here, not folded into light.
 - **What shade does.** No source measures it. The flowers come on last summer's shoots in the depth of winter, so a site with little winter sun is expected to flower less; the growers' "part shade" is taken to mean the plant grows there and flowers less. The RHS also advises keeping the base shaded and cool, which is about the roots, not the shoots.
-- **What too much sun or exposure does.** In hot dry summers the plant rests: its leaves may brown or partly drop in July and August and it grows again from about September (Ashridge; Thorncroft: a natural dormant period in mid summer; Bean: in the wild it "aestivates" by shedding its leaves). This is drought and heat on a sunny wall, not light as such. Exposure to cold wind damages buds and flowers (Ashridge).
+- **What too much sun or exposure does.** In hot dry summers the plant rests: its leaves may brown or partly drop in July and August and it grows again from about September (Ashridge; Thorncroft: a natural dormant period in mid summer; Bean: it "can aestivate through hot dry summers by shedding its foliage"). This is drought and heat on a sunny wall, not light as such. Exposure to cold wind damages buds and flowers (Ashridge).
 
 ## Care: what the gardener does
 
@@ -90,7 +90,7 @@ From late October to February the flowers hang singly from the leaf axils of the
 
 Where the model simplifies:
 
-- The leaves of the cultivar are described by Bean, the International Clematis Society and Ashridge as finely divided or "fern-leafed"; photographs of the cultivar (Wikimedia Commons, listed in morphology.json) show broad, toothed, shallowly lobed leaflets and simple leaves, and that is drawn. A more finely cut, two-ternate leaf is not.
+- The International Clematis Society calls the cultivar "fern-leafed" and Ashridge its foliage finely divided and fern-like, as Bean describes var. balearica, from whose seed it was raised; photographs of the cultivar (Wikimedia Commons, listed in morphology.json) show broad, toothed, shallowly lobed leaflets and simple leaves, and that is drawn. A more finely cut, two-ternate leaf is not.
 - The bronze tinge of the leaves in winter (RHS) is not drawn: the render data gives an evergreen leaf no season of colour.
 - One flower stands for the one or two of a leaf axil.
 - A short shoot is drawn longer than the cluster of leaves it is on the plant, because the engine sets leaf nodes 4 cm apart.
