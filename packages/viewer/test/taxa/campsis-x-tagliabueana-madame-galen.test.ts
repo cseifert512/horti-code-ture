@@ -383,8 +383,13 @@ describe('a specimen grown on the frame for eight years', () => {
 
   // RHS: "deciduous"; University of Connecticut, of the parent: "late to leaf out in spring"
   it('is bare from December to the middle of April, comes late into leaf and is in full leaf from June to October', () => {
+    // Since the late-winter spur prune (13 November 2026) the stubs it leaves carry their own node's leaves, which come
+    // out on the first day of the plant's leaf flush, day 106: 16 April, and 15 April in a leap year. So on 15 April 2032
+    // some 550 leaves are on the plant at no size at all. "Bare" here is: no leaf has begun to open.
+    const opening = (d: number) => data.leaves.filter((l) => leafState(l, seasonsOf(data, cal.dateOf(d).year).get(l.plantId), d).expansion > 0).length;
     for (let y = first + 2; y <= last; y++) {
-      for (const [m, d] of [[12, 15], [1, 15], [2, 15], [3, 15], [4, 15]] as const) expect(inLeaf(day(y, m, d)), `${y}-${m}-${d}`).toBe(0);
+      for (const [m, d] of [[12, 15], [1, 15], [2, 15], [3, 15]] as const) expect(inLeaf(day(y, m, d)), `${y}-${m}-${d}`).toBe(0);
+      expect(opening(day(y, 4, 15)), `${y}-4-15`).toBe(0);
       expect(inLeaf(day(y, 6, 15))).toBeGreaterThan(50);
       for (const m of [7, 8, 9, 10]) expect(inLeaf(day(y, m, 15)), `${y}-${m}`).toBeGreaterThan(inLeaf(day(y, 6, 15)));
       // late: not half of its summer leaf is out at the end of May

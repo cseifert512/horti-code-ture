@@ -2450,6 +2450,7 @@ export class Simulation {
     let unflowered = 0;
     let carried = 0;
     let backToStub = 0;
+    let asStub = 0;
     /** Length of `a` to keep, by the rule of the event, or null where nothing is to be cut. */
     const keepOf = (a: Axis, base: Vec3): number | null => {
       const rng = this.at(plant, a.contact[0]!, SALT.shorten + date.year);
@@ -2492,7 +2493,18 @@ export class Simulation {
         continue;
       }
       const keep = keepOf(a, first.contact[0]!);
-      if (keep === null) continue;
+      if (keep === null) {
+        // a side shoot no longer than the buds a winter cut keeps is already the stub the cut would leave: it stands as
+        // one, and next season's shoot breaks from its top. Left a shoot, it lived on, neither cut nor bearing a new
+        // shoot, and flowered again at its old end, which a plant that flowers on the growth of the year never does.
+        if (isSide && stub && e.keepNodes) {
+          a.shortenedYear = season;
+          if (a.tip.state !== 'stopped') a.tip = { state: 'stopped', reason: 'within the buds the gardener keeps: left as a stub' };
+          this.stubLeavesDone(a, season);
+          asStub++;
+        }
+        continue;
+      }
       if (e.keepEndFlower) {
         // what the end carries is carried to the cut end: the flower where one has opened, and the fruit that followed it
         const end = this.keptPoints(a, keep) - 1;
@@ -2515,7 +2527,10 @@ export class Simulation {
       this.cutAt(a, keep, e.id, fx);
       // a flower at the end of a shoot goes with the end, unless the gardener keeps it
       if (!e.keepEndFlower) for (const b of this.budsByAxis.get(a.id) ?? []) if (b.pointIndex === null) this.loseBud(plant, b, e.id, fx);
-      if (isSide && stub) a.shortenedYear = season;
+      if (isSide && stub) {
+        a.shortenedYear = season;
+        this.stubLeavesDone(a, season);
+      }
       if (a.tip.state !== 'stopped') a.tip = { state: 'stopped', reason: stub ? 'cut back by the gardener' : 'shortened by the gardener in summer' };
       if (isSide) sides++;
       else free++;
@@ -2524,10 +2539,24 @@ export class Simulation {
     const rule = e.keepNodes ? `to ${e.keepNodes[0] === e.keepNodes[1] ? e.keepNodes[0] : `${e.keepNodes[0]} or ${e.keepNodes[1]}`} node${e.keepNodes[1] === 1 ? '' : 's'} from its base` : e.withinM !== undefined ? `back to within ${e.withinM.toFixed(2)} m of where it leaves its stem` : `keeping ${Math.round((e.keepShare?.[0] ?? 0) * 100)}% to ${Math.round((e.keepShare?.[1] ?? 0) * 100)}% of its length`;
     let said = `${stub ? 'cut back to stubs' : 'shortened'}: ${sides} ${all ? '' : 'flowered '}side shoot${sides === 1 ? '' : 's'}${e.freeShoots ? ` and ${free} free shoot${free === 1 ? '' : 's'} of the year` : ''} cut back, each ${rule}; ${fx.stemRemovedM.toFixed(1)} m of shoot, ${fx.leafSitesRemoved} lea${fx.leafSitesRemoved === 1 ? 'f' : 'ves'}, ${fx.floralBudsRemoved} flower bud${fx.floralBudsRemoved === 1 ? '' : 's'} and ${fruit} fruit went with the cuts`;
     if (backToStub) said += ` (${backToStub} of them standing on the stub of an earlier winter, cut back to that stub, which bears again)`;
+    if (asStub) said += `; ${asStub} side shoot${asStub === 1 ? '' : 's'} already no longer than that left as ${asStub === 1 ? 'a stub' : 'stubs'}`;
     if (carried) said += `; ${carried} of them carried a flower or fruit, which was kept and hangs from the cut end`;
     if (unflowered) said += `; ${unflowered} side shoot${unflowered === 1 ? '' : 's'} that had not flowered left as ${unflowered === 1 ? 'it was' : 'they were'}`;
     if (stub && e.freeShoots) said += '; the stubs of free shoots stay as they are';
     return said;
+  }
+
+  /**
+   * The leaves of a side shoot cut to a stub in winter are those of the season before the cut, and do not come again:
+   * the buds at the stub's nodes break as next season's shoot, which carries the leaves. Without this a stub came into
+   * leaf at its own nodes every spring, on the first day of the flush, ahead of the shoots it bears. A leaf kept
+   * through the winter keeps its own day to fall.
+   */
+  private stubLeavesDone(stub: Axis, season: number): void {
+    for (const l of this.leavesByAxis.get(stub.id) ?? []) {
+      if (l.removedDay !== null || l.evergreen) continue;
+      if (l.lastYear === null || l.lastYear > season - 1) l.lastYear = Math.max(l.firstYear, season - 1);
+    }
   }
 
   /**
