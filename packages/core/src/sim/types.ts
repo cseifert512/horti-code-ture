@@ -164,6 +164,9 @@ export interface LeafSite {
    * For a leaf that a plant which is not evergreen keeps through the winter
    * after its last season: the day of the following spring on which it is to
    * be shed, as the new leaves open. `lastYear` is the year of that spring.
+   * And for an evergreen leaf at the end of its life, on a plant whose model
+   * gives the window its old leaves fall in (`phenology.evergreenLeafFallDoy`):
+   * the day in that window on which it falls; `lastYear` is the year of that day.
    */
   shedPlannedDay?: number;
 }
@@ -233,6 +236,12 @@ export interface FloralBud {
   endedBy: string | null;
   /** Set when it opens. */
   position: Vec3 | null;
+  /**
+   * Where it stood on the day it opened. `position` moves with the stem while a shoot in the air is still being laid
+   * along the shape its weight gives it; this does not, so that what is decided from the place a flower opened at
+   * (whether another follows it) is decided once.
+   */
+  openedAt?: Vec3;
   /** Unit direction the inflorescence is held in, set when it opens; null where it hangs. */
   direction: Vec3 | null;
   /** Which of the taxon's flower forms it is, where its growth model names one. */
@@ -367,8 +376,13 @@ export type GardenerAction =
        * shoot, stopped, which may flower and grow on as before.
        */
       remains?: 'stub' | 'shoot';
-      /** A shoot whose end carries a flower or fruit is left: nothing stands beyond its bunch (the model puts it at the end). */
-      spareFlowering?: boolean;
+      /**
+       * A flower or fruit at the end of a shoot stays on the plant when the shoot is shortened, and is carried to the
+       * cut end. For a plant whose model puts at the end of the shoot what on the plant stands part-way along it, within
+       * what the gardener keeps: a vine's bunch, at the third to sixth node from the base. Left out: what stood at the
+       * end goes with the end.
+       */
+      keepEndFlower?: boolean;
       renewCanes?: { keep: number; stubM: number };
     }
   /** Every free shoot of the year that holds nothing and whose tip stands further than `freeBeyondM` from where it left its support, cut off there. */

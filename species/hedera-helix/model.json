@@ -51,6 +51,16 @@
       "status": "provisional_design_assumption",
       "basis": "Not applicable to an evergreen: the engine drops an evergreen leaf at the end of its last year (organs.leafLifespanYears), whatever this window says. Ivy sheds its old leaves mainly in late spring (Metcalfe 2005), which cannot be entered here."
     },
+    "phenology.evergreenLeafFallDoy": {
+      "value": [
+        130,
+        171
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "source": "https://www.fs.usda.gov/database/feis/plants/vine/hedhel/all.html",
+      "basis": "The days between which a leaf at the end of its life falls, in the year after its last full season: 10 May to 20 June. Waggy (2010), the US Forest Service review of the species: \"The main period of litterfall occurs in late spring\", of leaves that are \"long-lived (3-4 years)\". The review gives no dates and is written of North America and Europe together; six weeks about the end of May is a choice for southern England. Without this the engine drops such a leaf on 1 January, every one of them on that day."
+    },
     "phenology.floralInitiationDoy": {
       "value": [
         196,
@@ -712,7 +722,7 @@
       "value": 1,
       "status": "peer_reviewed",
       "source": "https://doi.org/10.1111/j.1365-2745.2005.01021.x",
-      "basis": "Every leaf stays on through the winter: ivy is evergreen and its leaves live 3 to 4 years (Metcalfe 2005). Given so that the model says so rather than leaving it to the profile. What this cannot say: an evergreen leaf at the end of its life is dropped by the engine at the end of the calendar year, all on one day, whereas the main fall of ivy leaves is in late spring (US Forest Service review: \"The main period of litterfall occurs in late spring\")."
+      "basis": "Every leaf stays on through the winter: ivy is evergreen and its leaves live 3 to 4 years (Metcalfe 2005). Given so that the model says so rather than leaving it to the profile. When a leaf at the end of its life falls is given apart from this (phenology.evergreenLeafFallDoy): in late spring, not on 1 January."
     },
     "mechanics.greenShootModulusMPa": {
       "value": 60,

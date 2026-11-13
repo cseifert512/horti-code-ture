@@ -30,6 +30,8 @@ for (const n of frame.bower.graph.nodes.values()) topZ = Math.max(topZ, n.positi
  * a stub of two nodes (a node is 9 to 14 cm, Gifu Prefecture 2003) standing straight up from the top beam.
  */
 const tallAbove = (sim: Simulation) => [...standing(sim, 'side_shoot'), ...standing(sim, 'whip')].filter((a) => Math.max(...a.contact.slice(0, a.alive).map((p) => p.z)) > topZ + 0.35).length;
+/** Shoots of the year longer than a stub of two nodes: more than 0.4 m of side shoot or free cane that no winter cut has made a stub of. */
+const longShoots = (sim: Simulation) => [...standing(sim, 'side_shoot'), ...standing(sim, 'whip')].filter((a) => a.shortenedYear === undefined && lengthOf(a) > 0.4).length;
 
 describe('the vocabulary and the routines', () => {
   it('names the new event before it is used (CLAUDE.md: vocabulary first)', () => {
@@ -66,18 +68,37 @@ describe('the vocabulary and the routines', () => {
 
 describe('the crimson glory vine as the gardener keeps it', () => {
   const sim = grow(VINE, 'trained', 6);
+  sim.runUntil('2031-07-06');
+  const july = { long: longShoots(sim), longest: Math.max(...standing(sim, 'side_shoot').map(lengthOf)), fruitsBefore: sim.fruits.filter((f) => f.removedDay === null).length };
+  sim.runUntil('2031-07-08');
+  const hanging = sim.fruits.filter((f) => f.removedDay === null);
+  const stopped = {
+    longest: Math.max(...standing(sim, 'side_shoot').map(lengthOf)),
+    fruits: hanging.length,
+    // each bunch on a point of its shoot that is still there, and at that point
+    fruitsOnTheirShoots: hanging.filter((f) => {
+      const a = sim.axes.get(f.axisId)!;
+      return f.pointIndex < a.alive && a.removedDayAt[f.pointIndex] === null && f.position === a.contact[f.pointIndex];
+    }).length,
+    flowers: sim.buds.filter((b) => b.end === null && b.pointIndex === null && b.position !== null && b.stage !== 'spent').length,
+  };
   sim.runUntil('2031-12-14');
-  const before = { tall: tallAbove(sim), sideM: standing(sim, 'side_shoot').reduce((s, a) => s + lengthOf(a), 0), framework: [...standing(sim, 'leader'), ...standing(sim, 'lateral')].reduce((s, a) => s + lengthOf(a), 0) };
+  const before = { tall: tallAbove(sim), long: longShoots(sim), sideM: standing(sim, 'side_shoot').reduce((s, a) => s + lengthOf(a), 0), framework: [...standing(sim, 'leader'), ...standing(sim, 'lateral')].reduce((s, a) => s + lengthOf(a), 0) };
   sim.runUntil('2032-01-15');
-  const january = { tall: tallAbove(sim), sideM: standing(sim, 'side_shoot').reduce((s, a) => s + lengthOf(a), 0), framework: [...standing(sim, 'leader'), ...standing(sim, 'lateral')].reduce((s, a) => s + lengthOf(a), 0) };
+  const january = { tall: tallAbove(sim), long: longShoots(sim), sideM: standing(sim, 'side_shoot').reduce((s, a) => s + lengthOf(a), 0), framework: [...standing(sim, 'leader'), ...standing(sim, 'lateral')].reduce((s, a) => s + lengthOf(a), 0) };
   const stubs = standing(sim, 'side_shoot');
   sim.runUntil('2032-06-22');
   const june = { leaves: sim.leaves.filter((l) => l.removedDay === null && l.firstYear <= 2032 && (l.lastYear === null || l.lastYear >= 2032)).length, fromStubs: standing(sim, 'side_shoot').filter((a) => a.bornYear === 2032 && sim.axes.get(a.parent!.axisId)!.role === 'side_shoot').length };
 
-  it('has the thicket above the frame in December, before the cut', () => {
-    expect(before.tall).toBeGreaterThan(20);
+  // Until 12 November 2026 this asked for a thicket of more than twenty shoots standing 0.35 m above the frame in
+  // December. They stood there because a shoot never fell over and because a shoot that carried a bunch was not
+  // shortened in summer; neither is so now. What the test holds is that the year's shoots are still on the plant, long,
+  // until the winter cut, and are stubs after it.
+  it('carries the shoots of the year, shortened in summer, until the winter cut', () => {
+    expect(before.long).toBeGreaterThan(100);
   });
-  it('has none of it in January: the winter cut took every shoot of the year to one or two buds', () => {
+  it('has none of them in January: the winter cut took every shoot of the year to one or two buds', () => {
+    expect(january.long).toBe(0);
     expect(january.tall).toBe(0);
     expect(january.sideM).toBeLessThan(before.sideM / 2);
     const log = sim.events.find((e) => e.date === '2031-12-15' && e.type === 'shorten_side_shoots')!;
@@ -98,6 +119,19 @@ describe('the crimson glory vine as the gardener keeps it', () => {
     expect(summer.length).toBe(1);
     expect(summer[0]!.effects.stemRemovedM).toBeGreaterThan(1);
     expect(summer[0]!.effects.leafSitesRemoved).toBeGreaterThan(10);
+    // five or six leaves at 9 to 14 cm a node (Gifu Prefecture 2003), and the length below the first: no shoot of the year is left longer than 1 m
+    expect(july.longest).toBeGreaterThan(1.2);
+    expect(stopped.longest).toBeLessThan(1);
+  });
+  // RHS, of grapevines: a flowering side shoot is pruned "to two leaves past the developing flower cluster"; Hellman:
+  // clusters stand "at the third to sixth nodes from the base of the shoot". The model draws the bunch at the shoot's end.
+  it('shortens a shoot that carries a bunch like the rest, and keeps the bunch, at the cut end', () => {
+    const summer = sim.events.find((e) => e.type === 'shorten_side_shoots' && e.date === '2031-07-07')!;
+    expect(summer.outcome).toMatch(/\d+ of them carried a flower or fruit, which was kept and hangs from the cut end/);
+    expect(summer.effects.floralBudsRemoved).toBe(0);
+    expect(stopped.fruits + stopped.flowers).toBeGreaterThan(5);
+    expect(stopped.fruits).toBeGreaterThanOrEqual(july.fruitsBefore);
+    expect(stopped.fruitsOnTheirShoots).toBe(stopped.fruits);
   });
 });
 

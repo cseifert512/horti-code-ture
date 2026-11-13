@@ -106,10 +106,13 @@ export function climbingRoseRoutine(plantId: string, plantingYear: number, years
  *   summer, 7 July and 15 August   the young shoots shortened to five or six leaves (Bean: "The young shoots are
  *                       shortened back once or twice during the summer"; RHS plant record: pruning group 11, "in
  *                       midwinter, and in midsummer, if restricted growth is required"). Five or six leaves is the
- *                       growth model's `pruning.summerLeavesKept`, an assumption that makes Bean's "shortened" specific.
- *                       Every side shoot and every free cane of the year; a side shoot whose end carries a panicle or
- *                       bunch is left, because the model puts the bunch at the end and the gardener stops a shoot beyond
- *                       its bunch, where in the model there is nothing. Two visits, Bean's "once or twice".
+ *                       growth model's `pruning.summerLeavesKept`: the RHS, of grapevines grown as rod and spur
+ *                       "outdoors against a wall or fence, or over an arch or pergola", has "Shorten non-flowering
+ *                       side-branches to five leaves" and a flowering one pruned "to two leaves past the developing
+ *                       flower cluster". Every side shoot and every free cane of the year. A shoot that carries a
+ *                       panicle or bunch is shortened like the rest and keeps it (`keepEndFlower`): on the plant the
+ *                       bunch stands at the third to sixth node, inside what is kept; the model draws it at the shoot's
+ *                       end, so it is carried to the cut end. Two visits, Bean's "once or twice".
  *   winter, 15 December  every shoot of the year that is not framework cut "hard back in December or January to one or
  *                       two buds (later pruning causes bleeding)" (Bean), `pruning.winterBudsKept` [1, 2]: side shoots,
  *                       flowered or not, and free canes. A side shoot's stub bears next year's shoot from its top; where
@@ -120,7 +123,8 @@ export function climbingRoseRoutine(plantId: string, plantingYear: number, years
  * the longer shoots as necessary" (RHS pruning group 11) need a bound for the plant that a design has not declared.
  * Sources: https://www.treesandshrubsonline.org/articles/vitis/ ,
  * https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details ,
- * https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide (all read 12 November 2026).
+ * https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide ,
+ * https://www.rhs.org.uk/fruit/grapes/rod-and-spur-pruning-system (all read 12 November 2026).
  */
 export function vineRoutine(plantId: string, plantingYear: number, years: number, model?: GrowthModel): GardenerEvent[] {
   // the counts are the growth model's, each with its basis there; left out, the vine's own model's values as of this writing
@@ -129,7 +133,7 @@ export function vineRoutine(plantId: string, plantingYear: number, years: number
   const events: GardenerEvent[] = [];
   for (let y = 0; y < years; y++) {
     const year = plantingYear + y;
-    for (const d of ['07-07', '08-15']) events.push({ id: `vine-summer-${year}-${d}-${plantId}`, date: `${year}-${d}`, type: 'shorten_side_shoots', plantId, keepNodes: summerLeavesKept, which: 'all', freeShoots: true, remains: 'shoot', spareFlowering: true, author: 'gardener', reason: 'Bean, of Vitis: young shoots shortened once or twice during the summer; RHS pruning group 11, in midsummer where restricted growth is required' });
+    for (const d of ['07-07', '08-15']) events.push({ id: `vine-summer-${year}-${d}-${plantId}`, date: `${year}-${d}`, type: 'shorten_side_shoots', plantId, keepNodes: summerLeavesKept, which: 'all', freeShoots: true, remains: 'shoot', keepEndFlower: true, author: 'gardener', reason: 'Bean, of Vitis: young shoots shortened once or twice during the summer; RHS pruning group 11, in midsummer where restricted growth is required; RHS, of grapevines: non-flowering side shoots to five leaves, flowering ones to two leaves past the cluster' });
     events.push({ id: `vine-winter-${year}-${plantId}`, date: `${year}-12-15`, type: 'shorten_side_shoots', plantId, keepNodes: winterBudsKept, which: 'all', freeShoots: true, remains: 'stub', author: 'gardener', reason: 'Bean, of Vitis: cut hard back in December or January to one or two buds (later pruning causes bleeding); RHS pruning group 11, in midwinter' });
   }
   return events;

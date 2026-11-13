@@ -197,15 +197,16 @@ describe('shoots in the air, in a run', () => {
   });
 
   // (c) as replaced on 12 November 2026: a shoot that still holds itself up at its reach no longer stops there; it stops
-  // turning upwards and nods over, and grows on as its weight lets it (docs/ASSUMPTIONS_AUDIT.md section 12)
-  it('lets a shoot that still holds itself up at its reach grow on past it, nodding over and no longer turning up', () => {
-    // a rod far too stiff to droop: only the end of its upward turning bends it over
+  // turning upwards, and grows on along the line its tip has as its weight lets it (docs/ASSUMPTIONS_AUDIT.md section 12)
+  it('lets a shoot that still holds itself up at its reach grow on past it, no longer turning up', () => {
+    // a rod far too stiff to droop, so that only its own turning shapes it
     const stiff = withModel(library, WISTERIA, (m) => withParam(withParam(m, 'mechanics.woodModulusMPa', 300_000, 'a test: too stiff to droop'), 'mechanics.greenShootModulusMPa', 300_000, 'a test: too stiff to droop'));
-    for (const limit of [reach, 0.5]) {
-      const taxa = withModel(stiff, WISTERIA, (m) => withParam(m, 'mechanics.searcherReachM', limit, 'a test of the reach'));
+    /** How much more steeply the shoots that were still rising `limit` out from their foot head at their ends than they did there, on average. */
+    const turnedUpBeyond = (limit: number, reachM: number): { mean: number; n: number; stopped: boolean } => {
+      const taxa = withModel(stiff, WISTERIA, (m) => withParam(m, 'mechanics.searcherReachM', reachM, 'a test of the reach'));
       const sim = one(gapFrame, noHold(eager(taxa)), WISTERIA, 'untended', 4);
-      expect(sim.decisions.some((d) => d.kind === 'stopped' && d.text.includes('held itself out'))).toBe(false);
-      let past = 0;
+      let sum = 0;
+      let n = 0;
       for (const a of inTheAir(sim)) {
         for (const s of stretches(a)) {
           const base = a.contact[s.base]!;
@@ -216,14 +217,24 @@ describe('shoots in the air, in a run', () => {
             const q = a.contact[s.points[k]!]!;
             return (q.z - p.z) / distance(p, q);
           };
-          // a shoot still rising when it gets there (one already level, or turned along a member, is not the case)
-          if (dirZ(at) < 0.3) continue;
-          // beyond its reach the shoot heads lower than it did when it got there
-          expect(dirZ(s.points.length - 1), a.id).toBeLessThan(dirZ(at) - 0.05);
-          past++;
+          // a shoot still rising when it gets there, with room left to turn further up
+          if (dirZ(at) < 0.3 || dirZ(at) > 0.85) continue;
+          sum += dirZ(s.points.length - 1) - dirZ(at);
+          n++;
         }
       }
-      expect(past, `reach ${limit} m`).toBeGreaterThan(0);
+      return { mean: sum / Math.max(1, n), n, stopped: sim.decisions.some((d) => d.kind === 'stopped' && d.text.includes('held itself out')) };
+    };
+    for (const limit of [reach, 0.5]) {
+      const past = turnedUpBeyond(limit, limit);
+      // the same shoots with a reach they never come to: they go on turning up to the way they seek
+      const within = turnedUpBeyond(limit, 50);
+      expect(past.stopped).toBe(false);
+      expect(past.n, `reach ${limit} m`).toBeGreaterThan(0);
+      expect(within.n, `reach ${limit} m`).toBeGreaterThan(0);
+      // past its reach a shoot keeps its line, give or take its small wanderings; short of it, it turns up
+      expect(Math.abs(past.mean), `reach ${limit} m`).toBeLessThan(0.08);
+      expect(within.mean, `reach ${limit} m`).toBeGreaterThan(past.mean + 0.08);
     }
   });
 
