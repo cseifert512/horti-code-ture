@@ -1,152 +1,163 @@
 {
   "schemaVersion": 1,
   "taxonId": "trachelospermum-jasminoides",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it began from. What the plant is made of (opposite leaves of a measured length, cymes on short side shoots from older stems, paired follicles that seldom set in Britain, the weeks it flowers) follows floras, the RHS and one three-year study of a ten-year-old plant on a pergola in Belgrade. How fast it grows, how thickly it clothes a lattice and how much of it flowers are assumptions chosen to agree with those descriptions; none has been measured on a plant in Britain. The numbers by which a shoot chooses its way over a structure are still the wisteria model's. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "facing_out",
+    "fruitHeld": "hanging",
+    "basis": "One leaf form and one flower form, so none is named. The cymes stand out from the foliage on slender stalks 2 to 6 cm long (Flora of China), at the ends and in the upper leaf axils of short side shoots (Bean: 'usually on short lateral twigs'). The paired follicles hang: seen in photographs of fruiting plants (Wikimedia Commons, 'Fruit du faux jasmin'), not stated in a flora."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 95,
+      "value": 105,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No dated British record of the start of growth was found. Placed in mid April (15 April) so that the year's first shoots are full grown by mid June, which is when a three-year study in Belgrade found shoots at 90% of their length with leaves fully open (Ocokoljic et al. 2026, Pak. J. Bot. 58(7), BBCH 39)."
     },
     "phenology.growthEndDoy": {
       "value": 270,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Long twining shoots go on being made after flowering, through late summer; growth is taken to stop at the end of September. No dated source."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        100,
-        155
+        110,
+        166
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "An evergreen: this only paces the opening of leaves on wood that was already there. New leaves from late April to mid June; the end is the Belgrade study's date for fully expanded leaves (Ocokoljic et al. 2026), which Britain may run later than."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        283,
-        310
+        315,
+        350
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not acted on: the engine gives an evergreen leaf no change of colour. Recorded as the weeks in which the leaves take their winter bronze and red with the first cold (RHS: 'often turning deep bronze-red in winter'), mid November to mid December, for when it can be shown."
     },
     "phenology.leafFallDoy": {
       "value": [
-        310,
-        344
+        335,
+        365
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not acted on for an evergreen: a leaf stays for organs.leafLifespanYears. Kept at the end of the year only because every model carries the parameter."
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        150,
-        165
+        140,
+        152
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers on the year’s own growth (itself an inference for this species), so buds are taken to form on that growth about a fortnight before flowering. No dated source."
+      "basis": "Flower buds are taken to show on the young side shoots from the start of June, a month before the first open. In photographs the cymes stand in green bud for weeks before any flower opens. No dated source."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        190,
-        235
+        180,
+        222
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers open in succession across the RHS flowering envelope of mid to late summer (9 July to 23 August)."
+      "basis": "Cymes begin to open from the end of June to about 10 August, so that with the weeks each lasts the plant is in flower through July and August: Bean, 'produced in July and August'; RHS, 'mid to late summer'. In Belgrade the first tenth of the flowers were open on day 161 to 168 and the last petals fell on day 227 to 233 in two ordinary years (Ocokoljic et al. 2026); Britain is cooler, and the later British months are kept."
     },
     "phenology.petalFallDoy": {
       "value": [
-        213,
-        243
+        200,
+        250
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed inside the RHS flowering envelope of June to August (1 to 31 August)."
+      "basis": "Not acted on while phenology.flowerLastsDays is given: each cyme then goes over in its own time. Set to the span in which they do."
     },
     "phenology.flowerLastsDays": {
       "value": [
-        10,
-        20
+        16,
+        26
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "How long one flower cluster lasts. A placeholder."
+      "basis": "How long one cyme is in flower: its two to nine flowers (counted in Belgrade, Ocokoljic et al. 2026) open a few at a time. Chosen so that the whole plant flowers for about nine weeks, as it did there in two ordinary years (66 and 65 days from the first tenth open to the last petal fallen). Not timed on a single cyme."
     },
     "extension.leaderMPerSeason": {
-      "value": 1.2,
+      "value": 0.7,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: reaches its 8 to 12 m size band in 5 to 10 years, but is slow in cool sites. A size band is not a growth rate; a placeholder."
+      "basis": "RHS guide: 'It is relatively slow growing, but in favourable conditions can eventually reach 4m (14ft) or more.' Bean has it 10 or 12 ft high on walls in the south and west, and 'rather slow-growing when young'. The RHS record's band of 8 to 12 m in 5 to 10 years would need more than a metre a year and is not what British growers report; one retailer's 10 to 20 cm a year is slower than plants that fill a fence panel in five years. 0.7 m takes a main stem to the top of a 3 m support in its fifth or sixth season. Not measured."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        1.3,
-        1,
-        0.8
+        0.65,
+        0.6,
+        0.5,
+        0.4
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate as in the wisteria model. Not measured."
+      "basis": "Side branches a little slower than the main stems, each order slower again. Scaled from the leader rate; not measured. With the branching above they clothe about 2 m by 2 m of lattice by the fifth or sixth season, which is what one grower reports of a plant in Gloucestershire (6.5 ft by 6 ft after five years, growsonyou.com question 27963): an anecdote, used as a check and not as a source."
     },
     "extension.whipMPerSeason": {
-      "value": 1,
+      "value": 0.9,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+      "basis": "The long twining shoots that an established plant throws out from its older stems in summer, which reach for something to wind round. They make their length within the season. Rate not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
-        0.5,
-        0.8
+        0.3,
+        0.6,
+        0.85
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Slow to start. Bean: 'It is rather slow-growing when young'. The RHS guide has plants established after two or three years, when they 'will be hardier than recently planted ones'; Useful Temperate Plants, citing Davis, warns that they 'may put on no new growth for the first 2 - 3 years after planting out'. Three seasons of reduced extension, the first at under a third. The factors themselves are not measured."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
-        0
+        0,
+        0,
+        1,
+        1,
+        2
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Two stems from the base, both from the first season. A placeholder."
+      "basis": "A nursery plant comes as several stems tied to canes (RHS guide: 'usually trained onto bamboo canes'), and an established one goes on sending shoots from the base: three stems from the first season, two more in the second and one in the third. The number is a choice."
     },
     "architecture.nurseryCaneM": {
-      "value": 0.6,
+      "value": 0.9,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A typical nursery plant on a short cane. Not measured."
+      "basis": "RHS guide: nursery plants 'vary in height from about 60cm (2ft) to 1.8m (6ft) or more'. A plant from the lower half of that range."
     },
     "architecture.maxBranchOrder": {
-      "value": 3,
+      "value": 4,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Branches of branches of branches run along the lattice before the short flowering shoots take over: one order more than the wisteria model, for a plant that makes a mat of fine stems rather than a few thick ones. A choice."
     },
     "architecture.leaderLengthM": {
       "value": [
-        8,
-        12
+        4,
+        9
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The RHS ultimate-size band used as a cap on stem length. A height band is not a route length, so this is a placeholder."
+      "basis": "A cap on the length of a main stem: from the RHS guide's '4m (14ft) or more' to the RHS record's 'about 9m in height'. A height is not a route length, so this is a stand-in."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        2,
-        1.2,
-        0.7
+        3,
+        2.2,
+        1.6,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader as in the wisteria model. Not measured."
+      "basis": "Side branches run for metres: the RHS record gives a spread of 4 to 8 m. Scaled down by order; not measured."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
@@ -155,17 +166,18 @@
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
+        0.95,
         0.9,
-        0.75,
-        0.55
+        0.8,
+        0.6
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "It branches freely and 'will cover its support effectively on its own, twining and scrambling up and across' (RHS guide), so nearly every crossing of the lattice that a stem passes sends a branch along the other member. The chances are a choice."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.5,
+      "value": 0.2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Most buds left at a crossing of the lattice break the next spring: the plant branches freely and fills in behind its leading shoots ('will cover its support effectively on its own', RHS guide). One in five waits longer. A choice, not a count."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
@@ -177,19 +189,19 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
+      "value": 4,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Its slender stems wind round one another as well as round the support, so a lath or a cable carries a rope of several: seen in photographs of established plants (Wikimedia Commons, Starr 090416-5994 and 'Trachelospermum jasminoides A'). Four is a choice; not counted on plants."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 3,
+      "value": 5,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "One more than on a lath, as in the wisteria model, a glulam member being wide enough to lay more stems side by side."
     },
     "routing.occupancyCost": {
-      "value": 1.6,
+      "value": 0.8,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How much a shoot is put off a member that already carries stems. Half the wisteria model's 1.6: this plant's slender stems wind round one another readily and thicken on the ground they hold before they take new ground. A choice; nothing measured."
     },
     "routing.downhillCostPerM": {
       "value": 5,
@@ -235,13 +247,13 @@
       "value": 40,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. Taken as well below the timber lattice (76 mm round) and above a cable, so that this plant twines cables unaided and has to be tied to glulam. The whole difference between it and wisteria on the structure rests on this number."
+      "basis": "No measurement exists. Taken as well below the timber lattice (76 mm round) and above a cable, so that this plant twines cables unaided and has to be tied to glulam. The whole difference between it and wisteria on the structure rests on this number. What is recorded: it is sold wound on bamboo canes, and the RHS guide asks for a support of wires or trellis and says 'Young plants may need some guiding and tying in until they're able to twine'."
     },
     "attachment.minPitchM": {
-      "value": 0.3,
+      "value": 0.14,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The rise of one turn round a thin support. Read off a photograph of stems on a bamboo cane (Wikimedia Commons, 'Trachelospermum jasminoides A'), where a turn takes several widths of the cane: a slack spiral, tighter than the wisteria model's 0.3 m because the stems are far more slender. Not measured."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
@@ -250,31 +262,33 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.05,
-        0.09
+        0.03,
+        0.04
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Leaves in opposite pairs on short internodes. Not measured."
+      "basis": "No flora gives the length between leaf pairs. Read off photographs against the leaf lengths the floras give: 2 to 4 cm on the short flowering shoots, which carry most of the foliage, and 5 to 10 cm on long twining shoots. One range has to serve both kinds of shoot, and the engine sets a leaf pair only at a stored point of a stem, 4 cm apart: a range that ends at 4 cm puts a pair at every point, which is right for the short shoots and too close for the long ones."
     },
     "organs.leafLengthM": {
       "value": [
-        0.04,
-        0.08
+        0.042,
+        0.088
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "status": "peer_reviewed",
+      "source": "https://pakbs.org/pjbot/papers/1772748232.pdf",
+      "basis": "Ocokoljic et al. 2026, Pak. J. Bot. 58(7): 300 full-grown leaves of a ten-year-old plant on a pergola in Belgrade measured 4.20 to 8.80 cm long. The same species, cultivated outdoors in a climate with colder winters and hotter summers than Britain's; whether the stalk (3 to 12 mm, Flora of China) was included is not said. Flora of China gives the blade as 2 to 10 cm, Bean as 1 1/2 to 3 1/2 in."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Honeysuckles bear their leaves in opposite pairs. A character of the family, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension plant record: leaf arrangement 'Opposite'. The Belgrade study says the same of the leaves it measured."
     },
     "organs.spurChance": {
-      "value": 0.5,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Stands for the short leafy side shoots that keep old stems clothed. A placeholder."
+      "basis": "It makes no spurs. The short leafy shoots that clothe its older stems and carry its flowers are grown as flowering side shoots (sideShoots.*), which bear their leaves in pairs along their length; a spur in this engine is wisteria's, a tuft at one node that hangs clear of the timber."
     },
     "organs.spurLengthM": {
       "value": [
@@ -283,7 +297,7 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short leafy side shoots. A placeholder."
+      "basis": "Not acted on while organs.spurChance is 0; present because every model carries every parameter."
     },
     "organs.spurLeafCount": {
       "value": [
@@ -292,61 +306,62 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Not acted on while organs.spurChance is 0; present because every model carries every parameter."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.03,
-        0.05
+        0.04,
+        0.08
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Size of a flower cluster. A placeholder."
+      "basis": "The width of the cluster of flowers at the end of a cyme's stalk, which is what the flower model is authored to. Two to nine flowers (counted in Belgrade, Ocokoljic et al. 2026), each 1.7 to 2.3 cm across (measured there), standing loosely on forks 1 to 2 cm long, make a cluster two to four flowers wide. No source measures the cluster itself; Bean's cymes of 1 1/2 to 2 in. and Flora of China's stalk of 2 to 6 cm are lengths, not widths."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.08,
+      "value": 0.03,
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+      "basis": "The share of older leaf nodes that throw a long twining shoot in a year. Photographs of established plants in summer show such shoots standing out of the foliage every few hand-widths; the share is a choice."
     },
     "organs.whipsPerYearMax": {
-      "value": 60,
+      "value": 30,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "A cap on new long shoots a year, so that a large plant does not bristle. A choice."
     },
     "organs.whipLengthM": {
       "value": [
-        0.2,
-        0.5
+        0.25,
+        0.7
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a year’s side shoot. A placeholder."
+      "basis": "How far a long shoot reaches when it finds nothing to wind round, before it arches over and stops. Judged from photographs, where free shoots stand a few leaf lengths to an arm's length out of the plant. Not measured; see the species profile on how such shoots really behave."
     },
     "organs.leafLifespanYears": {
       "value": 3,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Evergreen. Leaves are taken to last three seasons; cold wind may strip them sooner."
+      "basis": "Evergreen and leathery, but no source read says how long a leaf lives. Three seasons assumed; older leaves are seen yellowing and reddening before they fall, and cold may strip them sooner (RHS guide: in cold snaps 'the leaves may turn red, develop spots or even fall')."
     },
     "organs.clearStemHeightM": {
-      "value": 0.3,
+      "value": 0.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Clothed nearly to the ground. A placeholder."
+      "basis": "Clothed nearly to the ground while young; side shoots are not thrown from the lowest hand-width of stem. A choice."
     },
     "flowering.competenceYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its second season. A placeholder."
+      "basis": "Nursery plants are sold in flower, so it flowers young. In the model its first flowering side shoots break from the cane it arrived with in its second season."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.5,
+        0.6,
+        0.85,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Half strength in its first flowering year. A placeholder."
+      "basis": "Flowering builds up while the plant establishes, which the RHS guide puts at two or three years; but it flowers freely young: nursery plants are sold in flower, and a plant about two metres tall is covered in it (photograph, Wikimedia Commons, 'Jasmin-rue-Judaique (1)'). The steps are a choice."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
@@ -362,13 +377,13 @@
       "value": 5,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flower clusters per metre of the year’s growth. A placeholder chosen to read as present but not profuse."
+      "basis": "Cymes in the leaf axils of the year's long growth. Flora of China has the cymes 'terminal and axillary', and photographs show them at several nodes in turn along a leafy shoot (Wikimedia Commons, 'Trachelospermum jasminoides RHu 01', 'Trachelospermum jasminoides 13zz'); Bean has them 'usually on short lateral twigs', so the long shoots carry fewer. Five to the metre, a cyme at one node in six, is a choice."
     },
     "flowering.currentSeasonMinShootM": {
       "value": 0.15,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot shorter than this is taken not to flower. A placeholder."
+      "basis": "A shoot shorter than this is taken not to flower in its leaf axils. A placeholder."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -398,16 +413,16 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 1.6,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A young shoot about 2.5 mm thick: read off photographs against leaves of known length. No flora gives the thickness of a shoot."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 6,
+      "value": 1.1,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Stems much more slender than wisteria’s. A placeholder."
+      "basis": "Stems stay slender: chosen so that the main stems of a ten-year-old plant on the specimen frame are about as thick as a thumb at the base. No measured stem diameters were found."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -415,32 +430,53 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.008,
+      "status": "provisional_design_assumption",
+      "basis": "RHS guide: 'fruits (and seeds) are rarely produced in UK gardens'; in Belgrade none set in three years (Ocokoljic et al. 2026). One cyme in a hundred and twenty-five is this model's reading of 'rarely': two or three pairs of pods in a year on a plant that covers a fence panel, a dozen or so on one that covers a wall, a young plant usually having none."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.1,
+        0.25
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
+      "basis": "Flora of China, volume 16 (efloras.org taxon 200018474, read from the copy at this address because efloras.org refused the request): follicles linear, 10 to 25 cm long and 3 to 10 mm wide. One fruit here is the pair of follicles that follows one flower."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        60,
+        90
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Days for the follicles to reach their length after the flower goes over. No source times it; chosen so that pods from August flowers are full length by late autumn."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        330,
+        365
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Flora of China: 'Fl. Mar-Aug, fr. Jun-Dec.', in China. In Britain it flowers three months later than it begins to there; the green pods are taken to turn brown in December. No British record of ripening was found."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        15,
+        75
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The dry follicles split along one side and let their plumed seeds go; taken to happen from mid January to mid March, so that pods hang through the winter. Not recorded for Britain."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "It has no tendrils: a twiner that holds on with its stems (RHS: 'with twining stems'). No description read mentions any."
     },
     "appendages.tendrilLengthM": {
       "value": null,
@@ -448,8 +484,9 @@
       "status": "unknown"
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Its leaf stalks are 3 to 12 mm long (Flora of China) and do not clasp: it holds on with its stems."
     },
     "appendages.leafStalkLengthM": {
       "value": null,
@@ -467,9 +504,13 @@
       "status": "unknown"
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: no description read mentions prickles or thorns."
     },
     "appendages.prickleLengthM": {
       "value": null,
@@ -477,28 +518,36 @@
       "status": "unknown"
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 1,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The flowering shoots break from wood made in earlier years: Useful Temperate Plants, citing Huxley's RHS Dictionary of Gardening, 'Flowers are produced on short laterals that grow from old wood'; Bean, 'usually on short lateral twigs'; Clemson Extension has them on short side branches. Last year's stems are old enough."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 28,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "How thickly the older stems are set with short flowering shoots. At the leaf spacing above this puts one at nearly every leaf node of a stem a year old or more that has none: photographs of established plants show the older stems hidden by leafy twigs, and a lattice it has covered reads as a screen (the RHS lists hedging and screens among its uses). Not counted on plants."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0.04,
+        0.22
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "'Short lateral twigs' (Bean): one to five pairs of leaves below the cyme in photographs, two fingers' width to a hand-span. The range is kept wide so that the twigs along a stem are of unequal length, as they are on the plant. Not measured."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 4,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The short shoots are woody and stay: on the plant they branch again and flower from their own side shoots in later years, which this model shows as the same shoot flowering again. Four seasons is a choice, a little longer than a leaf is taken to last."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.9,
+      "status": "provisional_design_assumption",
+      "basis": "Nine in ten of the short shoots of an established plant end in a cyme in a year. In photographs of plants in full flower hardly a shoot is without one: a young plant two metres tall on a wall in Bordeaux (Wikimedia Commons, 'Jasmin-rue-Judaique (1)'), a plant in a London garden ('Star Jasmine Trachelospermum Jasminoides Capel Manor College Gardens Enfield London England 01') and a fence in New Orleans ('Jasmine covered fence, New Orleans April 2026') are white with them. The share is a choice read from those pictures, and takes no account of shade, which the profiles say reduces flowering. Not counted on plants."
     }
   }
 }
