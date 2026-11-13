@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taxonId": "trachelospermum-jasminoides",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it began from. What the plant is made of (opposite leaves of a measured length, cymes on short side shoots from older stems, paired follicles that seldom set in Britain, the weeks it flowers) follows floras, the RHS and one three-year study of a ten-year-old plant on a pergola in Belgrade. How fast it grows, how thickly it clothes a lattice and how much of it flowers are assumptions chosen to agree with those descriptions; none has been measured on a plant in Britain. The numbers by which a shoot chooses its way over a structure are still the wisteria model's. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it began from. What the plant is made of (opposite leaves of a measured length, cymes on short side shoots from older stems, paired follicles that seldom set in Britain, the weeks it flowers) follows floras, the RHS and one three-year study of a ten-year-old plant on a pergola in Belgrade; how far its shoots hold themselves out in the air and how stiff they are at the base follow measurements of its searcher shoots (Vecchiato et al. 2023). How fast it grows, how thickly it clothes a lattice, how its leaves and twigs are held and how much of it flowers are assumptions chosen to agree with those descriptions and with photographs; none has been measured on a plant in Britain. The numbers by which a shoot chooses its way over a structure are still the wisteria model's. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
   "names": {
     "flowerHeld": "facing_out",
     "fruitHeld": "hanging",
@@ -199,9 +199,9 @@
       "basis": "One more than on a lath, as in the wisteria model, a glulam member being wide enough to lay more stems side by side."
     },
     "routing.occupancyCost": {
-      "value": 0.8,
+      "value": 1.6,
       "status": "provisional_design_assumption",
-      "basis": "How much a shoot is put off a member that already carries stems. Half the wisteria model's 1.6: this plant's slender stems wind round one another readily and thicken on the ground they hold before they take new ground. A choice; nothing measured."
+      "basis": "How much a shoot is put off a member that already carries stems. The wisteria model's figure, kept here for a different reason: a gardener training a young plant spreads its stems over the support rather than letting them rope up one wire (RHS guide: young plants 'may need some guiding and tying in until they're able to twine'). At half this (the earlier choice) every stem of a young plant went up the one cable stay of the specimen frame. A choice; nothing measured."
     },
     "routing.downhillCostPerM": {
       "value": 5,
@@ -262,12 +262,12 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.03,
-        0.04
+        0.05,
+        0.1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "No flora gives the length between leaf pairs. Read off photographs against the leaf lengths the floras give: 2 to 4 cm on the short flowering shoots, which carry most of the foliage, and 5 to 10 cm on long twining shoots. One range has to serve both kinds of shoot, and the engine sets a leaf pair only at a stored point of a stem, 4 cm apart: a range that ends at 4 cm puts a pair at every point, which is right for the short shoots and too close for the long ones."
+      "basis": "The length between leaf pairs on the long twining shoots and the framework they become: 5 to 10 cm, read off photographs against the leaf lengths the floras give (Commons, 'Trachelospermum jasminoides RHu 01', 'Trachelospermum jasminoides en hiver'). No flora gives it. The short flowering twigs, which carry most of the foliage, have their own spacing (organs.sideShootLeafSpacingM). The engine sets a node only at a stored point of a stem, 4 cm apart."
     },
     "organs.leafLengthM": {
       "value": [
@@ -329,12 +329,12 @@
     },
     "organs.whipLengthM": {
       "value": [
-        0.25,
-        0.7
+        0.3,
+        1
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "How far a long shoot reaches when it finds nothing to wind round, before it arches over and stops. Judged from photographs, where free shoots stand a few leaf lengths to an arm's length out of the plant. Not measured; see the species profile on how such shoots really behave."
+      "basis": "How far a long shoot of the year grows when it finds nothing to wind round. Its searchers hold themselves out to about 1.1 m (Vecchiato et al. 2023); beyond that a shoot droops, hangs or winds round its neighbours. In photographs of established plants such shoots stand a few leaf lengths to an arm's length out of the foliage (Commons, 'Star Jasmine ... Capel Manor ... 01'). The range is a choice below the measured reach."
     },
     "organs.leafLifespanYears": {
       "value": 3,
@@ -413,10 +413,10 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 1.6,
+      "value": 1,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "A young shoot about 2.5 mm thick: read off photographs against leaves of known length. No flora gives the thickness of a shoot."
+      "basis": "A young shoot about 2 mm thick behind its tip: read off photographs against leaves of known width (Commons, 'Fulles de gesmiler ... Altea', where the green shoots are about a twelfth of the width of a blade 1.6 to 3.4 cm wide; 'Trachelospermum jasminoides closeup'). No flora gives the thickness of a shoot."
     },
     "thickening.radiusSquaredPerMetreMm2": {
       "value": 1.1,
@@ -531,12 +531,12 @@
     },
     "sideShoots.lengthM": {
       "value": [
-        0.04,
-        0.22
+        0.05,
+        0.25
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "'Short lateral twigs' (Bean): one to five pairs of leaves below the cyme in photographs, two fingers' width to a hand-span. The range is kept wide so that the twigs along a stem are of unequal length, as they are on the plant. Not measured."
+      "basis": "'Short lateral twigs' (Bean): one to six pairs of leaves 2 to 4 cm apart below the cyme in photographs, two fingers' width to a hand-span and a bit (Commons, 'Trachelospermum jasminoides RHu 01', 'Trachelospermum jasminoides closeup'). The range is kept wide so that the twigs along a stem are of unequal length, as they are on the plant. Not measured."
     },
     "sideShoots.lifespanYears": {
       "value": 4,
@@ -548,6 +548,173 @@
       "value": 0.9,
       "status": "provisional_design_assumption",
       "basis": "Nine in ten of the short shoots of an established plant end in a cyme in a year. In photographs of plants in full flower hardly a shoot is without one: a young plant two metres tall on a wall in Bordeaux (Wikimedia Commons, 'Jasmin-rue-Judaique (1)'), a plant in a London garden ('Star Jasmine Trachelospermum Jasminoides Capel Manor College Gardens Enfield London England 01') and a fence in New Orleans ('Jasmine covered fence, New Orleans April 2026') are white with them. The share is a choice read from those pictures, and takes no account of shade, which the profiles say reduces flowering. Not counted on plants."
+    },
+    "mechanics.searcherReachM": {
+      "value": 1.1,
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1371/journal.pcbi.1011538",
+      "basis": "Vecchiato, Hattermann, Palladino, Tedone, Heuret, Rowe and Marcati 2023, PLoS Computational Biology 19:e1011538: searcher shoots of Trachelospermum jasminoides and of Condylocarpon guianense reach 'similar maximal reach capacities of around 110 cm in length' (five searchers of each measured). Hattermann et al. 2022 (https://doi.org/10.3389/ffgc.2022.836247) list it among 29 climbers and give twiners 10 to 225 cm. Measured on searchers of plants grown in France, not in Britain."
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 3000,
+      "unit": "MPa",
+      "status": "peer_reviewed",
+      "source": "https://doi.org/10.1371/journal.pcbi.1011538",
+      "basis": "Vecchiato et al. 2023: the two species have 'similar values of structural Young's modulus at the base of searcher shoots of around 3000'; the paper prints the unit as N m-2 in that sentence and as MN/m2 in its methods, and 3000 MN/m2 (= MPa) is the reading that agrees with Hattermann et al. 2022 (213 to 15 479 MN/m2 across 29 climbers). The base of a searcher is its stiffest, oldest stretch: taken for wood that has set."
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 300,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "basis": "Not measured for this plant. A tenth of the measured base of its searchers (Vecchiato et al. 2023, about 3000 MN/m2), near the least stiff searcher base Hattermann et al. 2022 measured among 29 climbers (213 MN/m2): the soft, latex-filled growing end of a twiner's searcher is far less stiff than its base."
+    },
+    "mechanics.woodSetDays": {
+      "value": 45,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "How long a new stretch of shoot stays soft. Not measured. In photographs the year's shoots are green and pliant for a hand-span or two behind the tip and brown and woody below (Wikimedia Commons, 'Trachelospermum jasminoides RHu 01', 'Fulles de gesmiler ... Altea'); at the summer growth rate of a few centimetres a week that is six weeks or so."
+    },
+    "mechanics.stemFreshDensityKgM3": {
+      "value": 1000,
+      "unit": "kg/m3",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. A young shoot is mostly water and latex: the density of water, as Chelakkot and Mahadevan 2017 take for a young shoot (https://doi.org/10.1098/rsif.2017.0001)."
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.4,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. The leaf is leathery (Flora of China: 'leathery or nearly so'), a blade roughly 0.4 mm thick by eye in photographs: 0.4 kg to the square metre, twice the generic thin leaf. The engine takes a leaf as a disc 0.56 of its length across; for this elliptic blade, about 0.4 as wide as long, that disc is close to the blade's own area, so no allowance is made for the outline."
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.0015,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. Two to nine flowers (Ocokoljic et al. 2026) each a corolla about 2 cm across of thin petals on a tube 5 to 10 mm long, with a stalk 2 to 6 cm (Flora of China): a gram and a half for the cyme is an estimate from its size."
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.006,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. Two follicles 10 to 25 cm long and 3 to 10 mm thick (Flora of China), slender and tapering: each about 3 cm3 of tissue at the middle sizes, so about 6 g for the pair green."
+    },
+    "mechanics.leanDeg": {
+      "value": 30,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The least a free shoot leans from plumb where it leaves its support. Vecchiato et al. 2023 start their model of a Trachelospermum jasminoides searcher at pi/4 (45 degrees) from the vertical; that is a modelling choice of theirs, not a measurement. Photographs show the long shoots of the year leaving the plant at every angle from nearly upright to level (Commons, 'Star Jasmine ... Capel Manor ... 01', 'Trachelospermum jasminoides RHu 01'). Thirty degrees is a choice between."
+    },
+    "mechanics.leafWeightOffsetShare": {
+      "value": 0.55,
+      "unit": "share of leaf length",
+      "status": "provisional_design_assumption",
+      "basis": "Where a leaf's weight hangs off the stem. The stalk is short (3 to 12 mm, Flora of China) and the blade elliptic, widest about the middle, so the blade's centre of mass is a little past half the leaf's length. Not measured."
+    },
+    "tropism.turnPerM": {
+      "value": 1.2,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "basis": "How sharply a searcher turns to the direction it seeks. Not measured. Vecchiato et al. 2023 fit an active posture control to T. jasminoides searchers but give its strength in their own model's terms, not as a turn per metre. A weak pull, a little under the generic shoot's, for a twiner whose searchers lean and sweep and are seen arching over and hanging in photographs rather than standing plumb."
+    },
+    "tropism.lightShare": {
+      "value": 0.4,
+      "unit": "share",
+      "status": "provisional_design_assumption",
+      "basis": "A plant of the sunny edges of forests and brushwood (Flora of China) that accepts partial shade (RHS): its searchers are taken to seek a direction a little nearer up than the light. A choice."
+    },
+    "attachment.graspReachM": {
+      "value": 0.12,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How near the tip of a searcher must come to a support to wind on to it. Not measured for this plant. Darwin 1875 (https://www.gutenberg.org/ebooks/2485) saw the revolving shoots of twiners sweep circles from about 0.5 m (hop) to over 1.5 m across; a quarter of the hop's sweep, the generic figure, is kept for a slender twiner whose tip revolves less widely than a hop's."
+    },
+    "sideShoots.branchAngleDeg": {
+      "value": [
+        40,
+        75
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The angle at which the short leafy twigs leave their stem, from the axil of a leaf of an opposite pair. Read off photographs of established plants on walls and frames: they leave at a half to most of a right angle and bend over under their leaves and cymes (Commons, 'Trachelospermum jasminoides RHu 01', 'Trachelospermum jasminoides en hiver'). Not measured."
+    },
+    "sideShoots.breakSpreadDays": {
+      "value": [
+        0,
+        35
+      ],
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "The twigs break over about five weeks from the start of growth, so that they are all in leaf by mid June, when the Belgrade study found shoots at 90 per cent of their length (Ocokoljic et al. 2026, BBCH 39). Not timed."
+    },
+    "sideShoots.startTowardsLight": {
+      "value": 0.35,
+      "unit": "share",
+      "status": "provisional_design_assumption",
+      "basis": "The twigs on a wall or frame turn out and up to the light as they set out, but stay in their pairs and are not all upright: in photographs they stand at every angle off the stems and the plant reads as a mat, not a brush (Commons, 'Trachelospermum jasminoides RHu 01'). A choice."
+    },
+    "organs.alternateDivergenceDeg": {
+      "value": 90,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The leaves are opposite (NC State Extension; Ocokoljic et al. 2026), the pairs at right angles to one another (decussate) as in the dogbane family generally and in photographs; the engine uses this angle only where leaves stand singly, so it is given for completeness and does not act on this plant."
+    },
+    "sideShoots.baseDiameterMm": {
+      "value": 3,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "A twig a hand-span long is about 3 mm thick at its base, read off photographs against leaves of known width (Commons, 'Fulles de gesmiler ... Altea'). No flora gives it."
+    },
+    "sideShoots.extensionMPerYear": {
+      "value": [
+        0.05,
+        0.15
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The short shoots stay and grow on: in later years they lengthen and throw short shoots of their own that flower (Useful Temperate Plants, citing Huxley: flowers on 'short laterals that grow from old wood'). The engine lets a side shoot lengthen but not fork; five to fifteen centimetres a year stands for both. Not measured."
+    },
+    "sideShoots.maxLengthM": {
+      "value": 0.4,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The mat of twigs on an established plant is a hand-span or two deep and fills the space between laths 0.4 m apart in photographs of plants on trellis and fences (Commons, 'Trachelospermum jasminoides RHu 01', 'Star Jasmine ... Capel Manor ... 01'). A choice."
+    },
+    "organs.leafTurnToOpenShare": {
+      "value": 0.6,
+      "unit": "share",
+      "status": "provisional_design_assumption",
+      "basis": "The leaf stalks turn their blades out from the wall or frame to the light, keeping the pairs, so that a plant on a wall is a sheet of overlapping faces (Commons, 'Trachelospermum jasminoides RHu 01', 'Fulles de gesmiler ... Altea'). A choice read from photographs."
+    },
+    "phenology.evergreenLeafFallDoy": {
+      "value": [
+        135,
+        180
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "When a leaf at the end of its life falls. No dated source. Old leaves are seen yellow and red through the winter and spring (Commons, 'Trachelospermum jasminoides en hiver'; RHS growing guide, in cold snaps the leaves 'may turn red, develop spots or even fall') and are taken to drop once the new leaves are opening, from mid May to the end of June, so that the plant is never bare: an evergreen that sheds its oldest leaves behind the new flush. The window begins after phenology.leafFlushDoy does."
+    },
+    "organs.sideShootLeafSpacingM": {
+      "value": [
+        0.02,
+        0.04
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The short flowering twigs are close-jointed, 2 to 4 cm between pairs, in photographs (Commons, 'Trachelospermum jasminoides RHu 01', 'Trachelospermum jasminoides closeup'). Not measured. The engine's stored points are 4 cm apart, so on a twig a pair stands at every point."
+    },
+    "organs.sideShootLeavesPerNode": {
+      "value": 2,
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/trachelospermum-jasminoides/",
+      "basis": "NC State Extension: leaf arrangement 'Opposite', on every shoot."
+    },
+    "organs.sideShootLeafLifespanYears": {
+      "value": 3,
+      "unit": "growing seasons",
+      "status": "provisional_design_assumption",
+      "basis": "As organs.leafLifespanYears: the leaves of a twig are taken to last three seasons, so that a twig that grows on is leafy at its outer end and bare at its base, as old twigs are in photographs. Not measured."
     }
   }
 }

@@ -34,22 +34,38 @@ const TAU = Math.PI * 2;
 // ---------------------------------------------------------------------------
 // Leaf
 // ---------------------------------------------------------------------------
-/** Measured on 300 leaves of one plant (Ocokoljic et al. 2026): 4.2 to 8.8 cm long, 1.6 to 3.4 cm wide. */
+/**
+ * Measured on 300 leaves of one plant (Ocokoljic et al. 2026): 4.2 to 8.8 cm long, 1.6 to 3.4 cm wide. The width for
+ * length the outlines are drawn to (below) is read off photographs, and lies about the ratio of these middles.
+ */
 const LEAF_LENGTH = characterRange(morphology, 'leaf.lengthM');
-const LEAF_WIDTH = characterRange(morphology, 'leaf.widthM');
 /** The leaf stalk, 3 to 12 mm (Flora of China). */
 const LEAF_STALK = characterRange(morphology, 'leaf.stalkLengthM');
 
-/** The stalk's share of the whole leaf, and the blade's width for its length, both from the middles of the ranges. */
+/** The stalk's share of the whole leaf, from the middles of the ranges. */
 const STALK_SHARE = mid(LEAF_STALK) / mid(LEAF_LENGTH);
-const BLADE_ASPECT = mid(LEAF_WIDTH) / (mid(LEAF_LENGTH) - mid(LEAF_STALK));
 
-/** The three outlines Flora of China and Bean describe, as: width against the measured middle, and where the blade is widest. */
+/**
+ * Width for length of the blade, narrowest to broadest, and where along it the blade is widest, as read off
+ * photographs (morphology.json leaf.bladeWidthToLength, leaf.widestAt).
+ */
+const BLADE_WIDTH = characterRange(morphology, 'leaf.bladeWidthToLength');
+const WIDEST_AT = characterRange(morphology, 'leaf.widestAt');
+/**
+ * The three outlines Flora of China and Bean describe, each as its width for its length and where it is widest. The
+ * narrow one is widest nearest the middle; the ovate one, broadest, is widest nearest the base.
+ */
 const OUTLINES = [
-  { name: 'narrowly elliptic', width: 0.8, widest: 0.48, fullness: 0.8 },
-  { name: 'elliptic', width: 1.0, widest: 0.46, fullness: 0.7 },
-  { name: 'ovate', width: 1.22, widest: 0.4, fullness: 0.64 },
+  { name: 'narrowly elliptic', aspect: BLADE_WIDTH[0], widest: WIDEST_AT[1], fullness: 0.8 },
+  { name: 'elliptic', aspect: mid(BLADE_WIDTH), widest: mid(WIDEST_AT), fullness: 0.7 },
+  { name: 'ovate', aspect: BLADE_WIDTH[1], widest: WIDEST_AT[0], fullness: 0.62 },
 ] as const;
+/**
+ * How the blade is held (morphology.json leaf.faceRiseDeg, leaf.faceRiseOpenDeg, leaf.bladeTurnDeg). The viewer turns
+ * the blade where it joins its stalk; the blade is drawn flat out along +Z from the stalk's end, and its one unit is
+ * measured with it turned down by UNIT_AT, the middle of how far below its stalk a blade hangs in the photographs.
+ */
+const UNIT_AT = characterNumber(morphology, 'leaf.bladeBelowStalkDeg');
 /** Two of each outline, differing in how they are held and where they sit between the two greens. */
 const LEAF_VARIANTS = OUTLINES.length * 2;
 const LEAF_LODS = 3;
@@ -77,12 +93,14 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
   const second = variant >= OUTLINES.length;
   const rng = new RNG(7300 + variant * 53);
   const [nu, nv] = LEAF_SEGS[lod]!;
-  const halfWidth = 0.5 * BLADE_ASPECT * outline.width;
+  // drawn with a blade one unit long and rescaled at the end; a leaf varies a little about its outline's width
+  const halfWidth = 0.5 * outline.aspect * rng.range(0.94, 1.06);
   // sin(pi * v^a) is widest where v^a = 1/2
   const a = Math.log(0.5) / Math.log(outline.widest);
-  // how this leaf is held: all arch over, some twist, some are flatter than others
-  const arch = rng.range(0.16, 0.3) + (second ? 0.1 : 0);
-  const fold = rng.range(0, 0.07);
+  // the viewer holds the blade (leaf.hold); here it only curls a little on towards its tip, folds along its midrib
+  // and twists, as leaves do not lie flat
+  const arch = rng.range(0.06, 0.14) + (second ? 0.05 : 0);
+  const fold = rng.range(0.02, 0.09);
   const twist = rng.range(-0.3, 0.3);
   const roll = rng.range(0.03, 0.055);
   const wavePhase = rng.range(0, TAU);
@@ -100,7 +118,7 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
     let x = u * w;
     // the margin rolls under; on the finest model each half also swells a little between the midrib, which lies in
     // a shallow groove, and the margin (a coarser sheet would show the swelling as stripes of gloss)
-    let y = fold * Math.abs(x) - roll * Math.pow(Math.abs(u), 3) * (w / halfWidth) - arch * v * v - 0.05 * smoothstep(0.7, 1, v);
+    let y = fold * Math.abs(x) - roll * Math.pow(Math.abs(u), 3) * (w / halfWidth) - arch * v * v - 0.03 * smoothstep(0.75, 1, v);
     if (lod === 0) y += 0.05 * w * Math.sin(Math.PI * Math.abs(u)) - 0.002 * Math.exp(-Math.pow(x / 0.02, 2)) * (1 - 0.6 * v);
     if (lod <= 1) y += 0.01 * Math.sin(v * 8 + wavePhase) * u * Math.abs(u);
     // a leaf is seldom flat: it turns a little about its midrib towards the tip
@@ -140,14 +158,41 @@ function makeLeaf(variant: number, lod: number): THREE.BufferGeometry {
   const blade = sb.build();
 
   const mg = new Merge(true);
-  const stalkLength = STALK_SHARE * (second ? 0.85 : 1.1);
-  // level 2 is a blade alone: its stalk is a few pixels
-  const from = lod === 2 ? new V3(0, 0, 0) : stalk(mg, stalkLength, 0.013, lod === 0 ? 6 : 3, 0.012);
-  const s = 1 - from.z;
-  mg.add(blade, new THREE.Matrix4().compose(from, new THREE.Quaternion(), new V3(s, s, s)), [1, 1, 1], from, second ? 0.78 : 0.22);
+  // the stalk's length for a blade one unit long: the measured stalk for the measured blade, a little more or less
+  const stalkLength = (STALK_SHARE / (1 - STALK_SHARE)) * (second ? 0.85 : 1.15);
+  // level 2 is a blade alone, on a stalk of no thickness: its stalk is a few pixels
+  const from = lod === 2 ? new V3(0, 0, stalkLength) : stalk(mg, stalkLength, 0.011, lod === 0 ? 6 : 3, 0.004);
+  mg.add(blade, new THREE.Matrix4().makeTranslation(from.x, from.y, from.z), [1, 1, 1], from, second ? 0.78 : 0.22);
+  // one unit long as the leaf is measured: its blade turned down below the stalk by UNIT_AT (TAXON_LOOKS.md 5a)
+  const k = 1 / measuredLength(mg, UNIT_AT);
+  for (let i = 0; i < mg.pos.length; i++) mg.pos[i]! *= k;
+  for (let i = 0; i < mg.part.length; i += 4) {
+    mg.part[i]! *= k;
+    mg.part[i + 1]! *= k;
+    mg.part[i + 2]! *= k;
+  }
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, -0.1, 0.5), 0.75);
+  g.boundingSphere = new THREE.Sphere(new V3(0, -0.2, 0.5), 0.8);
   return g;
+}
+
+/** The farthest a leaf reaches along +Z with the parts that come and go (its blade) turned down by `deg` about +X at their pivot. */
+function measuredLength(mg: Merge, deg: number): number {
+  const c = Math.cos((deg * Math.PI) / 180);
+  const s = Math.sin((deg * Math.PI) / 180);
+  let most = 0;
+  for (let i = 0; i < mg.n; i++) {
+    const y = mg.pos[3 * i + 1]!;
+    const z = mg.pos[3 * i + 2]!;
+    if (mg.part[4 * i + 3]! < 0) {
+      most = Math.max(most, z);
+      continue;
+    }
+    const py = mg.part[4 * i + 1]!;
+    const pz = mg.part[4 * i + 2]!;
+    most = Math.max(most, pz + (y - py) * s + (z - pz) * c);
+  }
+  return most;
 }
 
 // ---------------------------------------------------------------------------
@@ -312,12 +357,16 @@ const FLOWER_COUNT = characterRange(morphology, 'inflorescence.flowerCount');
 const CYME_STALK = mid(characterRange(morphology, 'inflorescence.stalkLengthM'));
 /** The width of the cluster of flowers: what the growth model's organs.racemeLengthM measures. */
 const CYME_WIDTH = mid(characterRange(morphology, 'inflorescence.widthM'));
-/** Flowers and buds to a cyme in each variant: the most the study counted, and two and four fewer. */
+/**
+ * Flowers and buds to a cyme in each variant, within the count the study made (two to nine): the photographs of
+ * plants in full flower show clusters of five to nine, with a bud or two still closed beside them ('Trachelospermum
+ * jasminoides RHu 01'), and fewer on a young plant.
+ */
 const CYME_VARIANTS: readonly { flowers: number; buds: number }[] = [
-  { flowers: FLOWER_COUNT[1] - 6, buds: 2 },
-  { flowers: FLOWER_COUNT[1] - 4, buds: 2 },
-  { flowers: FLOWER_COUNT[1] - 3, buds: 3 },
-  { flowers: FLOWER_COUNT[1] - 4, buds: 2 },
+  { flowers: FLOWER_COUNT[1] - 5, buds: 2 },
+  { flowers: FLOWER_COUNT[1] - 3, buds: 2 },
+  { flowers: FLOWER_COUNT[1] - 2, buds: 2 },
+  { flowers: FLOWER_COUNT[0] + 1, buds: 1 },
 ];
 const CYME_LODS = 3;
 
@@ -333,9 +382,10 @@ function makeCyme(variant: number, lod: number): THREE.BufferGeometry {
   const UP = new V3(0, 1, 0);
   const sides = detail.stalkSides;
   // lengths of the forks, as shares of the cluster's width
-  const fork1 = CYME_WIDTH * 0.24;
-  const fork2 = CYME_WIDTH * 0.2;
-  const footstalk = CYME_WIDTH * 0.15;
+  // short, so that the flowers stand together in a loose dome at the end of the long common stalk, as in photographs
+  const fork1 = CYME_WIDTH * 0.17;
+  const fork2 = CYME_WIDTH * 0.13;
+  const footstalk = CYME_WIDTH * 0.12;
 
   // every place a flower or bud can stand, in the order they open: the middle flower of each fork before its sides
   interface Place {
@@ -386,7 +436,11 @@ function makeCyme(variant: number, lod: number): THREE.BufferGeometry {
     });
   });
   places.sort((p, q) => p.order - q.order);
-  const used = places.slice(0, flowers + buds);
+  // from across a garden (the coarsest level) a cyme is a few flowers drawn larger, no buds: the same patch of white
+  // in fewer triangles (TAXON_LOOKS.md section 6)
+  const coarse = lod === CYME_LODS - 1;
+  const shown = coarse ? Math.ceil(flowers / 2) : flowers;
+  const used = places.slice(0, coarse ? shown : flowers + buds);
 
   // the stalks: all of them axis, which stays while the corollas come and go
   const thickness = CYME_WIDTH * 0.014;
@@ -417,11 +471,11 @@ function makeCyme(variant: number, lod: number): THREE.BufferGeometry {
     const along = place.at.clone().sub(place.from).normalize();
     const facing = along.addScaledVector(axis, 0.35).add(new V3(rng.range(-0.25, 0.25), rng.range(-0.1, 0.25), rng.range(-0.4, 0.1))).normalize();
     q.setFromUnitVectors(UP, facing).multiply(spin.setFromAxisAngle(UP, rng.range(0, TAU)));
-    const isBud = i >= flowers;
-    const size = isBud ? rng.range(0.8, 1.0) : rng.range(0.92, 1.08);
+    const isBud = i >= shown;
+    const size = (isBud ? rng.range(0.8, 1.0) : rng.range(0.92, 1.08)) * (coarse ? Math.sqrt(flowers / shown) : 1);
     m.compose(place.at, q, one.clone().multiplyScalar(size));
     // opening runs through the cyme from its middle flower outwards; the buds come last and do not open
-    const t = isBud ? lerp(0.9, 1, (i - flowers) / Math.max(1, buds - 1)) : (0.78 * i) / Math.max(1, flowers - 1);
+    const t = isBud ? lerp(0.9, 1, (i - shown) / Math.max(1, buds - 1)) : (0.78 * i) / Math.max(1, shown - 1);
     const tone = rng.range(0.96, 1.03);
     if (isBud) {
       if (parts.bud) mg.add(parts.bud, m, [tone, tone, tone * 0.98], place.at, t);
@@ -454,11 +508,14 @@ function makeFollicles(variant: number, lod: number): THREE.BufferGeometry {
   const rng = new RNG(9100 + variant * 37);
   const [around, alongSegs] = FRUIT_SEGS[lod]!;
   const sb = new Surf();
-  const stalkLength = FOLLICLE_LENGTH * 0.07;
+  // the stalk of the cyme the pair hangs from: 2 to 6 cm (Flora of China), as in the photograph 'Trachelospermum jasminoides fruits' (Commons)
+  const stalkLength = mid(characterRange(morphology, 'inflorescence.stalkLengthM'));
   const fork = new V3(0, -stalkLength, 0);
-  // how the pair is held: side by side, bowed apart with the tips together, or parting
-  const spread = [0.03, 0.02, 0.2][variant]!;
-  const bow = [0.012, 0.085, 0.02][variant]!;
+  // how the pair is held: close in a narrow V, parting, or spread wide apart. The green pods on a wall in 'Fruit du
+  // faux jasmin' (Commons) stand stiffly apart at most of a right angle; the dry pair in 'Trachelospermum jasminoides
+  // fruits' hangs in a narrow V, bowed
+  const spread = [0.12, 0.4, 0.9][variant]!;
+  const bow = [0.06, 0.02, 0.01][variant]!;
   const turn = rng.range(0, TAU);
   const e1 = new V3(Math.cos(turn), 0, Math.sin(turn));
   const e2 = new V3(-Math.sin(turn), 0, Math.cos(turn));
@@ -516,11 +573,20 @@ const leaf: LeafAsset = {
   },
   // "glossy dark green"; pale green as it unfolds. The last two are its winter bronze and red (RHS: "often turn
   // deep bronze-red in winter"), which the data cannot ask for yet: an evergreen leaf is given no change of colour.
-  palette: { greenA: lin('#27481d'), greenB: lin('#365c24'), young: lin('#a8c256'), autumnA: lin('#5a3a22'), autumnB: lin('#7c2a22') },
-  roughness: 0.3,
+  palette: { greenA: lin('#27431f'), greenB: lin('#365a29'), young: lin('#a9c45a'), autumnA: lin('#5a3a22'), autumnB: lin('#7c2a22') },
+  // "glossy": in every photograph the blades throw back the sky in white sheens
+  roughness: 0.13,
   // leathery: little light comes through
   translucency: 0.2,
   detailReach: 0.55,
+  // on a wall or a frame the blades hang from their short stalks with their faces out and a little up, tips down and
+  // overlapping; on a shoot out in the open they are held flatter to the sky
+  hold: {
+    unitAt: UNIT_AT,
+    rise: characterRange(morphology, 'leaf.faceRiseDeg'),
+    riseOpen: characterRange(morphology, 'leaf.faceRiseOpenDeg'),
+    turn: characterNumber(morphology, 'leaf.bladeTurnDeg'),
+  },
 };
 
 const cyme: FlowerAsset = {
@@ -568,7 +634,7 @@ const follicles: FruitAsset = {
  * photographs, not measured.
  */
 const wood: WoodLook = {
-  young: lin('#93a352'),
+  young: lin('#7f9a46'),
   mature: lin('#5c3f2c'),
   old: [0.62, 0.59, 0.55],
   woodyDays: [150, 520],

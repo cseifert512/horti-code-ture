@@ -34,12 +34,12 @@
     },
     "stem.youngDiameterM": {
       "value": [
-        0.002,
-        0.003
+        0.0018,
+        0.0025
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Read off photographs against leaves of known length: a young twining shoot is about a twentieth to a thirtieth of a leaf thick. Not measured; no flora gives it. The growth model's thickening.tipRadiusSquaredMm2 is the middle of this."
+      "basis": "Read off photographs against leaves of known width: the green shoots in 'Fulles de gesmiler ... Altea' are about a twelfth of the width of the blades beside them (1.6 to 3.4 cm, Ocokoljic et al. 2026). Not measured; no flora gives it. The growth model's thickening.tipRadiusSquaredMm2 (1.0 mm2, 2 mm across) is the middle of this."
     },
     "stem.latex": {
       "value": "white",
@@ -331,6 +331,54 @@
       "status": "published_plant_profile",
       "source": "https://naturelib.net/plantae/trachelospermum-jasminoides/",
       "basis": "Flora of China: coma 1.5 to 4 cm, a tuft of silky hairs on each seed. Not drawn."
+    },
+    "leaf.bladeWidthToLength": {
+      "value": [
+        0.36,
+        0.46
+      ],
+      "unit": "ratio",
+      "status": "provisional_design_assumption",
+      "basis": "The blade's greatest width for its length, narrowest and broadest leaves, measured off photographs: Wikimedia Commons 'Fulles de gesmiler (Trachelospermum jasminoides) darrere de l'esglesia, Altea' (the leaf in the middle 0.36, the leaf to its right 0.41) and 'Trachelospermum jasminoides RHu 01' (the broadest leaves about 0.45). The measured middles (Ocokoljic et al. 2026: 2.5 cm wide for 6.5 cm long, stalk included) give 0.38 for the leaf with its stalk, about 0.43 for the blade alone: within the range."
+    },
+    "leaf.widestAt": {
+      "value": [
+        0.4,
+        0.46
+      ],
+      "unit": "share of blade length from its base",
+      "status": "provisional_design_assumption",
+      "basis": "Where the blade is widest, read off the same photographs ('Fulles de gesmiler ... Altea': 0.44 and 0.45 of the way from the base; 'Trachelospermum jasminoides RHu 01': the broad, ovate leaves about 0.4). Flora of China's 'elliptic to ovate' puts the widest point at or below the middle."
+    },
+    "leaf.bladeBelowStalkDeg": {
+      "value": 35,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far below the line of its stalk a blade hangs, the middle of what the photographs show on plants on walls and frames ('Trachelospermum jasminoides RHu 01', 'Trachelospermum jasminoides en hiver'): blades leave their short stalks and droop, from a little to well over half a right angle. What the leaf's one unit is measured at (BladeHold.unitAt)."
+    },
+    "leaf.faceRiseDeg": {
+      "value": [
+        10,
+        45
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far above level the upper face of a blade looks where the shoot lies on a wall or frame: out and a little up, the tips down, overlapping like shingles, in 'Trachelospermum jasminoides RHu 01' (a plant on a stone wall) and 'Star Jasmine ... Capel Manor College Gardens Enfield London England 01' (a plant over a fence). Read from photographs."
+    },
+    "leaf.faceRiseOpenDeg": {
+      "value": [
+        35,
+        70
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The same on a shoot out in the open: the blades of shoots standing clear of the support face the sky more, as on the shoots off the obelisk in 'Trachelospermum jasminoides en hiver' and the free shoots in 'Trachelospermum jasminoides closeup'. Read from photographs."
+    },
+    "leaf.bladeTurnDeg": {
+      "value": 30,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far a blade is turned about its face from hanging tip-straight-down, either way: in the photographs the leaves of a pair hang splayed, seldom together, and the blades of a wall of them point every way between down and out ('Trachelospermum jasminoides RHu 01'). Read from photographs."
     }
   }
 }

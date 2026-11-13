@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { Calendar, characterNumber, characterOf, characterRange, characterText, flowerState, fruitState, known, leafState, param, parseMorphology, readBower, seasonsOf, toRenderData } from '@horti/core';
 import { growPlanting } from '../../src/plant/grow.ts';
+import { asMeasured } from '../../src/plant/hold.ts';
 import { triangles } from '../../src/plant/kit.ts';
 import { type FlowerAsset, type FruitAsset, type LeafAsset, assetsOf, ceilingFor } from '../../src/plant/look.ts';
 import { loadLooks, lookFor } from '../../src/plant/registry.ts';
@@ -134,29 +135,37 @@ describe('the leaf', () => {
   const [width0, width1] = characterRange(morphology, 'leaf.widthM');
   const [stalk0, stalk1] = characterRange(morphology, 'leaf.stalkLengthM');
 
-  it('is one unit long, stalk and blade, and as wide for its length as the measured leaves were', () => {
-    const widths: number[] = [];
+  it('is one unit long as the leaf is measured, its blade turned down by its hold, and as wide for its length as the photographs show', () => {
+    // TAXON_LOOKS.md 5a: a leaf with a hold is authored with its blade flat out from its stalk, and its unit is measured
+    // with the blade turned down by hold.unitAt (asMeasured, as test/looks.test.ts measures it)
+    expect(leaf.hold!.unitAt).toBe(characterNumber(morphology, 'leaf.bladeBelowStalkDeg'));
+    const [aspect0, aspect1] = characterRange(morphology, 'leaf.bladeWidthToLength');
+    const aspects: number[] = [];
     for (let v = 0; v < leaf.variants; v++) {
       const g = leaf.make(v, 0);
-      g.computeBoundingBox();
-      const { min, max } = g.boundingBox!;
-      expect(max.z).toBeGreaterThan(0.97);
-      expect(max.z).toBeLessThan(1.03);
-      expect(min.z).toBeGreaterThan(-0.02);
-      widths.push(max.x - min.x);
+      const z = asMeasured(g, leaf.hold!.unitAt).map((p) => p.z);
+      expect(Math.max(...z)).toBeGreaterThan(0.98);
+      expect(Math.max(...z)).toBeLessThan(1.02);
+      expect(Math.min(...z)).toBeGreaterThan(-0.02);
+      const blade = points(g).filter((q) => q.t >= 0);
+      const start = Math.min(...blade.map((q) => q.p.z));
+      const end = Math.max(...blade.map((q) => q.p.z));
+      const xs = blade.map((q) => q.p.x);
+      aspects.push((Math.max(...xs) - Math.min(...xs)) / (end - start));
     }
-    // Ocokoljic et al. 2026: 4.2 to 8.8 cm long and 1.6 to 3.4 cm wide. The narrowest leaf of the range is
-    // 1.6 / 8.8 of its length wide and the broadest 3.4 / 4.2; the middle one is drawn at the ratio of the middles.
-    for (const w of widths) {
-      expect(w).toBeGreaterThan(width0 / length1);
-      expect(w).toBeLessThan(width1 / length0);
+    // each leaf within the photographs' range, give or take the few per cent each is varied by
+    for (const a of aspects) {
+      expect(a).toBeGreaterThan(aspect0 * 0.9);
+      expect(a).toBeLessThan(aspect1 * 1.1);
     }
-    const elliptic = widths[1]!;
-    expect(elliptic).toBeGreaterThan(0.85 * (mid([width0, width1]) / mid([length0, length1])));
-    expect(elliptic).toBeLessThan(1.25 * (mid([width0, width1]) / mid([length0, length1])));
-    // three outlines (Flora of China: "ovate to obovate or narrowly elliptic"), each narrower than the next
-    expect(widths[0]!).toBeLessThan(widths[1]!);
-    expect(widths[1]!).toBeLessThan(widths[2]!);
+    // three outlines (Flora of China: narrowly elliptic, elliptic, ovate), the narrow ones narrower than the ovate
+    const of = (k: number) => (aspects[k]! + aspects[k + 3]!) / 2;
+    expect(of(0)).toBeLessThan(of(1));
+    expect(of(1)).toBeLessThan(of(2));
+    // and the measured leaves (Ocokoljic et al. 2026, middles: 2.5 cm wide for a blade of about 5.75 cm) lie within
+    const measured = mid([width0, width1]) / (mid([length0, length1]) - mid([stalk0, stalk1]));
+    expect(measured).toBeGreaterThan(aspect0);
+    expect(measured).toBeLessThan(aspect1);
   });
 
   it('has a short stalk: between the shortest stalk on the longest leaf and the longest on the shortest', () => {
@@ -175,12 +184,17 @@ describe('the leaf', () => {
     }
   });
 
-  it('arches over: the blade ends below where it began, as a leathery leaf hangs', () => {
+  it('is held as the photographs show: face out and tips down on a wall or frame, flatter to the sky out in the open', () => {
+    expect(leaf.hold!.rise).toEqual(characterRange(morphology, 'leaf.faceRiseDeg'));
+    expect(leaf.hold!.riseOpen).toEqual(characterRange(morphology, 'leaf.faceRiseOpenDeg'));
+    expect(leaf.hold!.turn).toBe(characterNumber(morphology, 'leaf.bladeTurnDeg'));
+    expect(leaf.hold!.riseOpen[0]).toBeGreaterThan(leaf.hold!.rise[0]);
+    // the blade itself is drawn flat out from its stalk and only curls a little on towards its tip
     for (let v = 0; v < leaf.variants; v++) {
       const blade = points(leaf.make(v, 0)).filter((q) => q.t >= 0);
       const tip = blade.reduce((a, b) => (b.p.z > a.p.z ? b : a));
-      expect(tip.p.y).toBeLessThan(-0.1);
-      expect(tip.p.y).toBeGreaterThan(-0.6);
+      expect(tip.p.y).toBeLessThan(-0.02);
+      expect(tip.p.y).toBeGreaterThan(-0.3);
     }
   });
 
@@ -227,7 +241,8 @@ describe('the cyme', () => {
       expect(petalTriangles / farParts.length, `variant ${v}`).toBe(2 * lobes);
       // at the near level: the spread of each flower that opens, tip to opposite tip
       const flowers = partsOf(cyme.make(v, 0)).filter((p) => p.t < 0.85);
-      expect(flowers.length).toBe(farParts.length);
+      // from afar half of them, drawn larger, and no buds (TAXON_LOOKS.md section 6: fewer flowers each drawn larger)
+      expect(farParts.length).toBe(Math.ceil(flowers.length / 2));
       for (const flower of flowers) {
         let widest = 0;
         for (let i = 0; i < flower.points.length; i += 3) for (let j = i + 1; j < flower.points.length; j += 3) widest = Math.max(widest, flower.points[i]!.distanceTo(flower.points[j]!));
@@ -294,12 +309,16 @@ describe('the fruit', () => {
           return { drop: Math.max(...ys) - Math.min(...ys), spread: Math.hypot(Math.max(...xs) - Math.min(...xs), Math.max(...zs) - Math.min(...zs)), points: surface };
         })
         .sort((a, b) => b.drop - a.drop);
-      // two follicles and the stalk they hang from
+      // two follicles and the stalk they hang from; a pair may hang close or stand wide apart (photographs 'Trachelospermum
+      // jasminoides fruits' and 'Fruit du faux jasmin'), so a follicle is measured along its slant, not by its drop
       expect(lengths.length).toBe(3);
-      expect(lengths[0]!.drop).toBeGreaterThan(follicles.authoredSize * 0.9);
-      expect(lengths[0]!.drop).toBeLessThan(follicles.authoredSize * 1.05);
-      expect(lengths[1]!.drop).toBeGreaterThan(follicles.authoredSize * 0.8);
-      expect(lengths[2]!.drop).toBeLessThan(follicles.authoredSize * 0.12);
+      const reach = (l: { drop: number; spread: number }) => Math.hypot(l.drop, l.spread);
+      expect(reach(lengths[0]!)).toBeGreaterThan(follicles.authoredSize * 0.9);
+      expect(reach(lengths[0]!)).toBeLessThan(follicles.authoredSize * 1.15);
+      expect(reach(lengths[1]!)).toBeGreaterThan(follicles.authoredSize * 0.8);
+      // the stalk of the cyme they hang from, 2 to 6 cm (Flora of China)
+      expect(lengths[2]!.drop).toBeGreaterThan(characterRange(morphology, 'inflorescence.stalkLengthM')[0]);
+      expect(lengths[2]!.drop).toBeLessThan(characterRange(morphology, 'inflorescence.stalkLengthM')[1]);
       // slender: the thickest ring of a follicle is within the 3 to 10 mm of the Flora
       const ring = (surface: number[]): number => {
         const midY = (Math.max(...surface.map((i) => pos.getY(i))) + Math.min(...surface.map((i) => pos.getY(i)))) / 2;
@@ -308,8 +327,11 @@ describe('the fruit', () => {
         for (const i of near) for (const j of near) widest = Math.max(widest, Math.hypot(pos.getX(i) - pos.getX(j), pos.getZ(i) - pos.getZ(j)));
         return widest;
       };
-      expect(ring(lengths[0]!.points)).toBeGreaterThan(width0);
-      expect(ring(lengths[0]!.points)).toBeLessThan(width1 * 1.6);
+      // (measured across a level slice, so only on the pair that hangs nearly plumb: a slanting pod's slice is drawn out)
+      if (v === 0) {
+        expect(ring(lengths[0]!.points)).toBeGreaterThan(width0);
+        expect(ring(lengths[0]!.points)).toBeLessThan(width1 * 1.6);
+      }
       // it hangs: all of it below where it is attached
       g.computeBoundingBox();
       expect(g.boundingBox!.max.y).toBeLessThan(0.002);
