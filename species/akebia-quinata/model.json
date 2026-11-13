@@ -1,74 +1,78 @@
 {
   "schemaVersion": 1,
   "taxonId": "akebia-quinata",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one. The sizes of leaf, raceme and fruit, the length of the stems and where the flowers are borne are taken from floras and plant records. The dates are placed about what those sources say of the seasons. The rates of growth, the numbers of shoots and the chances of flowering and fruiting are assumptions, chosen so that the plant covers what those sources say it covers, and each is labelled as one. The weights by which a shoot chooses its route, and a few other numbers, are still copied from the wisteria model, and in those it is thinner than the wisteria model it is derived from. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "hanging",
+    "fruitHeld": "hanging",
+    "basis": "The racemes hang: Bean describes \"slender, pendent racemes\" (https://www.treesandshrubsonline.org/articles/akebia/akebia-quinata/). The fruit is a heavy fleshy follicle 5 to 8 cm long on the slender stalk of a female flower in such a raceme, and hangs as the raceme did; no source read says so in words. One leaf form, one raceme and one fruit: the female and male flowers of a raceme, and the one to several follicles a flower sets, are differences within the viewer's models, not forms the engine names."
+  },
   "params": {
     "phenology.budburstDoy": {
-      "value": 95,
+      "value": 60,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No source read dates leafing in Britain. The flowers come with or just after the leaves (Virginia Tech dendrology) and the RHS dates them to early spring, so growth is taken to start on 1 March."
     },
     "phenology.growthEndDoy": {
-      "value": 270,
+      "value": 280,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No source read says when extension stops. A vigorous, tardily deciduous climber is taken to go on extending into early October (7 October)."
     },
     "phenology.leafFlushDoy": {
       "value": [
-        100,
-        155
+        68,
+        118
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Leaves on wood of earlier years open from 9 March to 28 April, so that the racemes of late March and April open among leaves that are still unfolding, as Virginia Tech describes (flowers \"with or just after the leaves\") and as photographs from Toulouse in late March and Lublin and Belgrade in late April show. Not a recorded date."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        283,
-        310
+        292,
+        326
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The plant has no autumn colour of note (Purdue Arboretum); what this dates is the purple tint the RHS record gives the foliage in winter, taken to come with the first cold, between 19 October and 22 November. Not a recorded date."
     },
     "phenology.leafFallDoy": {
       "value": [
-        310,
-        344
+        335,
+        365
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The leaves that are not kept through winter (organs.winterLeafShare) fall through December, late as a tardily deciduous climber's do (Virginia Tech dendrology). No British date is recorded."
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        213,
-        244
+        200,
+        240
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers in early spring, so buds are taken to form the summer before. Which wood flowers is not established for this plant."
+      "basis": "The racemes open with the first leaves from scaly buds on short branches (Flora of China), so the flower buds are taken to be laid down the summer before. When, is not recorded: late July and August."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        75,
-        100
+        85,
+        110
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed about the RHS flowering time of early spring (16 March to 10 April)."
+      "basis": "Racemes open between 26 March and 20 April. The RHS says early spring; Flora of China April and May; in central Japan early April to early May (University of Michigan CLIMBERS). No source read dates it in Britain more closely."
     },
     "phenology.petalFallDoy": {
       "value": [
-        105,
-        125
+        112,
+        134
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Racemes are over between 22 April and 14 May, so that one lasts some three to five weeks from its first female flower to its last male one. The female flowers open days before the male (Huang et al. 2022); how long a raceme lasts is not recorded."
     },
     "phenology.flowerLastsDays": {
       "value": [
@@ -77,29 +81,29 @@
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "One flowering a year, in spring: each raceme opens and goes over within the two windows above, and none comes later."
     },
     "extension.leaderMPerSeason": {
-      "value": 2,
+      "value": 3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: vigorous, reaching its 8 to 12 m size band in 5 to 10 years. A size band is not a growth rate; a placeholder."
+      "basis": "The RHS has it reach 8 to 12 m in 5 to 10 years, which is 0.8 to 2.4 m of height a year over the whole of that time; where it is invasive, in warmer summers, 6 to 12 m a year is reported (Weber 2003 and EPPO 2021, in the GB risk assessment, https://www.nonnativespecies.org/assets/Uploads/Akebia-quinata-RA-final_topub-v2.pdf). Three metres for a leading stem in a British summer lies between the two. Not measured."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        1.3,
-        1,
-        0.8
+        2.4,
+        1.8,
+        1.2
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate as in the wisteria model. Not measured."
+      "basis": "Side stems taken to extend a little less than the leading stem, and less with each order. Not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 1,
+      "value": 2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. Rate is a placeholder."
+      "basis": "The long shoots that old stems throw each year are slender and soon arch over: taken at two thirds of the rate of a leading stem (3 m). Not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -112,11 +116,13 @@
     "architecture.trunkStemStartYears": {
       "value": [
         0,
-        0
+        0,
+        1,
+        2
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Two stems from the base, both from the first season. A placeholder."
+      "basis": "A many-stemmed plant that shoots from the base and spreads in patches by its stems (Zou et al. 2023, https://pmc.ncbi.nlm.nih.gov/articles/PMC10772107): two stems at planting and one more from the base in each of the next two seasons. The number is a choice."
     },
     "architecture.nurseryCaneM": {
       "value": 0.6,
@@ -131,22 +137,23 @@
     },
     "architecture.leaderLengthM": {
       "value": [
-        8,
-        12
+        9.1,
+        12.2
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "The RHS ultimate-size band used as a cap on stem length. A height band is not a route length, so this is a placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/akebia/akebia-quinata/",
+      "basis": "Bean: a twining shrub \"30 to 40 ft\" in length, in metres: a length of stem, which is what this caps. The RHS height band, 8 to 12 m, agrees."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
-        2,
-        1.2,
-        0.7
+        5,
+        3,
+        1.6
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader as in the wisteria model. Not measured."
+      "basis": "Side stems of a plant that branches freely and makes \"dense masses of growth\" (Bean) are taken to run about half as far as a leading stem, and less with each order. Not measured."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
@@ -177,14 +184,14 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
+      "value": 6,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The stems are slender, 0.5 to 2 cm thick even when woody (Chinese Pharmacopoeia 2020, https://shennongalpha.westlake.edu.cn/knowledge/nmm-00b1), and run together in ropes of several, wound round one another and round their support (Commons photographs \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\", \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\"): a lath or a cable is taken to carry six before the next looks elsewhere. The number is a choice, raised from four after the ten-year run left the bays open where photographs of plants on walls show the face hidden."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 3,
+      "value": 7,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "One more than on a lath or cable, a glulam member being stouter. The number is a choice."
     },
     "routing.occupancyCost": {
       "value": 1.6,
@@ -235,13 +242,13 @@
       "value": 60,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. Taken as a little stouter than the honeysuckle, still short of the timber lattice. A placeholder."
+      "basis": "No measurement exists. Darwin timed the revolving shoot of Akebia quinata and did not record how thick a support it can wind round. Taken as enough for a lath or a sapling and too little for a post or a glulam rib. A placeholder that a trial on timber of several sizes would settle."
     },
     "attachment.minPitchM": {
-      "value": 0.3,
+      "value": 0.12,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A slender stem coils more closely round a cable or cane than a wisteria's does: one turn in about 12 cm at the closest. Not measured."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
@@ -250,125 +257,130 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.06,
-        0.1
+        0.05,
+        0.11
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "No flora read gives the length of an internode. Taken to be of the order of the leaf stalk (4.5 to 10 cm, Flora of China), so that the leaves of a long shoot stand clear of one another. To be measured on shoots."
     },
     "organs.leafLengthM": {
       "value": [
-        0.06,
-        0.1
+        0.085,
+        0.175
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Five-part leaves. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
+      "basis": "The whole leaf from the stem to the tip of the end leaflet, which no source states as one figure: the sum of the Flora of China's leaf stalk (4.5 to 10 cm), end leaflet's stalk (1.5 to 2.5 cm) and end leaflet (2.5 to 5 cm). Bean's figures (stalk 3 to 5 in., leaflets 1 1/2 to 3 in.) give 12.7 to 21.6 cm."
     },
     "organs.leavesPerNode": {
       "value": 1,
-      "status": "provisional_design_assumption",
-      "basis": "Leaves stand singly. A character of the genus, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=100921",
+      "basis": "Flora of China, of the genus: leaves \"alternate or clustered on short branches\". One leaf to a node on a long shoot."
     },
     "organs.spurChance": {
-      "value": 0.5,
+      "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "Stands for the short leafy side shoots that keep old stems clothed. A placeholder."
+      "basis": "The spur of this model stands for the short branch of the floras, on which the leaves are clustered and the racemes borne (Flora of China). Most buds of last year's stems are taken to make one, which is what keeps old stems clothed: photographs of old stems (Commons: \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\", \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") show a knob with its tuft of leaves every few centimetres. The share is a choice, not a count."
     },
     "organs.spurLengthM": {
       "value": [
-        0.04,
-        0.09
+        0.01,
+        0.03
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Short leafy side shoots. A placeholder."
+      "basis": "A short branch is a knob of crowded leaf scars and bud scales a centimetre or two long. No flora read gives its length."
     },
     "organs.spurLeafCount": {
       "value": [
-        2,
-        4
+        5,
+        8
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Leaves \"clustered on short branches\" (Flora of China): five to eight to a cluster is a choice, no source read giving a number; photographs of old stems in leaf (Commons: \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\", \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") show tufts of about four to eight hands of leaflets at each knob. Chosen with the other counts here so that a plant five or six years old hides most of a trellis it has covered, as a plant that makes \"dense masses of growth\" (Bean, of a plant photographed) does."
     },
     "organs.racemeLengthM": {
       "value": [
-        0.05,
-        0.1
+        0.06,
+        0.12
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Length of a hanging flower cluster. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
+      "basis": "Flora of China: racemes 6 to 12 cm. RHS: flowers \"in racemes 12cm long\". The length of the whole raceme, stalk included, which is what the viewer's raceme is authored to."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.08,
+      "value": 0.12,
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+      "basis": "Each year old stems throw new long shoots, which hang over and twine across the spaces between supports: they are what makes the plant a curtain of leaf rather than bands along the timber (Commons photographs named under organs.whipLengthM). The share of old nodes that do so is a choice, raised from 0.08 after the ten-year run showed the specimen 40% in leaf from the south at maturity where the photographs show a wall nearly hidden."
     },
     "organs.whipsPerYearMax": {
-      "value": 60,
+      "value": 140,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "A cap on new long shoots a year, so that an old plant does not throw them without limit. A choice. A trained plant has them trimmed back to the timber after flowering and in late summer (see SPECIES_PROFILE.md, Care); left alone they stay."
     },
     "organs.whipLengthM": {
       "value": [
-        0.2,
-        0.5
+        0.6,
+        1.8
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a year’s side shoot. A placeholder."
+      "basis": "How far a long shoot of the year grows into the air from an older stem. Unmeasured. Photographs of plants on walls, fences and in a botanic garden (Commons: \"Akebia quinata Kew Gardens.jpg\", \"Akebia quinata 001.JPG\", \"Akebia quinata arb Fof F.jpg\") show shoots of the year hanging across the face of the plant and arching over its top by a metre or more, twining round one another; Darwin saw the ends of weak shoots wind into a close spire. Taken at 0.6 to 1.8 m, under the year's extension of a side stem."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Semi-evergreen (RHS), mostly leafless in a cold winter: modelled as losing its leaves."
+      "basis": "Semi-evergreen (RHS): leaves last one season, and some through the winter after it (organs.winterLeafShare), to be shed as the new leaves open (Bean: evergreen only in mild winters). How long a leaf lives where winters are mild throughout is not recorded."
     },
     "organs.clearStemHeightM": {
-      "value": 0.3,
+      "value": 0.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Clothed nearly to the ground. A placeholder."
+      "basis": "Clothed nearly to the ground while young. A choice."
     },
     "flowering.competenceYears": {
-      "value": 1,
+      "value": 2,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Taken to flower from its second season. A placeholder."
+      "basis": "Taken to flower first in its third spring from a nursery plant, on short branches formed in its second summer. No source read gives the age at first flowering."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.5,
+        0.3,
+        0.6,
+        0.85,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Half strength in its first flowering year. A placeholder."
+      "basis": "Few racemes at first, the full share from the fourth flowering year. A choice."
     },
     "flowering.spurFloralChance": {
-      "value": 0.85,
+      "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "The share of short branches that carry a raceme in a year. One plant can carry \"hundreds\" of flowers at once (University of Michigan CLIMBERS, https://climbers.lsa.umich.edu/akebia-quinata/), at five to twelve flowers to a raceme, and the Flora of China has the racemes clustered on the short branches, where the engine gives a short branch one raceme at most: so a large share of short branches is taken to flower, chosen so that a specimen that has covered the 6 m2 trellis carries two to three hundred racemes in April, some two thousand flowers. Photographs of plants in flower (Commons: \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") show racemes at most knobs of old stem. Not a count made on a plant."
     },
     "flowering.unprunedFactor": {
-      "value": 0.5,
+      "value": 1,
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "This plant is not summer pruned to make it flower (RHS pruning group 11: cut after flowering, to limit it), and no source read ties its flowering to pruning: a year without pruning costs it nothing."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 5,
+      "value": 0,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flower clusters per metre of the year’s growth. A placeholder chosen to read as present but not profuse."
+      "basis": "Not applicable: the racemes come from buds carried over winter on short branches (Flora of China), not along the year's own growth."
     },
     "flowering.currentSeasonMinShootM": {
-      "value": 0.15,
+      "value": 0,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot shorter than this is taken not to flower. A placeholder."
+      "basis": "Not applicable: nothing flowers along the year's own growth."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -377,7 +389,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which has no summer and winter spur pruning; present because every model carries every parameter."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -386,7 +398,7 @@
       ],
       "unit": "buds",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant; present because every model carries every parameter."
+      "basis": "Not applicable to this plant, which has no summer and winter spur pruning; present because every model carries every parameter."
     },
     "regrowth.shootsPerCut": {
       "value": [
@@ -395,19 +407,19 @@
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "It \"recovers quickly when cut to the ground\" (Oregon State University, https://landscapeplants.oregonstate.edu/plants/akebia-quinata); how many shoots a stub throws is not recorded. One or two is a choice."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 1.44,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A young shoot about 2.4 mm thick. The sources call the stems slender and give no thickness for a young one; the stems of the year in photographs (Commons: \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\", \"Akebia quinata arb Fof F.jpg\") are a few millimetres across beside leaf stalks of about 1 to 1.5 mm. This decides more than any other number how far a shoot holds itself out before it arches."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 6,
+      "value": 0.7,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Stems much more slender than wisteria’s. A placeholder."
+      "basis": "Chosen so that the main stem of a ten-year-old specimen, which carries between a hundred and forty and two hundred and sixty metres of growth, is 2 to 2.7 cm thick at its foot: at and a little over the upper end of the 0.5 to 2 cm the Chinese Pharmacopoeia 2020 gives for harvested woody stems (https://shennongalpha.westlake.edu.cn/knowledge/nmm-00b1). Not measured on a plant of known age."
     },
     "thickening.branchShare": {
       "value": 0.9,
@@ -415,90 +427,201 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.03,
+      "status": "provisional_design_assumption",
+      "basis": "Three racemes in a hundred set fruit. In Britain fruit is seldom set and \"never abundantly borne\" (Bean); it needs a second plant of another clone for pollination and a long, hot summer (RHS), and the GB risk assessment says the plant does not as a rule set seed here. The engine knows neither the neighbours nor the summer, so this small share stands for a planting that has a second clone in a warm year; a plant of one clone alone should be given 0."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.05,
+        0.08
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
+      "basis": "Flora of China: fruit 5 to 8 cm long and 3 to 4 cm thick. RHS: \"to 10cm long\". The length of one follicle, the longest where a flower sets more than one."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        100,
+        130
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Full grown by the end of August from flowers over in late April and May. Of the related Akebia trifoliata, Zou et al. 2023 give about five months from fruit set to ripeness; the share of that spent swelling is a choice."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        244,
+        304
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "published_plant_profile",
+      "source": "https://climbers.lsa.umich.edu/akebia-quinata/",
+      "basis": "University of Michigan CLIMBERS: the fruits \"mature in September to October\"; Virginia Tech dendrology: \"ripening in late summer\". It colours from pale green to greyish violet within these months. The Flora of China gives fruiting from June to August in China, which is the fruit growing. Flora of North America refuses automated readers and was not read. When the few fruits set in Britain ripen is not recorded."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        300,
+        334
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The ripe fruit splits along one side (Zou et al. 2023) and its pulp is eaten or falls; the husk is taken to be gone by the end of November. How long it hangs is not recorded."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it climbs by twining its stems (Darwin; Flora of China, of the genus) and has no tendrils."
     },
     "appendages.tendrilLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it has no tendrils."
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: the stems twine, the long leaf stalks do not. No source read describes them clasping."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: its leaf stalks do not clasp. Their length as part of the leaf is in morphology.json."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it does not cling. Stems lying on the ground root where they touch, which is not climbing and is not modelled."
     },
     "appendages.aerialRootLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it has no clinging rootlets."
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: Flora of North America calls the plant glabrous, and no source read describes prickles or thorns."
     },
     "appendages.prickleLengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Unarmed: it has no prickles."
     },
     "sideShoots.bearingWoodAgeYears": {
-      "value": null,
+      "value": 0,
       "unit": "years",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: its short flowering wood is the short branch, which this model grows as a spur (organs.spurChance). It throws no separate flowering side shoots."
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 0,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: its short flowering wood is the short branch, which this model grows as a spur (organs.spurChance). It throws no separate flowering side shoots."
     },
     "sideShoots.lengthM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it throws no separate flowering side shoots."
     },
     "sideShoots.lifespanYears": {
-      "value": null,
+      "value": 0,
       "unit": "growing seasons",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it throws no separate flowering side shoots."
     },
     "sideShoots.terminalFlowerShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0,
+      "status": "provisional_design_assumption",
+      "basis": "Not applicable: it throws no separate flowering side shoots."
+    },
+    "organs.winterLeafShare": {
+      "value": 0.3,
+      "status": "provisional_design_assumption",
+      "basis": "Semi-evergreen (RHS); Bean: evergreen in mild winters and losing its leaves where conditions are more severe; Virginia Tech: \"tardily deciduous\". No source gives a share. A photograph from Lublin in April (Commons: \"Akebia quinata 2016-04-19 7787.JPG\") shows a good part of the old leaves still on, purple-brown, as the new ones open; one from Toulouse in March (\"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") shows none. Three in ten, for an average southern English winter, is a choice."
+    },
+    "organs.spurLeafLengthM": {
+      "value": [
+        0.08,
+        0.16
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The leaves of the short branches, where most of the plant's leaves are. No flora gives them apart; in photographs of clustered leaves (Commons: \"Akebia quinata leaf.jpg\", \"Akebia gui kz.jpg\") they are as large as those of long shoots, a little less at the top of the range. Without this the engine draws them nine tenths of organs.leafLengthM, a number from the wisteria prototype."
+    },
+    "organs.leafTurnToOpenShare": {
+      "value": 0.3,
+      "status": "provisional_design_assumption",
+      "basis": "Photographs of plants on a wall and a fence (Commons: \"Akebia quinata Kew Gardens.jpg\", \"Akebia quinata (vine, fruits, flowers) 01.jpg\") show the long leaf stalks lying out across the face of the plant in every direction, and the hands of leaflets at their ends turned out to the open, so that the face is a mosaic of flat leaves over the spaces between stems. The hand is turned by the viewer (morphology.json leaf.faceRiseDeg); the stalk is turned less than the generic half towards the open, so that it lies across the face rather than standing out of it. Not measured."
+    },
+    "mechanics.woodSetDays": {
+      "value": 60,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Young stems are \"green when young turning brown\" (NC State) and the long shoots of the year stay supple and twine through the summer (photographs named under organs.whipLengthM). How fast the wood sets is not measured for this plant or any climber here: two months, twice the generic month, so that a long shoot stays soft and hangs while it grows."
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.1,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Leaflets papery (Flora of China). Worked out, not weighed: five leaflets 2 to 5 cm by 1.5 to 2.5 cm (Flora of China), taken as ellipses, are about 25 cm2 of blade; at 0.15 kg/m2 for a thin papery blade with its stalks that is about 0.4 g, which over the disc the engine takes for a leaf of 13 cm (0.56 of its length across, about 41 cm2) is 0.1 kg/m2, the light end of the generic range."
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.002,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "A raceme of one or two female flowers 2 to 3 cm across and four to ten male flowers about 1.3 cm across (Flora of China, Flora of North America), on a thread of a stalk: about two grams, worked out from those sizes and not weighed."
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.05,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "Worked out, not weighed: a follicle 5 to 8 cm long and 3 to 4 cm thick (Flora of China) is about an ellipsoid of 40 cm3, some 40 g of fleshy fruit; one to three to a flower (Zou et al. 2023), most often one. Fifty grams for a fruit as the engine counts it."
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.6,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "Not measured for this plant. Hattermann et al. 2022 found that the searcher shoots of stem twiners reach from 10 cm to 225 cm before they fall over. Photographs of Akebia quinata (Commons: \"Akebia quinata 001.JPG\", \"Akebia quinata arb Fof F.jpg\") show shoots of the year arching over within half a metre to a metre, with leaves full sized along them; 0.6 m is taken."
+    },
+    "attachment.graspReachM": {
+      "value": 0.1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How near a revolving tip must pass a support to take hold. Darwin timed the revolutions of Akebia quinata (1 h 30 m to 1 h 45 m) but gave no width for its sweep. Its shoots wind round each other and round laths readily (photographs named under organs.whipLengthM); 10 cm, a little under the generic, for a slender shoot. Not measured."
     }
   }
 }
