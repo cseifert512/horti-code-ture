@@ -164,6 +164,9 @@ export interface LeafSite {
    * For a leaf that a plant which is not evergreen keeps through the winter
    * after its last season: the day of the following spring on which it is to
    * be shed, as the new leaves open. `lastYear` is the year of that spring.
+   * And for an evergreen leaf at the end of its life, on a plant whose model
+   * gives the window its old leaves fall in (`phenology.evergreenLeafFallDoy`):
+   * the day in that window on which it falls; `lastYear` is the year of that day.
    */
   shedPlannedDay?: number;
 }
@@ -233,6 +236,12 @@ export interface FloralBud {
   endedBy: string | null;
   /** Set when it opens. */
   position: Vec3 | null;
+  /**
+   * Where it stood on the day it opened. `position` moves with the stem while a shoot in the air is still being laid
+   * along the shape its weight gives it; this does not, so that what is decided from the place a flower opened at
+   * (whether another follows it) is decided once.
+   */
+  openedAt?: Vec3;
   /** Unit direction the inflorescence is held in, set when it opens; null where it hangs. */
   direction: Vec3 | null;
   /** Which of the taxon's flower forms it is, where its growth model names one. */
@@ -346,8 +355,39 @@ export type GardenerAction =
    * Flowered side shoots shortened so that a share of each is kept, drawn for each shoot from `keepShare`; and, with
    * `renewCanes`, where more than that many canes rise from the base, the oldest beyond it cut out low down to shoot again.
    */
-  | { type: 'shorten_side_shoots'; plantId: string; keepShare: [number, number]; renewCanes?: { keep: number; stubM: number } }
-  | { type: Exclude<GardenerEventType, 'train_leader' | 'spur_prune' | 'hard_prune' | 'monitor' | 'plant' | 'shorten_side_shoots'>; plantId: string; note?: string };
+  | {
+      type: 'shorten_side_shoots';
+      plantId: string;
+      /**
+       * How much of each shoot is kept: one of the three. A share of its length, drawn for each shoot (a rose); a count
+       * of its leaf nodes from its base, drawn for each shoot (a vine: "to one or two buds", or "five or six leaves"); or
+       * what stands within this straight-line distance of where it leaves its stem (ivy's adult growth kept in bounds).
+       */
+      keepShare?: [number, number];
+      keepNodes?: [number, number];
+      withinM?: number;
+      /** 'flowered' (the default): only side shoots that have flowered; 'all': every side shoot. */
+      which?: 'flowered' | 'all';
+      /** Also every free shoot of the year (a whip, a cane that found no place in the framework), by the same rule. */
+      freeShoots?: boolean;
+      /**
+       * 'stub' (the default, a winter cut): what is left of a side shoot is a stub of the plant's own wood, and next
+       * season's side shoot from that node breaks from its top. 'shoot' (a summer shortening): what is left is the same
+       * shoot, stopped, which may flower and grow on as before.
+       */
+      remains?: 'stub' | 'shoot';
+      /**
+       * A flower or fruit at the end of a shoot stays on the plant when the shoot is shortened, and is carried to the
+       * cut end. For a plant whose model puts at the end of the shoot what on the plant stands part-way along it, within
+       * what the gardener keeps: a vine's bunch, at the third to sixth node from the base. Left out: what stood at the
+       * end goes with the end.
+       */
+      keepEndFlower?: boolean;
+      renewCanes?: { keep: number; stubM: number };
+    }
+  /** Every free shoot of the year that holds nothing and whose tip stands further than `freeBeyondM` from where it left its support, cut off there. */
+  | { type: 'trim_to_bounds'; plantId: string; freeBeyondM: number }
+  | { type: Exclude<GardenerEventType, 'train_leader' | 'spur_prune' | 'hard_prune' | 'monitor' | 'plant' | 'shorten_side_shoots' | 'trim_to_bounds'>; plantId: string; note?: string };
 
 export type GardenerEvent = GardenerAction & {
   id: string;

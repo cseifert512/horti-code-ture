@@ -594,3 +594,55 @@ Added 12 November 2026, after the owner looked at the top of the vault in winter
 - *Every new number is a choice.* No branching angle, break date, divergence or shoot thickness has been measured on any plant in the library, nor a rose spray or hip weighed.
 
 Tests: `packages/core/test/side-shoots.test.ts`.
+
+## 12. The gardener's care for the vine and the ivy, shoots that arch over, leaves that turn to the open
+
+Added 12 and 13 November 2026. Two more plants had been laid beside photographs. The crimson glory vine, trained, stood in January as a thicket of straight canes 0.8 m above the frame, which a gardener cuts back every December; the ivy stood shoots up off the top beam. It was the rose's comb (section 11) in two other guises. The owner's rule for all of it: the plant a client is shown is the plant as the in-house gardener keeps it (`PROJECT_CONTEXT.md` section 3.4).
+
+**The vine's routine** (`vineRoutine` in `sim/scenarios.ts`, `MODELLED_ROUTINE` and the reference palette). 15 December each year: every side shoot, flowered or not, and every free cane is cut back to one or two buds; next year's shoot breaks from the top of the stub. 7 July and 15 August: every shoot of the year is shortened to five or six leaves. The framework is not cut. Bean, of the genus (https://www.treesandshrubsonline.org/articles/vitis/): "The young shoots are shortened back once or twice during the summer, and then cut hard back in December or January to one or two buds (later pruning causes bleeding)". The RHS plant record gives pruning group 11, "in midwinter, and in midsummer, if restricted growth is required"; the count of leaves is the RHS's for grapevines grown as rod and spur ("Shorten non-flowering side-branches to five leaves", https://www.rhs.org.uk/fruit/grapes/rod-and-spur-pruning-system). A bunch at the end of a shortened shoot is kept and carried to the cut end (`keepEndFlower`): on the plant it stands at the third to sixth node, inside what is kept, and the model can put it only at the shoot's end. The stand-in the vine's model used for the winter cut (side shoots that lived one season) is gone: an untended vine keeps its shoots.
+
+**The ivy's routine** (`ivyRoutine`). 25 February each year from the second: a new event, `trim_to_bounds`, cuts off where it leaves the timber every free shoot of the year that holds nothing and stands more than 0.5 m out. 5 September every second year: adult shoots are cut back to within 0.5 m of their stem. Nothing is cut from March to August, the nesting season the RHS names. There is no declared envelope in a design yet, so "out of bounds" means free of the structure beyond a stated distance; that distance is a choice.
+
+**`shorten_side_shoots`** now takes a number of nodes to keep (`keepNodes`), a distance to keep within (`withinM`), which shoots (`which`: flowered or all), whether free shoots of the year are cut with them (`freeShoots`), what is left (`remains`: a stub that bears again, or a shortened shoot) and `keepEndFlower`. The rose's form of it runs as before.
+
+**A shoot in the air** (`sim/free-shoot.ts`). Three things were wrong after section 10. A shoot that set out exactly plumb carried no bending load and stood straight; every whip off a level member set out nearly plumb; and each new length was laid in the direction the tip had that day and never moved, which kept the foot of every shoot as straight as it set out and put all the bend at the tip: a row of rods with nodding ends.
+
+- A shoot that would set out plumb leans a little, to a side drawn from where it stands (`mechanics.leanDeg`), and a leaf's weight acts off the stem (`mechanics.leafWeightOffsetShare`), as a moment in the rod.
+- A whip leaves from the axil of its leaf at the side-shoot angles, without the old pull straight up.
+- While a shoot grows, the whole of its free length is laid along the shape its rod balances in that day: the foot bends as the load on it grows. It sets when it stops growing or is cut, and does not spring back when its leaves fall. Where that shape would pass through timber or cable the shoot is taken to rest there. The render contract keeps one position for each point, so a still of an earlier day shows the part of the shoot that was there then along its final shape.
+- Reach no longer stops a shoot. Past `mechanics.searcherReachM` it no longer lifts its growing end; its weight brings it over and it grows on to its planned length.
+
+**Leaf stalks** were pointed by a fixed mix of sideways, up and along the stem. Each is now turned part of the way towards the open (away from what the stem lies on) and the light the place has (`organs.leafTurnToOpenShare`), square to the line of its rank so that ranks and pairs stay. How the blade hangs on its stalk is the viewer's (`packages/viewer/src/plant/hold.ts`).
+
+**Flowers at the ends of side shoots** are scaled by the light the plant has, as flowers elsewhere were. Ivy flowers only on well-lit adult growth.
+
+**An evergreen leaf at the end of its life** fell on 1 January. It now falls on a day in the window a model gives (`phenology.evergreenLeafFallDoy`), in the year after its last full season; without the window it falls as before. Ivy's is 10 May to 20 June ("The main period of litterfall occurs in late spring", the US Forest Service review); the review gives no dates and the six weeks are a choice.
+
+**New numbers.** All optional (`GROWTH_PARAMS_OPTIONAL`); the first three have generic values in `sim/generic-shoot.ts`, used where a model gives none, with the run saying so once for the plant. None is measured.
+
+| Parameter | Value | What it decides |
+|---|---|---|
+| `mechanics.leanDeg` | generic 4 degrees | How far from plumb a shoot sets out that would have set out plumb |
+| `mechanics.leafWeightOffsetShare` | generic 0.5 | How far off the stem a leaf's weight acts, as a share of its length |
+| `organs.leafTurnToOpenShare` | generic 0.5 | How far a leaf stalk is turned from the fixed recipe towards the open and the light |
+| `pruning.winterBudsKept` | vine: 1 to 2 (Bean) | Buds left on each shoot of the year at the winter cut |
+| `pruning.summerLeavesKept` | vine: 5 to 6 (RHS, of grapevines) | Leaves left on each shoot of the year at a summer cut |
+| `phenology.evergreenLeafFallDoy` | ivy: day 130 to 171 | When an evergreen leaf at the end of its life falls |
+
+The vine's own mechanics were set again with them: a shoot stays green for 120 days (it ripens from its foot from late summer), and its leaf weight is worked out for the true blade, which is far larger than the outline the engine takes for a leaf.
+
+**Pictures, before and after** (the specimen frame, trained, six years; the ivy twelve). The vine in January: spurs along the framework, no canes standing above the frame. The vine in early July: shoots arch over the top and hang down both faces as a mass of leaf, where they stood as rods. The ivy in July: a hanging curtain of leaf, one shoot still leaning up at the top of the post. The wisteria and the rose, as controls, read as they did.
+
+**Which runs moved.** Every run: the lean, the leaf's off-centre weight and the laying of a shoot along its balance shape act on every free shoot of every plant. Frameworks are the same; holds taken from the air, and so route shares on a few specimens, moved by a few points. Runs that plant the vine or the ivy moved further, through their routines.
+
+**What is still wrong, or not done.**
+
+- *The routine does not restrain the vine's spread.* Its framework is not cut, and on the reference hemisphere it held about 280 m at twelve years with and without the routine (measured after the routine alone; not measured again after the mechanics changed). Whether the gardener holds it to a lane of its own is a decision for the owner, and would need an extent declared in the planting plan.
+- *An earlier day is drawn along the final shape* of a growing shoot, so a young shoot is shown leaning as it will when long.
+- *No force from the timber* is worked out where a shoot rests on it, and a shoot does not lean on another shoot.
+- *"Out of bounds" for the ivy* is a distance from the timber, not a declared envelope.
+- *A vine's bunch* is still drawn at the end of its shoot.
+- *Side shoots do not fork and old shoots do not die back* (as section 11).
+- *Every new number is a choice* except the two counts taken from Bean and the RHS.
+
+Tests: `packages/core/test/care.test.ts`, `packages/core/test/posture.test.ts`, and the changed cases in `packages/core/test/free-shoot.test.ts`.

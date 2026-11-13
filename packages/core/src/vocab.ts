@@ -265,8 +265,26 @@ export const GARDENER_EVENT = [
    * 17: "Prune any flowered side shoots back by two thirds of their length"; "if heavily congested, cut out any really
    * old branches from the base"; https://www.rhs.org.uk/plants/roses/climbing/pruning-guide). Not `spur_prune`, which
    * is wisteria's cut to two or three buds, and not `hard_prune`, which takes whole axes or the whole plant down.
+   *
+   * The same event, with its other options, maps two more routines of shoots that are not framework:
+   *   a vine's (RHS pruning group 11, "in midwinter, and in midsummer, if restricted growth is required";
+   *   https://www.rhs.org.uk/plants/19030/vitis-coignetiae/details). Bean, of the genus Vitis: "The young shoots are
+   *   shortened back once or twice during the summer, and then cut hard back in December or January to one or two buds
+   *   (later pruning causes bleeding)" (https://www.treesandshrubsonline.org/articles/vitis/). Every shoot of the year,
+   *   flowered or not, and the free canes too, to a count of nodes from its base: in winter what is left is a stub
+   *   that bears next year's shoot, in summer it is the same shoot, shorter.
+   *   ivy's adult growth shortened where it stands out further than a stated distance from its stem (RHS, pruning
+   *   group 11 at any time; the RHS ivy guide: "trim back any excess growth"; https://www.rhs.org.uk/plants/ivy/growing-guide).
    */
   'shorten_side_shoots',
+  /**
+   * Free shoots of the year that stand out from the structure further than a stated distance, and hold nothing, cut
+   * off where they leave it. Maps the RHS's keeping of ivy in bounds: "it is easy to keep ivy from straying
+   * out-of-bounds by annual pruning" (https://www.rhs.org.uk/prevention-protection/ivy-on-buildings). The model has no
+   * declared envelope, so "out of bounds" is a free shoot whose tip stands further than the distance from the timber.
+   * Not `remove_problem_growth`, which names no rule the engine can act on.
+   */
+  'trim_to_bounds',
   'thin_canopy',
   'deadhead_or_select_flowers',
   'water',

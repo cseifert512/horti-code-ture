@@ -96,6 +96,8 @@ This is the elastica of a heavy rod, with its large rotations kept. E rises from
 
 Not changed by this note: a spur is still the short drawn curve the prototype gave it; a leader or lateral that finds no way on at a node still stops there and does not set out into the air; wind, rain and snow are not loads.
 
+**Further note of 13 November 2026.** Three things in the above are replaced (`docs/ASSUMPTIONS_AUDIT.md` section 12): a growing shoot is laid, each day, along the whole shape its rod balances in, and sets when it stops growing, where each length was laid in the direction of the tip and never moved; a shoot that would set out plumb leans a little and carries its leaves' weight off its axis; and reaching as far as a searcher shoot reaches no longer stops a shoot, which instead stops lifting its growing end and grows on as its weight lets it.
+
 ### 4.4 Bud history / flowering for old-wood species
 
 \[

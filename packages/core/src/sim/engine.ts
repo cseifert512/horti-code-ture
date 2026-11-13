@@ -29,9 +29,10 @@
  * the place it happens (`placeRng`), so that switching one on, or cutting one
  * off, moves nothing else on the plant.
  *
- * Three things a taxon may or may not do are switched on in the same way, and
+ * Four things a taxon may or may not do are switched on in the same way, and
  * decided in the same way:
  *   keep leaves through winter   a share of them (`winterFate`)
+ *   shed old evergreen leaves    in a window of the year, not on 1 January (`evergreenFall`)
  *   flower again                 where a flower has gone over, in flushes (`flowerAgain`, `deadhead`)
  *   grow its side shoots on      a little more each year, up to a length (`sideShootSeason`)
  * A spur's leaf and a side shoot's leaf may have a size, spacing and lifespan
@@ -42,10 +43,10 @@ import type { SupportEdge } from '../bower/types.ts';
 import { Calendar, type CalendarDate } from '../calendar.ts';
 import { type Vec3, UP, ZERO, add, addScaled, anyPerpendicular, cross, distance, dot, length, lerp, normalize, scale, smoothstep, sub, v3 } from '../math/vec3.ts';
 import type { AppendageKind, GardenerEventType, MemberTier, OrganHeld } from '../vocab.ts';
-import { FEEL_EVERY_M, type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, ROD_SEGMENT_M, SOLVE_EVERY_M, type Rod, Surroundings, directionAt, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
+import { FEEL_EVERY_M, type FreeShoot, GRAVITY, LIGHT_EVERY_M, PLUMB_RAD, ROD_SEGMENT_M, SOLVE_EVERY_M, type Rod, Surroundings, directionAt, inclineOf, modulusPa, replane, secondMomentM4, seekDirection, solveRod, startFreeShoot, steer } from './free-shoot.ts';
 import { type LightFrom, openSkyLight } from './light-from.ts';
 import { LightField } from './light.ts';
-import { type GrowthModel, type OptionalParamKey, genericShootKeys, genericSideShootKeys, known, listAt, param, shootParam, sideShootParam } from './model.ts';
+import { type GrowthModel, type OptionalParamKey, genericLeafKeys, genericShootKeys, genericSideShootKeys, known, leafParam, listAt, param, shootParam, sideShootParam } from './model.ts';
 import { Rng, placeRng } from './rng.ts';
 import { liePath, pathAt, pathLength, twinePath } from './stem-path.ts';
 import { nextWindow, unrolled, windowFrom, windowTo } from './windows.ts';
@@ -60,7 +61,7 @@ const LANE_M = 0.022;
 const mid = (r: readonly [number, number]) => (r[0] + r[1]) / 2;
 
 /** What tells one decision made at a place from another made at the same place. */
-const SALT = { fruit: 101, tendril: 211, leafStalk: 307, rootlets: 401, prickle: 503, sideShoot: 601, sideShootGrowth: 701, sideShootLeaf: 809, sideShootBud: 907, held: 1009, shorten: 1409, sideShootStart: 1511 } as const;
+const SALT = { fruit: 101, tendril: 211, leafStalk: 307, rootlets: 401, prickle: 503, sideShoot: 601, sideShootGrowth: 701, sideShootLeaf: 809, sideShootBud: 907, held: 1009, shorten: 1409, sideShootStart: 1511, lean: 1613, whipStart: 1709 } as const;
 /**
  * The least a side shoot's place round its stem leans out from the face of the support, as the cosine of its angle
  * from straight out: a bud pressed against the timber grows round to the open side, and one at the flank sets out a
@@ -74,7 +75,7 @@ const newSpacing = (): Spacing => ({ sinceM: 0, nextM: null, count: 0 });
  * The same as `SALT`, for what a taxon may or may not do: keep a leaf through winter, flower again where a flower
  * has gone over, grow a side shoot on in a later year.
  */
-const SALT_DOES = { winterLeaf: 1103, repeat: 1201, sideShootGrowsOn: 1301 } as const;
+const SALT_DOES = { winterLeaf: 1103, repeat: 1201, sideShootGrowsOn: 1301, evergreenFall: 1811 } as const;
 /**
  * Length of a spur's leaf as a share of a shoot's, where a model gives no spur leaf length of its own
  * (`organs.spurLeafLengthM`). The Wisteria prototype's figure, and not a measurement of any plant.
@@ -118,7 +119,7 @@ export class Simulation {
   private readonly appendagesByAxis = new Map<string, AppendageSite[]>();
   /** Fruit still on each plant, waiting for its day to fall. */
   private readonly hanging = new Map<string, FruitSite[]>();
-  /** Leaves kept through a winter, by the day in the following spring on which each is to be shed. */
+  /** Leaves kept through a winter, or evergreen leaves at the end of their lives, by the day on which each is to be shed. */
   private readonly leafShedByDay = new Map<number, LeafSite[]>();
   private readonly topZ: number;
   private readonly routeTotalM: number;
@@ -236,6 +237,7 @@ export class Simulation {
     this.noteMissingParts(plant);
     this.noteGenericShoot(plant);
     this.noteGenericSideShoot(plant);
+    this.noteGenericLeaf(plant);
     // the plant arrives as a cane already some way up
     const cane = this.newTrunkStem(plant, 0);
     if (cane) this.advance(plant, cane, param(model, 'architecture.nurseryCaneM'));
@@ -550,12 +552,36 @@ export class Simulation {
     // a deciduous leaf lasts its one season; an evergreen one stays for as many as the model gives it
     const seasons = Math.max(1, Math.round(param(model, 'organs.leafLifespanYears')));
     const form = model.names.leafForm;
-    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
+    this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(up, 0.6)), scale(t, 0.3))), side), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
     // where leaves stand in opposite pairs, the second faces the other way
     if (param(model, 'organs.leavesPerNode') >= 2) {
-      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(up, 0.6)), scale(t, 0.3))), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
+      this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(up, 0.6)), scale(t, 0.3))), side), plant.rng.organ.range(...param(model, 'organs.leafLengthM')), year, year + seasons - 1, form);
     }
     this.atLeafNode(plant, axis, i, t, side);
+  }
+
+  /**
+   * A leaf's stalk turns its blade away from the support and towards the open sky and the light, whichever way the
+   * stem runs. `base` is the direction the node gives the leaf (to its side of the stem, a little up and forward); it
+   * is turned by `organs.leafTurnToOpenShare` of the way towards the open: straight out of the support the stem lies on,
+   * and the way the light comes from (the same answer a shoot in the air is given, `lightFor`), together. Where the
+   * leaves of a stem stand in ranks or pairs, `ranks` is the line across the stem they stand along, and the turn is
+   * made square to it, so that each leaf stays on its own side: two ranks stay two ranks and pairs stay pairs.
+   * Nothing is drawn from a random stream.
+   */
+  private turnLeaf(plant: Plant, axis: Axis, i: number, base: Vec3, ranks: Vec3 | null): Vec3 {
+    const k = leafParam(this.taxon(plant).model, 'organs.leafTurnToOpenShare');
+    if (k <= 0) return base;
+    const away = axis.away[i]!;
+    const at = axis.contact[i]!;
+    let open = add(length(away) > 0.5 ? away : ZERO, this.lightFor(plant, at));
+    if (ranks && length(ranks) > 1e-9) {
+      const r = normalize(ranks);
+      open = addScaled(open, r, -dot(open, r));
+    }
+    if (length(open) < 1e-6) return base;
+    const turned = normalize(add(scale(base, 1 - k), scale(normalize(open), k)));
+    return length(turned) > 0.5 ? turned : base;
   }
 
   private addLeaf(plant: Plant, axis: Axis, i: number, direction: Vec3, lengthM: number, firstYear: number, lastYear: number | null, form?: string): void {
@@ -563,6 +589,7 @@ export class Simulation {
     const leaf: LeafSite = { plantId: plant.id, axisId: axis.id, pointIndex: i, position: axis.contact[i]!, direction, lengthM, firstYear, lastYear, evergreen, bornDay: this.day, removedDay: null };
     if (form !== undefined) leaf.form = form;
     this.winterFate(plant, axis, leaf);
+    this.evergreenFall(plant, axis, leaf);
     this.leaves.push(leaf);
     const list = this.leavesByAxis.get(axis.id);
     if (list) list.push(leaf);
@@ -602,6 +629,31 @@ export class Simulation {
     leaf.lastYear += 1;
     const [first, last] = windowTo(this.calendar, param(model, 'phenology.leafFlushDoy'), leaf.lastYear);
     leaf.shedPlannedDay = Math.max(this.day + 1, first + rng.int(0, Math.max(0, last - first)));
+    const due = this.leafShedByDay.get(leaf.shedPlannedDay);
+    if (due) due.push(leaf);
+    else this.leafShedByDay.set(leaf.shedPlannedDay, [leaf]);
+  }
+
+  /**
+   * When an evergreen leaf at the end of its life falls, for a taxon whose
+   * model gives the days of the year between which its old leaves are shed
+   * (`phenology.evergreenLeafFallDoy`). Without it such a leaf is there to the
+   * last day of its last year and gone on 1 January, every one of them on that
+   * day. With it the leaf stays on into the following year and falls on a day
+   * of its own inside the window, drawn where the leaf stands and from none of
+   * the plant's streams; a cut, or the death of the plant, may take it first.
+   * Not for a leaf position that is renewed every year, nor for a leaf that
+   * `winterFate` has made deciduous.
+   */
+  private evergreenFall(plant: Plant, axis: Axis, leaf: LeafSite): void {
+    if (!leaf.evergreen || leaf.lastYear === null || leaf.shedPlannedDay !== undefined) return;
+    const fall = known(this.taxon(plant).model, 'phenology.evergreenLeafFallDoy');
+    if (fall === null) return;
+    // the window that ends in the year after its last season; one that runs through the new year began in that season
+    const [first, last] = windowTo(this.calendar, fall, leaf.lastYear + 1);
+    const rng = this.at(plant, leaf.position, SALT_DOES.evergreenFall + 7919 * (this.leavesByAxis.get(axis.id)?.length ?? 0));
+    leaf.shedPlannedDay = Math.max(this.day + 1, first + rng.int(0, Math.max(0, last - first)));
+    leaf.lastYear = this.calendar.dateOf(leaf.shedPlannedDay).year;
     const due = this.leafShedByDay.get(leaf.shedPlannedDay);
     if (due) due.push(leaf);
     else this.leafShedByDay.set(leaf.shedPlannedDay, [leaf]);
@@ -856,13 +908,25 @@ export class Simulation {
     this.note('generic_shoot', plant, null, `the shoots of ${profile.names.label} that stand clear of the structure are drawn with the generic shoot of a woody climber, not its own: its growth model gives no value for ${generic.join(', ')}. How far they stand out, where they droop and what they reach are not findings about this plant`);
   }
 
+  /** Say once, on planting day, that this plant's leaves are turned to the open by the generic leaf's share, for want of its own. */
+  private noteGenericLeaf(plant: Plant): void {
+    const { profile, model } = this.taxon(plant);
+    const generic = genericLeafKeys(model);
+    if (!generic.length) return;
+    this.note('generic_shoot', plant, null, `the leaves of ${profile.names.label} turn away from the support and towards the open and the light as the generic leaf does, not as its own: its growth model gives no value for ${generic.join(', ')}. How far each blade faces out is not a finding about this plant`);
+  }
+
   /** Say once, on planting day, which numbers of how its side shoots set out this plant is drawn with for want of its own. */
   private noteGenericSideShoot(plant: Plant): void {
     const { profile, model } = this.taxon(plant);
-    if (!this.sideShootRule(model)) return;
-    const generic = genericSideShootKeys(model);
+    const sides = !!this.sideShootRule(model);
+    const whips = param(model, 'organs.whipShareOfNodes') > 0 && param(model, 'organs.whipsPerYearMax') > 0;
+    if (!sides && !whips) return;
+    // a whip leaves its stem as a side shoot does, so it uses the angles; when buds break, and the first turn to the light, are the side shoots' alone
+    const generic = genericSideShootKeys(model).filter((k) => sides || (k !== 'sideShoots.breakSpreadDays' && k !== 'sideShoots.startTowardsLight'));
     if (!generic.length) return;
-    this.note('generic_shoot', plant, null, `the flowering side shoots of ${profile.names.label} set out from their stems as the generic side shoot does, not as its own: its growth model gives no value for ${generic.join(', ')}. The angles they leave at and the days they break on are not findings about this plant`);
+    const what = sides && whips ? 'flowering side shoots and long shoots' : sides ? 'flowering side shoots' : 'long shoots';
+    this.note('generic_shoot', plant, null, `the ${what} of ${profile.names.label} set out from their stems as the generic side shoot does, not as its own: its growth model gives no value for ${generic.join(', ')}. The angles they leave at${sides ? ' and the days they break on' : ''} are not findings about this plant`);
   }
 
   /**
@@ -889,9 +953,10 @@ export class Simulation {
   /**
    * The rod the mechanics solve for a shoot in the air, with the length about
    * to be laid as its last segment: how stiff each joint is today, and what
-   * hangs at the far end of each segment.
+   * hangs at the far end of each segment. `into[k]` is the segment of the rod
+   * that laid length k is part of.
    */
-  private rodOf(plant: Plant, axis: Axis, shoot: FreeShoot): Rod {
+  private rodOf(plant: Plant, axis: Axis, shoot: FreeShoot): { rod: Rod; into: number[] } {
     const { model } = this.taxon(plant);
     const m = shoot.lengthM.length;
     const green = shootParam(model, 'mechanics.greenShootModulusMPa');
@@ -933,7 +998,16 @@ export class Simulation {
       if (k >= 0 && k < m) load[into[k]!]! += kg * GRAVITY;
     };
     const leafKgM2 = shootParam(model, 'mechanics.leafFreshMassPerAreaKgM2');
-    for (const leaf of this.leavesByAxis.get(axis.id) ?? []) if (leaf.removedDay === null) hang(leaf.pointIndex, leafSilhouetteAreaM2(leaf.lengthM) * leafKgM2);
+    // a leaf hangs its weight off the stem, on the side it is turned to: a moment at the joint it stands at
+    const couple = new Array<number>(lengthM.length).fill(0);
+    const offset = shootParam(model, 'mechanics.leafWeightOffsetShare');
+    for (const leaf of this.leavesByAxis.get(axis.id) ?? []) {
+      if (leaf.removedDay !== null) continue;
+      const kg = leafSilhouetteAreaM2(leaf.lengthM) * leafKgM2;
+      hang(leaf.pointIndex, kg);
+      const k = leaf.pointIndex - shoot.basePoint - 1;
+      if (offset > 0 && k >= 0 && k < m) couple[into[k]!]! += kg * GRAVITY * offset * leaf.lengthM * dot(leaf.direction, shoot.plane);
+    }
     const flowerKg = shootParam(model, 'mechanics.inflorescenceFreshMassKg');
     for (const bud of this.budsByAxis.get(axis.id) ?? []) {
       if (bud.end !== null || bud.stage === 'spent') continue;
@@ -945,7 +1019,84 @@ export class Simulation {
       if (fruit.removedDay !== null) continue;
       hang(fruit.pointIndex, fruitKg * Math.min(1, Math.max(0, (this.day - fruit.swell[0]) / Math.max(1, fruit.swell[1] - fruit.swell[0]))));
     }
-    return { baseIncline: shoot.baseIncline, lengthM, turn, compliance, load };
+    return { rod: { baseIncline: shoot.baseIncline, lengthM, turn, compliance, load, couple }, into };
+  }
+
+  /**
+   * Lay the free length of a shoot again, along the shape its rod balances in today (`shape`, the angle from plumb of
+   * each segment of the rod). The foot of a shoot bends as the load on it grows, as well as its tip; what stood on the
+   * shoot goes with it: each leaf, tendril, prickle, flower and fruit is carried to where its point of the stem now is,
+   * and turned as that length of stem turned. The length about to be laid, the last of the rod, has no point yet.
+   *
+   * Nothing is moved, and false is returned, where the shape would pass through timber or cable or below the ground:
+   * the shoot rests there (free-shoot.ts, "it rests"). Each point's own path from where it was to where it would be,
+   * and each length of stem as it would lie, is asked of the structure; a cable that passes between two points of the
+   * stem without touching either path is not seen. The first length is not asked: it leaves the face of what bears the
+   * shoot, as in `growFree`.
+   */
+  private relay(axis: Axis, shoot: FreeShoot, shape: readonly number[], into: readonly number[]): boolean {
+    const m = shoot.lengthM.length - 1;
+    if (m < 1 || !shoot.origin) return true;
+    const base = shoot.basePoint;
+    // a shoot that already bears another on this stretch is no longer moved: nothing here would carry the shoot it bears
+    for (const id of axis.children) {
+      const c = this.axes.get(id)!;
+      if (c.removedDay === null && c.parent!.pointIndex > base) return false;
+    }
+    const next = new Array<Vec3>(m);
+    let at = shoot.origin;
+    for (let k = 0; k < m; k++) next[k] = at = addScaled(at, directionAt(shape[into[k]!]!, shoot.planes[k]!), shoot.lengthM[k]!);
+    for (let k = 0; k < m; k++) {
+      const r = axis.radiusMm[base + k + 1]! / 1000;
+      if (next[k]!.z < r) return false;
+      if (k === 0) continue;
+      const was = axis.contact[base + k + 1]!;
+      if (distance(was, next[k]!) > 1e-6 && this.surroundings.enters(was, next[k]!, r)) return false;
+      if (this.surroundings.enters(next[k - 1]!, next[k]!, r)) return false;
+    }
+    // what stands on each point goes with it
+    const moved = new Map<Vec3, number>();
+    for (let k = 0; k < m; k++) moved.set(axis.contact[base + k + 1]!, k);
+    const carry = (position: Vec3, pointIndex: number | null): number => (moved.get(position) ?? (pointIndex !== null && pointIndex > base && pointIndex <= base + m ? pointIndex - base - 1 : -1));
+    const place = (position: Vec3, k: number): Vec3 => (moved.has(position) ? next[k]! : add(position, sub(next[k]!, axis.contact[base + k + 1]!)));
+    /** `d` turned as laid length k turned: about the level line square to the plane the length lies in. */
+    const turn = (d: Vec3, k: number): Vec3 => {
+      const by = shape[into[k]!]! - shoot.laid[k]!;
+      if (Math.abs(by) < 1e-9) return d;
+      const about = cross(UP, shoot.planes[k]!);
+      const c = Math.cos(by);
+      return add(add(scale(d, c), scale(cross(about, d), Math.sin(by))), scale(about, dot(about, d) * (1 - c)));
+    };
+    for (const leaf of this.leavesByAxis.get(axis.id) ?? []) {
+      const k = carry(leaf.position, leaf.pointIndex);
+      if (k < 0) continue;
+      leaf.position = place(leaf.position, k);
+      leaf.direction = turn(leaf.direction, k);
+    }
+    for (const a of this.appendagesByAxis.get(axis.id) ?? []) {
+      const k = carry(a.position, a.pointIndex);
+      if (k < 0) continue;
+      a.position = place(a.position, k);
+      a.direction = turn(a.direction, k);
+    }
+    for (const b of this.budsByAxis.get(axis.id) ?? []) {
+      if (!b.position) continue;
+      const k = carry(b.position, b.pointIndex);
+      if (k < 0) continue;
+      b.position = place(b.position, k);
+      if (b.direction) b.direction = turn(b.direction, k);
+    }
+    for (const f of this.fruitsByAxis.get(axis.id) ?? []) {
+      const k = carry(f.position, f.pointIndex);
+      if (k < 0) continue;
+      f.position = place(f.position, k);
+      if (f.direction) f.direction = turn(f.direction, k);
+    }
+    for (let k = 0; k < m; k++) {
+      axis.contact[base + k + 1] = next[k]!;
+      shoot.laid[k] = shape[into[k]!]!;
+    }
+    return true;
   }
 
   /**
@@ -954,14 +1105,22 @@ export class Simulation {
    * the shoot stopped, or took hold of a support (its tip is then on that
    * route, and `advance` carries on along it).
    *
-   * As grown: what is already laid is not moved. See free-shoot.ts for what
-   * that leaves out.
+   * Each time the rod is solved, the whole free length is laid again along the
+   * shape it balances in (`relay`), unless the shoot rests on the structure.
+   * See free-shoot.ts for what that leaves out.
    */
   private growFree(plant: Plant, axis: Axis, tip: Extract<Tip, { state: 'free' }>, go: number): number {
-    const { profile, model } = this.taxon(plant);
+    const { model } = this.taxon(plant);
     const n = axis.contact.length;
-    const last = axis.contact[n - 1]!;
-    const shoot = (tip.rod ??= startFreeShoot(n - 1, tip.dir));
+    let last = axis.contact[n - 1]!;
+    if (!tip.rod) {
+      // no shoot sets out exactly plumb: one that would leans a little, to a side drawn from where it stands
+      const lean = (shootParam(model, 'mechanics.leanDeg') * Math.PI) / 180;
+      const azimuth = this.at(plant, last, SALT.lean).range(0, 2 * Math.PI);
+      tip.rod = startFreeShoot(n - 1, tip.dir, lean, v3(Math.cos(azimuth), Math.sin(azimuth), 0));
+      if (Math.abs(tip.rod.baseIncline - inclineOf(normalize(tip.dir), tip.rod.plane)) > 1e-12) tip.dir = directionAt(tip.rod.baseIncline, tip.rod.plane);
+    }
+    const shoot = tip.rod;
     const radiusM = axis.radiusMm[n - 1]! / 1000;
     // a flowering side shoot stands free by nature; every other shoot in the air is looking for a support
     const searcher = axis.role !== 'side_shoot';
@@ -978,26 +1137,39 @@ export class Simulation {
     let dir: Vec3;
     if (shoot.posture === 'plumb') dir = normalize(v3(wander.x, wander.y, -1));
     else {
-      // while it holds itself up, its growing end steers towards up and the light
+      // while it holds itself up, and has not come as far as its kind hold themselves out, its growing end steers
+      // towards up and the light
       let heading = tip.dir;
-      if (shoot.posture === 'self_supporting') {
+      if (shoot.posture === 'self_supporting' && !shoot.pastReach) {
         if (!shoot.light || tip.grownM - shoot.lightAskedAtM >= LIGHT_EVERY_M) {
           shoot.light = this.lightFor(plant, last);
           shoot.lightAskedAtM = tip.grownM;
         }
         heading = steer(heading, seekDirection(shoot.light, shootParam(model, 'tropism.lightShare')), shootParam(model, 'tropism.turnPerM'), go);
       }
+      // past its reach a searcher that has found nothing no longer lifts its growing end: it grows on along the line
+      // its tip has, and its weight, which now bends the whole of it, brings it over (Hattermann et al. 2022 measured
+      // reach as the longest searcher that still held itself between upright and level)
       const turned = replane(normalize(add(heading, wander)), shoot.plane);
       shoot.plane = turned.plane;
+      shoot.origin ??= n === 1 ? addScaled(last, axis.away[0]!, axis.radiusMm[0]! / 1000) : last;
       shoot.lengthM.push(go);
       shoot.turn.push(turned.incline - shoot.incline);
-      // then its weight has its say: the tip of the rod, with this length on it, points where the mechanics put it.
+      shoot.planes.push(turned.plane);
+      // then its weight has its say: the rod, with this length on it, lies where the mechanics put it, foot to tip.
       // A shoot that lays only millimetres in a day keeps the sag it had until it has grown SOLVE_EVERY_M.
       let incline = turned.incline;
       if (tip.grownM + go - shoot.solvedAtM >= SOLVE_EVERY_M) {
         shoot.solvedAtM = tip.grownM + go;
-        const solved = solveRod(this.rodOf(plant, axis, shoot), shoot.baseMoment);
+        const { rod, into } = this.rodOf(plant, axis, shoot);
+        const shape: number[] = [];
+        const solved = solveRod(rod, shoot.baseMoment, shoot.resting ? undefined : shape);
         shoot.baseMoment = solved.baseMoment;
+        // the whole of what is laid moves to that shape; where it cannot, the shoot rests on what is in its way
+        if (solved.found && !shoot.resting) {
+          if (this.relay(axis, shoot, shape, into)) last = axis.contact[n - 1]!;
+          else shoot.resting = true;
+        }
         incline = solved.found ? solved.tipIncline : Math.PI;
         const side = incline < 0 ? -1 : 1;
         const sag = side * (incline - solved.unloadedIncline);
@@ -1006,6 +1178,7 @@ export class Simulation {
         else if (shoot.posture === 'self_supporting' && Math.abs(incline) > Math.PI / 2 && Math.abs(incline) - sag <= Math.PI / 2) shoot.posture = 'pendulous';
       }
       shoot.incline = incline;
+      shoot.laid.push(incline);
       dir = directionAt(incline, shoot.plane);
     }
 
@@ -1033,6 +1206,8 @@ export class Simulation {
           shoot.turn[shoot.turn.length - 1]! += turned.incline - shoot.incline;
           shoot.incline = turned.incline;
           shoot.plane = turned.plane;
+          shoot.planes[shoot.planes.length - 1] = turned.plane;
+          shoot.laid[shoot.laid.length - 1] = turned.incline;
         }
       } else {
         laid = 0;
@@ -1051,9 +1226,9 @@ export class Simulation {
       this.appendPoint(plant, axis, to, ZERO);
     } else laid = 0;
 
-    // held out as far as shoots of its kind are known to hold themselves: it grows no further
-    const reach = shootParam(model, 'mechanics.searcherReachM');
-    if (!stop && shoot.posture === 'self_supporting' && distance(to, axis.contact[shoot.basePoint]!) >= reach) stop = `held itself out ${reach.toFixed(2)} m from where it left its support, which is as far as the growth model lets a shoot of ${profile.names.label} hold itself`;
+    // held out as far as shoots of its kind are known to hold themselves (Hattermann et al. 2022): it no longer steers
+    // upwards, and grows on as its weight and stiffness let it
+    if (!stop && !shoot.pastReach && shoot.posture === 'self_supporting' && distance(to, axis.contact[shoot.basePoint]!) >= shootParam(model, 'mechanics.searcherReachM')) shoot.pastReach = true;
     if (stop) {
       axis.tip = { state: 'stopped', reason: stop };
       this.note('stopped', plant, axis, `a shoot in the air ${stop}, ${this.lengthOf(axis).toFixed(2)} m long`);
@@ -1416,7 +1591,9 @@ export class Simulation {
       let at = n.pointIndex;
       if (n.sideShootId !== null) {
         const last = this.axes.get(n.sideShootId)!;
-        if (last.removedDay === null && !kept.has(last.id)) continue;
+        // a stub of an earlier winter that bore nothing last season, on a plant whose stubs outlive a season, can bear again
+        const bare = last.shortenedYear !== undefined && last.shortenedYear < year && !last.children.some((c) => this.axes.get(c)!.removedDay === null);
+        if (last.removedDay === null && !kept.has(last.id) && !bare) continue;
         if (last.removedDay === null) {
           bearer = last;
           at = last.alive - 1;
@@ -1453,14 +1630,15 @@ export class Simulation {
    * bears it. Where round the stem it stands follows the turn of the leaves
    * from node to node: each pair a right angle from the last where leaves are
    * opposite, the taxon's divergence (or the generic one) where they stand
-   * singly. A place on the side pressed against the support is folded round
+   * singly, and the two flanks of the stem in turn where that divergence is
+   * half a turn (two ranks). A place on the side pressed against the support is folded round
    * to the open side: no shoot sets out into the timber. It leans forward
    * along the bearing stem at an angle the model gives as a range, and is
    * turned part of the way towards the direction a shoot of the plant seeks,
    * up and to the light. Everything is drawn from `rng`, a stream of the
    * place, so that nothing else on the plant moves.
    */
-  private sideShootHeading(plant: Plant, bearer: Axis, at: number, n: Plant['leafNodes'][number], rng: Rng): Vec3 {
+  private sideShootHeading(plant: Plant, bearer: Axis, at: number, n: Plant['leafNodes'][number], rng: Rng, towardsLight = true): Vec3 {
     const { model } = this.taxon(plant);
     const t = bearer.alive > 1 ? this.tangent(bearer, at) : UP;
     const away = bearer.away[at]!;
@@ -1475,7 +1653,15 @@ export class Simulation {
     const deg = Math.PI / 180;
     // the leaf arrangement of the stem it stands on
     const opposite = (bearer.role === 'side_shoot' ? (known(model, 'organs.sideShootLeavesPerNode') ?? param(model, 'organs.leavesPerNode')) : param(model, 'organs.leavesPerNode')) >= 2;
-    const phi = opposite ? (ordinal % 2) * (Math.PI / 2) + (n.side === 1 ? Math.PI / 2 : -Math.PI / 2) : ordinal * sideShootParam(model, 'organs.alternateDivergenceDeg') * deg;
+    const divergence = sideShootParam(model, 'organs.alternateDivergenceDeg');
+    // Leaves that stand singly and half a turn apart stand in two ranks, and the ranks are the two flanks of the stem as
+    // it lies on its support: that is where the engine sets the leaves (`addLeafNode`), and a shoot breaks from the axil
+    // of its leaf. Counted from straight out of the support, as a spiral is, half a turn put one rank on the open side
+    // and the other against the timber, which was then folded round on to the first: every shoot of a two-ranked plant
+    // set out in one plane, and off the top of a level member that plane is upright.
+    const twoRanked = !opposite && Math.abs(divergence - 180) < 1e-9;
+    const flank = (n.side === 1 ? 1 : -1) * (bearer.role === 'side_shoot' ? -1 : 1);
+    const phi = opposite ? (ordinal % 2) * (Math.PI / 2) + (n.side === 1 ? Math.PI / 2 : -Math.PI / 2) : twoRanked ? flank * (Math.PI / 2) : ordinal * divergence * deg;
     let c = Math.cos(phi);
     const s = Math.sin(phi);
     // the side against the support is folded round to the open side
@@ -1486,7 +1672,7 @@ export class Simulation {
     let dir = normalize(add(scale(t, Math.cos(theta)), scale(radial, Math.sin(theta))));
     // part of the way towards up and the light
     const k = sideShootParam(model, 'sideShoots.startTowardsLight');
-    if (k > 0) dir = normalize(add(scale(dir, 1 - k), scale(seekDirection(this.lightFor(plant, bearer.contact[at]!), shootParam(model, 'tropism.lightShare')), k)));
+    if (towardsLight && k > 0) dir = normalize(add(scale(dir, 1 - k), scale(seekDirection(this.lightFor(plant, bearer.contact[at]!), shootParam(model, 'tropism.lightShare')), k)));
     // and never into the timber
     if (supported && dot(dir, away) < CLEAR_OF_SUPPORT) dir = normalize(addScaled(dir, away, CLEAR_OF_SUPPORT - dot(dir, away)));
     return dir;
@@ -1530,9 +1716,9 @@ export class Simulation {
     let side = cross(t, UP);
     side = length(side) > 1e-6 ? scale(normalize(side), axis.leafSide) : v3(axis.leafSide, 0, 0);
     const form = model.names.sideShootLeafForm ?? model.names.leafForm;
-    this.addLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...leaf.lengthM), year, lastYear, form);
+    this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, 0.75), scale(UP, 0.6)), scale(t, 0.3))), side), rng.range(...leaf.lengthM), year, lastYear, form);
     if (leaf.perNode >= 2) {
-      this.addLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(UP, 0.6)), scale(t, 0.3))), rng.range(...leaf.lengthM), year, lastYear, form);
+      this.addLeaf(plant, axis, i, this.turnLeaf(plant, axis, i, normalize(add(add(scale(side, -0.75), scale(UP, 0.6)), scale(t, 0.3))), side), rng.range(...leaf.lengthM), year, lastYear, form);
     }
   }
 
@@ -1540,7 +1726,9 @@ export class Simulation {
    * Flower buds at the ends of side shoots, formed on the day the plant's
    * other flower buds form and opening in its next flowering window. A bud is
    * the plant's own: it goes with its shoot, and with the stem that bears the
-   * shoot, if either is cut before it opens.
+   * shoot, if either is cut before it opens. The chance that one forms is
+   * scaled by the light the plant has (`light.floweringFactor`), as every
+   * other flower's is.
    */
   private budsOnSideShoots(plant: Plant, date: CalendarDate): void {
     const { model } = this.taxon(plant);
@@ -1558,7 +1746,9 @@ export class Simulation {
     const [fall0, fall1] = unrolled(this.calendar, falling, fallYear);
     const ramp = openYear - plant.plantedYear - param(model, 'flowering.competenceYears');
     if (ramp < 0) return;
-    const chance = Math.min(1, rule.terminalShare * listAt(model, 'flowering.maturityRamp', ramp));
+    // light: 1 where the plant has as much as its profile asks for, less where it is shaded below that, as for the
+    // flowers along the shoots and on spurs
+    const chance = Math.min(1, rule.terminalShare * listAt(model, 'flowering.maturityRamp', ramp)) * this.light.floweringFactor(plant, date);
     const form = model.names.sideShootFlowerForm ?? model.names.flowerForm;
     // a plant that flowers in flushes opens its first flowers in the days of the first flush; any other, over the whole window
     const flush = known(model, 'flowering.firstFlushDays');
@@ -1616,7 +1806,8 @@ export class Simulation {
     // a spur's leaf has a length of its own where the model gives one; either way it is one draw from the organ stream
     const own = known(model, 'organs.spurLeafLengthM');
     for (let k = 0; k < n; k++) {
-      const dir = normalize(v3(plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(0.45, 1)));
+      // a spur's leaves stand in a tuft at its end, in no ranks: each is turned to the open and the light from where it is drawn
+      const dir = this.turnLeaf(plant, spur, 0, normalize(v3(plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(-0.8, 0.8), plant.rng.organ.range(0.45, 1))), null);
       this.addLeaf(plant, spur, 0, dir, own ? plant.rng.organ.range(...own) : plant.rng.organ.range(...param(model, 'organs.leafLengthM')) * SPUR_LEAF_OF_SHOOT_LEAF, fromYear, null, form);
     }
   }
@@ -1626,12 +1817,18 @@ export class Simulation {
     if (host.removedDay !== null || i >= host.alive) return;
     const { model } = this.taxon(plant);
     const whip = this.newAxis(plant, 'whip', host.order + 1, { axisId: host.id, pointIndex: i }, planM, param(model, 'extension.whipMPerSeason'));
-    const t = this.tangent(host, i);
-    const up = length(host.away[i]!) > 0.5 ? host.away[i]! : UP;
-    let side = cross(t, up);
-    side = length(side) > 1e-6 ? normalize(side) : v3(1, 0, 0);
+    // Three draws from the organ stream, as there always were, so that the rest of the plant's organs stay as they
+    // were. They no longer set the heading: that was out from the support with an extra pull upwards, which off the top
+    // of a level member pointed every whip nearly straight up. A whip now leaves its stem from the axil of the leaf at
+    // its node, as a side shoot does (sideShootHeading), drawn from where it stands.
     const r = plant.rng.organ;
-    const dir = normalize(add(add(add(scale(up, r.range(0.6, 1)), scale(t, r.range(-0.6, 0.6))), scale(side, r.range(-0.6, 0.6))), scale(UP, 0.5)));
+    r.range(0.6, 1);
+    r.range(-0.6, 0.6);
+    r.range(-0.6, 0.6);
+    const base = host.contact[i]!;
+    const node = plant.leafNodes.find((ln) => ln.axisId === host.id && ln.pointIndex === i) ?? { axisId: host.id, pointIndex: i, year: 0, side: 1 as const, taken: true, sideShootId: null, ordinal: 0 };
+    // (not turned towards up and the light at the start, as a flowering side shoot is: a searcher's own tropism does that as it grows)
+    const dir = this.sideShootHeading(plant, host, i, node, this.at(plant, base, SALT.whipStart + this.calendar.dateOf(this.day).year), false);
     this.appendPoint(plant, whip, host.contact[i]!, host.away[i]!);
     whip.tip = { state: 'free', dir, grownM: 0, planM };
   }
@@ -1840,6 +2037,7 @@ export class Simulation {
         // a spur's raceme hangs from the end of the spur, wherever pruning has left that end;
         // a flower on the year's growth stands at its own node
         b.position = bearer.contact[b.pointIndex === null ? bearer.alive - 1 : b.pointIndex]!;
+        b.openedAt = b.position;
         b.direction = this.heldDirection(plant, this.taxon(plant).model.names.flowerHeld, bearer, b.pointIndex);
         opened++;
       } else if (b.stage === 'open' && this.day >= b.spentPlannedDay) {
@@ -1891,7 +2089,7 @@ export class Simulation {
     const nth = (spent.flush ?? 0) + 1;
     if (nth > rule.max) return false;
     const { model } = this.taxon(plant);
-    const rng = this.at(plant, spent.position, SALT_DOES.repeat + spent.floweringYear + 7919 * nth);
+    const rng = this.at(plant, spent.openedAt ?? spent.position, SALT_DOES.repeat + spent.floweringYear + 7919 * nth);
     if (!rng.chance(rule.share)) return false;
     const opens = fromDay + rng.int(waitDays[0], waitDays[1]);
     if (opens > windowFrom(this.calendar, param(model, 'phenology.flowerOpenDoy'), spent.floweringYear)[1]) return false;
@@ -1963,8 +2161,13 @@ export class Simulation {
     if (held === 'upright') return normalize(add(UP, scale(supported ? away : ZERO, 0.25)));
     // facing out: at the end of a shoot it carries on the shoot's own line
     if (pointIndex === null) return t;
-    // at a node, away from the support; on a shoot in the air, square off it on one side or the other
-    const out = supported ? away : scale(anyPerpendicular(t), this.at(plant, bearer.contact[i]!, SALT.held).sign());
+    // at a node, away from the support; on a shoot in the air, square off it to one side or the other, level, so that a
+    // shoot that arches over does not turn its flowers to the ground
+    const level = cross(t, UP);
+    const square = length(level) > 1e-6 ? normalize(level) : anyPerpendicular(t);
+    // (which side is drawn from the foot of the stem and the point's number, not from where the point is: a shoot in
+    // the air moves as it grows, and a flower and the fruit that follows it must face the same way)
+    const out = supported ? away : scale(square, this.at(plant, bearer.contact[0]!, SALT.held + 7919 * i).sign());
     return normalize(add(out, scale(UP, 0.35)));
   }
 
@@ -2183,6 +2386,10 @@ export class Simulation {
         this.events.push(this.record(e, date, this.shortenSideShoots(plant, e, date, fx), true, fx));
         return;
       }
+      case 'trim_to_bounds': {
+        this.events.push(this.record(e, date, this.trimToBounds(plant, e, fx), true, fx));
+        return;
+      }
       case 'monitor': {
         const alive = plant.axisIds.map((id) => this.axes.get(id)!).filter((a) => a.removedDay === null);
         const fw = alive.filter((a) => a.role === 'leader' || a.role === 'lateral').reduce((s, a) => s + this.lengthOf(a), 0);
@@ -2209,6 +2416,147 @@ export class Simulation {
    * cut down low and shoot again. Returns what the log says of the visit.
    */
   private shortenSideShoots(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }>, date: CalendarDate, fx: EventRecord['effects']): string {
+    const rose = e.keepShare && !e.keepNodes && e.withinM === undefined && (e.which ?? 'flowered') === 'flowered' && !e.freeShoots && (e.remains ?? 'stub') === 'stub' && !e.keepEndFlower;
+    const said = rose ? this.shortenFlowered(plant, { ...e, keepShare: e.keepShare! }, date, fx) : this.shortenShootsOfYear(plant, e, date, fx);
+    return said + this.renewCanes(plant, e, fx);
+  }
+
+  /**
+   * The nodes of a shoot, base first, as the point indices of the leaves it bore (fallen or not): where its buds are.
+   */
+  private nodesOf(axis: Axis): number[] {
+    return [...new Set((this.leavesByAxis.get(axis.id) ?? []).map((l) => l.pointIndex))].filter((i) => i > 0 && i < axis.alive).sort((x, y) => x - y);
+  }
+
+  /**
+   * Every other use of `shorten_side_shoots`: a vine's winter cut to one or two buds and its summer shortening, and
+   * ivy's adult growth kept within a distance of its stem. Which shoots: side shoots that have flowered, or all of
+   * them, and the free shoots of the year as well where `freeShoots` says so. How much stays: a count of nodes from
+   * the shoot's own base, or what stands within `withinM` of where its line leaves the framework, or a share of its
+   * length. A winter cut (`remains` 'stub') leaves a stub that bears next season's side shoot from its top; where
+   * the shoot already stands on such a stub, the cut is made back at the stub, so a spur stays one stub long. A summer
+   * shortening (`remains` 'shoot') leaves the shoot itself, stopped. Whatever stood beyond a cut goes with it,
+   * flowers at the shoot's end included; with `keepEndFlower` what the shoot carries at its end (a flower, or the
+   * fruit that followed it) stays on the plant and is carried to the cut end, for a plant whose model draws at the
+   * end of the shoot what stands lower down on it. Each count or share is drawn for the shoot from its place.
+   */
+  private shortenShootsOfYear(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }>, date: CalendarDate, fx: EventRecord['effects']): string {
+    const stub = (e.remains ?? 'stub') === 'stub';
+    const all = (e.which ?? 'flowered') === 'all';
+    const season = date.month >= 7 ? date.year + 1 : date.year;
+    const fruitBefore = this.fruits.filter((f) => f.plantId === plant.id && f.removedBy === e.id).length;
+    let sides = 0;
+    let free = 0;
+    let unflowered = 0;
+    let carried = 0;
+    let backToStub = 0;
+    /** Length of `a` to keep, by the rule of the event, or null where nothing is to be cut. */
+    const keepOf = (a: Axis, base: Vec3): number | null => {
+      const rng = this.at(plant, a.contact[0]!, SALT.shorten + date.year);
+      if (e.keepNodes) {
+        const nodes = this.nodesOf(a);
+        const k = rng.int(e.keepNodes[0], e.keepNodes[1]);
+        if (nodes.length <= k) return null;
+        return k <= 0 ? 0 : a.lengthAt[nodes[k - 1]!]!;
+      }
+      if (e.withinM !== undefined) {
+        let j = 0;
+        while (j + 1 < a.alive && distance(a.contact[j + 1]!, base) <= e.withinM) j++;
+        return j >= a.alive - 1 ? null : a.lengthAt[j]!;
+      }
+      if (e.keepShare) return rng.range(...e.keepShare) * this.lengthOf(a);
+      return null;
+    };
+    for (const id of [...plant.axisIds]) {
+      const a = this.axes.get(id)!;
+      if (a.removedDay !== null || a.alive < 2) continue;
+      const isSide = a.role === 'side_shoot';
+      const isFree = a.role === 'whip' && !!e.freeShoots;
+      if (!isSide && !isFree) continue;
+      // a stub cut in an earlier winter is not cut again: the gardener shortens the shoot it bore
+      if (isSide && a.shortenedYear !== undefined) continue;
+      if (isSide && !all && !(this.budsByAxis.get(a.id) ?? []).some((b) => b.openDay !== null)) {
+        unflowered++;
+        continue;
+      }
+      // the stubs of earlier winters it stands on, and the foot of the line on the framework
+      let first: Axis = a;
+      for (let s = a.parent ? this.axes.get(a.parent.axisId) : undefined; s && s.role === 'side_shoot'; s = s.parent ? this.axes.get(s.parent.axisId) : undefined) first = s;
+      if (isSide && stub && first !== a && e.keepNodes) {
+        // a spur is cut back to the buds at its own base: the shoot from the stub goes, the stub bears again
+        for (const c of [...first.children]) this.removeAxis(this.axes.get(c)!, e.id, fx);
+        first.shortenedYear = season;
+        for (const n of plant.leafNodes) if (n.sideShootId === a.id) n.sideShootId = first.id;
+        backToStub++;
+        sides++;
+        continue;
+      }
+      const keep = keepOf(a, first.contact[0]!);
+      if (keep === null) continue;
+      if (e.keepEndFlower) {
+        // what the end carries is carried to the cut end: the flower where one has opened, and the fruit that followed it
+        const end = this.keptPoints(a, keep) - 1;
+        if (end < a.alive - 1) {
+          const ends = (this.budsByAxis.get(a.id) ?? []).filter((b) => b.pointIndex === null && b.end === null);
+          let bears = false;
+          for (const b of ends) {
+            if (b.stage !== 'spent') bears = true;
+            if (b.position) b.position = a.contact[end]!;
+            const fruit = b.fruitId === undefined ? undefined : (this.fruitsByAxis.get(a.id) ?? []).find((f) => f.id === b.fruitId && f.removedDay === null);
+            if (fruit) {
+              fruit.pointIndex = end;
+              fruit.position = a.contact[end]!;
+              bears = true;
+            }
+          }
+          if (bears) carried++;
+        }
+      }
+      this.cutAt(a, keep, e.id, fx);
+      // a flower at the end of a shoot goes with the end, unless the gardener keeps it
+      if (!e.keepEndFlower) for (const b of this.budsByAxis.get(a.id) ?? []) if (b.pointIndex === null) this.loseBud(plant, b, e.id, fx);
+      if (isSide && stub) a.shortenedYear = season;
+      if (a.tip.state !== 'stopped') a.tip = { state: 'stopped', reason: stub ? 'cut back by the gardener' : 'shortened by the gardener in summer' };
+      if (isSide) sides++;
+      else free++;
+    }
+    const fruit = this.fruits.filter((f) => f.plantId === plant.id && f.removedBy === e.id).length - fruitBefore;
+    const rule = e.keepNodes ? `to ${e.keepNodes[0] === e.keepNodes[1] ? e.keepNodes[0] : `${e.keepNodes[0]} or ${e.keepNodes[1]}`} node${e.keepNodes[1] === 1 ? '' : 's'} from its base` : e.withinM !== undefined ? `back to within ${e.withinM.toFixed(2)} m of where it leaves its stem` : `keeping ${Math.round((e.keepShare?.[0] ?? 0) * 100)}% to ${Math.round((e.keepShare?.[1] ?? 0) * 100)}% of its length`;
+    let said = `${stub ? 'cut back to stubs' : 'shortened'}: ${sides} ${all ? '' : 'flowered '}side shoot${sides === 1 ? '' : 's'}${e.freeShoots ? ` and ${free} free shoot${free === 1 ? '' : 's'} of the year` : ''} cut back, each ${rule}; ${fx.stemRemovedM.toFixed(1)} m of shoot, ${fx.leafSitesRemoved} lea${fx.leafSitesRemoved === 1 ? 'f' : 'ves'}, ${fx.floralBudsRemoved} flower bud${fx.floralBudsRemoved === 1 ? '' : 's'} and ${fruit} fruit went with the cuts`;
+    if (backToStub) said += ` (${backToStub} of them standing on the stub of an earlier winter, cut back to that stub, which bears again)`;
+    if (carried) said += `; ${carried} of them carried a flower or fruit, which was kept and hangs from the cut end`;
+    if (unflowered) said += `; ${unflowered} side shoot${unflowered === 1 ? '' : 's'} that had not flowered left as ${unflowered === 1 ? 'it was' : 'they were'}`;
+    if (stub && e.freeShoots) said += '; the stubs of free shoots stay as they are';
+    return said;
+  }
+
+  /**
+   * `trim_to_bounds`: every free shoot of the year that holds nothing and whose tip stands further than the distance
+   * from where it left its support is cut off there, with all it carried. The model has no declared envelope: this is
+   * what "out of bounds" can mean in it. Shoots that took hold of a support from the air, and the framework, are left.
+   */
+  private trimToBounds(plant: Plant, e: Extract<GardenerEvent, { type: 'trim_to_bounds' }>, fx: EventRecord['effects']): string {
+    let cut = 0;
+    let within = 0;
+    for (const id of [...plant.axisIds]) {
+      const a = this.axes.get(id)!;
+      if (a.role !== 'whip' || a.removedDay !== null || a.alive < 2) continue;
+      if (a.runs.some((r) => r.status !== 'detached')) continue;
+      const base = a.contact[0]!;
+      let reach = 0;
+      for (let i = 1; i < a.alive; i++) reach = Math.max(reach, distance(a.contact[i]!, base));
+      if (reach <= e.freeBeyondM) {
+        within++;
+        continue;
+      }
+      this.removeAxis(a, e.id, fx);
+      cut++;
+    }
+    return `trimmed to bounds: ${cut} free shoot${cut === 1 ? '' : 's'} standing out more than ${e.freeBeyondM.toFixed(2)} m from the timber cut off where ${cut === 1 ? 'it leaves' : 'they leave'} it, ${fx.stemRemovedM.toFixed(1)} m of shoot and ${fx.leafSitesRemoved} lea${fx.leafSitesRemoved === 1 ? 'f' : 'ves'} with them; ${within} within bounds left`;
+  }
+
+  /** The rose's winter cut, as it was first written: flowered side shoots to a share of their length. */
+  private shortenFlowered(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }> & { keepShare: [number, number] }, date: CalendarDate, fx: EventRecord['effects']): string {
     let cut = 0;
     let unflowered = 0;
     let backToFirst = 0;
@@ -2252,6 +2600,12 @@ export class Simulation {
       : 'winter pruning: no flowered side shoots to cut back';
     if (backToFirst) said += ` (${backToFirst} of them, standing on the stubs of earlier winters further out than a side shoot grows, cut back to the first stub)`;
     if (unflowered) said += `; ${unflowered} side shoot${unflowered === 1 ? '' : 's'} that had not flowered left as ${unflowered === 1 ? 'it was' : 'they were'}`;
+    return said;
+  }
+
+  /** With `renewCanes`: where more canes rise from the base than the gardener keeps, the oldest beyond that number are cut down low to shoot again. */
+  private renewCanes(plant: Plant, e: Extract<GardenerEvent, { type: 'shorten_side_shoots' }>, fx: EventRecord['effects']): string {
+    let said = '';
     if (e.renewCanes) {
       const { keep, stubM } = e.renewCanes;
       const standing = (a: Axis) => a.removedDay === null && a.alive > 0;
@@ -2356,8 +2710,7 @@ export class Simulation {
    */
   private cutAt(axis: Axis, keepM: number, eventId: string, fx: EventRecord['effects']): void {
     if (axis.removedDay !== null) return;
-    let keep = 1;
-    while (keep < axis.alive && axis.lengthAt[keep]! <= keepM + 1e-9) keep++;
+    const keep = this.keptPoints(axis, keepM);
     if (keep >= axis.alive) return;
     fx.axesCut++;
     fx.stemRemovedM += axis.lengthAt[axis.alive - 1]! - axis.lengthAt[keep - 1]!;
@@ -2389,6 +2742,13 @@ export class Simulation {
     }
     plant.pendingLaterals = plant.pendingLaterals.filter((b) => !(b.parentId === axis.id && b.pointIndex >= keep));
     plant.pendingWhips = plant.pendingWhips.filter((w) => !(w.hostId === axis.id && w.pointIndex >= keep));
+  }
+
+  /** How many points of an axis, counted from its base, a cut that keeps `keepM` of it leaves. */
+  private keptPoints(axis: Axis, keepM: number): number {
+    let keep = 1;
+    while (keep < axis.alive && axis.lengthAt[keep]! <= keepM + 1e-9) keep++;
+    return keep;
   }
 
   /** Fruit and appendages from point `keep` of an axis onwards go with the stem that carried them. */

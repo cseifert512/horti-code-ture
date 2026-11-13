@@ -477,8 +477,8 @@ describe('appendages: what each way of climbing holds on with', () => {
       }
     }
     expect(gaps).toBeGreaterThan(80);
-    // none on the long shoots that wave about in the air
-    for (const a of axesOf('ivy')) if (a.role === 'whip') expect(patches.some((p) => p.axisId === a.id)).toBe(false);
+    // none on the long shoots where they wave about in the air: only where one has come down on a lath and holds it
+    for (const a of axesOf('ivy')) if (a.role === 'whip') for (const p of patches.filter((q) => q.axisId === a.id)) expect(len(a.away[p.pointIndex]!), a.id).toBeGreaterThan(0.5);
   });
 
   it('sets prickles along every stem of a scrambler, pointing outwards and never into the support, and holding nothing', () => {
@@ -712,8 +712,21 @@ describe('flowering side shoots: a second kind of growth on an established stem'
         return s + (last >= 0 ? a.lengthAt[last]! : 0);
       }, 0);
     expect(eligibleM).toBeGreaterThan(10);
-    expect(made).toBeGreaterThan(eligibleM * 1 * 0.4);
     expect(made).toBeLessThan(eligibleM * 1 * 1.6);
+    // a node still bearing a shoot of the two springs before (they live three seasons), or one that threw a long shoot, bears no other: of the nodes on
+    // wood old enough, those free in 2034 each break with the chance a metre's rate gives a node. (Until 12 November
+    // 2026 this asked for 0.4 of the rate over all the old wood, which held by the luck of the draw: shoots in the air
+    // now grow on past their reach, which moves the plant's organ stream and with it where its nodes fall.)
+    const plant = sim.plants.get('hydrangea')!;
+    const bearing = new Set(side.filter((a) => a.bornYear === 2032 || a.bornYear === 2033).map((a) => a.id));
+    const free = plant.leafNodes.filter((n) => {
+      const host = sim.axes.get(n.axisId)!;
+      return n.year <= 2032 && !n.taken && (host.role === 'leader' || host.role === 'lateral') && host.contact[n.pointIndex]!.z >= model.params['organs.clearStemHeightM'].value! && !side.some((a) => bearing.has(a.id) && a.parent!.axisId === n.axisId && a.parent!.pointIndex === n.pointIndex);
+    }).length;
+    const perNode = Math.min(1, 1 * ((model.params['organs.leafSpacingM'].value![0] + model.params['organs.leafSpacingM'].value![1]) / 2));
+    // (about 28 free nodes at an even chance: a binomial spread of some 2.6 shoots either way, so the band is wide)
+    expect(made).toBeGreaterThan(free * perNode * 0.4);
+    expect(made).toBeLessThan(free * perNode * 1.5);
   });
 
   it('is short, stands clear of the support on a line of its own, and grows through the spring, not in a day', () => {

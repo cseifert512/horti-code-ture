@@ -236,7 +236,7 @@ describe('a day-of-year window whose first day is later than its last runs throu
 
   it('is accepted by a growth model for every window it has, while an ordinary range must still be in order', () => {
     const windows = (Object.keys(GROWTH_PARAMS) as GrowthParamKey[]).filter((k) => GROWTH_PARAMS[k] === 'window');
-    expect(windows).toEqual(['phenology.leafFlushDoy', 'phenology.autumnColourDoy', 'phenology.leafFallDoy', 'phenology.floralInitiationDoy', 'phenology.flowerOpenDoy', 'phenology.petalFallDoy', 'fruit.ripenDoy', 'fruit.fallDoy']);
+    expect(windows).toEqual(['phenology.leafFlushDoy', 'phenology.autumnColourDoy', 'phenology.leafFallDoy', 'phenology.floralInitiationDoy', 'phenology.flowerOpenDoy', 'phenology.petalFallDoy', 'fruit.ripenDoy', 'fruit.fallDoy', 'phenology.evergreenLeafFallDoy']);
     const copy = () => JSON.parse(JSON.stringify(library.get(WISTERIA)!.model));
     for (const key of windows) {
       const m = copy();

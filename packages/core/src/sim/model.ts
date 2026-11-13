@@ -26,7 +26,7 @@
 import { z } from 'zod';
 import { type ProvenanceEntry, type Sourced, sourced } from '../provenance.ts';
 import { ORGAN_HELD } from '../vocab.ts';
-import { GENERIC_SHOOT, GENERIC_SIDE_SHOOT, type ShootParamKey, type SideShootParamKey } from './generic-shoot.ts';
+import { GENERIC_LEAF, GENERIC_SHOOT, GENERIC_SIDE_SHOOT, type LeafParamKey, type ShootParamKey, type SideShootParamKey } from './generic-shoot.ts';
 
 /**
  * Every parameter, with the shape of its value. `range` is [low, high]; `list` is indexed as its name says.
@@ -213,6 +213,13 @@ export const GROWTH_PARAMS = {
    * tip: what has been measured of searcher shoots. A shoot that still holds itself up at that distance grows no further.
    */
   'mechanics.searcherReachM': 'number',
+  /**
+   * The least an unsupported shoot leans from plumb where it sets out, degrees: no stem is exactly upright, and one that
+   * is carries no bending load. Unknown: the generic value.
+   */
+  'mechanics.leanDeg': 'number',
+  /** Where along a leaf its weight hangs off the stem, as a share of the leaf's length from the node. Unknown: the generic value. */
+  'mechanics.leafWeightOffsetShare': 'number',
   /** Radians the growing end turns towards the direction it seeks for each metre grown, when at right angles to it. */
   'tropism.turnPerM': 'number',
   /** How far the direction a shoot seeks leans from plumb towards the light: 0 straight up, 1 straight at the light. */
@@ -309,6 +316,18 @@ export const GROWTH_PARAMS = {
    * the whole window.
    */
   'flowering.firstFlushDays': 'range',
+  /**
+   * Share, 0 to 1, by which a leaf's direction is turned from where its node sets it (to its side of the stem, a little
+   * up and forward) towards the open (away from the support it lies on) and the light. Unknown: the generic leaf
+   * (sim/generic-shoot.ts), said once for the plant.
+   */
+  'organs.leafTurnToOpenShare': 'number',
+  /**
+   * For an evergreen leaf at the end of its life (`organs.leafLifespanYears`): the days of the year in the following year
+   * between which it falls, each on a day of its own. Unknown: it is there to the end of its last year and gone on
+   * 1 January, every such leaf on that one day.
+   */
+  'phenology.evergreenLeafFallDoy': 'window',
 } as const;
 
 export type GrowthParamKey = keyof typeof GROWTH_PARAMS;
@@ -328,6 +347,8 @@ export const GROWTH_PARAMS_OPTIONAL = [
   'mechanics.inflorescenceFreshMassKg',
   'mechanics.fruitFreshMassKg',
   'mechanics.searcherReachM',
+  'mechanics.leanDeg',
+  'mechanics.leafWeightOffsetShare',
   'tropism.turnPerM',
   'tropism.lightShare',
   'attachment.graspReachM',
@@ -367,6 +388,8 @@ export const GROWTH_PARAMS_OPTIONAL = [
   'organs.alternateDivergenceDeg',
   'sideShoots.baseDiameterMm',
   'flowering.firstFlushDays',
+  'organs.leafTurnToOpenShare',
+  'phenology.evergreenLeafFallDoy',
 ] as const satisfies readonly GrowthParamKey[];
 export type OptionalParamKey = (typeof GROWTH_PARAMS_OPTIONAL)[number];
 export type RequiredParamKey = Exclude<GrowthParamKey, OptionalParamKey>;
@@ -399,6 +422,8 @@ const optionalShapes: { [K in OptionalParamKey]: z.ZodType } = {
   'mechanics.inflorescenceFreshMassKg': z.number().nonnegative(),
   'mechanics.fruitFreshMassKg': z.number().nonnegative(),
   'mechanics.searcherReachM': z.number().nonnegative(),
+  'mechanics.leanDeg': z.number().min(0).max(90),
+  'mechanics.leafWeightOffsetShare': share,
   'tropism.turnPerM': z.number().nonnegative(),
   'tropism.lightShare': share,
   'attachment.graspReachM': z.number().nonnegative(),
@@ -438,6 +463,8 @@ const optionalShapes: { [K in OptionalParamKey]: z.ZodType } = {
   'organs.alternateDivergenceDeg': z.number().min(0).max(360),
   'sideShoots.baseDiameterMm': positive,
   'flowering.firstFlushDays': lengths,
+  'organs.leafTurnToOpenShare': share,
+  'phenology.evergreenLeafFallDoy': window,
 };
 
 const paramShape = Object.fromEntries(
@@ -533,6 +560,16 @@ export function shootParam(model: GrowthModel, key: ShootParamKey): number {
   return model.params[key].value ?? GENERIC_SHOOT[key].value;
 }
 
+/** The value of a parameter of how a leaf is held: the taxon's own, or the generic leaf's. */
+export function leafParam(model: GrowthModel, key: LeafParamKey): number {
+  return model.params[key].value ?? GENERIC_LEAF[key].value;
+}
+
+/** The leaf parameters a model leaves to the generic leaf. */
+export function genericLeafKeys(model: GrowthModel): LeafParamKey[] {
+  return (Object.keys(GENERIC_LEAF) as LeafParamKey[]).filter((k) => model.params[k].value === null);
+}
+
 /** The value of a parameter of how a side shoot sets out: the taxon's own, or the generic side shoot's. */
 export function sideShootParam<K extends SideShootParamKey>(model: GrowthModel, key: K): (typeof GENERIC_SIDE_SHOOT)[K]['value'] {
   return (model.params[key].value ?? GENERIC_SIDE_SHOOT[key].value) as (typeof GENERIC_SIDE_SHOOT)[K]['value'];
@@ -578,12 +615,18 @@ export function modelProvenance(model: GrowthModel): ProvenanceEntry[] {
   return (Object.keys(GROWTH_PARAMS) as GrowthParamKey[]).map((k) => {
     const p = model.params[k];
     // a shoot parameter the model leaves out is not left out of the run: the generic value is used, and is what is counted
+    if (p.value === null && k in GENERIC_LEAF) {
+      const g: Sourced<number> = GENERIC_LEAF[k as LeafParamKey];
+      return { owner: `${model.taxonId} growth model (generic leaf)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
+    }
     if (p.value === null && k in GENERIC_SHOOT) {
       const g: Sourced<number> = GENERIC_SHOOT[k as ShootParamKey];
       return { owner: `${model.taxonId} growth model (generic shoot)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
     }
-    // the same for how a side shoot sets out, on a plant that makes side shoots
-    if (p.value === null && k in GENERIC_SIDE_SHOOT && model.params['sideShoots.perMetrePerYear'].value) {
+    // the same for how a side shoot sets out, on a plant that makes side shoots, or long shoots, which set out the same way
+    const sides = !!model.params['sideShoots.perMetrePerYear'].value;
+    const whips = (model.params['organs.whipShareOfNodes'].value ?? 0) > 0 && (model.params['organs.whipsPerYearMax'].value ?? 0) > 0;
+    if (p.value === null && k in GENERIC_SIDE_SHOOT && (sides || (whips && k !== 'sideShoots.breakSpreadDays' && k !== 'sideShoots.startTowardsLight'))) {
       const g: Sourced<number | [number, number]> = GENERIC_SIDE_SHOOT[k as SideShootParamKey];
       return { owner: `${model.taxonId} growth model (generic side shoot)`, path: k, value: g.value, unit: g.unit, status: g.status, source: g.source, basis: g.basis };
     }

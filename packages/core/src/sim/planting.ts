@@ -6,7 +6,7 @@
 import { z } from 'zod';
 import type { Bower } from '../bower/types.ts';
 import type { Site } from '../light/site.ts';
-import { type Growable, annualRoutine, climbingRoseRoutine, groupThreeRoutine, wisteriaRoutine } from './scenarios.ts';
+import { type Growable, annualRoutine, climbingRoseRoutine, groupThreeRoutine, ivyRoutine, vineRoutine, wisteriaRoutine } from './scenarios.ts';
 import type { GardenerEvent, Planting, Scenario } from './types.ts';
 import type { Viewpoint } from './view.ts';
 
@@ -41,12 +41,14 @@ export function parsePlantingPlan(input: unknown, source = 'planting plan'): Pla
  * The pruning routines the model acts on, by taxon. A list and not a rule:
  * what suits one plant is not inferred for another that resembles it.
  */
-export const MODELLED_ROUTINE: Readonly<Record<string, 'wisteria_two_prunes' | 'cut_down_each_february' | 'climbing_rose_group_17'>> = {
+export const MODELLED_ROUTINE: Readonly<Record<string, 'wisteria_two_prunes' | 'cut_down_each_february' | 'climbing_rose_group_17' | 'vine_spur_and_summer' | 'ivy_in_bounds'>> = {
   'wisteria-sinensis': 'wisteria_two_prunes',
   'wisteria-floribunda-macrobotrys': 'wisteria_two_prunes',
   'clematis-viticella-etoile-violette': 'cut_down_each_february',
   'clematis-princess-diana': 'cut_down_each_february',
   'rosa-the-generous-gardener': 'climbing_rose_group_17',
+  'vitis-coignetiae': 'vine_spur_and_summer',
+  'hedera-helix': 'ivy_in_bounds',
 };
 
 export interface PlantingOptions {
@@ -82,6 +84,8 @@ export function plantingOn(bower: Bower, plan: PlantingPlan, options: PlantingOp
     if (routine === 'wisteria_two_prunes') events.push(...wisteriaRoutine(p.plantId, plantingYear, years));
     if (routine === 'cut_down_each_february') events.push(...groupThreeRoutine(p.plantId, plantingYear, years));
     if (routine === 'climbing_rose_group_17') events.push(...climbingRoseRoutine(p.plantId, plantingYear, years));
+    if (routine === 'vine_spur_and_summer') events.push(...vineRoutine(p.plantId, plantingYear, years, taxon.model));
+    if (routine === 'ivy_in_bounds') events.push(...ivyRoutine(p.plantId, plantingYear, years));
     if (annual) events.push(...annualRoutine(p.plantId, plantingYear, years));
   }
   return { name: `${plan.name} on ${bower.name}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: [...viewpoints], ...(site ? { site } : {}) };

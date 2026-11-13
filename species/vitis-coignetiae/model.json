@@ -390,7 +390,8 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not acted on: the model has no pruning routine for this plant. Bean, of the genus: young shoots \"shortened once or twice in summer\"."
+      "source": "https://www.rhs.org.uk/fruit/grapes/rod-and-spur-pruning-system",
+      "basis": "Acted on by the vine's routine (vineRoutine, two summer visits): every shoot of the year shortened to five or six leaves. Bean, of the genus: \"The young shoots are shortened back once or twice during the summer\" (https://www.treesandshrubsonline.org/articles/vitis/); the RHS plant record gives pruning group 11, \"in midwinter, and in midsummer, if restricted growth is required\". The count is the RHS's for grapevines grown as rod and spur, \"outdoors against a wall or fence, or over an arch or pergola\": \"Shorten non-flowering side-branches to five leaves\", and a flowering one \"to two leaves past the developing flower cluster\", which with the cluster at the third to sixth node (Hellman, of the common vine: \"Flower clusters develop opposite the leaves typically at the third to sixth nodes from the base of the shoot\") is five to eight leaves. Five or six is taken for both. Advice for vines grown for fruit, applied to one grown for its leaves: an assumption."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -398,8 +399,9 @@
         2
       ],
       "unit": "buds",
-      "status": "provisional_design_assumption",
-      "basis": "Not acted on: the model has no pruning routine for this plant. Bean, of the genus: cut back hard in December or January \"to one or two buds\"."
+      "status": "published_plant_profile",
+      "basis": "Acted on by the vine's routine (vineRoutine, 15 December): every shoot of the year that is not framework cut to its first one or two nodes. Bean, of the genus: \"then cut hard back in December or January to one or two buds (later pruning causes bleeding)\"; \"The same pruning should be given to plants grown on walls.\" Of the genus, not of this species in particular.",
+      "source": "https://www.treesandshrubsonline.org/articles/vitis/"
     },
     "regrowth.shootsPerCut": {
       "value": [
@@ -559,18 +561,18 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot of the year from a spur, by the end of its season. Annual shoots of 2 to 5 m are given by a wall-greening supplier (fassadengruen.de, excerpt only) and the longest shoot of a young plant in Gifu made 3.24 m on average; on a framework of many spurs most stay shorter, and the gardener shortens them \"once or twice during the summer\" (Bean, of the genus), which the model does not do. Taken from a short shoot to one that arches and hangs: Bean, of the genus, \"if the shoots are allowed to hang loosely, they are very elegant\"."
+      "basis": "A shoot of the year from a spur, by the end of its season. Annual shoots of 2 to 5 m are given by a wall-greening supplier (fassadengruen.de, excerpt only) and the longest shoot of a young plant in Gifu made 3.24 m on average; on a framework of many spurs most stay shorter, and the gardener shortens them \"once or twice during the summer\" (Bean, of the genus), which the routine of care now does (vineRoutine). Taken from a short shoot to one that arches and hangs: Bean, of the genus, \"if the shoots are allowed to hang loosely, they are very elegant\"."
     },
     "sideShoots.lifespanYears": {
-      "value": 1,
+      "value": 30,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "The year's shoots are cut \"hard back in December or January to one or two buds\" (Bean, of the genus), so on the gardened plant they are gone before the next spring and the next year's shoots break from the spur. On a plant left alone they would stay and become canes; the engine has one lifespan for both, and the gardened plant is the baseline."
+      "basis": "Left uncut, a shoot of the year stays on the plant as its own wood: an unpruned vine keeps its shoots and they become canes (Bean, of the genus: whole trees \"over which they can ramble at will\"). No source read says how long such a shoot lives on this species; 30 seasons is longer than any run here, so nothing is shed in a run. On the gardened plant the winter cut (vineRoutine, Bean: \"cut hard back in December or January to one or two buds\") takes the year's shoots back to stubs, and next year's shoots break from the stubs. Until 12 November 2026 this was 1, a stand-in for that cut."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "About a third of the short shoots carry a panicle once the plant is old enough. A choice: no count was found. The panicle is at the end of the shoot only because the engine cannot put it opposite a leaf part-way along."
+      "basis": "About a third of the short shoots carry a panicle once the plant is old enough. A choice: no count was found. The panicle is at the end of the shoot only because the engine cannot put it opposite a leaf part-way along, where it stands on the plant (the third to sixth node from the base on the common vine: Hellman, eXtension). When the gardener shortens the shoot in summer the bunch is therefore kept, and hangs from the cut end (vineRoutine)."
     },
     "sideShoots.branchAngleDeg": {
       "value": [
@@ -579,7 +581,7 @@
       ],
       "unit": "degrees",
       "status": "provisional_design_assumption",
-      "basis": "No angle was found measured for this species. A vine shoot from a spur sets out leaning forward along the cane that bears it and soon turns up and out; 30 to 65 degrees is a choice, a little closer to the cane than the generic side shoot."
+      "basis": "No angle was found measured for this species. A vine shoot from a spur sets out leaning forward along the cane that bears it, from the flank its leaf stands on (the leaves are in two ranks, organs.alternateDivergenceDeg), and soon turns up and out; 30 to 65 degrees is a choice, a little closer to the cane than the generic side shoot."
     },
     "sideShoots.breakSpreadDays": {
       "value": [
@@ -642,13 +644,14 @@
       ]
     },
     "mechanics.woodSetDays": {
-      "value": 40,
+      "value": 120,
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "Not measured. A vine shoot is taken to stay green and pliable for some weeks behind its tip; six weeks is a choice.",
+      "source": "https://growables.org/information/LowChillFruit/GrapeBotanyExtOrg2.htm",
+      "basis": "Not measured. A vine shoot stays green through early summer and ripens from its foot late in the season. Hellman, \"Parts of the Grape Vine: Shoots\" (eXtension; read on a mirror of the page, 12 November 2026), of the common vine: \"The shoot enters a transitional phase, starting around veraison, when it begins to mature or ripen\", \"Shoot maturation begins at the shoot base as periderm develops\", and it \"continues to form outward toward the shoot tip through the remainder of summer and fall\". A length of shoot laid in late April is then set by late August and one laid in mid June by mid October: four months, a choice that fits those words. Until 12 November 2026 this was 40 days, which had the foot of a shoot as stiff as a ripe cane by the end of May; with the whole shoot bending under its weight (docs/ASSUMPTIONS_AUDIT.md section 12) that stood shoots of 1.5 m upright, where the free shoots of the common vine arch over (mechanics.searcherReachM).",
       "range": [
-        20,
-        90
+        60,
+        160
       ]
     },
     "mechanics.stemFreshDensityKgM3": {
@@ -663,13 +666,13 @@
       ]
     },
     "mechanics.leafFreshMassPerAreaKgM2": {
-      "value": 0.25,
+      "value": 0.9,
       "unit": "kg/m2",
       "status": "provisional_design_assumption",
-      "basis": "Not weighed. A large leaf with a thick felt beneath (Bean: \"a thick rusty brown felt\"; the Kyoto Red Data Book, seen as an excerpt, calls it thick) on a stout stalk 5 to 15 cm long: taken as a quarter of a millimetre of water over its outline, a little heavier than a thin leaf. The leaves are most of what a vine shoot carries; weigh some to settle it.",
+      "basis": "Worked out, not weighed, and given for each square metre of the outline the engine takes for a leaf, which is far smaller than this plant's blade. The engine's outline is a disc 0.56 of the leaf's length across (sim/view.ts): 67 cm2 for the mean leaf here, whose length (0.165 m) is from the node to the far point of the blade. The blade itself is \"ordinarily 4 to 8 in. wide\" (Bean) and about six fifths as long as wide: some 15 by 18 cm, about 210 cm2 as a roundish heart. At a quarter of a millimetre of water over the blade (0.25 kg/m2: a thin grape leaf is nearer 0.17, from a dry mass of 45 g/m2 seen in a search excerpt of a study of the common vine and some three quarters water, and this one has \"a thick rusty brown felt\" beneath, Bean) that is 5.3 g, and a woolly stalk 10 cm long and 3.5 mm thick is 1 g more: 6.3 g a leaf, which is 0.9 kg for each square metre of the engine's outline. Until 12 November 2026 this was 0.25, which weighed a leaf at 1.7 g. The leaves are most of what a vine shoot carries; weigh some to settle it.",
       "range": [
-        0.15,
-        0.4
+        0.5,
+        1.5
       ]
     },
     "mechanics.inflorescenceFreshMassKg": {
@@ -698,7 +701,7 @@
       "unit": "m",
       "status": "provisional_design_assumption",
       "source": "https://doi.org/10.3389/ffgc.2022.836247",
-      "basis": "Hattermann et al. 2022: the longest self-supporting searchers of the tendril and root climbers they measured, the common vine among them, reached 0.14 to 0.91 m from base to tip; the vine is not given a figure of its own. 0.8 m is taken for a stout vine shoot. Bean of the genus: shoots \"allowed to hang loosely\", and a supplier's \"hanging / cascading growth\" (excerpt only): beyond its reach a shoot bends over and hangs.",
+      "basis": "Hattermann et al. 2022: the longest self-supporting searchers of the tendril and root climbers they measured, the common vine among them, reached 0.14 to 0.91 m from base to tip; the vine is not given a figure of its own. 0.8 m is taken for a stout vine shoot. Past it a shoot no longer lifts its growing end, and its weight brings it over. What the shoot then looks like is checked against the one measurement of free vine shoots found: Louarn, Lecoeur and Lebon (2008), Annals of Botany 101: 1167-1184 (https://doi.org/10.1093/aob/mcm170), digitised the shoots of two cultivars of the common vine. Trained with no wires (gobelet and free cordon) their mean basal elevation was 23 to 46 degrees, their far end 11 to 44 degrees lower, and the point of greatest curvature 0.41 to 0.45 of the way along (\"natural bending, characterized by MXs values below 0·45\"); held up by catching wires the same shoots stood at 58 to 74 degrees (\"Trellised shoots were therefore more vertical\"). Another species, in vineyards in the south of France, hedged, with leaves a third the size: a check on the form, not a calibration. Bean of the genus: shoots \"allowed to hang loosely\".",
       "range": [
         0.14,
         0.91
@@ -708,7 +711,7 @@
       "value": 0.8,
       "unit": "rad/m",
       "status": "provisional_design_assumption",
-      "basis": "Chosen, not measured: a shoot lying across the way it seeks turns through about a right angle in a metre of growth. A vine shoot tip leans out and nods rather than standing plumb.",
+      "basis": "Chosen, not measured: a shoot lying across the way it seeks turns through about a right angle in two metres of growth. A vine shoot tip leans out rather than standing plumb.",
       "range": [
         0.5,
         5

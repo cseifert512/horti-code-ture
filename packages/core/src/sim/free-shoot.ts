@@ -31,14 +31,28 @@
  *
  * WHAT IS SIMPLIFIED, because the render contract stores one fixed position
  * for each point of a stem with the day it was laid down:
- *   as grown   Each new length of stem is laid in the direction the rod's tip
- *              has on that day. What is already laid stays where it was put:
- *              it keeps the shape it had when its wood set, and is not bent
- *              further as the shoot beyond it grows heavier. The line drawn
- *              is therefore the path of the tip's direction, not the shape a
- *              wholly elastic rod of the final length would hang in: it keeps
- *              more of an arch near the base than that would, as a shoot does
- *              whose base has thickened and set.
+ *   one shape  While a shoot grows, the whole of its free length is laid, each
+ *              time its rod is solved, along the shape the rod balances in
+ *              that day: the foot bends as the load on it grows, as well as
+ *              the tip. The contract keeps one position for each point, so
+ *              what is stored is the shape the shoot has when it stops
+ *              growing, and a still of an earlier day shows the part of the
+ *              shoot that was there then along that final shape: a young
+ *              shoot is drawn leaning as it will when it is long, where on
+ *              the plant it stood more upright while it was short. Until
+ *              12 November 2026 each length was laid in the direction the
+ *              tip had on its day and never moved ("as grown"), which kept
+ *              the foot of every shoot as straight as it set out, and put all
+ *              the bend near the tip: a row of rods with nodding ends.
+ *   it sets    Once a shoot stops growing (its length made, or cut) its
+ *              shape is kept: it does not spring back when its leaves fall or
+ *              when part of it is cut away, nor sag further as its fruit
+ *              swells. A shoot that grows on in a later year is clamped at
+ *              the end of the wood it already had.
+ *   it rests   Where the shape a rod balances in would pass through timber
+ *              or cable, the shoot is taken to rest on it: what is laid stays
+ *              where it was, and it grows on as grown, each new length in the
+ *              direction of the tip. No force from the timber is worked out.
  *   one plane  The rod bends under its weight in the vertical plane it lies
  *              in. Turning towards light on one side swings that plane round,
  *              and the moments are taken as if the rod were unrolled flat.
@@ -49,8 +63,7 @@
  *              inflorescence from the day it begins to lengthen; a fruit in
  *              step with its swelling. Tendrils and prickles weigh nothing.
  *              Wind, rain and snow are not loads here.
- *   no twist, no contact forces, no neighbours: a shoot does not lean on
- *              another shoot, or rest on a member it lies across.
+ *   no twist, no neighbours: a shoot does not lean on another shoot.
  */
 import { type Bower, type Section, type SupportEdge, equivalentDiameterMm } from '../bower/types.ts';
 import { type Vec3, UP, add, addScaled, dot, length, normalize, scale, sub, v3 } from '../math/vec3.ts';
@@ -96,6 +109,11 @@ export interface Rod {
   compliance: readonly number[];
   /** Weight carried at the far end of each segment, N. */
   load: readonly number[];
+  /**
+   * Moment of weight hung off the stem's axis at the far end of each segment, N m: a leaf's weight times how far its
+   * middle stands out from the stem, level, in the rod's plane; positive on the side the plane points to. Left out: none.
+   */
+  couple?: readonly number[];
 }
 
 export interface RodSolution {
@@ -113,9 +131,12 @@ export interface RodSolution {
  * The shape a rod hangs in. `near` is the base moment of the rod as it was a
  * moment ago (one segment shorter): the balance is looked for outwards from
  * there, so that a shoot followed as it grows stays on the shape it was
- * already in instead of jumping to another that also balances.
+ * already in instead of jumping to another that also balances. `inclines`, where
+ * given, is filled with the angle from plumb of every segment in that balance,
+ * base to tip: the shape the whole rod has, not only its tip. It is left empty
+ * where no balance was found.
  */
-export function solveRod(rod: Rod, near = 0): RodSolution {
+export function solveRod(rod: Rod, near = 0, inclines?: number[]): RodSolution {
   const n = rod.lengthM.length;
   let unloaded = rod.baseIncline;
   for (let k = 0; k < n; k++) unloaded += rod.turn[k]!;
@@ -125,21 +146,36 @@ export function solveRod(rod: Rod, near = 0): RodSolution {
   for (let k = n - 1; k >= 0; k--) beyond[k] = w += rod.load[k]!;
   let most = 0;
   let along = 0;
+  const couple = rod.couple;
   for (let k = 0; k < n; k++) {
     along += rod.lengthM[k]!;
-    most += rod.load[k]! * along;
+    most += rod.load[k]! * along + (couple ? Math.abs(couple[k]!) : 0);
   }
-  if (!(most > 0)) return { tipIncline: unloaded, unloadedIncline: unloaded, baseMoment: 0, found: true };
+  if (!(most > 0)) {
+    if (inclines) {
+      let psi = rod.baseIncline;
+      inclines.length = 0;
+      for (let k = 0; k < n; k++) inclines.push((psi += rod.turn[k]!));
+    }
+    return { tipIncline: unloaded, unloadedIncline: unloaded, baseMoment: 0, found: true };
+  }
 
   let tip = unloaded;
-  /** The moment left over at the tip when the base moment is `m0`: zero when the rod is in balance. */
-  const left = (m0: number): number => {
+  /**
+   * The moment left over at the tip when the base moment is `m0`: zero when the rod is in balance. A weight hung off
+   * the axis at the far end of segment k bends every joint up to and including the one it hangs at, and none beyond.
+   */
+  const left = (m0: number, shape?: number[]): number => {
     let psi = rod.baseIncline;
     let m = m0;
+    if (shape) shape.length = 0;
     for (let k = 0; k < n; k++) {
       psi += rod.turn[k]! + m * rod.compliance[k]!;
+      if (shape) shape.push(psi);
       m -= beyond[k]! * rod.lengthM[k]! * Math.sin(psi);
+      if (couple && k > 0) m -= couple[k - 1]!;
     }
+    if (couple && n > 0) m -= couple[n - 1]!;
     tip = psi;
     return m;
   };
@@ -185,7 +221,10 @@ export function solveRod(rod: Rod, near = 0): RodSolution {
       flo = fdown;
       step *= 2;
     }
-    if (!bracketed) return { tipIncline: tip, unloadedIncline: unloaded, baseMoment: start, found: false };
+    if (!bracketed) {
+      if (inclines) inclines.length = 0;
+      return { tipIncline: tip, unloadedIncline: unloaded, baseMoment: start, found: false };
+    }
     // close in: false position with the Illinois correction, which cannot leave the bracket. A moment known to a
     // part in a hundred million of the most it could be turns the tip by far less than can be drawn.
     let side = 0;
@@ -211,7 +250,7 @@ export function solveRod(rod: Rod, near = 0): RodSolution {
     }
   }
   const m0 = Math.abs(fa) <= Math.abs(fb) ? a : b;
-  left(m0);
+  left(m0, inclines);
   return { tipIncline: tip, unloadedIncline: unloaded, baseMoment: m0, found: Number.isFinite(tip) };
 }
 
@@ -229,6 +268,17 @@ export interface FreeShoot {
   /** Length of each segment laid since, and the turn its own growth gave it. */
   lengthM: number[];
   turn: number[];
+  /** The level direction of the vertical plane each length was laid in: the plane swings round as the shoot turns to the light. */
+  planes: Vec3[];
+  /** Angle from plumb each length lies at as it is stored: what it had when it was laid, or when the whole shoot was last laid again. */
+  laid: number[];
+  /** Where the first free length starts: the base point, or a stem's radius out from the face it left. Null until the first length is laid. */
+  origin: Vec3 | null;
+  /**
+   * True once the shape its rod balances in would have passed through timber or cable: the shoot rests there. From then
+   * on what is laid is not moved, and each new length is laid in the direction of the tip.
+   */
+  resting?: boolean;
   /** Angle from plumb of the last segment laid. */
   incline: number;
   /** Bending moment at the base when it was last solved: where the next balance is looked for. */
@@ -243,6 +293,11 @@ export interface FreeShoot {
   feltAtM: number;
   /** How long it was when its rod was last solved: it is solved again every `SOLVE_EVERY_M` of growth, and in between the tip keeps the sag it had. */
   solvedAtM: number;
+  /**
+   * True once its tip has come as far from its base as shoots of its kind are known to hold themselves out (the
+   * searcher reach): from then on it no longer steers towards up and the light, and grows on as its weight lets it.
+   */
+  pastReach?: boolean;
 }
 
 /** The level direction a vector leans in, or `fallback` where it stands plumb. Kept on the same side as `fallback`. */
@@ -258,12 +313,19 @@ export const inclineOf = (d: Vec3, plane: Vec3): number => Math.atan2(dot(d, pla
 /** The unit direction at an angle from plumb in a plane. */
 export const directionAt = (incline: number, plane: Vec3): Vec3 => add(scale(plane, Math.sin(incline)), scale(UP, Math.cos(incline)));
 
-/** A shoot that is about to grow its first free length from point `basePoint`, heading `dir`. */
-export function startFreeShoot(basePoint: number, dir: Vec3): FreeShoot {
+/**
+ * A shoot that is about to grow its first free length from point `basePoint`, heading `dir`. With `leanRad`, a shoot
+ * heading nearer plumb than that is set out leaning that far: towards the side it already leans to where it leans at
+ * all, and otherwise towards `leanToward` (a level direction). No stem is exactly upright, and a rod that is carries no
+ * bending load: without the lean it would stand straight to any length.
+ */
+export function startFreeShoot(basePoint: number, dir: Vec3, leanRad = 0, leanToward: Vec3 = v3(1, 0, 0)): FreeShoot {
   const d = normalize(dir);
-  const plane = levelOf(d, v3(1, 0, 0));
-  const incline = inclineOf(d, plane);
-  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null, light: null, lightAskedAtM: 0, feltAtM: -1, solvedAtM: -1 };
+  // a heading that leans less than a thousandth of a radian has no side of its own worth keeping
+  const plane = Math.hypot(d.x, d.y) > 1e-3 ? levelOf(d, v3(1, 0, 0)) : leanRad > 0 ? levelOf(leanToward, leanToward) : levelOf(d, v3(1, 0, 0));
+  let incline = inclineOf(d, plane);
+  if (leanRad > 0 && Math.abs(incline) < leanRad) incline = incline < 0 ? -leanRad : leanRad;
+  return { basePoint, baseIncline: incline, plane, lengthM: [], turn: [], planes: [], laid: [], origin: null, incline, baseMoment: 0, posture: 'self_supporting', leftBehind: null, light: null, lightAskedAtM: 0, feltAtM: -1, solvedAtM: -1 };
 }
 
 /**

@@ -79,7 +79,8 @@ Explicit boundaries, periodic cutting/removal of encroachment, exposure of all t
 What the sources say:
 
 - RHS pruning group 11, at any time (RHS plant record). The RHS ivy guide: "trim back any excess growth in mid-spring"; "Overgrown plants can be hard pruned in early spring: they regenerate readily from old wood"; "Regular pruning will maintain ivies in a self-clinging, non-flowering juvenile state"; for wildlife "it is best to allow adult growth to develop"; adult growth comes "after around 10 years". https://www.rhs.org.uk/plants/ivy/growing-guide
-- RHS, ivy on buildings: trim growth away from gutters, windows, chimneys and roofs with secateurs or loppers, a task that "may need doing a few times per year, but once a year is often enough"; ivy "can damage wooden fences if stems grow into gaps between slats or panels", and annual pruning keeps it to one panel; nesting season "generally lasts from March to August", so check before any work; remove heavy branching growth where its weight is a risk. https://www.rhs.org.uk/prevention-protection/ivy-on-buildings
+- RHS, ivy on buildings: trim growth away from gutters, windows, chimneys and roofs with secateurs or loppers, a task that "may need doing a few times per year, but once a year is often enough"; "it is easy to keep ivy from straying out-of-bounds by annual pruning"; ivy "can damage wooden fences if stems grow into gaps between slats or panels"; "Nesting season generally lasts from March to August", so check for nesting birds before any work; remove branching growth where its weight is a risk. https://www.rhs.org.uk/prevention-protection/ivy-on-buildings
+- Checked against the pages on 12 November 2026. The RHS ivy guide's "trim back any excess growth in mid-spring" falls inside the nesting season the other RHS page warns of; the routine below keeps to the nesting rule. An earlier wording here, that annual pruning keeps ivy "to one panel", is not on the page and was removed.
 - Flowers open September to November and the berries ripen from late winter into spring (RHS; Metcalfe), so any cut between September and April takes the season's flowers or berries off the shoots it shortens.
 
 The routine taken for a Bower, which keeps the flowers and berries the palette wants ivy for:
@@ -90,7 +91,13 @@ The routine taken for a Bower, which keeps the flowers and berries the palette w
 
 A tied-in young plant needs no tying after its first season: it clings by itself. Hard renovation (all growth to 0.3-0.5 m in early spring) is for a plant that has outgrown its place; it regrows from old wood and goes back to juvenile growth for some years.
 
-What the model would need to act on this. Today "trained" for ivy means the engine ties in the young stems and nothing more; none of these visits is modelled. It would need (a) a dated "trim to bounds" event that removes, lineage and all, every stretch of stem and every free shoot outside an envelope declared for the plant or inside a declared exclusion (joints, junction faces), on a date, with what goes recorded; (b) the climbing rose's `shorten_side_shoots` (which exists) applied to ivy's side shoots, on a date late in August, every second or third year, keeping a share of each adult shoot's length, or better cutting back to a fork, which the engine cannot express while side shoots do not fork; (c) a rule that nothing is cut from March to August (nesting). None of `MODELLED_ROUTINE`, `sim/scenarios.ts` or `sim/planting.ts` was edited.
+What the model does (12 November 2026). The routine is modelled (`ivyRoutine` in `packages/core/src/sim/scenarios.ts`, `MODELLED_ROUTINE` 'ivy_in_bounds'), and a trained plant gets it wherever it is planted, with nothing cut from March to August:
+
+1. **25 February, every year from the second** (`trim_to_bounds`, 0.5 m). The model has no declared envelope and no exclusions, so "out of bounds" is what it can honestly mean today: a free juvenile shoot of the year that holds nothing and whose tip stands more than 0.5 m from where it left the timber is cut off at the timber, with its leaves. Shoots that have taken hold of a lath from the air, and the stems on the timber, are left. 0.5 m is the example of a line given in step 2 above, a choice.
+2. **5 September, every second year** (`shorten_side_shoots`, `withinM` 0.5). Every adult shoot is cut back where it crosses the line 0.5 m from where it leaves its stem; what stood beyond goes, an umbel at its end included. The shoot stays, stops for the season and grows on from the cut the next year. The engine cannot cut back to a fork, because its adult shoots do not fork.
+3. The inspection of junctions is not modelled.
+
+Still not done: an envelope or exclusion declared by a design, and stems entering joints, gaps and drainage details, which the timber model does not have.
 
 ## Interactions with the broader palette
 

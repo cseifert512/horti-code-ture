@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
-import { Calendar, type RenderData, appendagePresent, characterList, characterNumber, characterRange, characterText, flowerState, fruitState, known, leafState, param, parseMorphology, readBower, seasonsOf, toRenderData } from '@horti/core';
+import { Calendar, MODELLED_ROUTINE, type RenderData, appendagePresent, characterList, characterNumber, characterRange, characterText, flowerState, fruitState, known, leafState, param, parseMorphology, readBower, seasonsOf, toRenderData } from '@horti/core';
 import { growPlanting } from '../../src/plant/grow.ts';
 import { asMeasured } from '../../src/plant/hold.ts';
 import { triangles } from '../../src/plant/kit.ts';
@@ -451,7 +451,8 @@ describe('the growth model of Vitis coignetiae', () => {
     expect(entries.every(([, p]) => p.status !== 'unknown')).toBe(true);
     for (const [key, p] of entries) expect(p.basis ?? '', key).not.toMatch(/placeholder/i);
     const published = entries.filter(([, p]) => p.status === 'published_plant_profile' || p.status === 'peer_reviewed').map(([k]) => k);
-    expect(published.sort()).toEqual(['appendages.leafStalkLengthM', 'appendages.tendrilNodePattern', 'fruit.ripenDoy', 'organs.alternateDivergenceDeg', 'organs.leafLengthM', 'organs.leafLifespanYears', 'organs.leavesPerNode', 'phenology.flowerLastsDays', 'phenology.flowerOpenDoy']);
+    // (pruning.winterBudsKept since 12 November 2026: Bean's "one or two buds", of the genus, now acted on by the vine's routine)
+    expect(published.sort()).toEqual(['appendages.leafStalkLengthM', 'appendages.tendrilNodePattern', 'fruit.ripenDoy', 'organs.alternateDivergenceDeg', 'organs.leafLengthM', 'organs.leafLifespanYears', 'organs.leavesPerNode', 'phenology.flowerLastsDays', 'phenology.flowerOpenDoy', 'pruning.winterBudsKept']);
     // measured on plants of this species: the internodes and the thickening of young plants in Gifu (2003)
     const measured = entries.filter(([, p]) => p.status === 'measured' || p.status === 'calibrated').map(([k]) => k);
     expect(measured.sort()).toEqual(['organs.leafSpacingM', 'organs.sideShootLeafSpacingM', 'thickening.radiusSquaredPerMetreMm2']);
@@ -487,7 +488,10 @@ describe('the growth model of Vitis coignetiae', () => {
     expect(reach).toBeLessThanOrEqual(0.91);
     // a tendril catches what comes within about its own length
     expect(known(model, 'attachment.graspReachM')!).toBeLessThanOrEqual(known(model, 'appendages.tendrilLengthM')![1]);
-    // the year's shoots from spurs are cut back to one or two buds in winter (Bean, of the genus): one season each
-    expect(known(model, 'sideShoots.lifespanYears')).toBe(1);
+    // The year's shoots from spurs are cut back to one or two buds in winter (Bean, of the genus). Until 12 November 2026
+    // the model stood in for that cut by giving a shoot one season to live; the cut is now the gardener's (vineRoutine), and
+    // a vine left alone keeps its shoots: longer than any run.
+    expect(known(model, 'sideShoots.lifespanYears')).toBeGreaterThanOrEqual(30);
+    expect(MODELLED_ROUTINE[ID]).toBe('vine_spur_and_summer');
   });
 });
