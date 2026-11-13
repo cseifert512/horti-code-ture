@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "clematis-armandi",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "evergreen woody climber",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
+      "basis": "RHS plant record: \"A large, vigorous evergreen climber\". Bean: an evergreen climber \"growing 20 to 30 ft high\". Huang et al. 2024: a woody vine."
+    },
+    "habit.stemLengthM": {
+      "value": 6,
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"Stems to 6 m long\"."
+    },
+    "habit.holdsBy": {
+      "value": "the stalks of its leaflets, which coil round a support",
+      "status": "published_plant_profile",
+      "source": "https://stories.rbge.org.uk/?p=8863",
+      "basis": "Royal Botanic Garden Edinburgh: the stalk of each leaflet coils round a support that it touches and grips it. Bean: the secondary stalks are \"1/2 to 1 in. long and twisted\"."
+    },
+    "habit.bareBelow": {
+      "value": "the lower stems go bare after a few seasons",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=735",
+      "basis": "International Clematis Society (Rogerson, 1998): it puts its energy into growing upwards and will \"leave its lower reaches bare after a few seasons\"."
+    },
+    "stem.grooveCount": {
+      "value": [
+        10,
+        16
+      ],
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"branches shallowly longitudinally 10-16-grooved\"."
+    },
+    "stem.youngColour": {
+      "value": "deep bronze-red",
+      "status": "published_plant_profile",
+      "source": "https://stories.rbge.org.uk/?p=8863",
+      "basis": "Royal Botanic Garden Edinburgh, 18 April 2008: \"The new vegetative shoots are a deep bronze red.\" International Clematis Society: \"The youngest growth may be bronzy in both stem and leaf.\""
+    },
+    "stem.youngDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    },
+    "stem.oldDiameterMm": {
+      "value": [
+        10,
+        50
+      ],
+      "unit": "mm",
+      "status": "published_plant_profile",
+      "source": "https://cmro.gov.hk/hkcmms/vol2/pdf_e/Caulis_Clematidis_Armandii_v2_e.pdf",
+      "basis": "Hong Kong Chinese Materia Medica Standards, Caulis Clematidis Armandii (the dried stem of this species): \"long and cylindrical, slightly twisted, 1-5 cm in diameter\"."
+    },
+    "stem.oldSurface": {
+      "value": [
+        "longitudinal grooves and ridges",
+        "nodes swollen",
+        "bark easily torn off"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://cmro.gov.hk/hkcmms/vol2/pdf_e/Caulis_Clematidis_Armandii_v2_e.pdf",
+      "basis": "Hong Kong Chinese Materia Medica Standards: \"marked with longitudinal grooves and ridges. Nodes usually swollen, with leaf scars and branch scars. Any bark that remains is easily torn off.\""
+    },
+    "stem.barkTexture": {
+      "value": [
+        "exfoliating",
+        "stringy",
+        "moderately fissured"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.kpu.ca/Plant/clar",
+      "basis": "Kwantlen Polytechnic University plant database, bark texture: exfoliating, stringy, moderately fissured."
+    },
+    "stem.barkColour": {
+      "value": "red to brown",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.kpu.ca/Plant/clar",
+      "basis": "Kwantlen Polytechnic University plant database, bark colour: red to brown. The dried, stripped stem is \"yellowish-brown or dull yellowish-brown\" (Hong Kong Chinese Materia Medica Standards)."
+    },
+    "stem.internodeLengthM": {
+      "value": [
+        0.08,
+        0.15
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs on Wikimedia Commons against the leaflets in the same picture (Clematis armandii in the Ceanothus - Flickr - peganum.jpg; Ranunculales - Clematis armandii - 5.jpg): pairs of leaves somewhat less than a leaflet's length apart. No flora read gives it. The growth model's organs.leafSpacingM."
+    },
+    "leaf.arrangement": {
+      "value": "opposite",
+      "status": "published_plant_profile",
+      "source": "https://plants.ces.ncsu.edu/plants/clematis-armandi/",
+      "basis": "NC State Extension: leaves opposite. The Kwantlen plant database: compound, opposite."
+    },
+    "leaf.division": {
+      "value": "ternate",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: leaves ternate. RHS: \"trifoliate leaves\"."
+    },
+    "leaf.leafletCount": {
+      "value": 3,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean (Trees and Shrubs Online): \"Leaves composed of three leaflets\". The same in every source read."
+    },
+    "leaf.stalkLengthM": {
+      "value": [
+        0.036,
+        0.11
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"petiole 3.6-11 cm long\". Bean: \"the main-stalk is 1 1/2 to 4 in. long\"."
+    },
+    "leaf.leafletStalkLengthM": {
+      "value": [
+        0.013,
+        0.025
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: the stalks that carry the leaflets, \"the secondary ones 1/2 to 1 in. long and twisted\". In metres."
+    },
+    "leaf.leafletLengthM": {
+      "value": [
+        0.05,
+        0.16
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"leaflet blades narrowly ovate, lanceolate, or ovate, 5-16 cm long, 1.5-7 cm broad\". Bean: 3 to 6 in. long. RHS: \"up to 15cm long\"."
+    },
+    "leaf.leafletWidthM": {
+      "value": [
+        0.015,
+        0.07
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"5-16 cm long, 1.5-7 cm broad\". Bean: 1 to 2 1/2 in. wide."
+    },
+    "leaf.leafletWidthToLength": {
+      "value": [
+        0.22,
+        0.42
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Width of a leaflet for its length, read off photographs on Wikimedia Commons (looked at, not measured with an instrument): about 0.2 to 0.25 on the narrow leaflets of Clematis armandii - Flickr - peganum.jpg and Clematis armandii RJB.jpg, about 0.27 on Ranunculales - Clematis armandii 2.jpg, about 0.3 to 0.4 on the broader young leaflets of Clematis armandii in the Ceanothus - Flickr - peganum.jpg and on the garden plant of Clematis armandii Franch. (AM AK299135).jpg. One photograph (Clematis armandii.jpg, a plant among ivy) shows leaflets near 0.5, broader than the rest, and is left out. The flora's sizes (Huang et al. 2024: 5 to 16 cm long, 1.5 to 7 cm broad) allow all of these."
+    },
+    "leaf.leafletShape": {
+      "value": [
+        "narrowly ovate",
+        "lanceolate",
+        "ovate"
+      ],
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"leaflet blades narrowly ovate, lanceolate, or ovate\". Bean: \"oblong-lanceolate to ovate\"."
+    },
+    "leaf.leafletBase": {
+      "value": [
+        "rounded",
+        "subcordate",
+        "broadly cuneate"
+      ],
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"base rounded, subcordate, or broadly cuneate\". Bean: \"rounded or slightly heart-shaped at the base\"."
+    },
+    "leaf.leafletApex": {
+      "value": "acuminate to attenuate",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"apex acuminate to attenuate\". Bean: \"pointed\"."
+    },
+    "leaf.margin": {
+      "value": "entire",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"margin entire\". Bean: \"not toothed\"."
+    },
+    "leaf.texture": {
+      "value": "leathery",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: leaflet blades leathery, glabrous on both surfaces. RHS: \"leathery\"."
+    },
+    "leaf.mainVeinCount": {
+      "value": 3,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: the leaflets are \"prominently three-veined\". Huang et al. 2024: \"basal veins abaxially prominent\". The Royal Botanic Gardens Victoria count five veins from base to tip (https://hortflora.rbg.vic.gov.au/taxon/ad8c7fce-5340-11e7-b82b-005056b0018f): the outer pair is faint and is not drawn."
+    },
+    "leaf.colour": {
+      "value": "dark glossy green",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
+      "basis": "RHS plant record: \"leathery, dark glossy green trifoliate leaves\". Bean: \"of a rich glossy green, and quite glabrous on both surfaces\"."
+    },
+    "leaf.youngColour": {
+      "value": "bronze",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=112",
+      "basis": "Clematis on the Web: the foliage is bronze when young. International Clematis Society: \"The youngest growth may be bronzy in both stem and leaf.\""
+    },
+    "leaf.posture": {
+      "value": "drooping",
+      "status": "published_plant_profile",
+      "source": "https://landscapeplants.oregonstate.edu/plants/clematis-armandii",
+      "basis": "Oregon State University, Landscape Plants: the leaflets droop. NC State Extension: droopy or cascading."
+    },
+    "leaf.leafletPosture": {
+      "value": "hanging nearly plumb from the end of the leaf stalk, face out, in a curtain",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs on Wikimedia Commons: Clematis armandii Badefols-sur-Dordogne.jpg (an arch seen from some metres, the leaflets hanging as a curtain of narrow dark blades below the flowers), Clematis armandii RJB.jpg and Ranunculales - Clematis armandii 3.jpg (leaflets hanging tip down, flat, their faces to the open). Oregon State University (leaf.posture) says only that they droop."
+    },
+    "leaf.lifespanYears": {
+      "value": null,
+      "unit": "years",
+      "status": "unknown"
+    },
+    "inflorescence.type": {
+      "value": "cyme",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"Cymes 1- to many-flowered, from axillary buds of old branches\"."
+    },
+    "inflorescence.position": {
+      "value": "in the leaf axils of last year's shoots, a cluster to each axil",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/?p=735",
+      "basis": "International Clematis Society: the clusters are \"usually paired along the stems and in bunches at the ends\". Bean: \"produced in April in dense axillary clusters\". The leaves being opposite, a node has two axils."
+    },
+    "inflorescence.flowersPerStalk": {
+      "value": 3,
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: flowers in dense axillary clusters, \"mostly three on a stalk\"."
+    },
+    "inflorescence.stalksPerAxil": {
+      "value": [
+        2,
+        3
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "A dense cluster of flowers that stand three to a stalk has several stalks to an axil; no source read counts them. Two or three are drawn."
+    },
+    "inflorescence.stalkLengthM": {
+      "value": [
+        0.004,
+        0.08
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"peduncle 0.4-8 cm long, puberulous or glabrous\"."
+    },
+    "inflorescence.bractLengthM": {
+      "value": [
+        0.007,
+        0.02
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"bracts narrowly oblong to linear, 0.7-2 cm long\"."
+    },
+    "inflorescence.budScaleLengthM": {
+      "value": [
+        0.008,
+        0.02
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"scales of axillary buds ovate, triangular, or oblong, 0.8-2 cm long\". Bean: \"The bases of the flower-stalks are surrounded by numerous bracts.\""
+    },
+    "inflorescence.spanM": {
+      "value": [
+        0.13,
+        0.17
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The width of the two clusters of one node, from the outermost flower of one to the outermost of the other: what the growth model gives as organs.racemeLengthM and a flower record measures. This project's sum of the published stalk lengths and flower width, not a source's figure."
+    },
+    "inflorescence.held": {
+      "value": "standing out from the leaf axils",
+      "status": "published_plant_profile",
+      "source": "https://www.botanic.cam.ac.uk/the-garden/plant-list/clematis-armandii/",
+      "basis": "Cambridge University Botanic Garden: saucer-shaped flowers borne in axillary clusters, giving a mass of bloom. The growth model records the same as flowerHeld: facing_out."
+    },
+    "inflorescence.stalkColour": {
+      "value": "red to maroon",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs on Wikimedia Commons: the flower stalks and the stalks of the clusters are red to maroon in Clematis armandii (1).jpg, Clematis armandii (2).jpg, Clematis armandii01-4035~2015 03 22.JPG and Clematis armandii - Flickr - peganum.jpg, and are painted reddish in Curtis's Botanical Magazine t. 8587 (Commons: Clematis armandi 140-8587.jpg). No flora read gives their colour."
+    },
+    "flower.diameterM": {
+      "value": [
+        0.05,
+        0.06
+      ],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
+      "basis": "RHS plant record: \"creamy-white flowers 5-6cm across\". Bean: \"Flowers 2 to 2 1/2 in. across\". Huang et al. 2024 give 2 to 8 cm for the species over its whole range."
+    },
+    "flower.stalkLengthM": {
+      "value": [
+        0.018,
+        0.07
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"Pedicel 1.8-7 cm long\"."
+    },
+    "flower.sepalCount": {
+      "value": [
+        4,
+        7
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: \"sepals four to seven, narrow oblong\". Huang et al. 2024: \"Sepals 4 (-6)\". There are no petals: the white parts are sepals."
+    },
+    "flower.sepalCountUsual": {
+      "value": [
+        5,
+        6
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Garden plants most often have five or six: Clematis on the Web gives six as the commonest number for the garden form (var. biondiana) and four or five for the species; the Edinburgh plant had \"6 petals\"; Clemson Extension four, five or six. The mix drawn (mostly five and six, a few with four) is this project's."
+    },
+    "flower.sepalLengthM": {
+      "value": 0.025,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: sepals \"about 1 in. long, 1/3 in. wide\", in metres. Huang et al. 2024: 1.2 to 4.7 cm long."
+    },
+    "flower.sepalWidthM": {
+      "value": 0.0085,
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: sepals \"about 1 in. long, 1/3 in. wide\", in metres."
+    },
+    "flower.sepalShape": {
+      "value": "narrowly oblong to obovate-oblong",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"Sepals 4 (-6), white or pinkish, spreading, narrowly oblong, obovate-oblong, or oblong\". Bean: \"narrow oblong\"."
+    },
+    "flower.colour": {
+      "value": [
+        "pure white",
+        "creamy white"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: \"pure or creamy white, changing to rose\". RHS: \"creamy-white\". Huang et al. 2024: \"white or pinkish\"."
+    },
+    "flower.colourAged": {
+      "value": "flushed rose",
+      "status": "published_plant_profile",
+      "source": "https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/",
+      "basis": "Bean: \"pure or creamy white, changing to rose\". Not drawn: the model's flower has one colour through its life."
+    },
+    "flower.budColour": {
+      "value": "silvery",
+      "status": "published_plant_profile",
+      "source": "https://stories.rbge.org.uk/?p=8863",
+      "basis": "Royal Botanic Garden Edinburgh: the flowers \"open pure white\" from \"globose silvery buds\"."
+    },
+    "flower.stamenLengthM": {
+      "value": [
+        0.006,
+        0.011
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"Stamens 6-11 mm long, glabrous\"."
+    },
+    "flower.antherLengthM": {
+      "value": [
+        0.003,
+        0.0045
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"anthers narrowly oblong to linear, 3-4.5 mm long\"."
+    },
+    "flower.antherColour": {
+      "value": [
+        "cream",
+        "pale yellow"
+      ],
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=112",
+      "basis": "Clematis on the Web: anthers cream or pale yellow. RHS: \"with creamy stamens\". The Edinburgh plant had \"light coffee brown anthers\", which is the colour after the pollen is shed."
+    },
+    "flower.stamenCount": {
+      "value": 40,
+      "status": "provisional_design_assumption",
+      "basis": "Many (NC State Extension); a \"central boss of stamens\" (Royal Botanic Garden Edinburgh). No source read counts them. Forty are drawn at the finest level of detail."
+    },
+    "flower.styleLengthM": {
+      "value": [
+        0.006,
+        0.008
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"Style 6-8 mm long, densely villous\"."
+    },
+    "flower.scent": {
+      "value": "fragrant",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/3923/clematis-armandi/details",
+      "basis": "RHS plant record: \"fragrant creamy-white flowers\"."
+    },
+    "fruit.type": {
+      "value": "head of achenes with feathered tails",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: achenes with a \"persistent style 1.6-4.8 cm long, white plumose\". NC State Extension: many small dry fruits, each with a silky, plumed tail."
+    },
+    "fruit.acheneLengthM": {
+      "value": [
+        0.004,
+        0.005
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"Achenes narrowly ovate to elliptic-ovate, 4-5 mm long, 2-2.6 mm broad\"."
+    },
+    "fruit.acheneWidthM": {
+      "value": [
+        0.002,
+        0.0026
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"4-5 mm long, 2-2.6 mm broad\"."
+    },
+    "fruit.tailLengthM": {
+      "value": [
+        0.016,
+        0.048
+      ],
+      "unit": "m",
+      "status": "peer_reviewed",
+      "source": "https://zenodo.org/records/15001723",
+      "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"persistent style 1.6-4.8 cm long, white plumose\"."
+    },
+    "fruit.colour": {
+      "value": "white, feathery",
+      "status": "published_plant_profile",
+      "source": "https://plantdatabase.kpu.ca/Plant/clar",
+      "basis": "Kwantlen Polytechnic University plant database: the fruit is white and feathery, in early summer."
+    },
+    "fruit.achenesPerHead": {
+      "value": 12,
+      "status": "provisional_design_assumption",
+      "basis": "No source read counts the achenes of a head. Twelve are drawn at the finest level of detail."
+    },
+    "fruit.headsPerNode": {
+      "value": [
+        3,
+        5
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "The seed heads that follow the flowers of one node. No source read says how many of a cluster's flowers ripen a head; a minority are drawn."
+    },
+    "fruit.spanM": {
+      "value": [
+        0.13,
+        0.17
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The width of the seed heads of one node: what the growth model gives as fruit.lengthM and a fruit record measures. The heads stand on the stalks the flowers stood on, so the cluster is about as wide as the flowers were. This project's sum of the published tail and stalk lengths, not a source's figure."
+    },
+    "hold.woundReachM": {
+      "value": [
+        0.011,
+        0.014
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The reach of a leaflet stalk where it is wound, from the node to the far side of the turn it makes round a support: the growth model's appendages.leafStalkLengthM. The thickness of a cable it can clasp (4 to 5 mm in the project's structures), the stalk's own thickness, and slack."
+    },
+    "hold.turns": {
+      "value": 1.25,
+      "status": "provisional_design_assumption",
+      "basis": "A stalk is drawn making a turn and a quarter round what it holds. No source read says how many turns it makes; a stalk \"1/2 to 1 in. long\" (Bean) can make about one round a 5 mm cable."
+    },
+    "hold.maxGraspDiameterMm": {
+      "value": null,
+      "unit": "mm",
+      "status": "unknown"
+    }
+  }
+}
