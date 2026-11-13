@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { Calendar, type Growable, appendagePresent, characterNumber, characterRange, characterText, flowerState, fruitState, known, leafState, param, parseGrowthModel, parseMorphology, parseTaxon, readBower, seasonsOf, toRenderData } from '@horti/core';
 import { growPlanting } from '../../src/plant/grow.ts';
-import { triangles } from '../../src/plant/kit.ts';
+import { GROUND, triangles } from '../../src/plant/kit.ts';
 import { assetsOf, ceilingFor } from '../../src/plant/look.ts';
 import { look } from '../../src/plant/taxa/akebia-quinata.ts';
 import { specimenPlan } from '../../src/specimen/specimen.ts';
@@ -33,6 +33,29 @@ function parts(g: THREE.BufferGeometry): { pivot: THREE.Vector3; t: number; poin
   }
   return [...found.values()];
 }
+/**
+ * The leaflets of a leaf. Every part of a held blade pivots on the top of the leaf stalk (BladeHold), so a leaflet is
+ * told by its place in the palette (its t), and its own stalk, which samples the ground of the texture, is left out.
+ * `base` is the leaflet's point nearest the top of the stalk.
+ */
+function leafletsOf(g: THREE.BufferGeometry): { hub: THREE.Vector3; base: THREE.Vector3; length: number; points: THREE.Vector3[]; uv: [number, number][] }[] {
+  const pos = g.getAttribute('position');
+  const part = g.getAttribute('aPart');
+  const uv = g.getAttribute('uv');
+  const found = new Map<string, { hub: THREE.Vector3; points: THREE.Vector3[]; uv: [number, number][] }>();
+  for (let i = 0; i < pos.count; i++) {
+    if (part.getW(i) < 0) continue;
+    if (Math.abs(uv.getX(i) - GROUND[0]) < 1e-6 && Math.abs(uv.getY(i) - GROUND[1]) < 1e-6) continue;
+    const key = part.getW(i).toFixed(6);
+    if (!found.has(key)) found.set(key, { hub: new THREE.Vector3(part.getX(i), part.getY(i), part.getZ(i)), points: [], uv: [] });
+    found.get(key)!.points.push(new THREE.Vector3().fromBufferAttribute(pos, i));
+    found.get(key)!.uv.push([uv.getX(i), uv.getY(i)]);
+  }
+  return [...found.values()].map((l) => {
+    const base = l.points.reduce((a, b) => (a.distanceTo(l.hub) <= b.distanceTo(l.hub) ? a : b));
+    return { ...l, base, length: Math.max(...l.points.map((q) => q.distanceTo(base))) };
+  });
+}
 /** How far the vertices of a part reach from its pivot. */
 const reachOf = (p: { pivot: THREE.Vector3; points: THREE.Vector3[] }): number => Math.max(...p.points.map((q) => q.distanceTo(p.pivot)));
 /** The widest a set of points is across, in any direction. */
@@ -53,37 +76,39 @@ describe('the leaf of Akebia quinata agrees with its morphology file', () => {
   it('has five leaflets, as Flora of China gives it, and now and then one fewer but never fewer than the fewest recorded', () => {
     const usual = characterNumber(morphology, 'leaf.leafletCount');
     const [fewest, most] = characterRange(morphology, 'leaf.leafletCountRange');
-    const counts = Array.from({ length: leaf.variants }, (_, v) => parts(leaf.make(v, 0)).length);
+    const counts = Array.from({ length: leaf.variants }, (_, v) => leafletsOf(leaf.make(v, 0)).length);
     expect(counts.filter((n) => n === usual).length).toBeGreaterThanOrEqual(leaf.variants - 1);
     for (const n of counts) {
       expect(n).toBeGreaterThanOrEqual(fewest);
       expect(n).toBeLessThanOrEqual(most);
     }
     // the same leaflets at every level of detail
-    for (let v = 0; v < leaf.variants; v++) for (let lod = 1; lod < leaf.lods; lod++) expect(parts(leaf.make(v, lod)).length, `variant ${v} level ${lod}`).toBe(counts[v]);
+    for (let v = 0; v < leaf.variants; v++) for (let lod = 1; lod < leaf.lods; lod++) expect(leafletsOf(leaf.make(v, lod)).length, `variant ${v} level ${lod}`).toBe(counts[v]);
     // most leaves drawn are the usual five
     const picked = Array.from({ length: 200 }, (_, i) => counts[leaf.pick(0.12, (i + 0.5) / 200)]!);
     expect(picked.filter((n) => n === usual).length / picked.length).toBeGreaterThan(0.8);
   });
 
   it('gives the stalk, the end leaflet and the side leaflets the shares of the leaf that the floras measure', () => {
+    const [ratioLow, ratioHigh] = characterRange(morphology, 'leaf.leafletLengthToWidth');
     for (let v = 0; v < leaf.variants; v++) {
-      const leaflets = parts(leaf.make(v, 0));
+      const leaflets = leafletsOf(leaf.make(v, 0));
       // the end leaflet is the one that reaches farthest along the leaf
       const end = leaflets.reduce((a, b) => (Math.max(...a.points.map((q) => q.z)) > Math.max(...b.points.map((q) => q.z)) ? a : b));
-      expect(reachOf(end), `variant ${v}: end leaflet`).toBeCloseTo(mid('leaf.terminalLeafletLengthM') / whole, 1);
+      expect(end.length, `variant ${v}: end leaflet`).toBeCloseTo(mid('leaf.terminalLeafletLengthM') / whole, 1);
       // its stalk starts where the leaf stalk ends: the leaf stalk is more than half the leaf, as measured
       const stalkShare = mid('leaf.petioleLengthM') / whole;
       expect(stalkShare).toBeGreaterThan(0.5);
-      expect(end.pivot.length(), `variant ${v}: stalk and end leaflet's stalk`).toBeCloseTo((mid('leaf.petioleLengthM') + mid('leaf.terminalPetioluleLengthM')) / whole, 1);
+      expect(end.hub.length(), `variant ${v}: leaf stalk`).toBeCloseTo(stalkShare, 1);
+      expect(end.base.length(), `variant ${v}: stalk and end leaflet's stalk`).toBeCloseTo((mid('leaf.petioleLengthM') + mid('leaf.terminalPetioluleLengthM')) / whole, 1);
       for (const l of leaflets) {
         // no leaflet is longer than the longest end leaflet recorded, for a leaf of ordinary length
-        expect(reachOf(l), `variant ${v}`).toBeLessThan((characterRange(morphology, 'leaf.terminalLeafletLengthM')[1] / whole) * 1.05);
-        // as wide for its length as the floras give: 1.5 to 2.5 cm for 2 to 5 cm
-        const widest = Math.max(...l.points.map((q) => q.distanceTo(l.pivot))) > 0 ? across(l.points.filter((q) => Math.abs(q.distanceTo(l.pivot) / reachOf(l) - 0.6) < 0.12)) : 0;
-        const ratio = widest / reachOf(l);
-        expect(ratio, `variant ${v}: width for length`).toBeGreaterThan(0.4);
-        expect(ratio, `variant ${v}: width for length`).toBeLessThan(0.8);
+        expect(l.length, `variant ${v}`).toBeLessThan((characterRange(morphology, 'leaf.terminalLeafletLengthM')[1] / whole) * 1.05);
+        // as wide for its length as the floras give (1.5 to 2.5 cm for 2 to 5 cm) and the photographs show
+        const widest = across(l.points.filter((q) => Math.abs(q.distanceTo(l.base) / l.length - 0.58) < 0.08));
+        const ratio = l.length / widest;
+        expect(ratio, `variant ${v}: length for width`).toBeGreaterThan(ratioLow * 0.85);
+        expect(ratio, `variant ${v}: length for width`).toBeLessThan(ratioHigh * 1.1);
       }
     }
     expect(mid('leaf.leafletWidthM') / mid('leaf.leafletLengthM')).toBeGreaterThan(0.4);
@@ -92,21 +117,16 @@ describe('the leaf of Akebia quinata agrees with its morphology file', () => {
 
   it('is notched at the tip of each leaflet: the midrib stops short of the shoulders either side of it', () => {
     expect(characterText(morphology, 'leaf.leafletApex')).toContain('notched');
-    const leaflets = parts(leaf.make(0, 0));
-    for (const l of leaflets) {
-      // along the leaflet's own line, the farthest point is not on the midrib (uv u = 0.5) but beside it
-      const g = leaf.make(0, 0);
-      const pos = g.getAttribute('position');
-      const part = g.getAttribute('aPart');
-      const uv = g.getAttribute('uv');
+    for (const l of leafletsOf(leaf.make(0, 0))) {
+      // along the leaflet's own line, the farthest point is not on the midrib (the texture's u = 0.5) but beside it
       let onMidrib = 0;
       let beside = 0;
-      for (let i = 0; i < pos.count; i++) {
-        if (part.getW(i) < 0 || Math.abs(part.getX(i) - l.pivot.x) > 1e-6 || Math.abs(part.getY(i) - l.pivot.y) > 1e-6 || Math.abs(part.getZ(i) - l.pivot.z) > 1e-6) continue;
-        const d = new THREE.Vector3().fromBufferAttribute(pos, i).distanceTo(l.pivot);
-        if (Math.abs(uv.getX(i) - 0.5) < 0.01) onMidrib = Math.max(onMidrib, d);
-        else if (Math.abs(uv.getX(i) - 0.5) < 0.3) beside = Math.max(beside, d);
-      }
+      l.points.forEach((q, i) => {
+        const d = q.distanceTo(l.base);
+        const u = Math.abs(l.uv[i]![0] - 0.5);
+        if (u < 0.01) onMidrib = Math.max(onMidrib, d);
+        else if (u < 0.3) beside = Math.max(beside, d);
+      });
       expect(beside).toBeGreaterThan(onMidrib * 1.01);
     }
   });
@@ -356,18 +376,26 @@ describe('a specimen of Akebia quinata through its eighth year', () => {
     expect(thickest).toBeLessThan(characterRange(morphology, 'stem.oldDiameterM')[1] * 1000 * 1.5);
   });
 
-  it('is in leaf from March to December and bare in January and February: the plant of a hard winter', () => {
+  it('is semi-evergreen: in full leaf from spring to late autumn, and keeps some of its leaves through winter', () => {
+    expect(profile.leafHabit.value).toBe('semi_evergreen');
+    const share = known(model, 'organs.winterLeafShare')!;
+    expect(share).toBeGreaterThan(0);
+    expect(share).toBeLessThan(1);
     const inLeaf = months((day) => {
       const seasons = seasonsOf(data, cal.dateOf(day).year);
       return data.leaves.some((l) => leafState(l, seasons.get(l.plantId), day).present);
     });
-    expect(inLeaf).toEqual([3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    expect(leavesOn(`${last}-01-20`)).toBe(0);
-    expect(leavesOn(`${last}-02-20`)).toBe(0);
+    expect(inLeaf).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    // in winter, some of last year's leaves and no others: roughly the share kept, of what was out in late autumn
+    const summer = leavesOn(`${last - 1}-07-15`);
+    for (const iso of [`${last}-01-20`, `${last}-02-20`]) {
+      const winter = leavesOn(iso);
+      expect(winter, iso).toBeGreaterThan(summer * share * 0.5);
+      expect(winter, iso).toBeLessThan(summer * share * 1.6);
+    }
     // the leaves are out by the time the racemes are at their fullest, and most are still on in late November
     expect(leavesOn(`${last}-04-20`)).toBeGreaterThan(leavesOn(`${last}-07-15`) * 0.6);
     expect(leavesOn(`${last}-11-25`)).toBeGreaterThan(leavesOn(`${last}-07-15`) * 0.9);
-    expect(profile.leafHabit.value).toBe('semi_evergreen');
   });
 
   it('flowers in spring and at no other time: racemes open from late March to mid May, most of them in April', () => {

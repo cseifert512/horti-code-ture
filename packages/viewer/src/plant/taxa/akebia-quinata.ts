@@ -32,7 +32,7 @@ import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/akebia-quinata/morphology.json';
 import { RNG, lerp, smoothstep } from '../../util.ts';
-import { MIDRIB, Merge, type RGB, type Segs, Surf, WHITE, across, lin, mix } from '../kit.ts';
+import { GROUND, Merge, type PalmateVeins, type RGB, type Segs, Surf, WHITE, across, lin, mix, palmateTexture, veinUv } from '../kit.ts';
 import { type FlowerAsset, type FruitAsset, type LeafAsset, type TaxonLook, type WoodLook } from '../look.ts';
 
 const morphology = parseMorphology(morphologyJson, 'species/akebia-quinata/morphology.json');
@@ -68,8 +68,25 @@ const END_LEAFLET = END_LEAFLET_M / LEAF_M;
 const SIDE_LEAFLET = SIDE_LEAFLET_M / LEAF_M;
 /** Half the width of a leaflet for its length: "1.5 to 2.5 cm wide for 2 to 5 cm long". */
 const LEAFLET_HALF_WIDTH = LEAFLET_WIDTH_M / SIDE_LEAFLET_M / 2;
-/** Side veins to a side (5 to 7): the shared leaf texture has eleven, so a leaflet is laid over that share of it. */
-const VEIN_SHARE = mid('leaf.lateralVeinPairs') / 11;
+/**
+ * The leaflet's own veins, in leaflet units (base 0, tip 1). One main vein, the midrib, "sunken above" and paler than
+ * the blade; five to seven side veins to a side (both from the Flora Reipublicae Popularis Sinicae rendering, in
+ * morphology.json), which in photographs are faint, leave the midrib at a wide angle and loop forward well short of the
+ * margin; a fine net that barely shows. The shared texture's eleven bold side veins are a wisteria leaflet's, not this.
+ */
+const LEAFLET_VEINS: PalmateVeins = {
+  origin: 0.04,
+  span: 1.1,
+  main: [{ deg: 0, length: 0.93 }],
+  secondary: { angle: 58, spacing: 0.86 / (mid('leaf.lateralVeinPairs') + 0.5), first: 0.06, reach: 0.27, curve: 30 },
+  net: { cell: 0.045, jitter: 0.8 },
+  width: { main: 0.022, secondary: 0.007, net: 0.004 },
+  ground: 0.74,
+  pale: { main: 0.2, secondary: 0.045, net: 0.018 },
+  tint: { main: 0.75, secondary: 0.3, net: 0.1 },
+  relief: { vein: 0.45, pucker: 0.12 },
+  seed: 5,
+};
 
 const LEAF_LODS = 3;
 const LEAFLET_SEGS: Segs[] = [
@@ -91,6 +108,7 @@ function makeLeaflet(lod: number, seed: number): THREE.BufferGeometry {
   const rng = new RNG(900 + seed * 13);
   const lean = rng.range(-0.05, 0.05);
   const wavePhase = rng.range(0, TAU);
+  const flat: number[] = [];
   sb.surf(nu, nv, (u01, v) => {
     const u = u01 * 2 - 1;
     // the outline stops short of closing: the tip is broad, and its edge is shaped below
@@ -112,10 +130,15 @@ function makeLeaflet(lod: number, seed: number): THREE.BufferGeometry {
     } else if (lod === 1) {
       y += 0.012 * Math.sin(v * 9 + wavePhase) * u * u;
     }
+    flat.push(x, z);
     return { p: [x, y, z] };
   });
-  // five to seven side veins to a side: lay the leaflet over that much of the texture's eleven
-  for (let i = 1; i < sb.uv.length; i += 2) sb.uv[i] = sb.uv[i]! * VEIN_SHARE;
+  // the leaflet's own texture, laid over the flat leaflet before it was folded
+  for (let i = 0; i < flat.length; i += 2) {
+    const [u, v] = veinUv(LEAFLET_VEINS, flat[i]!, flat[i + 1]!);
+    sb.uv[i] = u;
+    sb.uv[i + 1] = v;
+  }
   return sb.build();
 }
 
@@ -125,19 +148,21 @@ interface LeafletPlace {
   /** 0 the end leaflet, 1 a side one, 2 one of the lowest pair. */
   rank: 0 | 1 | 2;
 }
+/** The angles from the end leaflet of the next pair and the lowest pair, read off photographs (morphology.json). */
+const [SIDE_ANGLE, LOW_ANGLE] = characterRange(morphology, 'leaf.leafletSpreadDeg').map((d) => (d * Math.PI) / 180) as [number, number];
 const FIVE: LeafletPlace[] = [
   { angle: 0, rank: 0 },
-  { angle: 1.16, rank: 1 },
-  { angle: -1.16, rank: 1 },
-  { angle: 2.3, rank: 2 },
-  { angle: -2.3, rank: 2 },
+  { angle: SIDE_ANGLE, rank: 1 },
+  { angle: -SIDE_ANGLE, rank: 1 },
+  { angle: LOW_ANGLE, rank: 2 },
+  { angle: -LOW_ANGLE, rank: 2 },
 ];
-/** A leaf of fewer leaflets, as some are ("sometimes three or four", Bean): one of the lowest pair missing. */
+/** A leaf of fewer leaflets, as some are ("sometimes three or four", Bean): one of the lowest pair missing, the rest spread into its room. */
 const FOUR: LeafletPlace[] = [
   { angle: 0.12, rank: 0 },
-  { angle: 1.3, rank: 1 },
-  { angle: -1.1, rank: 1 },
-  { angle: -2.25, rank: 2 },
+  { angle: SIDE_ANGLE + 0.14, rank: 1 },
+  { angle: -SIDE_ANGLE + 0.06, rank: 1 },
+  { angle: -LOW_ANGLE + 0.05, rank: 2 },
 ];
 if (FIVE.length !== LEAFLETS || FOUR.length < FEWEST_LEAFLETS) throw new Error('akebia-quinata: the leaf model no longer has the leaflets its morphology file gives it');
 /** Each variant: its leaflets, and how far the hand of leaflets is turned down from the line of the stalk. */
@@ -168,23 +193,28 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
     pts.push(at(t));
     radii.push(0.0062 * (1 + 0.9 * Math.exp(-Math.pow(t / 0.05, 2)) + 0.5 * Math.exp(-Math.pow((1 - t) / 0.04, 2))));
   }
-  mg.tube(pts, radii, radial, WHITE, WHITE, MIDRIB);
+  mg.tube(pts, radii, radial, WHITE, WHITE, GROUND);
   const hub = at(1);
 
-  // the hand of leaflets: a plane through the top of the stalk, turned down from the stalk's line
-  const forward = new V3(0, -Math.sin(tilt), Math.cos(tilt));
-  const normal = new V3(0, Math.cos(tilt), Math.sin(tilt));
+  // The hand of leaflets: a plane through the top of the stalk, authored lying flat out along +Z (upper side +Y), as a
+  // held blade is (BladeHold): the viewer turns the whole hand about the top of the stalk, its face to the open side.
+  // `tilt` is now only a slight cupping of this variant's hand, the leaflets standing a little up from the plane.
+  const forward = new V3(0, 0, 1);
+  const normal = new V3(0, 1, 0);
+  const cup = tilt * 0.25;
   const side = new V3(1, 0, 0);
   const m = new THREE.Matrix4();
   const X = new V3();
   const Y = new V3();
   const Z = new V3();
   places.forEach((place, k) => {
+    // which of the palette's greens it takes; its stalk takes the same, which also tells one leaflet from another
+    const t = rng.f();
     const angle = place.angle + rng.range(-0.1, 0.1);
     const stalkLength = (place.rank === 0 ? END_STALK : SIDE_STALK * (place.rank === 2 ? 0.85 : 1)) * rng.range(0.9, 1.1);
     const length = (place.rank === 0 ? END_LEAFLET : SIDE_LEAFLET * (place.rank === 2 ? 0.86 : 1)) * rng.range(0.93, 1.07);
     // each leaflet hangs a little below the plane of the hand, the lowest pair most
-    const droop = (place.rank === 0 ? 0.1 : place.rank === 1 ? 0.2 : 0.32) + rng.range(-0.06, 0.08);
+    const droop = (place.rank === 0 ? 0.08 : place.rank === 1 ? 0.12 : 0.18) - cup + rng.range(-0.06, 0.06);
     const flat = forward
       .clone()
       .multiplyScalar(Math.cos(angle))
@@ -198,9 +228,12 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
     X.applyAxisAngle(Z, roll);
     // its own stalk, from the top of the leaf stalk
     const base = hub.clone().addScaledVector(Z, stalkLength);
+    // its own stalk is part of the blade the viewer holds, so it turns with the leaflets, about the top of the leaf stalk
     if (lod < 2) {
       const bend = hub.clone().addScaledVector(Z, stalkLength * 0.5).addScaledVector(normal, 0.012);
-      mg.tube([hub, bend, base], [0.0048, 0.0042, 0.0045], radial, WHITE, WHITE, MIDRIB);
+      const sub = new Merge(true);
+      sub.tube([hub, bend, base], [0.0048, 0.0042, 0.0045], radial, WHITE, WHITE, GROUND);
+      mg.add(sub.build(), IDENTITY, WHITE, hub, t);
     }
     const key = `${lod}/${(variant + k) % 3}`;
     let leaflet = leafletCache.get(key);
@@ -210,7 +243,8 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
     m.setPosition(lod < 2 ? base : hub);
     // at the far level there is no leaflet stalk: the leaflet reaches from the hub
     if (lod === 2) m.scale(new V3(1, 1, 1 + stalkLength / length));
-    mg.add(leaflet, m, WHITE, base, rng.f());
+    // every part of the blade pivots on the top of the leaf stalk (BladeHold)
+    mg.add(leaflet, m, WHITE, hub, t);
   });
   const g = mg.build();
   g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.55), 0.75);
@@ -224,8 +258,12 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
 // ---------------------------------------------------------------------------
 /** The raceme as authored: the middle of the Flora of China's 6 to 12 cm, which is what `organs.racemeLengthM` measures. */
 const RACEME_LEN = mid('inflorescence.lengthM');
-/** The bare stalk of the raceme, drawn in the lower part of its recorded range (2 to 5 cm): about 2.6 cm of the 9. */
-const PEDUNCLE = lerp(...characterRange(morphology, 'inflorescence.peduncleLengthM'), 0.2);
+/**
+ * The bare stalk of the raceme, drawn a little above the middle of its recorded range (2 to 5 cm): about 3.8 cm of the 9.
+ * In photographs (Commons "Akebia quinata Akebia pieciolistkowa 2023-04-23 04.jpg") the stalk is long and slender and
+ * the male flowers hang crowded at its end.
+ */
+const PEDUNCLE = lerp(...characterRange(morphology, 'inflorescence.peduncleLengthM'), 0.6);
 const FEMALE_SEPALS = characterNumber(morphology, 'flower.female.sepalCount');
 const FEMALE_SEPAL = mid('flower.female.sepalLengthM');
 const FEMALE_SEPAL_HALF_WIDTH = mid('flower.female.sepalWidthM') / 2;
@@ -250,10 +288,10 @@ const C = {
   femaleEdge: lin('#55202f'),
   carpel: lin('#4a2046'),
   stigma: lin('#e3c8d6'),
-  // male: "pale purple" (Flora of China, Bean), "rose-purple" (Purdue)
-  male: lin('#c495a6'),
-  malePale: lin('#dcbcc6'),
-  maleBase: lin('#a66a84'),
+  // male: "pale purple" (Flora of China, Bean), "rose-purple" (Purdue); in photographs a rose-mauve, deeper inside
+  male: lin('#b47d95'),
+  malePale: lin('#cf9fb2'),
+  maleBase: lin('#8c4f6c'),
   filament: lin('#8a4a6c'),
   anther: lin('#43203c'),
   // stalks: pale green, flushed with the purple of the flowers
@@ -404,9 +442,11 @@ function makeMaleFlower(lod: number, seed: number): THREE.BufferGeometry {
   const shape: SepalShape = {
     length: MALE_SEPAL * big,
     halfWidth: MALE_SEPAL_HALF_WIDTH * 1.1 * big,
-    from: 0.5,
-    to: -0.85,
-    cup: 0.5,
+    // hooded ("broadly ovate, hooded", Flora of China) and spreading to turned back (Bean: "reflexed"): in photographs a
+    // shallow nodding cup more often than a flat star
+    from: 0.75,
+    to: -0.4,
+    cup: 0.75,
     widest: 0.8,
     full: 0.55,
     base: C.maleBase,
@@ -539,10 +579,11 @@ function makeRacemeGeometry(variant: number, lod: number): THREE.BufferGeometry 
 
   // the male flowers, spiralled round the rest of the axis and crowded towards its tip, on short stalks
   const phi0 = rng.range(0, TAU);
-  const first = stalkFrom + 0.16;
+  // crowded towards the tip, as the photographs show them
+  const first = stalkFrom + 0.2;
   for (let i = 0; i < plan.male; i++) {
     const f = plan.male === 1 ? 0 : i / (plan.male - 1);
-    const s = lerp(first, 1, Math.pow(f, 0.8));
+    const s = lerp(first, 1, Math.pow(f, 0.6));
     at(s, p);
     const a = phi0 + i * 2.39996 + rng.range(-0.3, 0.3);
     const out = new V3(Math.cos(a), 0, Math.sin(a));
@@ -572,6 +613,8 @@ const FRUIT_HALF_WIDTH = mid('fruit.widthM') / 2;
 /** The stalk it hangs by: what is left of the raceme's stalk and the flower's own. */
 const FRUIT_STALK = PEDUNCLE + FEMALE_PEDICEL * 0.8;
 const FRUIT_LODS = 3;
+/** How far from plumb the follicles of a cluster stand, radians. */
+const SPREAD = characterRange(morphology, 'fruit.spread').map((d) => (d * Math.PI) / 180) as [number, number];
 const FOLLICLE_SEGS: Segs[] = [
   [16, 14],
   [8, 6],
@@ -590,6 +633,7 @@ const F = {
   greenShade: lin('#7d9468'),
   seam: lin('#c9d3ad'),
   fleck: lin('#6f8459'),
+  russet: lin('#8a7058'),
   stalk: lin('#7b7a52'),
   stalkWoody: lin('#6b5a44'),
 };
@@ -617,6 +661,11 @@ function makeFollicle(lod: number, seed: number): THREE.BufferGeometry {
     const fleck = lod === 0 ? 0.5 + 0.5 * Math.sin(th * 7 + v * 31 + seed) * Math.sin(v * 17 + th * 3) : 0.5;
     let c = mix(F.green, F.greenShade, 0.5 - 0.5 * toSeam);
     c = mix(c, F.fleck, 0.12 * fleck * fleck);
+    // russet flecks and a dull flush, as on fruit near ripeness in photographs ("Akebia quinata (fruits 3p).jpg")
+    if (lod === 0) {
+      const blot = Math.max(0, Math.sin(th * 3 + seed * 1.7 + v * 5) * Math.sin(v * 7 + seed));
+      c = mix(c, F.russet, 0.28 * blot * blot + 0.35 * Math.pow(Math.max(0, Math.sin(th * 23 + v * 61 + seed * 3) * Math.sin(v * 47 + th * 11)), 12));
+    }
     c = mix(c, F.seam, 0.8 * seam * Math.sin(Math.PI * v));
     return { p: [x, -v * FRUIT_LEN, z], c };
   });
@@ -642,10 +691,10 @@ function makeFruitGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const turn = new THREE.Matrix4();
   const spin0 = rng.range(0, TAU);
   for (let k = 0; k < count; k++) {
-    // a single one hangs plumb; two or three hang side by side from the end of the stalk like the fingers of a
-    // hand, a little apart where they join and parting a little more as they go, seams inwards
-    const spread = count === 1 ? rng.range(0, 0.12) : rng.range(0.2, 0.32);
-    const apart = count === 1 ? 0 : FRUIT_HALF_WIDTH * rng.range(0.55, 0.7);
+    // a single one hangs nearly plumb; two or three splay from the end of the stalk like the fingers of an open hand,
+    // the first nearer level (morphology.json fruit.spread, read off photographs), seams inwards
+    const spread = count === 1 ? rng.range(0, 0.15) : lerp(SPREAD[0], SPREAD[1], k === 0 ? rng.range(0.6, 1) : rng.range(0, 0.6));
+    const apart = count === 1 ? 0 : FRUIT_HALF_WIDTH * rng.range(0.35, 0.5);
     const spin = spin0 + (k / count) * TAU;
     const size = (k === 0 ? 1 : rng.range(0.75, 0.95)) * (lod === 2 ? 1.04 : 1);
     m.makeRotationY(spin);
@@ -672,13 +721,25 @@ const leaf: LeafAsset = {
   budget: [2250, 360, 110],
   // about one leaf in ten has a leaflet fewer; the rest are hands of five, held three ways
   pick: (_lengthM, r) => (r < 0.1 ? 3 : r < 0.45 ? 0 : r < 0.75 ? 1 : 2),
-  // "dark green" (RHS), "bright blue-green above" (NC State); young leaves "purple-tinged" (Purdue);
-  // "tinted purple in winter" (RHS), with no autumn colour of note
-  palette: { greenA: lin('#436f42'), greenB: lin('#58834a'), young: lin('#8a6c5a'), autumnA: lin('#66535c'), autumnB: lin('#4b6c47') },
-  // papery, matt, with a faint bloom
-  roughness: 0.62,
+  // "dark green leaves, blue-green below" (RHS), "bright blue-green above" (NC State): in photographs a dark, slightly
+  // grey green on a wall in summer, fresher on young growth; greenB is also the colour the pale midrib is drawn to.
+  // Young leaves: "purple-tinged" (Purdue), and in photographs of plants in flower a fresh yellow-green flushed bronze.
+  // "Tinted purple in winter" (RHS): a dull purple-brown, as on the leaves a plant has kept through winter in April
+  // photographs (Commons "Akebia quinata 2016-04-19 7787.JPG"); no autumn colour of note (Purdue).
+  palette: { greenA: lin('#3c5d36'), greenB: lin('#6a8a52'), young: lin('#93a05c'), autumnA: lin('#5a4652'), autumnB: lin('#6b6a4c') },
+  // papery, matt to satin, hairless
+  roughness: 0.55,
   translucency: 0.42,
   detailReach: 0.9,
+  texture: palmateTexture(LEAFLET_VEINS, 512, 1.1),
+  // On a wall or a trellis the hands of leaflets are turned out to the open on their long stalks and overlap as a mosaic;
+  // on a shoot hanging in the open they are held flatter to the sky (morphology.json leaf.faceRiseDeg and others).
+  hold: {
+    unitAt: 0,
+    rise: characterRange(morphology, 'leaf.faceRiseDeg'),
+    riseOpen: characterRange(morphology, 'leaf.faceRiseOpenDeg'),
+    turn: characterNumber(morphology, 'leaf.handTurnDeg'),
+  },
 };
 
 const raceme: FlowerAsset = {
@@ -713,8 +774,9 @@ const fruit: FruitAsset = {
   poise: 'hangs',
   centreAlong: (FRUIT_STALK + FRUIT_LEN / 2) / FRUIT_LEN,
   // "greyish violet or purplish" (Bean), glaucous (Flora of North America); the seam brightens as it nears splitting
-  ripe: lin('#9585a4'),
-  ripeShade: [0.5, 1.15],
+  // in photographs a pale lilac under a heavy bloom where it colours fully ("Akebia quinata fruits 0s1.JPG")
+  ripe: lin('#a092b2'),
+  ripeShade: [0.55, 1.05],
   roughness: 0.78,
   swing: 0.45,
   detailAt: [1.6, 5],
@@ -730,11 +792,12 @@ const fruit: FruitAsset = {
 const wood: WoodLook = {
   young: lin('#76864f'),
   mature: lin('#7a5644'),
-  old: [0.8, 0.72, 0.62],
+  // in photographs of old plants a pale to mid grey-brown, nearly smooth (morphology.json stem.oldColour, stem.bark)
+  old: [0.8, 0.76, 0.71],
   woodyDays: [90, 330],
   oldDays: [800, 2600],
-  furrowDays: [900, 3200],
-  furrow: 0.45,
+  furrowDays: [1200, 3600],
+  furrow: 0.18,
   stiffDays: [45, 420],
   relief: 2,
   roughness: 0.9,

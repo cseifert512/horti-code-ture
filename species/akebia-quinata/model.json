@@ -281,9 +281,9 @@
       "basis": "Flora of China, of the genus: leaves alternate, or clustered on short branches. One leaf to a node on a long shoot."
     },
     "organs.spurChance": {
-      "value": 0.8,
+      "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "The spur of this model stands for the short branch of the floras, on which the leaves are clustered and the racemes borne (Flora of China). Most buds of last year's stems are taken to make one, which is what keeps old stems clothed; the share is a choice, not a count."
+      "basis": "The spur of this model stands for the short branch of the floras, on which the leaves are clustered and the racemes borne (Flora of China). Most buds of last year's stems are taken to make one, which is what keeps old stems clothed: photographs of old stems (Commons: \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\", \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") show a knob with its tuft of leaves every few centimetres. The share is a choice, not a count."
     },
     "organs.spurLengthM": {
       "value": [
@@ -361,9 +361,9 @@
       "basis": "Few racemes at first, the full share from the fourth flowering year. A choice."
     },
     "flowering.spurFloralChance": {
-      "value": 0.22,
+      "value": 0.35,
       "status": "provisional_design_assumption",
-      "basis": "The share of short branches that carry a raceme in a year. One plant can carry \"hundreds\" of flowers at once (University of Michigan CLIMBERS, https://climbers.lsa.umich.edu/akebia-quinata/), at five to twelve flowers to a raceme: chosen so that a specimen that has covered a 6 m2 trellis carries some two hundred racemes, which is one to two thousand flowers. Not a count made on a plant."
+      "basis": "The share of short branches that carry a raceme in a year. One plant can carry \"hundreds\" of flowers at once (University of Michigan CLIMBERS, https://climbers.lsa.umich.edu/akebia-quinata/), at five to twelve flowers to a raceme, and the Flora of China has the racemes clustered on the short branches, where the engine gives a short branch one raceme at most: so a large share of short branches is taken to flower, chosen so that a specimen that has covered the 6 m2 trellis carries two to three hundred racemes in April, some two thousand flowers. Photographs of plants in flower (Commons: \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") show racemes at most knobs of old stem. Not a count made on a plant."
     },
     "flowering.unprunedFactor": {
       "value": 1,
@@ -582,9 +582,9 @@
       "basis": "The leaves of the short branches, where most of the plant's leaves are. No flora gives them apart; in photographs of clustered leaves (Commons: \"Akebia quinata leaf.jpg\", \"Akebia gui kz.jpg\") they are as large as those of long shoots, a little less at the top of the range. Without this the engine draws them nine tenths of organs.leafLengthM, a number from the wisteria prototype."
     },
     "organs.leafTurnToOpenShare": {
-      "value": 0.65,
+      "value": 0.3,
       "status": "provisional_design_assumption",
-      "basis": "Photographs of plants on a wall and a fence (Commons: \"Akebia quinata Kew Gardens.jpg\", \"Akebia quinata (vine, fruits, flowers) 01.jpg\") show the hands of leaflets turned out to the open on their long stalks whichever way the stem runs, so that the face of the plant is a mosaic of flat leaves. A little more than the generic half; not measured."
+      "basis": "Photographs of plants on a wall and a fence (Commons: \"Akebia quinata Kew Gardens.jpg\", \"Akebia quinata (vine, fruits, flowers) 01.jpg\") show the long leaf stalks lying out across the face of the plant in every direction, and the hands of leaflets at their ends turned out to the open, so that the face is a mosaic of flat leaves over the spaces between stems. The hand is turned by the viewer (morphology.json leaf.faceRiseDeg); the stalk is turned less than the generic half towards the open, so that it lies across the face rather than standing out of it. Not measured."
     },
     "mechanics.woodSetDays": {
       "value": 60,

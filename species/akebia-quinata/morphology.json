@@ -9,7 +9,10 @@
       "basis": "RHS plant record: a \"semi-evergreen climber\". Bean: \"a twining shrub\", evergreen in mild winters and leafless in hard ones. Flora of China, of the genus: woody climbers, \"deciduous or subevergreen\"."
     },
     "habit.stemLengthM": {
-      "value": [9.1, 12.2],
+      "value": [
+        9.1,
+        12.2
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/akebia/akebia-quinata/",
@@ -22,14 +25,20 @@
       "basis": "As in taxon.json. Darwin's table: Akebia quinata \"moves against the sun\", that is anticlockwise seen from above, a right-handed helix (vocab.ts HANDEDNESS)."
     },
     "stem.revolutionHours": {
-      "value": [1.5, 1.75],
+      "value": [
+        1.5,
+        1.75
+      ],
       "unit": "h",
       "status": "published_plant_profile",
       "source": "https://www.gutenberg.org/files/2485/2485-h/2485-h.htm",
       "basis": "Darwin, a plant in a hothouse: after a first slow circle by a young shoot, revolutions of 1 h 40 m, 1 h 30 m and 1 h 45 m. Recorded for the record of the mechanism; nothing is drawn from it."
     },
     "stem.youngColour": {
-      "value": ["green", "red-brown"],
+      "value": [
+        "green",
+        "red-brown"
+      ],
       "status": "published_plant_profile",
       "source": "https://plants.ces.ncsu.edu/plants/akebia-quinata/",
       "basis": "NC State Extension: stems slender, twining, \"green when young turning brown\". Virginia Tech dendrology: twig \"slender, red-brown\". University of Illinois: \"reddish brown, twining and glabrous\"."
@@ -38,7 +47,7 @@
       "value": "greyish brown",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
-      "basis": "Flora of China: stems \"grayish brown\", slender, cylindric. Virginia Tech dendrology: bark \"reddish to gray-brown\"."
+      "basis": "Flora of China: stems \"grayish brown\", slender, cylindric. Virginia Tech dendrology: bark \"reddish to gray-brown\". Commons photographs of old plants (\"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\", \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\") show the old stems a pale to mid grey-brown and nearly smooth, roped together."
     },
     "stem.lenticels": {
       "value": "prominent, small, round",
@@ -50,10 +59,13 @@
       "value": "interlacing ridges and furrows with age",
       "status": "published_plant_profile",
       "source": "https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=948",
-      "basis": "Virginia Tech dendrology fact sheet: bark reddish to gray-brown, \"developing interlacing ridges and furrows\". The Chinese Pharmacopoeia describes the harvested stem as rough, with irregular cracks or lengthwise grooves and raised lenticels."
+      "basis": "Virginia Tech dendrology fact sheet: bark reddish to gray-brown, \"developing interlacing ridges and furrows\". The Chinese Pharmacopoeia describes the harvested stem as rough, with irregular cracks or lengthwise grooves and raised lenticels. Old stems a few centimetres thick in Commons photographs (named under stem.oldColour) look smoother than either says: the model furrows them only lightly."
     },
     "stem.oldDiameterM": {
-      "value": [0.005, 0.02],
+      "value": [
+        0.005,
+        0.02
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://shennongalpha.westlake.edu.cn/knowledge/nmm-00b1",
@@ -94,55 +106,79 @@
       "basis": "Flora of China: leaflets (3 to) 5 (to 7). Bean: \"normally five (sometimes three or four)\". The usual number."
     },
     "leaf.leafletCountRange": {
-      "value": [3, 7],
+      "value": [
+        3,
+        7
+      ],
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: leaflets (3 to) 5 (to 7), the outer numbers being the exceptions. The model draws five, with an occasional leaf of four."
     },
     "leaf.petioleLengthM": {
-      "value": [0.045, 0.1],
+      "value": [
+        0.045,
+        0.1
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: petiole slender, 4.5 to 10 cm. Bean: \"slender stalks, 3 to 5 in. long\" (7.6 to 12.7 cm). Flora of North America: 1.6 to 12.5 cm."
     },
     "leaf.petioluleLengthM": {
-      "value": [0.008, 0.015],
+      "value": [
+        0.008,
+        0.015
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: petiolules slender, 0.8 to 1.5 (to 2.5) cm. Bean: each leaflet on a stalk \"about 1/2 in. long\" (1.3 cm). NC State: about 1 cm."
     },
     "leaf.terminalPetioluleLengthM": {
-      "value": [0.015, 0.025],
+      "value": [
+        0.015,
+        0.025
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "The upper end of the Flora of China range, 1.5 (to 2.5) cm, taken as the middle leaflet's stalk: the Flora Reipublicae Popularis Sinicae, as rendered at https://baike.baidu.com/en/item/Akebia%20quinata/25006, gives the side ones as 8 to 10 mm and the middle one as up to 18 mm."
     },
     "leaf.leafletLengthM": {
-      "value": [0.02, 0.05],
+      "value": [
+        0.02,
+        0.05
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: side leaflets 2 to 5 cm long, the end one 2.5 to 5 (to 7) cm. Bean: \"1 1/2 to 3 in. long\" (3.8 to 7.6 cm). Flora of North America: 0.7 to 8.2 cm."
     },
     "leaf.terminalLeafletLengthM": {
-      "value": [0.025, 0.05],
+      "value": [
+        0.025,
+        0.05
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: the end leaflet 2.5 to 5 (to 7) cm long."
     },
     "leaf.leafletWidthM": {
-      "value": [0.015, 0.025],
+      "value": [
+        0.015,
+        0.025
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: leaflets 1.5 to 2.5 cm wide for 2 to 5 cm long. Flora of North America: 0.4 to 4.2 cm wide for 0.7 to 8.2 cm long."
     },
     "leaf.leafletShape": {
-      "value": ["obovate", "obovate-elliptic"],
+      "value": [
+        "obovate",
+        "obovate-elliptic"
+      ],
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: leaflets obovate to obovate-elliptic. Bean: \"oblong or obovate\". Flora of North America: oblong to ovate-elliptic."
@@ -166,7 +202,10 @@
       "basis": "Flora of North America: margins entire. NC State: margin entire."
     },
     "leaf.lateralVeinPairs": {
-      "value": [5, 7],
+      "value": [
+        5,
+        7
+      ],
       "status": "published_plant_profile",
       "source": "https://baike.baidu.com/en/item/Akebia%20quinata/25006",
       "basis": "The Flora Reipublicae Popularis Sinicae, in the English rendering at this address: midrib sunken above and raised beneath, 5 to 7 side veins to a side, the net of veins plain on both faces. Read in translation, not in the original."
@@ -178,7 +217,10 @@
       "basis": "Flora of China: leaflets papery, hairless."
     },
     "leaf.colourAbove": {
-      "value": ["dark green", "blue-green"],
+      "value": [
+        "dark green",
+        "blue-green"
+      ],
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details",
       "basis": "RHS plant record: \"dark green leaves\". Flora of China: adaxially dark green. NC State: \"bright blue-green above\". Oregon State: bluish green above."
@@ -199,13 +241,13 @@
       "value": "tinted purple",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details",
-      "basis": "RHS plant record: foliage \"tinted purple in winter\". NC State: becoming purple in cold weather. Purdue Arboretum: no appreciable autumn colour. The model shows the tint in the weeks before its leaves fall."
+      "basis": "RHS plant record: foliage \"tinted purple in winter\". NC State: becoming purple in cold weather. Purdue Arboretum: no appreciable autumn colour. A Commons photograph taken in Lublin in April (\"Akebia quinata 2016-04-19 7787.JPG\") shows the kept leaves a dull purple-brown with a grey bloom. The model shows the tint on leaves that fall in December; the leaves the engine keeps through winter are drawn green, which it cannot yet change."
     },
     "leaf.persistence": {
       "value": "kept through mild winters, shed in hard ones",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/akebia/akebia-quinata/",
-      "basis": "Bean: evergreen in mild winters and warm localities, but loses its leaves where conditions are more severe. Virginia Tech: \"tardily deciduous\". The growth engine can only drop every leaf each winter; see the species profile."
+      "basis": "Bean: evergreen in mild winters and warm localities, but loses its leaves where conditions are more severe. Virginia Tech: \"tardily deciduous\". The growth model keeps three leaves in ten through winter (organs.winterLeafShare); the engine draws a kept leaf green, not purple-tinted."
     },
     "leaf.lifespanSeasons": {
       "value": null,
@@ -215,7 +257,7 @@
       "value": "raceme",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
-      "basis": "Flora of China: racemes, with scaly overlapping bracts at the foot. RHS: flowers \"in racemes to 12cm long\"."
+      "basis": "Flora of China: racemes, with scaly overlapping bracts at the foot. RHS: flowers \"in racemes 12cm long\"."
     },
     "inflorescence.position": {
       "value": "axillary on short branches",
@@ -230,27 +272,39 @@
       "basis": "Bean: flowers \"on slender, pendent racemes\". Virginia Tech: drooping racemes. The growth model's names section records the same thing as flowerHeld: hanging."
     },
     "inflorescence.lengthM": {
-      "value": [0.06, 0.12],
+      "value": [
+        0.06,
+        0.12
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
-      "basis": "Flora of China: racemes 6 to 12 cm. RHS: \"racemes to 12cm long\". The growth model's organs.racemeLengthM is the same figure, and the raceme model is authored to it."
+      "basis": "Flora of China: racemes 6 to 12 cm. RHS: flowers \"in racemes 12cm long\". The growth model's organs.racemeLengthM is the same figure, and the raceme model is authored to it."
     },
     "inflorescence.peduncleLengthM": {
-      "value": [0.02, 0.05],
+      "value": [
+        0.02,
+        0.05
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://baike.baidu.com/en/item/Akebia%20quinata/25006",
       "basis": "The Flora Reipublicae Popularis Sinicae, in the English rendering at this address: peduncle 2 to 5 cm, its foot wrapped in bud scales. Read in translation. A reading of the Flora of China page through a search engine gave \"ca. 2.5 cm\", which lies within it."
     },
     "inflorescence.maleFlowerCount": {
-      "value": [4, 10],
+      "value": [
+        4,
+        10
+      ],
       "status": "peer_reviewed",
       "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10772107",
       "basis": "Zou et al. 2023, Plant Diversity 45: an inflorescence 6 to 12 cm long with 4 to 10 male flowers and 1 or 2 female. Flora of China: 4 to 8 (to 11) male flowers. Flora of North America: 4 to 15."
     },
     "inflorescence.femaleFlowerCount": {
-      "value": [1, 2],
+      "value": [
+        1,
+        2
+      ],
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=100921",
       "basis": "Flora of China, of the genus: female flowers 1 or 2, at the base of the inflorescence, larger than the male. Bean: \"usually two\". Flora of North America: 0 to 5."
@@ -274,7 +328,10 @@
       "basis": "Bean: very fragrant, with a spicy scent. RHS: fragrant."
     },
     "flower.female.widthM": {
-      "value": [0.02, 0.03],
+      "value": [
+        0.02,
+        0.03
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://floranorthamerica.org/Akebia_quinata",
@@ -287,14 +344,20 @@
       "basis": "Flora of China: sepals usually 3, now and then 4 or 5. NC State: three concave sepals."
     },
     "flower.female.sepalLengthM": {
-      "value": [0.01, 0.02],
+      "value": [
+        0.01,
+        0.02
+      ],
       "unit": "m",
       "status": "peer_reviewed",
       "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10772107",
       "basis": "Zou et al. 2023: female sepals 1 to 2 cm. Flora of North America: 10 to 16 mm. The Flora Reipublicae Popularis Sinicae rendering: 1 to 2 cm long and 8 to 15 mm wide."
     },
     "flower.female.sepalWidthM": {
-      "value": [0.008, 0.015],
+      "value": [
+        0.008,
+        0.015
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://baike.baidu.com/en/item/Akebia%20quinata/25006",
@@ -313,20 +376,29 @@
       "basis": "Bean: female flowers \"dark chocolate-purple\". Purdue Arboretum: dark brownish-purple. RHS: reddish-purple flowers."
     },
     "flower.female.pedicelLengthM": {
-      "value": [0.02, 0.04],
+      "value": [
+        0.02,
+        0.04
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: female flowers on a slender pedicel 2 to 4 (to 5) cm long."
     },
     "flower.female.carpelCount": {
-      "value": [3, 6],
+      "value": [
+        3,
+        6
+      ],
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: carpels 3 to 6 (to 9), cylindric, spreading apart. Flora of North America: 3 to 7 pistils."
     },
     "flower.female.carpelLengthM": {
-      "value": [0.005, 0.008],
+      "value": [
+        0.005,
+        0.008
+      ],
       "unit": "m",
       "status": "provisional_design_assumption",
       "basis": "No flora read gives the length of a carpel in flower. Drawn at about a third to a half of the sepal's length (1 to 2 cm), as the flower is seen; to be measured on a living flower."
@@ -337,7 +409,10 @@
       "basis": "No flora read gives the colour of the carpels. Drawn the colour of the sepals with a pale sticky tip, as the plant is seen in flower; to be checked against a living flower."
     },
     "flower.male.widthM": {
-      "value": [0.012, 0.016],
+      "value": [
+        0.012,
+        0.016
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://floranorthamerica.org/Akebia_quinata",
@@ -350,14 +425,20 @@
       "basis": "Flora of China: male sepals 3 (to 5)."
     },
     "flower.male.sepalLengthM": {
-      "value": [0.006, 0.008],
+      "value": [
+        0.006,
+        0.008
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
       "basis": "Flora of China: male sepals 6 to 8 mm long and 4 to 6 mm wide. Flora of North America: 5 to 9 mm."
     },
     "flower.male.sepalWidthM": {
-      "value": [0.004, 0.006],
+      "value": [
+        0.004,
+        0.006
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
@@ -376,7 +457,10 @@
       "basis": "Flora of China: male sepals pale purple, now and then pale green or white. Bean: pale purple. Purdue Arboretum: rose-purple."
     },
     "flower.male.pedicelLengthM": {
-      "value": [0.007, 0.01],
+      "value": [
+        0.007,
+        0.01
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
@@ -389,7 +473,10 @@
       "basis": "Flora of China: stamens 6 (or 7), curved inwards at first, on very short filaments."
     },
     "flower.male.stamenLengthM": {
-      "value": [0.004, 0.005],
+      "value": [
+        0.004,
+        0.005
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://floranorthamerica.org/Akebia_quinata",
@@ -402,14 +489,20 @@
       "basis": "Flora of North America: follicles. Bean: \"thick and sausage-shaped\", with many seeds in white pulp."
     },
     "fruit.lengthM": {
-      "value": [0.05, 0.08],
+      "value": [
+        0.05,
+        0.08
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
-      "basis": "Flora of China: fruit 5 to 8 cm long and 3 to 4 cm thick. RHS: fruits \"to 10cm long\". Bean: \"2 1/2 to 4 in. long\" (6.4 to 10 cm). Flora of North America: 5 to 15 cm. The growth model's fruit.lengthM is the same figure."
+      "basis": "Flora of China: fruit 5 to 8 cm long and 3 to 4 cm thick. RHS: fruits \"to 10cm in length\". Bean: \"2 1/2 to 4 in. long\" (6.4 to 10 cm). Flora of North America: 5 to 15 cm. The growth model's fruit.lengthM is the same figure."
     },
     "fruit.widthM": {
-      "value": [0.03, 0.04],
+      "value": [
+        0.03,
+        0.04
+      ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
@@ -422,7 +515,10 @@
       "basis": "Flora of China: oblong to ellipsoid, straight or slightly incurved. Bean and the RHS: sausage-shaped."
     },
     "fruit.perFlower": {
-      "value": [1, 5],
+      "value": [
+        1,
+        5
+      ],
       "status": "peer_reviewed",
       "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10772107",
       "basis": "Zou et al. 2023, of the genus: fruits usually set singly or in clusters of two to five. Each comes from one carpel of a female flower. The Flora Reipublicae Popularis Sinicae rendering: borne singly or in pairs."
@@ -434,10 +530,13 @@
       "basis": "Virginia Tech dendrology: fruit \"pale green to purple-pink\". The Flora Reipublicae Popularis Sinicae rendering: greenish-white when young."
     },
     "fruit.colourRipe": {
-      "value": ["greyish violet", "purplish"],
+      "value": [
+        "greyish violet",
+        "purplish"
+      ],
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/akebia/akebia-quinata/",
-      "basis": "Bean: fruit \"greyish violet or purplish\". Flora of China: purplish at maturity. Flora of North America: glaucous, violet to dark purple. Purdue Arboretum: bloomy pale pinkish-purple."
+      "basis": "Bean: fruit \"greyish violet or purplish\". Flora of China: purplish at maturity. Flora of North America: glaucous, violet to dark purple. Purdue Arboretum: bloomy pale pinkish-purple. Commons photographs show both: a pale lilac husk with a heavy bloom (\"Akebia quinata fruits 0s1.JPG\", Japan) and, from plants in Canada and the Czech Republic and one unplaced, fruit still a pale grey-green, some flushed brownish purple, when it splits (\"Akebia quinata (vine, fruits, flowers) 05.jpg\", \"Akebia quinata (Havlíčkův Brod) 02.jpg\", \"Akebia quinata (fruits 3p).jpg\")."
     },
     "fruit.surface": {
       "value": "glaucous",
@@ -462,6 +561,64 @@
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/akebia/akebia-quinata/",
       "basis": "Bean: no fruit out of doors at Kew; in the south-western counties \"never abundantly borne\"; two or more plants of different origin advised. RHS: fruit needs long, hot summers and a second plant for cross-pollination. The GB risk assessment: \"does not set seed in GB\" as a rule."
+    },
+    "leaf.leafletLengthToWidth": {
+      "value": [
+        1.7,
+        2.1
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Read off Commons photographs, leaflets seen flat: \"Akebia quinata leaf.jpg\" (cultivated, Japan) about 2.0 to 2.1; \"Akebia quinata Kew Gardens.jpg\" about 1.6 to 1.8, rounder. The Flora of China's ranges (2 to 5 cm by 1.5 to 2.5 cm) give 1.75 at their middles, which is what the model draws."
+    },
+    "leaf.leafletWidestAt": {
+      "value": [
+        0.55,
+        0.62
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Where the leaflet is widest, as a share of its length from its base: read off \"Akebia quinata leaf.jpg\" and \"Akebia gui kz.jpg\" (Commons). Obovate (Flora of China) means widest beyond the middle; in the photographs only a little beyond it."
+    },
+    "leaf.leafletSpreadDeg": {
+      "value": [
+        66,
+        132
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Angle from the end leaflet of the next pair and of the lowest pair, the leaflets lying flat round the top of the stalk: read off \"Akebia quinata leaf.jpg\" (Commons), the lowest pair pointing back on either side of the stalk. Bean: leaflets \"radially arranged\"."
+    },
+    "leaf.faceRiseDeg": {
+      "value": [
+        15,
+        55
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far above level the face of a hand of leaflets looks where its stem lies against an upright support: read off Commons photographs of plants on a wall and a fence (\"Akebia quinata Kew Gardens.jpg\", \"Akebia quinata (vine, fruits, flowers) 01.jpg\"), where the hands face out, most tilted somewhat to the sky."
+    },
+    "leaf.faceRiseOpenDeg": {
+      "value": [
+        40,
+        80
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The same on a shoot hanging in the open: read off \"Akebia quinata 001.JPG\" and \"Akebia quinata arb Fof F.jpg\" (Commons), where the hands of shoots out in the air are held more nearly flat to the sky."
+    },
+    "leaf.handTurnDeg": {
+      "value": 40,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far a hand of leaflets is turned about its face from end-leaflet-down, either way: in the photographs named for leaf.faceRiseDeg the hands lie every way round, the end leaflet often to one side."
+    },
+    "fruit.spread": {
+      "value": [
+        35,
+        80
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Angle from plumb at which the follicles of a cluster stand: read off Commons photographs (\"Akebia quinata (fruits 3p).jpg\", \"Akebia quinata (vine, fruits, flowers) 10.jpg\"), where two to five follicles splay from the end of the stalk like the fingers of an open hand, the upper ones near level. A single follicle hangs."
     }
   }
 }
