@@ -166,9 +166,9 @@
       "basis": "Clematis on the Web: \"recurved towards tip\". International Clematis Society: four sepals with pointed tips that recurve gently."
     },
     "flower.tepalWidthToLength": {
-      "value": 0.4,
+      "value": 0.32,
       "status": "provisional_design_assumption",
-      "basis": "Not published. Judged from photographs of flared flowers: a tepal about 5.5 cm long is a little over 2 cm across at its widest."
+      "basis": "Not published. Read from a photograph of three flared flowers seen from the front (Wikimedia Commons, Clematis 'Princess Diana', 1 - geograph.org.uk - 6524519.jpg): a tepal is a little over three times as long as it looks wide, and it is channelled, so somewhat wider laid flat."
     },
     "flower.tubeShareOfLength": {
       "value": 0.45,

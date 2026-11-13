@@ -121,6 +121,8 @@
         1,
         1,
         1,
+        1,
+        1,
         1
       ],
       "unit": "growing seasons",
@@ -187,7 +189,7 @@
       "basis": "How long such a bud waits. Matters only to a plant left unpruned. Assumed."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
+      "value": 3,
       "status": "provisional_design_assumption",
       "basis": "The RHS has the gardener tie in the new growth \"spacing stems evenly on the support\": two to a lath or a cable is taken. Left to itself the plant would crowd more than two on to a single wire, each stem clasping the last (the stems are thin: at most 3.5 mm through on new growth of the parent C. texensis, Gibson); the engine has one number for both cases. Assumed."
     },

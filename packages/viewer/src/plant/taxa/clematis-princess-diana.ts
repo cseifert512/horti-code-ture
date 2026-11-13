@@ -311,7 +311,7 @@ const PINK = {
   throat: lin('#f3c4cf'),
   // without: pinkish red along three ribs, a pale margin, green where it joins the stalk
   rib: lin('#b61d50'),
-  outerEdge: lin('#f3bcd0'),
+  outerEdge: lin('#f1aec8'),
   joint: lin('#9aa860'),
   filament: lin('#f3ecca'),
   anther: lin('#e7d684'),
@@ -346,15 +346,17 @@ const TEPAL_SEGS: [number, number][] = [
 function tepalProfile(flare: number, tipAngle: number): { r: number[]; h: number[]; psi: number[]; tube: number } {
   const n = 56;
   // an older flower stands open lower down as well
-  const tube = TUBE_SHARE * (1 - 0.35 * flare);
+  const tube = TUBE_SHARE * (1 - 0.5 * flare);
   const waist = lerp(-0.1, 0.22, flare);
+  // a flower just open turns only its tips back; one flared wide spreads from low down
+  const turn = lerp(1.6, 1.05, flare);
   const psi = (v: number): number => {
     // straight out from the stalk and round into the swollen base of the tube: an urn, not a funnel
     if (v < 0.16) return lerp(1.5, 0.3, smoothstep(0, 0.16, v));
     // the tube, drawn in a little above its base
     if (v < tube) return lerp(0.3, waist, (v - 0.16) / (tube - 0.16));
     // the free part turns out and back
-    return waist + (tipAngle - waist) * Math.pow((v - tube) / (1 - tube), 1.6);
+    return waist + (tipAngle - waist) * Math.pow((v - tube) / (1 - tube), turn);
   };
   const r = [0.04];
   const h = [0];
@@ -405,7 +407,7 @@ function makeFlower(variant: number, lod: number): THREE.BufferGeometry {
     const R = right.clone().multiplyScalar(Math.cos(theta)).addScaledVector(fore, Math.sin(theta));
     const T = right.clone().multiplyScalar(-Math.sin(theta)).addScaledVector(fore, Math.cos(theta));
     // each tepal turns back by its own amount, and leans a little to one side as it does
-    const tipAngle = lerp(0.55, 2.3, bloom.flare) + (hash2(bloom.seed + 1, k) - 0.5) * 0.35;
+    const tipAngle = lerp(0.55, 2.05, bloom.flare) + (hash2(bloom.seed + 1, k) - 0.5) * 0.35;
     const skew = (hash2(bloom.seed + 2, k) - 0.5) * 0.16 * (0.4 + bloom.flare);
     const profile = tepalProfile(bloom.flare, tipAngle);
     const phase = hash2(bloom.seed + 3, k) * TAU;
@@ -443,7 +445,7 @@ function makeFlower(variant: number, lod: number): THREE.BufferGeometry {
     };
     const outside = (u: number, v: number): RGB => {
       // the pale margin is widest low on the tube and runs out towards the tip
-      let c = mix(PINK.rib, PINK.outerEdge, smoothstep(0.58, 0.97, Math.abs(u)) * (1 - 0.6 * smoothstep(0.55, 1, v)));
+      let c = mix(PINK.rib, PINK.outerEdge, smoothstep(0.62, 0.98, Math.abs(u)) * (1 - 0.6 * smoothstep(0.55, 1, v)));
       // the ribs themselves are a shade deeper than the band they stand on
       c = mix(c, PINK.bar, 0.4 * (bump(u, 0, 0.1) + bump(Math.abs(u), 0.34, 0.08)));
       return mix(c, PINK.joint, 0.7 * (1 - smoothstep(0, 0.07, v)));
@@ -830,17 +832,20 @@ const stalkCoil: AppendageAsset = {
 };
 
 /**
- * Thin, ridged, wiry shoots, maroon where the sun reaches them, that ripen to
- * a pale stringy brown and mostly die back in winter; only the short woody
- * base, grey-brown and shredding, lasts from year to year. From descriptions
- * of the parent Clematis texensis and photographs of the cultivar.
+ * Thin, ridged, wiry shoots, green at first and maroon where the sun reaches
+ * them by midsummer, that ripen to a reddish stringy brown and mostly die back
+ * in winter; only the short woody base lasts from year to year. From
+ * descriptions of the parent Clematis texensis and photographs of the cultivar
+ * and of 'Duchess of Albany', another of the Texensis Group, in spring.
  */
 const wood: WoodLook = {
-  young: lin('#8f5560'),
-  mature: lin('#a58a62'),
-  old: [0.9, 0.79, 0.64],
-  woodyDays: [75, 175],
-  oldDays: [320, 820],
+  // a new shoot is green; by midsummer it is maroon where the sun reaches it; by winter the dead top is a pale
+  // reddish brown, and so, greyer, is the woody base that lasts
+  young: lin('#7f9a4c'),
+  mature: lin('#8a4a52'),
+  old: [1.02, 0.78, 0.6],
+  woodyDays: [35, 110],
+  oldDays: [170, 290],
   furrowDays: [150, 700],
   furrow: 0.4,
   stiffDays: [30, 190],

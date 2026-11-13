@@ -133,6 +133,7 @@ describe("Clematis 'Princess Diana': the models agree with its morphology file",
       }
       spans.push(widestApart(tips));
     }
+    console.log('spans', spans);
     // the first variant has just opened and is the narrowest; the last is flared wide
     expect(spans[0]).toBe(Math.min(...spans));
     expect(spans.at(-1)).toBe(Math.max(...spans));
