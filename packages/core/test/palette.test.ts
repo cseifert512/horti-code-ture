@@ -325,7 +325,8 @@ describe('the alternates, each grown alone at the foot of a rib', () => {
     expect(open(r, 'akebia')).toEqual([4]);
     expect(open(r, 'hydrangea')).toEqual(expect.arrayContaining([6]));
     expect(open(r, 'hydrangea').every((m) => m === 6 || m === 7)).toBe(true);
-    expect(open(r, 'diana').every((m) => m >= 7 && m <= 9)).toBe(true);
+    // July to October (Clematis on the Web: "Jul, Aug, Sep, Oct"): flowers that open late in September last into October
+    expect(open(r, 'diana').every((m) => m >= 7 && m <= 10)).toBe(true);
     expect(open(r, 'diana')).toEqual(expect.arrayContaining([8, 9]));
     expect(open(r, 'campsis').every((m) => m >= 8 && m <= 10)).toBe(true);
     expect(open(r, 'campsis')).toEqual(expect.arrayContaining([9]));

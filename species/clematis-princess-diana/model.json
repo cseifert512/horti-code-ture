@@ -1,143 +1,154 @@
 {
   "schemaVersion": 1,
   "taxonId": "clematis-princess-diana",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it is derived from: there was no prototype of this plant to carry numbers over from, so most are copied from wisteria or are placeholders. None has been measured on a plant. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
-  "names": {},
+  "statement": "A running model, not a calibrated one. Its sizes, counts and dates are read from published descriptions of the cultivar (the RHS record and pruning guide, the International Clematis Register as the International Clematis Society quotes it, Clematis on the Web, the Chicago Botanic Garden trial) and, where nobody describes the cultivar, from floras of its parent Clematis texensis; whatever is still an assumption says so with its reason, and nothing has been measured on a plant. Three things the plant does are not in it: a stem does not branch in the season it is made, shoots that find no support do not clasp one another or lie on the ground, and top growth left unpruned does not die back in winter. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "names": {
+    "flowerHeld": "upright",
+    "fruitHeld": "upright",
+    "basis": "RHS, of the Texensis Group: \"erect or nodding, bell- or tulip-shaped flowers\" (https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details). Of this cultivar the flowers are called upward-facing by growers and \"outward facing\" by Clematis on the Web (https://clematisontheweb.org/clemdetail/?dbkey=530): they stand up and out on long stalks above the leaves, which is what `upright` says and no other clematis in this library does. The seed head stands on the stalk its flower stood on; no source says so in words, and photographs show it."
+  },
   "params": {
     "phenology.budburstDoy": {
       "value": 75,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Shoots are taken to start in mid March, soon after the late-winter prune. No dated source."
+      "basis": "RHS group 3 guide: prune \"when buds show signs of growth - typically in February\". The new shoots are taken to start lengthening in mid March. The day is assumed; no dated record was found."
     },
     "phenology.growthEndDoy": {
-      "value": 250,
+      "value": 258,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Extension is taken to end in early September. No dated source."
+      "basis": "Flowers keep coming on the year's growth into early autumn (RHS: mid summer to early autumn), so the shoots are taken to go on lengthening until mid September. The day is assumed."
     },
     "phenology.leafFlushDoy": {
       "value": [
         80,
-        130
+        125
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Follows bud break. A placeholder."
+      "basis": "Leaves open on the new shoots as these are made, from the second half of March. A plant cut down each February has no leaf on old wood, so this window matters only to one left unpruned. Assumed."
     },
     "phenology.autumnColourDoy": {
       "value": [
-        283,
-        310
+        290,
+        322
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "No source describes autumn colour. The leaves are taken to yellow and then brown from mid October as the top growth dies back (RHS: \"of herbaceous habit\"). Assumed dates."
     },
     "phenology.leafFallDoy": {
       "value": [
-        300,
-        335
+        312,
+        346
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Deciduous; leafless in winter (RHS). Dates are a placeholder."
+      "basis": "Deciduous (RHS). The withered leaves are taken to drop from early November to mid December. Assumed dates."
     },
     "phenology.floralInitiationDoy": {
       "value": [
-        165,
-        180
+        150,
+        156
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers on the year’s own growth (RHS group 3), so buds are taken to form on that growth a few weeks before flowering. No dated source."
+      "basis": "Flowers on the year's own growth (RHS group 3). Buds are taken to show about a month before the first flowers open in early July. Derived from the flowering dates, not observed."
     },
     "phenology.flowerOpenDoy": {
       "value": [
-        190,
-        258
+        186,
+        273
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers open in succession across the RHS flowering envelope of midsummer to early autumn (9 July to 15 September)."
+      "basis": "Flowers open in succession from 5 July to 30 September, so that with two to three weeks to a flower the display runs from July into October. RHS record: \"mid summer to early autumn\"; RHS (Graham Rice, https://www.rhs.org.uk/plants/articles/graham-rice/10-agm-clematis): \"open over a long season from July to October\"; Clematis on the Web: July to October. Months are published, the days are a reading of them."
     },
     "phenology.petalFallDoy": {
       "value": [
-        225,
-        250
+        200,
+        292
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Placed at the end of the RHS flowering envelope of July to August (13 August to 7 September)."
+      "basis": "Not used while each flower has a life of its own (flowerLastsDays). It states the same thing: the first flowers go over in mid July and the last by the third week of October."
     },
     "phenology.flowerLastsDays": {
       "value": [
         12,
-        22
+        20
       ],
       "unit": "days",
       "status": "provisional_design_assumption",
-      "basis": "How long one flower lasts. A placeholder."
+      "basis": "No source gives the life of one flower. The tepals are thick and \"keep their shape until they fall\" (International Clematis Society). Two to three weeks is assumed."
     },
     "extension.leaderMPerSeason": {
       "value": 3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "RHS: group 3 clematis are cut to 15-30 cm every February and are back in their 2.5 to 4 m size band by flowering, so a stem makes about that much in a season. Derived, not measured."
+      "basis": "A plant cut to the ground every February climbs \"to 8 ft (2.5 m), or 10 ft (3 m) in warmer climates\" (International Clematis Society), so a stem makes up to about 3 m in a season. Derived from published heights, not measured."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
-        1.5,
-        1,
-        0.6
+        1.2,
+        0.8,
+        0.5
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader rate. Not measured."
+      "basis": "Only a plant left unpruned keeps stems for a bud to break from; RHS says it will \"continue growing from where the growth ended the previous season\". How much such a shoot makes is not recorded: taken as well under what a shoot from the base makes."
     },
     "extension.whipMPerSeason": {
-      "value": 1.5,
+      "value": 1.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. On a plant cut down each February there are no old stems, so this only shows on one left unpruned. Rate is a placeholder."
+      "basis": "The shoots an unpruned plant makes from its old stems (RHS: it will \"continue growing from where the growth ended the previous season\"). On a plant cut down each February there are none. The rate is assumed."
     },
     "extension.establishmentFactorByYear": {
       "value": [
-        0.6,
-        0.9
+        0.5,
+        0.8
       ],
       "status": "provisional_design_assumption",
-      "basis": "Slower while it roots in. A placeholder."
+      "basis": "Richard Hawke, of the Chicago Botanic Garden trial: \"a wispy habit when first planted but is a strong grower that gets more robust with age\"; RHS: 2 to 5 years to ultimate height. The two factors are assumed."
     },
     "architecture.trunkStemStartYears": {
       "value": [
         0,
         0,
-        0
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Three stems from the base in the first season. A placeholder."
+      "basis": "Shoots that rise from the crown itself: two on a newly planted clematis and seven more in its second season, nine stubs in all once it is established. RHS has the crown planted 5-8 cm deep \"to encourage new shoots to grow from below ground level\", and the plant is \"wispy\" at first and \"more robust with age\" (Hawke). With the two or three shoots each cut stub gives (regrowth.shootsPerCut), an established plant has eighteen to twenty-seven stems and makes about 45 m of stem a year on the specimen frame. These stems stand in the model for the plant's stems and their side branches together, because a stem here cannot branch in the season it is made. No source counts the stems of a plant; the numbers are assumed, chosen so that the leaf covers the RHS's spread of 0.5-1 m to a height of 2.5 m about two leaves deep."
     },
     "architecture.nurseryCaneM": {
       "value": 0.3,
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Planted cut back, as is usual for clematis. Not measured."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/clematis/group-three-pruning-guide",
+      "basis": "RHS, of a newly planted group 3 clematis: \"Cut back to just above a strong pair of leaf buds about 30cm (1ft) above soil level.\""
     },
     "architecture.maxBranchOrder": {
       "value": 2,
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Side branches from buds on kept stems arise only on a plant left unpruned; two orders of them are allowed. Assumed."
     },
     "architecture.leaderLengthM": {
       "value": [
-        2.5,
-        4
+        2,
+        2.6
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The RHS ultimate-size band used as a cap on stem length measured from the ground. A height band is not a route length, so this is a placeholder."
+      "basis": "Length of a season's stem, measured along itself from the ground. Read from the heights given for a plant cut down each year: 2.0-2.5 m (Clematis on the Web; Graham Rice for the RHS), 2.5 m and 3 m in warmer climates (International Clematis Society); the RHS record's ultimate-height band is 2.5-4 m. A height is not a route length: a stem led sideways is assumed to grow as long as one grown upright."
     },
     "architecture.lateralLengthMByOrder": {
       "value": [
@@ -147,135 +158,136 @@
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Scaled down from the leader. Not measured."
+      "basis": "Side branches of a plant left unpruned, shorter with each order. Not recorded anywhere read; assumed."
     },
     "architecture.lateralLengthSpread": {
       "value": 0.3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How far one side branch differs in length from the next, as a share. No description of this plant gives it; assumed."
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
-        0.7,
-        0.4,
+        0.5,
+        0.3,
         0.2
       ],
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Chance that a bud on a kept stem breaks where the stem passes a joint of the structure. Matters only to a plant left unpruned. Assumed."
     },
     "architecture.budExtraDormancyChance": {
-      "value": 0.5,
+      "value": 0.3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Chance that such a bud waits more than one winter. Matters only to a plant left unpruned. Assumed."
     },
     "architecture.budExtraDormancyYears": {
       "value": [
         1,
-        3
+        2
       ],
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How long such a bud waits. Matters only to a plant left unpruned. Assumed."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
-    },
-    "architecture.maxStemsPerPrimaryMember": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The RHS has the gardener tie in the new growth \"spacing stems evenly on the support\": two to a lath or a cable is taken. Left to itself the plant would crowd more than two on to a single wire, each stem clasping the last (the stems are thin: at most 3.5 mm through on new growth of the parent C. texensis, Gibson); the engine has one number for both cases. Assumed."
+    },
+    "architecture.maxStemsPerPrimaryMember": {
+      "value": 7,
+      "status": "provisional_design_assumption",
+      "basis": "As many thin stems as can be tied side by side across the face of a 150 mm glulam member at the engine's spacing of 22 mm. Assumed."
     },
     "routing.occupancyCost": {
-      "value": 1.6,
+      "value": 0.6,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A stem is led to a support that carries none before it joins one that does (RHS: \"tie in new growth, spacing stems evenly on the support\"). The weight is assumed."
     },
     "routing.downhillCostPerM": {
       "value": 5,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A clematis shoot makes for the light and hardly extends if led downward. The weight is assumed."
     },
     "routing.uphillBonusPerM": {
-      "value": 1.2,
+      "value": 2.5,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Every stem of the year climbs: none is kept as a level arm. The weight is assumed, and is set high enough that a stem takes the upright at a crossing unless that upright is already full."
     },
     "routing.straightOnBonus": {
-      "value": 0.6,
+      "value": 0.3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A slight preference for carrying straight on over turning a corner. Assumed."
     },
     "routing.riserBonus": {
-      "value": 1.4,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used: every stem of this plant is of one kind and climbs by the same rule (see routing.uphillBonusPerM)."
     },
     "routing.tierBonus": {
-      "value": 1.2,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used: no stem of a plant cut down each year is laid in as a permanent level tier."
     },
     "routing.roleDropChance": {
-      "value": 0.12,
+      "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used: the stems have no separate roles to drop (see routing.riserBonus and routing.tierBonus)."
     },
     "routing.noise": {
-      "value": 0.9,
+      "value": 0.6,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How much chance decides between ways that are nearly as good. Assumed."
     },
     "routing.giveUpCost": {
       "value": 4.2,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A shoot offered nothing but a long way down stops instead. The threshold is assumed."
     },
     "attachment.maxGraspDiameterMm": {
-      "value": 8,
+      "value": 12,
       "unit": "mm",
       "status": "provisional_design_assumption",
-      "basis": "No measurement exists. A leaf stalk a few centimetres long is taken to clasp nothing stouter than this: a cable qualifies, timber of any size here does not, and the plant has to be tied to it."
+      "basis": "Not measured for this plant. Published advice on clematis in general puts the thickest support a leaf stalk can clasp between a quarter of an inch (6 mm; https://www.gardeners.com/how-to/netting-helps-clematis-climb/9622.html) and three quarters (19 mm; Washington State University Extension, https://wpcdn.web.wsu.edu/extension/uploads/sites/57/2014/03/060608.pdf), and the leaf stalk of the parent C. texensis is at most 55 mm long (Gibson). Half an inch is taken: a cable or a thin rod qualifies, a 40 mm lath does not, and the plant has to be tied to it."
     },
     "attachment.minPitchM": {
       "value": 0.3,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable: this plant holds by its leaf stalks and its stems do not twine. Present because every model carries every parameter."
     },
     "attachment.pitchPerCircumference": {
       "value": 1.46,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not applicable: this plant holds by its leaf stalks and its stems do not twine. Present because every model carries every parameter."
     },
     "organs.leafSpacingM": {
       "value": [
-        0.08,
-        0.14
+        0.06,
+        0.12
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "Stem length from one pair of leaves to the next. Not published for the cultivar. In the parent C. texensis the internodes are \"to 190 mm long\" (Gibson), a longest. Photographs of the cultivar in flower (references 05-pd-habit-flowers-on-stalks.jpg and 06-pd-1-foliage-buds.jpg) show joints one to two leaflet lengths apart, 6 to 12 cm against leaflets of 4 to 7.5 cm; that is taken. Read from photographs, not measured."
     },
     "organs.leafLengthM": {
       "value": [
-        0.08,
-        0.14
+        0.11,
+        0.17
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A placeholder."
+      "basis": "The whole leaf, stalk and leaflets together. Not published for the cultivar. Built up from the parts: a stalk of up to 55 mm (C. texensis, Gibson) and leaflets of 4 to 7.5 cm (see morphology.json), which gives 11 to 14 cm for a leaf of three leaflets and up to 17 cm for one of five."
     },
     "organs.leavesPerNode": {
       "value": 2,
-      "status": "provisional_design_assumption",
-      "basis": "Clematis bear their leaves in opposite pairs. A character of the genus, not sourced here."
+      "status": "published_plant_profile",
+      "source": "https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis",
+      "basis": "Gibson, of the parent C. texensis: \"Leaves: opposite decussate\". Opposite leaves are a character of the genus and show in every photograph of the cultivar."
     },
     "organs.spurChance": {
       "value": 0,
       "status": "provisional_design_assumption",
-      "basis": "No spurs: old stems are bare, which is why group 3 clematis are cut down each year."
+      "basis": "No spurs: it flowers on the long growth of the year (RHS group 3), and its old stems are bare."
     },
     "organs.spurLengthM": {
       "value": [
@@ -298,56 +310,59 @@
     "organs.racemeLengthM": {
       "value": [
         0.05,
-        0.07
+        0.06
       ],
       "unit": "m",
-      "status": "provisional_design_assumption",
-      "basis": "Length of a single tulip-shaped flower. A placeholder."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "The length of one flower, from its base to the tips of its tepals, its stalk not counted. RHS: \"tulip-shaped ... flowers to 6cm in length\"; Clematis on the Web: tepals 5 cm long. One flower stands at a place, so this is the engine's whole measure of the inflorescence."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.05,
+      "value": 0.5,
       "status": "provisional_design_assumption",
-      "basis": "Every year the old stems throw new side shoots, which is where an established plant makes its leaves and flowers once the framework has stopped extending. The share of nodes that do so is a placeholder."
+      "basis": "Share of the leaf joints on kept stems, above the bare base, that throw a new shoot in a year. Only a plant left unpruned has kept stems (RHS: it will \"continue growing from where the growth ended the previous season\"). The share is assumed."
     },
     "organs.whipsPerYearMax": {
-      "value": 20,
+      "value": 12,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new side shoots a year. A placeholder."
+      "basis": "A cap on such shoots in a year, about what the crown gives a pruned plant. Assumed."
     },
     "organs.whipLengthM": {
       "value": [
-        0.3,
-        0.8
+        0.4,
+        1.2
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Length of a year’s side shoot. A placeholder."
+      "basis": "Length of a shoot made from a kept stem in a year. Not recorded anywhere read; taken as under half what a shoot from the base makes."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
-      "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "RHS: foliage deciduous. A leaf lasts the one season."
     },
     "organs.clearStemHeightM": {
-      "value": 0,
+      "value": 1.2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable: no spurs."
+      "basis": "RHS, of a group 3 clematis left unpruned: \"top heavy, flowering well above eye level, and with a bare base\". Kept stems are taken to throw no new shoot below this height. It does nothing to a plant cut down each February, whose stubs are shorter. The height is assumed."
     },
     "flowering.competenceYears": {
       "value": 0,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Group 3 clematis flower on the year’s growth and are taken to do so from the first summer. A placeholder."
+      "basis": "It flowers on the growth of the year (RHS group 3), so a plant can flower in its first summer; RHS: \"profuse flowers once established\". Assumed."
     },
     "flowering.maturityRamp": {
       "value": [
-        0.5,
+        0.4,
+        0.8,
         1
       ],
       "status": "provisional_design_assumption",
-      "basis": "Half strength in the planting year. A placeholder."
+      "basis": "RHS: \"profuse flowers once established\". Flowering is taken to be sparse in the planting year, fuller in the second and full from the third. The shares are assumed."
     },
     "flowering.spurFloralChance": {
       "value": 0.85,
@@ -360,16 +375,16 @@
       "basis": "Not applicable to this plant; present because every model carries every parameter."
     },
     "flowering.currentSeasonFlowersPerM": {
-      "value": 7,
+      "value": 8,
       "unit": "per m",
       "status": "provisional_design_assumption",
-      "basis": "Flowers per metre of the year’s growth. A placeholder."
+      "basis": "Flowering stalks to a metre of the year's stem: one at nearly every leaf joint. No count is published; RHS says only \"profuse flowers once established\". On the plant the lower third of a stem carries none and each joint above carries two stalks of one to several flowers (Gibson, of the parent C. texensis: \"cyme ... 1-several-flowered ... 2 cymes per node\"), which comes to more than one flower to a joint over the whole stem; the engine places one flower at a joint and no more, anywhere along the stem."
     },
     "flowering.currentSeasonMinShootM": {
-      "value": 0.25,
+      "value": 0.4,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "A shoot shorter than this is taken not to flower. A placeholder."
+      "basis": "A shoot must have made a few joints before it flowers. The length is assumed."
     },
     "pruning.summerLeavesKept": {
       "value": [
@@ -391,58 +406,77 @@
     },
     "regrowth.shootsPerCut": {
       "value": [
-        1,
-        2
+        2,
+        3
       ],
       "unit": "shoots",
-      "status": "published_plant_profile",
-      "source": "https://www.rhs.org.uk/plants/clematis/group-three-pruning-guide",
-      "basis": "RHS: cut back to just above a pair of strong buds; each stub is taken to give one or two shoots."
+      "status": "provisional_design_assumption",
+      "basis": "RHS group 3 guide: cut back to \"the lowest pair of healthy buds 15-30cm (6in-1ft) above soil level\". The pair below the cut gives two shoots; a third is allowed for a bud lower on the stub (RHS: these clematis \"make new growth from the base each year\"). The count is assumed."
     },
     "thickening.tipRadiusSquaredMm2": {
-      "value": 4,
+      "value": 1,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A growing tip 2 mm through. Not measured; chosen with the rate below so that a season's stem ends as thick as Gibson gives for the parent species."
     },
     "thickening.radiusSquaredPerMetreMm2": {
-      "value": 2,
+      "value": 0.8,
       "unit": "mm2 per m",
       "status": "provisional_design_assumption",
-      "basis": "Thin, wiry stems. A placeholder."
+      "basis": "Set so that a stem of the year 2.5 m long is 3.5 mm through at its base: new growth of the parent C. texensis is \"to 3.5 mm diameter\" (Gibson). The cultivar's stems are not measured anywhere read."
     },
     "thickening.branchShare": {
       "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How much of a shoot's thickness is added to the stub that bears it, so that the woody base thickens over the years (\"only the base is woody\": clematis.com.pl on the Texensis Group). The share is assumed."
     },
     "fruit.setShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "The seed heads are called \"gorgeous and persistent\" (International Clematis Society) and \"silky, ball-shaped\" (growers), so the plant sets them freely; what share of flowers do so is not recorded. Half is assumed."
     },
     "fruit.lengthM": {
-      "value": null,
+      "value": [
+        0.05,
+        0.07
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Width of the whole seed head across its feathered tails. Not published for the cultivar. In the parent C. texensis an achene 7.5-10 mm long carries a tail of 27-34 mm (Gibson) or \"about 1 1/2 in.\" (Bean), which makes a head 5 to 7 cm across."
     },
     "fruit.swellDays": {
-      "value": null,
+      "value": [
+        21,
+        35
+      ],
       "unit": "days",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Time for the styles to lengthen into tails after the tepals fall. Not recorded; three to five weeks is assumed."
     },
     "fruit.ripenDoy": {
-      "value": null,
+      "value": [
+        244,
+        350
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "The heads turn from green and silky to dry, silver-gold fluff from September; those of the last flowers dry off by mid December. Growers call the seed heads decorative \"into late fall\". Assumed dates."
     },
     "fruit.fallDoy": {
-      "value": null,
+      "value": [
+        15,
+        59
+      ],
       "unit": "day of year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "\"Persistent\" (International Clematis Society): the heads are taken to stay through the first half of winter and to break up in the wind from mid January. On a plant cut down in February whatever is left goes with the stems. Assumed dates."
     },
     "appendages.tendrilNodePattern": {
-      "value": null,
-      "status": "unknown"
+      "value": [
+        0
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "No tendrils are drawn: it holds by its leaf stalks (RHS). The parent C. texensis ends its leaf in a tendril-like leaflet (Gibson; Bean); whether the cultivar's leaves do is not recorded."
     },
     "appendages.tendrilLengthM": {
       "value": null,
@@ -450,18 +484,27 @@
       "status": "unknown"
     },
     "appendages.leafStalkCoilShare": {
-      "value": null,
-      "status": "unknown"
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "Share of the leaf joints, on a stretch the plant holds by itself, where a leaf stalk has wound round the support. Not every leaf finds something to clasp; no count exists. Half is assumed."
     },
     "appendages.leafStalkLengthM": {
-      "value": null,
+      "value": [
+        0.03,
+        0.055
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. The leaf stalk of the parent C. texensis is \"to 55 mm long\" (Gibson)."
     },
     "appendages.aerialRootPatchSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "None: a clematis has no clinging rootlets."
     },
     "appendages.aerialRootLengthM": {
       "value": null,
@@ -469,9 +512,13 @@
       "status": "unknown"
     },
     "appendages.prickleSpacingM": {
-      "value": null,
+      "value": [
+        0,
+        0
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "None: the plant is unarmed."
     },
     "appendages.prickleLengthM": {
       "value": null,
@@ -484,9 +531,10 @@
       "status": "unknown"
     },
     "sideShoots.perMetrePerYear": {
-      "value": null,
+      "value": 0,
       "unit": "per m per year",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "None of the engine's kind. Its flowering shoots are the long shoots of the year: stems from the base on a pruned plant, shoots from kept stems on an unpruned one. They are not short stiff shoots that stand clear of the support."
     },
     "sideShoots.lengthM": {
       "value": null,
@@ -501,6 +549,145 @@
     "sideShoots.terminalFlowerShare": {
       "value": null,
       "status": "unknown"
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 1600,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1093/aob/mcg044",
+      "basis": "No bending test on this cultivar or on C. texensis was found. Isnard, Rowe and Speck 2003 (Annals of Botany 91:407-417) measured another clematis of semi-woody habit, C. flammula var. maritima: a structural Young's modulus of 1.619 +/- 0.492 GN/m2 in its aerial, trellis-forming shoots, 0.855 in its emergent axes and 0.470 in its underground stems (abstract). The aerial-shoot figure is taken for a season's stem of this plant once set: a genus value, not this plant's.",
+      "range": [
+        855,
+        3000
+      ]
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 500,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1093/aob/mcg044",
+      "basis": "Not measured on this plant. The emergent axes of C. flammula var. maritima, young shoots rising from the ground, have a structural modulus of 0.855 GN/m2 (Isnard, Rowe and Speck 2003); a growing tip is softer than that. 500 MPa is assumed, between that figure and the least stiff searcher base Hattermann et al. 2022 measured (213 MN/m2).",
+      "range": [
+        213,
+        855
+      ]
+    },
+    "mechanics.woodSetDays": {
+      "value": 45,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Not measured. The stems are thin and herbaceous in habit but \"tough\" (Gibson, of the parent C. texensis) and hold their flowers up on wiry stalks by midsummer; six or seven weeks from soft to set is assumed, longer than the generic month because the stem stays green and pliant through the season (photographs of the cultivar in flower show green and maroon stems that bend without breaking).",
+      "range": [
+        20,
+        90
+      ]
+    },
+    "mechanics.stemFreshDensityKgM3": {
+      "value": 1000,
+      "unit": "kg/m3",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.1098/rsif.2017.0001",
+      "basis": "Not weighed. A fresh green shoot is mostly water; 1000 kg/m3, as Chelakkot and Mahadevan 2017 take for a young shoot.",
+      "range": [
+        800,
+        1200
+      ]
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.3,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. A thin, soft leaflet (light green, nearly hairless: International Clematis Society; Bean, of C. texensis) is taken at about 0.2 kg of fresh leaf to each square metre of blade, the generic thin leaf. The engine spreads that weight over a disc 0.56 of the leaf's length across; a leaf of three to five broad leaflets 4-7.5 cm long (morphology.json) has about one and a half times that area of blade, so 0.3 is given for the disc.",
+      "range": [
+        0.15,
+        0.5
+      ]
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.002,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "Not weighed. One flower of four thick tepals 5-6 cm long (RHS; Clematis on the Web) with its stalk of 10-15 cm and two small bracts (morphology.json): a couple of grams if as dense as water.",
+      "range": [
+        0.001,
+        0.005
+      ]
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.001,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "source": "https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis",
+      "basis": "Not weighed. A head of up to 30 achenes each 7.5-10 x 5-6 x 2 mm (Gibson, of the parent C. texensis) with their feathered tails: about a gram.",
+      "range": [
+        0.0005,
+        0.003
+      ]
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.5,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "Not measured on this plant. Hattermann et al. 2022 measured the longest self-supporting searcher shoots of 29 climbers; the one clematis among them, C. vitalba, is counted with the tendril climbers (attachment by twining petioles), whose reach together with the root climber ran from 0.14 to 0.91 m. The paper gives no figure for C. vitalba alone. This plant's shoots are thinner and softer than C. vitalba's (new growth to 3.5 mm: Gibson); half a metre is taken, below the middle of that range.",
+      "range": [
+        0.14,
+        0.91
+      ]
+    },
+    "tropism.turnPerM": {
+      "value": 1.5,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "basis": "Chosen, not measured: a shoot lying across the way it seeks turns through about a right angle in a metre of growth, the generic figure. RHS record: the plant needs tying in on its support; a free shoot of it leans and arches rather than standing plumb.",
+      "range": [
+        0.5,
+        5
+      ]
+    },
+    "tropism.lightShare": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Chosen, not measured: a little nearer the light than half way. Specialist growers ask full sun for the Texensis Group (Rogerson Clematis Garden; International Clematis Society recommended list), and photographs of the cultivar show its flowering shoots turned out to the light.",
+      "range": [
+        0,
+        1
+      ]
+    },
+    "attachment.graspReachM": {
+      "value": 0.1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis",
+      "basis": "How near a shoot must come to a support for a leaf stalk to catch it: about the reach of a leaf stalk and the axis of a leaf, a stalk to 55 mm and leaflet stalks to 40 mm (Gibson, of the parent C. texensis). 0.1 m is taken.",
+      "range": [
+        0.05,
+        0.2
+      ]
+    },
+    "organs.leafTurnToOpenShare": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "Not measured. Photographs of the cultivar on a wall and on trellis (reference 06-pd-1-foliage-buds.jpg, 10-pd-geograph-1-6524519.jpg) show the leaflets turned out from the support to the open side, overlapping, each leaf still on its own side of the stem; a little more than the generic half way is taken.",
+      "range": [
+        0,
+        1
+      ]
+    },
+    "sideShoots.branchAngleDeg": {
+      "value": [
+        30,
+        60
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Only a plant left unpruned throws shoots from its kept stems (RHS group 3 guide: it will \"continue growing from where the growth ended the previous season\"). Photographs of Texensis Group plants in spring (18-duchess-of-albany-1.jpg, of 'Duchess of Albany', another of the group) show new shoots leaving the old stems at an acute angle and turning up. 30 to 60 degrees is read from that, not measured."
+    },
+    "organs.alternateDivergenceDeg": {
+      "value": 90,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "Not used: the leaves stand in opposite pairs, each pair turned a right angle from the last (\"opposite decussate\": Gibson, of the parent C. texensis), which the engine does without this number. Given so that the run does not report the generic spiral for this plant."
     }
   }
 }
