@@ -255,21 +255,21 @@
     },
     "organs.leafSpacingM": {
       "value": [
-        0.1,
-        0.18
+        0.08,
+        0.15
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The length of stem between one pair of leaves and the next. No source read gives it. Chosen so that leaves whose leaflets are 8 to 13 cm long overlap along a shoot and clothe it; to be measured on a plant."
+      "basis": "The length of stem between one pair of leaves and the next. No source read gives it. Read from photographs on Wikimedia Commons, against the leaflets in the same picture (5 to 16 cm, Huang et al. 2024): on the young shoots of Clematis armandii in the Ceanothus - Flickr - peganum.jpg and Ranunculales - Clematis armandii - 5.jpg the pairs stand somewhat less than a leaflet's length apart. To be measured on a plant."
     },
     "organs.leafLengthM": {
       "value": [
-        0.12,
-        0.19
+        0.095,
+        0.15
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The reach of the whole leaf, from the stem to its farthest point, as it is drawn: the stalk stands out and the leaflets hang, so the reach is about three quarters of the parts laid end to end. The parts are published: leaf stalk 3.6 to 11 cm and leaflets 5 to 16 cm (Huang et al. 2024, https://zenodo.org/records/15001723); main stalk 1.5 to 4 in, secondary stalks 0.5 to 1 in, leaflets 3 to 6 in (Bean, https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/). End to end they come to 10 to 30 cm; this range draws leaflets 8 to 13 cm long on a main stalk of 6 to 9 cm, the middle of what is published, the engine having one leaf size for a plant. The sum and the reach are this project's, not a source's."
+      "basis": "The reach of the whole leaf, from the stem to its farthest point along the way it points, as it is drawn: the main stalk stands out and bows over and the three leaflets hang nearly plumb from its end (photographs on Wikimedia Commons, see morphology.json leaf.leafletPosture), so the reach is about 0.62 of the parts laid end to end. The parts are published: leaf stalk 3.6 to 11 cm and leaflets 5 to 16 cm (Huang et al. 2024, https://zenodo.org/records/15001723); main stalk 1.5 to 4 in, secondary stalks 0.5 to 1 in, leaflets 3 to 6 in (Bean, https://www.treesandshrubsonline.org/articles/clematis/clematis-armandii/). This range draws leaflets about 8 to 13 cm long on main stalks of about 5.5 to 8.5 cm, the middle of what is published, the engine having one leaf size for a plant. The reach and the share are this project's, not a source's."
     },
     "organs.leavesPerNode": {
       "value": 2,
@@ -329,10 +329,10 @@
       "basis": "The length of a long shoot of the year where it finds nothing to hold: it arches out and hangs. No source gives the length of a year's shoot; of the order of the leader rate."
     },
     "organs.leafLifespanYears": {
-      "value": 2,
+      "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Evergreen (RHS). Old leaves drop from the vine in summer (https://www.rainyside.com/plant_gallery/vines/Clematis_armandii.html), so a leaf lives more than one year; how much more is from no source. Two growing seasons are taken: a leaf stays until the end of the year after the one it was made in."
+      "basis": "Evergreen (RHS). A leaf is taken to live through the season it is made in and the winter after, and to fall in the summer of the next year (phenology.evergreenLeafFallDoy), as the new leaves come: \"In summer the old leaves drop off the vine\" (Rainyside Gardeners, https://www.rainyside.com/plant_gallery/vines/Clematis_armandii.html). So a leaf lives some fifteen months, and last year's leaves stand behind the flowers in spring. How long a leaf lives is from no measurement."
     },
     "organs.clearStemHeightM": {
       "value": 0.6,
@@ -408,7 +408,7 @@
       "value": 4,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "A young shoot is taken to be 4 mm thick. No source gives the thickness of a young shoot."
+      "basis": "A young shoot taken as 4 mm thick (radius 2 mm). No measurement of this species was found. Its congener Clematis flammula, measured by Isnard, Rowe and Speck 2003, Annals of Botany 91:407-417 (read at https://pmc.ncbi.nlm.nih.gov/articles/PMC4241066/), has aerial climbing shoots of 10.2 mm2 in cross-section on average (about 3.6 mm across); the long shoots of C. armandi, which carry leaves of three leaflets up to 16 cm long, are taken as a little stouter."
     },
     "thickening.radiusSquaredPerMetreMm2": {
       "value": 4.5,
@@ -537,6 +537,96 @@
     "sideShoots.terminalFlowerShare": {
       "value": null,
       "status": "unknown"
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 1600,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "basis": "Structural bending modulus of a set shoot. Not measured on this species. Isnard, Rowe and Speck 2003, Annals of Botany 91:407-417 (read at https://pmc.ncbi.nlm.nih.gov/articles/PMC4241066/) measured the aerial trellis-forming shoots of its congener Clematis flammula var. maritima at 1.619 +/- 0.492 GN/m2; that figure is taken. It is about half the 3000 MN/m2 that Hattermann et al. 2022, Frontiers in Forests and Global Change 5:836247 (https://doi.org/10.3389/ffgc.2022.836247) found a searcher needs to span more than about 0.8 m, which agrees with a shoot that arches over and hangs where it finds no hold."
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 160,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "basis": "The soft growing end of a shoot on the day it is laid down: a tenth of the set value (mechanics.woodModulusMPa), the proportion the generic values have. Not measured."
+    },
+    "mechanics.woodSetDays": {
+      "value": 60,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Days over which a new stretch of shoot stiffens. Not measured. Young shoots of this plant stay soft and coloured (bronze-red, then green) for weeks (Royal Botanic Garden Edinburgh, https://stories.rbge.org.uk/?p=8863, records the new shoots still \"a deep bronze red\" in April); twice the generic month is taken."
+    },
+    "mechanics.stemFreshDensityKgM3": {
+      "value": 1000,
+      "unit": "kg/m3",
+      "status": "provisional_design_assumption",
+      "basis": "A fresh shoot is mostly water; 1000 kg/m3 as Chelakkot and Mahadevan 2017 (https://doi.org/10.1098/rsif.2017.0001) take for a young shoot. Not weighed."
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 1,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Worked out, not weighed, for the outline the engine takes for a leaf: a disc 0.56 of its length across, which for the mean leaf of this model (organs.leafLengthM, 0.12 m, a reach and not the leaf laid out) is some 37 cm2. The real leaf is three leathery leaflets (Huang et al. 2024, https://zenodo.org/records/15001723: \"leathery\"), each about 10 by 3.5 cm as drawn (morphology.json), some 80 cm2 of blade with its stalks; a leathery evergreen blade is taken at about 0.45 kg of fresh mass a square metre, so some 3.6 g a leaf, which is about 1 kg/m2 of the engine's smaller outline."
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.005,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "One flower record is one node: two clusters of eleven to eighteen flowers in all (morphology.json), each flower some 5 to 6 cm across of thin sepals on a slender stalk. Not weighed: about 0.3 g a flower is taken, 5 g a node."
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.002,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "One fruit record is the seed heads of one node: three to five tufts of achenes 4 to 5 mm long with feathered tails (Huang et al. 2024). Not weighed: a couple of grams."
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.6,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The farthest a free shoot holds itself out before it stops lifting its end. Not measured on this species. Hattermann et al. 2022, Frontiers in Forests and Global Change 5:836247 (https://doi.org/10.3389/ffgc.2022.836247) put Clematis vitalba, a leaf-stalk climber of the same genus, among the tendril climbers, which with the root climber \"spanned the shortest range of distances from 14 to 91 cm\"; no figure is given for the clematis alone. 0.6 m is taken, inside that range, for a shoot carrying heavy evergreen leaves."
+    },
+    "mechanics.leanDeg": {
+      "value": 4,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The least a free shoot leans from plumb where it sets out: the generic figure, an imperfection of the size engineers give a column so that its buckling can be computed, not a measurement of this plant. Given here only so that the plant's mechanics are its own set."
+    },
+    "mechanics.leafWeightOffsetShare": {
+      "value": 0.8,
+      "status": "provisional_design_assumption",
+      "basis": "Where a leaf's weight hangs off the stem, as a share of its reach from the node (organs.leafLengthM). The leaflets, which are nearly all the weight, hang from the end of the main stalk (3.6 to 11 cm, Huang et al. 2024) and the reach is little more than that stalk with the leaflet stalks, so the weight sits near the far end of the reach. A choice, not a measurement."
+    },
+    "tropism.turnPerM": {
+      "value": 0.6,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "basis": "How sharply a growing free shoot turns towards the way it seeks, chosen not measured: about a right angle in two and a half metres of growth. Weak on purpose: the long shoots of this plant arch out and hang where they find no hold (photographs on Wikimedia Commons, Clematis armandii Badefols-sur-Dordogne.jpg, an arch hung with a curtain of shoots; Clematis armandii in the Ceanothus - Flickr - peganum.jpg, shoot tips nodding over) and do not stand up as a twiner's leader does."
+    },
+    "tropism.lightShare": {
+      "value": 0.6,
+      "status": "provisional_design_assumption",
+      "basis": "How far the way a shoot seeks leans from plumb to the light. Chosen: a little past half way, as the plant climbs through shrubs and trees to the light (the Edinburgh plant \"gained five metres in height through a Viburnum tinus\", Royal Botanic Garden Edinburgh, https://stories.rbge.org.uk/?p=8863)."
+    },
+    "attachment.graspReachM": {
+      "value": 0.1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How near a free shoot must come to a support for a leaf to take hold of it. What holds is the stalk of a leaf and of its leaflets (Royal Botanic Garden Edinburgh: they coil round a support they touch), on a leaf reaching some 12 to 19 cm from the stem (organs.leafLengthM). 0.1 m is taken, short of the leaf's reach, since only the stalks wind. Not measured."
+    },
+    "organs.leafTurnToOpenShare": {
+      "value": 0.7,
+      "status": "provisional_design_assumption",
+      "basis": "How far a leaf is turned from where its node sets it towards the open and the light. Read from photographs, not measured: the leaflets hang face out from the support whichever way the shoot runs, in a curtain (Wikimedia Commons: Clematis armandii Badefols-sur-Dordogne.jpg, Clematis armandii RJB.jpg, Ranunculales - Clematis armandii 3.jpg). More than the generic half."
+    },
+    "phenology.evergreenLeafFallDoy": {
+      "value": [
+        160,
+        200
+      ],
+      "unit": "day of year",
+      "status": "provisional_design_assumption",
+      "basis": "The days in the year after its last season between which an old leaf falls: 9 June to 19 July. Rainyside Gardeners (https://www.rainyside.com/plant_gallery/vines/Clematis_armandii.html): \"In summer the old leaves drop off the vine\", and leaves blackened by winter wind \"cling to the vine until summer\". The days within the summer are this project's."
     }
   }
 }

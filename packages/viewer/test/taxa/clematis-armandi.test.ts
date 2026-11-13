@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
-import { Calendar, type RenderData, appendagePresent, characterNumber, characterRange, flowerState, fruitState, known, leafState, param, parseMorphology, readBower, seasonsOf, toRenderData } from '@horti/core';
+import { Calendar, type RenderData, appendagePresent, characterNumber, characterRange, flowerState, fruitState, known, leafState, param, parseMorphology, readBower, seasonsOf, stemPointAlive, toRenderData } from '@horti/core';
 import { growPlanting } from '../../src/plant/grow.ts';
 import { triangles } from '../../src/plant/kit.ts';
 import { type OrganModel, assetsOf, ceilingFor } from '../../src/plant/look.ts';
@@ -64,10 +64,11 @@ describe('Clematis armandi: the shapes drawn agree with its morphology file', ()
     for (const { asset } of assetsOf(look)) expect(asset.key.startsWith(`${ID}/`), asset.key).toBe(true);
   });
 
-  it('draws a leaf of three leaflets, each two to four times as long as it is wide, on a stalk about two thirds as long as a leaflet', () => {
+  it('draws a leaf of three leaflets, each as narrow or as broad for its length as the photographs show, on a stalk about two thirds as long as a leaflet', () => {
     const leaflets = characterNumber(morphology, 'leaf.leafletCount');
-    const ratio = mid(characterRange(morphology, 'leaf.leafletWidthM')) / mid(characterRange(morphology, 'leaf.leafletLengthM'));
+    const [narrow, broad] = characterRange(morphology, 'leaf.leafletWidthToLength');
     const leaf = look.leaves.default;
+    const ratios: number[] = [];
     for (let v = 0; v < leaf.variants; v++) {
       const found = parts(leaf.make(v, 0));
       expect(found.length, `variant ${v}`).toBe(leaflets);
@@ -77,8 +78,10 @@ describe('Clematis armandi: the shapes drawn agree with its morphology file', ()
         const axis = tip.clone().sub(leaflet.pivot).normalize();
         // the widest it is across its own length, taken as twice the farthest any point lies from its midline
         const width = 2 * leaflet.points.reduce((w, p) => Math.max(w, p.clone().sub(leaflet.pivot).cross(axis).length()), 0);
-        expect(width / length, `variant ${v}`).toBeGreaterThan(ratio * 0.7);
-        expect(width / length, `variant ${v}`).toBeLessThan(ratio * 1.35);
+        // the measure runs from the stalk, along the curve of a blade that bends a little: allow for both
+        expect(width / length, `variant ${v}`).toBeGreaterThan(narrow * 0.85);
+        expect(width / length, `variant ${v}`).toBeLessThan(broad * 1.15);
+        ratios.push(width / length);
       }
       // the longest leaflet is the share of the whole leaf that the flora's lengths give it
       const whole = mid(characterRange(morphology, 'leaf.stalkLengthM')) + mid(characterRange(morphology, 'leaf.leafletStalkLengthM')) + mid(characterRange(morphology, 'leaf.leafletLengthM'));
@@ -86,8 +89,15 @@ describe('Clematis armandi: the shapes drawn agree with its morphology file', ()
       const longest = Math.max(...found.map((l) => farthest(l.pivot, l.points)));
       // one unit is the reach of the hanging leaf, which is shorter than its parts laid end to end
       expect(longest).toBeGreaterThan(share * 0.9);
-      expect(longest).toBeLessThan(share * 1.6);
+      expect(longest).toBeLessThan(share * 1.9);
+      // and in metres, at the leaf length the growth model gives, a leaflet is as long as the floras allow
+      const [shortest, longestPublished] = characterRange(morphology, 'leaf.leafletLengthM');
+      const [low, high] = param(model, 'organs.leafLengthM');
+      expect(longest * low, `variant ${v}`).toBeGreaterThan(shortest);
+      expect(longest * high, `variant ${v}`).toBeLessThan(longestPublished);
     }
+    // the leaflets differ from leaf to leaf, narrow and broad, as they do in the photographs
+    expect(Math.max(...ratios) - Math.min(...ratios)).toBeGreaterThan((broad - narrow) * 0.4);
   });
 
   it('lays the pale midrib of the leaf texture along three veins from the base of each leaflet, and along one from far off', () => {
@@ -285,6 +295,42 @@ describe('Clematis armandi grown on the specimen frame', () => {
     expect(Math.min(...counts)).toBeGreaterThan(400);
     // PROJECT_CONTEXT.md section 3.2: a plant six years old that is meant for evergreen cover carries a mass of leaf, not a few sprigs
     expect(Math.max(...counts)).toBeGreaterThan(1200);
+  });
+
+  // the growth model's phenology.evergreenLeafFallDoy: "In summer the old leaves drop off the vine" (Rainyside Gardeners)
+  it('keeps last year\'s leaves through winter and spring and sheds them in June and July', () => {
+    const seasons = (day: number) => seasonsOf(data, cal.dateOf(day).year).get('specimen');
+    const old = data.leaves.filter((l) => l.firstYear === last - 1);
+    const present = (iso: string) => old.filter((l) => leafState(l, seasons(cal.dayOf(iso)), cal.dayOf(iso)).present).length;
+    expect(present(`${last}-01-15`)).toBeGreaterThan(300);
+    expect(present(`${last}-05-31`)).toBe(present(`${last}-01-15`));
+    expect(present(`${last}-07-01`)).toBeLessThan(present(`${last}-05-31`));
+    expect(present(`${last}-08-01`)).toBe(0);
+  });
+
+  // docs/ASSUMPTIONS_AUDIT.md section 10: a shoot in the air is laid along the shape its weight gives it; addendum to
+  // the species brief, "Straight rods standing in rows"
+  it('draws its free shoots with its own mechanics, and lets the long ones hang instead of standing out straight', () => {
+    for (const key of ['mechanics.woodModulusMPa', 'mechanics.greenShootModulusMPa', 'mechanics.woodSetDays', 'mechanics.stemFreshDensityKgM3', 'mechanics.leafFreshMassPerAreaKgM2', 'mechanics.inflorescenceFreshMassKg', 'mechanics.fruitFreshMassKg', 'mechanics.searcherReachM', 'mechanics.leanDeg', 'mechanics.leafWeightOffsetShare', 'tropism.turnPerM', 'tropism.lightShare', 'attachment.graspReachM', 'organs.leafTurnToOpenShare'] as const) {
+      expect(known(model, key), key).not.toBeNull();
+    }
+    let long = 0;
+    let standing = 0;
+    for (const s of data.stems) {
+      if (s.role !== 'whip') continue;
+      const pts: number[][] = [];
+      for (let i = 0; i < s.bornDay.length; i++) if (stemPointAlive(s, i, data.lastDay)) pts.push([s.contact[3 * i]!, s.contact[3 * i + 1]!, s.contact[3 * i + 2]!]);
+      let arc = 0;
+      for (let i = 1; i < pts.length; i++) arc += Math.hypot(pts[i]![0]! - pts[i - 1]![0]!, pts[i]![1]! - pts[i - 1]![1]!, pts[i]![2]! - pts[i - 1]![2]!);
+      if (arc < 0.6) continue;
+      long++;
+      const [a, b] = [pts[0]!, pts[pts.length - 1]!];
+      const chord = Math.hypot(b[0]! - a[0]!, b[1]! - a[1]!, b[2]! - a[2]!);
+      // a straight rod whose end stands level with its base or higher
+      if (chord / arc > 0.95 && b[2]! - a[2]! > -0.2 * arc) standing++;
+    }
+    expect(long).toBeGreaterThan(50);
+    expect(standing / long).toBeLessThan(0.05);
   });
 
   // species/clematis-armandi/taxon.json flowering.monthsUK: March and April (RHS "early to mid spring"; Bean "produced in April")

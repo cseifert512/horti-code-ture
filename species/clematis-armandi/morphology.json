@@ -84,9 +84,13 @@
       "basis": "Kwantlen Polytechnic University plant database, bark colour: red to brown. The dried, stripped stem is \"yellowish-brown or dull yellowish-brown\" (Hong Kong Chinese Materia Medica Standards)."
     },
     "stem.internodeLengthM": {
-      "value": null,
+      "value": [
+        0.08,
+        0.15
+      ],
       "unit": "m",
-      "status": "unknown"
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs on Wikimedia Commons against the leaflets in the same picture (Clematis armandii in the Ceanothus - Flickr - peganum.jpg; Ranunculales - Clematis armandii - 5.jpg): pairs of leaves somewhat less than a leaflet's length apart. No flora read gives it. The growth model's organs.leafSpacingM."
     },
     "leaf.arrangement": {
       "value": "opposite",
@@ -145,6 +149,14 @@
       "status": "peer_reviewed",
       "source": "https://zenodo.org/records/15001723",
       "basis": "Huang, Fei, Yuan & Yang (2024), Phytotaxa 670(4): 203-236, the description of Clematis armandi, read in the treatment deposited at Zenodo: \"5-16 cm long, 1.5-7 cm broad\". Bean: 1 to 2 1/2 in. wide."
+    },
+    "leaf.leafletWidthToLength": {
+      "value": [
+        0.22,
+        0.42
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Width of a leaflet for its length, read off photographs on Wikimedia Commons (looked at, not measured with an instrument): about 0.2 to 0.25 on the narrow leaflets of Clematis armandii - Flickr - peganum.jpg and Clematis armandii RJB.jpg, about 0.27 on Ranunculales - Clematis armandii 2.jpg, about 0.3 to 0.4 on the broader young leaflets of Clematis armandii in the Ceanothus - Flickr - peganum.jpg and on the garden plant of Clematis armandii Franch. (AM AK299135).jpg. One photograph (Clematis armandii.jpg, a plant among ivy) shows leaflets near 0.5, broader than the rest, and is left out. The flora's sizes (Huang et al. 2024: 5 to 16 cm long, 1.5 to 7 cm broad) allow all of these."
     },
     "leaf.leafletShape": {
       "value": [
@@ -207,6 +219,11 @@
       "status": "published_plant_profile",
       "source": "https://landscapeplants.oregonstate.edu/plants/clematis-armandii",
       "basis": "Oregon State University, Landscape Plants: the leaflets droop. NC State Extension: droopy or cascading."
+    },
+    "leaf.leafletPosture": {
+      "value": "hanging nearly plumb from the end of the leaf stalk, face out, in a curtain",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs on Wikimedia Commons: Clematis armandii Badefols-sur-Dordogne.jpg (an arch seen from some metres, the leaflets hanging as a curtain of narrow dark blades below the flowers), Clematis armandii RJB.jpg and Ranunculales - Clematis armandii 3.jpg (leaflets hanging tip down, flat, their faces to the open). Oregon State University (leaf.posture) says only that they droop."
     },
     "leaf.lifespanYears": {
       "value": null,
@@ -283,6 +300,11 @@
       "status": "published_plant_profile",
       "source": "https://www.botanic.cam.ac.uk/the-garden/plant-list/clematis-armandii/",
       "basis": "Cambridge University Botanic Garden: saucer-shaped flowers borne in axillary clusters, giving a mass of bloom. The growth model records the same as flowerHeld: facing_out."
+    },
+    "inflorescence.stalkColour": {
+      "value": "red to maroon",
+      "status": "provisional_design_assumption",
+      "basis": "Read from photographs on Wikimedia Commons: the flower stalks and the stalks of the clusters are red to maroon in Clematis armandii (1).jpg, Clematis armandii (2).jpg, Clematis armandii01-4035~2015 03 22.JPG and Clematis armandii - Flickr - peganum.jpg, and are painted reddish in Curtis's Botanical Magazine t. 8587 (Commons: Clematis armandi 140-8587.jpg). No flora read gives their colour."
     },
     "flower.diameterM": {
       "value": [

@@ -103,8 +103,12 @@ const LEAF_PATH = LEAF_STALK + LEAFLET_STALK + LEAFLET_LENGTH;
 const STALK_SHARE = LEAF_STALK / LEAF_PATH;
 const LEAFLET_STALK_SHARE = LEAFLET_STALK / LEAF_PATH;
 const LEAFLET_SHARE = LEAFLET_LENGTH / LEAF_PATH;
-/** Half the width of a leaflet for its length. */
-const LEAFLET_HALF = LEAFLET_WIDTH / LEAFLET_LENGTH / 2;
+/**
+ * Width of a leaflet for its length, measured off photographs: narrow on some plants and shoots, broad on others.
+ * Inside what the flora's sizes allow (LEAFLET_WIDTH / LEAFLET_LENGTH at their middles).
+ */
+const LEAFLET_RATIO = characterRange(morphology, 'leaf.leafletWidthToLength');
+void LEAFLET_WIDTH;
 
 const LEAF_VARIANTS = 4;
 const LEAF_LODS = 3;
@@ -166,8 +170,13 @@ function leafletGeometry(form: LeafletForm, lod: number): THREE.BufferGeometry {
   const nu = columns.length - 1;
   const nv = LEAFLET_ROWS[lod]!;
   // the outline: widest near the base, the base rounded, the tip drawn out
-  const power = Math.log(0.5) / Math.log(form.widest);
-  const outline = (v: number): number => Math.pow(Math.sin(Math.PI * Math.pow(v, power)), 0.75) * (1 - 0.45 * smoothstep(0.5, 1, v));
+  // rounded into the base, the sides long and nearly parallel, then drawn in to a fine point: the edge comes in
+  // concave towards the tip ("apex acuminate to attenuate", Huang et al. 2024)
+  const outline = (v: number): number => {
+    if (v <= form.widest) return Math.pow(Math.sin((Math.PI / 2) * (v / form.widest)), 0.55);
+    const t = (v - form.widest) / (1 - form.widest);
+    return Math.pow(Math.max(0, 1 - Math.pow(t, 1.7)), 1.3);
+  };
   let most = 0;
   for (let i = 1; i < 64; i++) most = Math.max(most, outline(i / 64));
   // the line of the midrib, curving down towards the tip
@@ -263,8 +272,10 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
     const side = k === 0 ? 0 : k % 2 ? 1 : -1;
     const from = k < 3 ? end : main.points[Math.max(1, main.points.length - 2)]!;
     // its own stalk, bent and twisted as it goes ("twisted", Bean)
-    const yaw = main.yaw + (side === 0 ? rng.range(-0.15, 0.15) : side * rng.range(0.85, 1.2));
-    const droop = side === 0 ? rng.range(0.55, 0.95) : rng.range(0.4, 0.85);
+    const yaw = main.yaw + (side === 0 ? rng.range(-0.15, 0.15) : side * rng.range(0.7, 1.05));
+    // the leaflets hang nearly plumb from the end of the stalk, a curtain of narrow blades (Commons photographs:
+    // Clematis armandii Badefols-sur-Dordogne.jpg, Clematis armandii RJB.jpg, Ranunculales - Clematis armandii 3.jpg)
+    const droop = side === 0 ? rng.range(1.0, 1.25) : rng.range(0.9, 1.2);
     const own = stalkLine(from, LEAFLET_STALK_SHARE * (side === 0 ? 1.45 : 1), main.pitch - 0.1, -droop, yaw - side * 0.25, yaw + rng.range(-0.12, 0.12), [4, 2, 1][lod]!);
     mg.tube(
       own.points,
@@ -276,13 +287,15 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
     );
     const base = own.points[own.points.length - 1]!;
     // lance-shaped to ovate; the base rounded, heart-shaped or wedge-shaped
+    // narrow lance-shaped on one leaf, broader and ovate on another, as the photographs show from plant to plant
+    const ratio = lerp(LEAFLET_RATIO[0], LEAFLET_RATIO[1], ((variant + 0.5) / LEAF_VARIANTS) * 0.8 + rng.range(0, 0.2));
     const form: LeafletForm = {
-      half: LEAFLET_HALF * rng.range(0.78, 1.08),
-      widest: rng.range(0.26, 0.33),
+      half: ratio / 2,
+      widest: rng.range(0.26, 0.36),
       cord: rng.pick([0, 0.012, 0.03]),
-      fold: rng.range(0.03, 0.2),
-      bend: rng.range(0.25, 0.75),
-      twist: rng.range(-0.35, 0.35),
+      fold: rng.range(0.05, 0.18),
+      bend: rng.range(0.08, 0.3),
+      twist: rng.range(-0.25, 0.25),
       seed: variant * 10 + k,
     };
     const key = `${lod}:${variant}:${k}`;
@@ -301,6 +314,8 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   for (let i = 0; i < mg.pos.length; i++) mg.pos[i] = mg.pos[i]! / reach;
   for (let i = 0; i < mg.part.length; i += 4) for (let k = 0; k < 3; k++) mg.part[i + k] = mg.part[i + k]! / reach;
   const g = mg.build();
+  // the reach as a share of the leaf laid out end to end (stalk, leaflet stalk, end leaflet): what organs.leafLengthM is set from
+  g.userData.reachOfPath = reach;
   g.boundingSphere = new THREE.Sphere(new V3(0, -0.2, 0.5), 0.95);
   return g;
 }
@@ -334,12 +349,15 @@ const FLOWER_LODS = 3;
 const WHITE_SEPAL = lin('#fffae8');
 const CREAM_SEPAL = lin('#f7edc8');
 const SEPAL_BASE = lin('#e7e5aa');
-const FILAMENT = lin('#eef0d6');
-const ANTHER = lin('#e9dc9a');
-const STYLE_GREEN = lin('#cfdcae');
-const STALK_GREEN = lin('#7c8c50');
-const STALK_PALE = lin('#a9b678');
-const STALK_BRONZE = lin('#7a6a48');
+// the boss is greenish cream, the styles in its middle green-yellow (Commons: Clematis armandii (1).jpg, (MHNT) Clematis armandii - flower.jpg)
+const FILAMENT = lin('#e6ecc8');
+const ANTHER = lin('#e8e0a0');
+const STYLE_GREEN = lin('#c2d47e');
+// the flower stalks are red to maroon (Commons: Clematis armandii (2).jpg, Clematis armandii01-4035~2015 03 22.JPG,
+// Clematis armandii - Flickr - peganum.jpg; Curtis's Botanical Magazine t. 8587 paints them so)
+const STALK_GREEN = lin('#8e3b36');
+const STALK_PALE = lin('#a8574a');
+const STALK_BRONZE = lin('#6e3a2e');
 const SCALE_BROWN = lin('#6e5a3c');
 const SCALE_PALE = lin('#a08a5e');
 
@@ -452,7 +470,7 @@ function sepalGeometry(shape: number, lod: number): THREE.BufferGeometry {
   if (lod === 2) {
     // a kite: enough to read as a white star from across a garden, and drawn a little broad so that the mass of white holds
     const raw = new Raw();
-    const w = (SEPAL_WIDTH / 2) * 1.3;
+    const w = (SEPAL_WIDTH / 2) * 1.6;
     const a = raw.vert(new V3(start, 0, 0), SEPAL_BASE);
     const b = raw.vert(new V3(start + length * 0.62, 0.0015, w), WHITE_SEPAL);
     const c = raw.vert(new V3(start + length, 0.0005, 0), WHITE_SEPAL);
@@ -593,7 +611,8 @@ function addNodeAxis(mg: Merge, layout: NodeLayout, lod: number, keep: (flower: 
     const [a, b] = across(along);
     mg.add(geometry, frame(a, b, along, at, length), WHITE, at, AXIS);
   };
-  bractCache[lod] ??= bladeGeometry(0.09, 0.3, (_u, v) => mix(STALK_GREEN, STALK_PALE, v), lod === 0 ? [2, 4] : [1, 2]);
+  // the bracts are pale green (Curtis's Botanical Magazine t. 8587)
+  bractCache[lod] ??= bladeGeometry(0.09, 0.3, (_u, v) => mix(lin('#7d8f55'), lin('#b0bd86'), v), lod === 0 ? [2, 4] : [1, 2]);
   scaleCache[lod] ??= bladeGeometry(0.24, 0.45, (u, v) => mix(mix(SCALE_BROWN, SCALE_PALE, 0.5 + 0.5 * Math.cos(u * 9)), SCALE_PALE, v * 0.6), lod === 0 ? [4, 4] : [2, 2]);
   for (const bract of layout.bracts) place(bractCache[lod]!, bract.at, bract.along, bract.length);
   for (const scale of layout.scales) place(scaleCache[lod]!, scale.at, scale.along, scale.length);
@@ -627,7 +646,7 @@ const FRUIT_LODS = 3;
 const ACHENE_GREEN = lin('#76914f');
 const TAIL_GREEN = lin('#b4c494');
 const PLUME = lin('#dfe6cf');
-const FRUIT_STALK = lin('#7f9058');
+const FRUIT_STALK = lin('#7a4a38');
 
 /** One seed head: achenes on a small knob, each with its feathered tail. */
 function addHead(mg: Merge, at: V3, axis: V3, seed: number, lod: number): void {
@@ -831,7 +850,8 @@ const leaf: LeafAsset = {
   budget: [1700, 360, 96],
   pick: (_lengthM, r) => Math.min(LEAF_VARIANTS - 1, Math.floor(r * LEAF_VARIANTS)),
   // "dark glossy green" (RHS), "bronze when young": evergreen, so its greens again where another plant has autumn colours
-  palette: { greenA: lin('#27461a'), greenB: lin('#33561f'), young: lin('#9a4f2a'), autumnA: lin('#33561f'), autumnB: lin('#27461a') },
+  // the photographs show the mature leaf darker and greyer than a bright green, the veins paler than the blade
+  palette: { greenA: lin('#22381c'), greenB: lin('#33482a'), young: lin('#8a4a2c'), autumnA: lin('#33482a'), autumnB: lin('#22381c') },
   roughness: 0.28,
   translucency: 0.16,
   detailReach: 1.15,
