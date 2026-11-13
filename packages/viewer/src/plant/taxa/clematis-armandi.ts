@@ -175,7 +175,7 @@ function leafletGeometry(form: LeafletForm, lod: number): THREE.BufferGeometry {
   const outline = (v: number): number => {
     if (v <= form.widest) return Math.pow(Math.sin((Math.PI / 2) * (v / form.widest)), 0.55);
     const t = (v - form.widest) / (1 - form.widest);
-    return Math.pow(Math.max(0, 1 - Math.pow(t, 1.7)), 1.3);
+    return Math.pow(Math.max(0, 1 - Math.pow(t, 1.45)), 1.6);
   };
   let most = 0;
   for (let i = 1; i < 64; i++) most = Math.max(most, outline(i / 64));
@@ -732,7 +732,8 @@ function addHead(mg: Merge, at: V3, axis: V3, seed: number, lod: number): void {
       raw.flat(from.clone().addScaledVector(t, -w), from.clone().addScaledVector(t, w), from.clone().addScaledVector(out, reach), TAIL_GREEN, TAIL_GREEN, PLUME);
     }
   }
-  mg.add(raw.build(), IDENTITY, WHITE, at, AXIS);
+  // not axis: the head ripens (its tails whiten, its achenes brown) while the stalk under it keeps its colour
+  mg.add(raw.build(), IDENTITY, WHITE, at, 0);
 }
 
 function makeFruitGeometry(variant: number, lod: number): THREE.BufferGeometry {
@@ -889,6 +890,8 @@ const seedHeads: FruitAsset = {
   // "white, feathery" (Kwantlen): the hairs dry silver-white, the achenes and stalks brown
   ripe: lin('#fff6de'),
   ripeShade: [-0.25, 1.39],
+  // the stalks the heads stand on keep their red-brown while the tails whiten
+  stalkKeepsColour: true,
   roughness: 0.85,
   swing: 0.35,
   detailAt: [1.5, 4.5],

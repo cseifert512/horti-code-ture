@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taxonId": "clematis-armandi",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model: there was no prototype of this plant to carry numbers over from. The sizes of its leaf, flower clusters and seed heads and its flowering months rest on published descriptions; its rates (how far a shoot extends, how often it branches, how many nodes flower or set seed, the days within the published months) are assumptions of the right order, none measured on a plant; the weights by which a shoot chooses its route are copied from the wisteria model. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "statement": "A running model, not a calibrated one, and thinner than the wisteria model: there was no prototype of this plant to carry numbers over from. The sizes of its leaf, flower clusters and seed heads and its flowering months rest on published descriptions; how its free shoots bend rests on a bending test of a congener (Clematis flammula) and on a study of searcher shoots that includes another clematis; its leaf spacing, leaf width and how its leaflets hang were read from photographs; its rates (how far a shoot extends, how often it branches, how many nodes flower or set seed, the days within the published months) are assumptions of the right order, none measured on a plant; the weights by which a shoot chooses its route are copied from the wisteria model. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
   "names": {
     "flowerHeld": "facing_out",
     "fruitHeld": "facing_out",
