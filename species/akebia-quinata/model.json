@@ -23,11 +23,11 @@
     "phenology.leafFlushDoy": {
       "value": [
         68,
-        124
+        118
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Leaves on wood of earlier years open from 9 March to 4 May, so that the racemes of late March and April open among leaves that are still unfolding and still purple-tinged, as Virginia Tech describes (flowers \"with or just after the leaves\"). Not a recorded date."
+      "basis": "Leaves on wood of earlier years open from 9 March to 28 April, so that the racemes of late March and April open among leaves that are still unfolding, as Virginia Tech describes (flowers \"with or just after the leaves\") and as photographs from Toulouse in late March and Lublin and Belgrade in late April show. Not a recorded date."
     },
     "phenology.autumnColourDoy": {
       "value": [
@@ -45,7 +45,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Semi-evergreen (RHS): Bean has it evergreen in mild winters and leafless in hard ones. The engine cannot keep part of the foliage, so every leaf is dropped, as late as a calendar year allows: through December. What is shown is therefore the plant of a hard winter."
+      "basis": "The leaves that are not kept through winter (organs.winterLeafShare) fall through December, late as a tardily deciduous climber's do (Virginia Tech dendrology). No British date is recorded."
     },
     "phenology.floralInitiationDoy": {
       "value": [
@@ -100,10 +100,10 @@
       "basis": "Side stems taken to extend a little less than the leading stem, and less with each order. Not measured."
     },
     "extension.whipMPerSeason": {
-      "value": 1.5,
+      "value": 2,
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "The long shoots that old stems throw each year are slender and soon arch over: taken at half the rate of a leading stem. Not measured."
+      "basis": "The long shoots that old stems throw each year are slender and soon arch over: taken at two thirds of the rate of a leading stem (3 m). Not measured."
     },
     "extension.establishmentFactorByYear": {
       "value": [
@@ -184,12 +184,12 @@
       "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 4,
+      "value": 6,
       "status": "provisional_design_assumption",
-      "basis": "The stems are slender, 0.5 to 2 cm thick even when woody (Chinese Pharmacopoeia 2020, https://shennongalpha.westlake.edu.cn/knowledge/nmm-00b1), and run together in ropes: a lath or a cable is taken to carry four before the next looks elsewhere. The number is a choice."
+      "basis": "The stems are slender, 0.5 to 2 cm thick even when woody (Chinese Pharmacopoeia 2020, https://shennongalpha.westlake.edu.cn/knowledge/nmm-00b1), and run together in ropes of several, wound round one another and round their support (Commons photographs \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\", \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\"): a lath or a cable is taken to carry six before the next looks elsewhere. The number is a choice, raised from four after the ten-year run left the bays open where photographs of plants on walls show the face hidden."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 5,
+      "value": 7,
       "status": "provisional_design_assumption",
       "basis": "One more than on a lath or cable, a glulam member being stouter. The number is a choice."
     },
@@ -296,12 +296,12 @@
     },
     "organs.spurLeafCount": {
       "value": [
-        4,
-        7
+        5,
+        8
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Leaves \"clustered on short branches\" (Flora of China): four to seven to a cluster is a choice, no source read giving a number. Chosen with the other counts here so that a ten-year-old plant hides most of a trellis it has covered, as a plant that makes \"dense masses of growth\" (Bean) does."
+      "basis": "Leaves \"clustered on short branches\" (Flora of China): five to eight to a cluster is a choice, no source read giving a number; photographs of old stems in leaf (Commons: \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\", \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") show tufts of about four to eight hands of leaflets at each knob. Chosen with the other counts here so that a plant five or six years old hides most of a trellis it has covered, as a plant that makes \"dense masses of growth\" (Bean, of a plant photographed) does."
     },
     "organs.racemeLengthM": {
       "value": [
@@ -311,32 +311,32 @@
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
-      "basis": "Flora of China: racemes 6 to 12 cm. RHS: \"racemes to 12cm long\". The length of the whole raceme, stalk included, which is what the viewer's raceme is authored to."
+      "basis": "Flora of China: racemes 6 to 12 cm. RHS: flowers \"in racemes 12cm long\". The length of the whole raceme, stalk included, which is what the viewer's raceme is authored to."
     },
     "organs.whipShareOfNodes": {
-      "value": 0.08,
+      "value": 0.12,
       "status": "provisional_design_assumption",
-      "basis": "Each year old stems throw new long shoots that reach out for something to twine: it is these that fill the spaces between supports. The share of old nodes that do so is a choice, made so that an established plant throws about one for every metre or two of old stem."
+      "basis": "Each year old stems throw new long shoots, which hang over and twine across the spaces between supports: they are what makes the plant a curtain of leaf rather than bands along the timber (Commons photographs named under organs.whipLengthM). The share of old nodes that do so is a choice, raised from 0.08 after the ten-year run showed the specimen 40% in leaf from the south at maturity where the photographs show a wall nearly hidden."
     },
     "organs.whipsPerYearMax": {
-      "value": 90,
+      "value": 140,
       "status": "provisional_design_assumption",
-      "basis": "A cap on new long shoots a year, so that an old plant does not throw them without limit. A choice. The engine never sheds or twines in a long shoot that found no hold, so they add up over the years as bare sticks: a fault of the model, not a habit of the plant."
+      "basis": "A cap on new long shoots a year, so that an old plant does not throw them without limit. A choice. A trained plant has them trimmed back to the timber after flowering and in late summer (see SPECIES_PROFILE.md, Care); left alone they stay."
     },
     "organs.whipLengthM": {
       "value": [
-        0.3,
-        1
+        0.6,
+        1.8
       ],
       "unit": "m",
       "status": "provisional_design_assumption",
-      "basis": "How far a long shoot reaches in the air before it has found nothing and stops. Darwin saw the tip of an Akebia shoot that had nearly stopped growing wind into a close spire; how long such a shoot gets is not recorded. A choice."
+      "basis": "How far a long shoot of the year grows into the air from an older stem. Unmeasured. Photographs of plants on walls, fences and in a botanic garden (Commons: \"Akebia quinata Kew Gardens.jpg\", \"Akebia quinata 001.JPG\", \"Akebia quinata arb Fof F.jpg\") show shoots of the year hanging across the face of the plant and arching over its top by a metre or more, twining round one another; Darwin saw the ends of weak shoots wind into a close spire. Taken at 0.6 to 1.8 m, under the year's extension of a side stem."
     },
     "organs.leafLifespanYears": {
       "value": 1,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Semi-evergreen (RHS): leaves last one season, and through the winter after it where that is mild (Bean). Modelled as losing its leaves each winter; how long a leaf lives on a plant that keeps them is not recorded."
+      "basis": "Semi-evergreen (RHS): leaves last one season, and some through the winter after it (organs.winterLeafShare), to be shed as the new leaves open (Bean: evergreen only in mild winters). How long a leaf lives where winters are mild throughout is not recorded."
     },
     "organs.clearStemHeightM": {
       "value": 0.2,
@@ -413,7 +413,7 @@
       "value": 1.44,
       "unit": "mm2",
       "status": "provisional_design_assumption",
-      "basis": "A young shoot about 2.4 mm thick. The sources call the stems slender and give no thickness for a young one."
+      "basis": "A young shoot about 2.4 mm thick. The sources call the stems slender and give no thickness for a young one; the stems of the year in photographs (Commons: \"Akebia quinata Akebia pieciolistkowa 2023-04-23 01.jpg\", \"Akebia quinata arb Fof F.jpg\") are a few millimetres across beside leaf stalks of about 1 to 1.5 mm. This decides more than any other number how far a shoot holds itself out before it arches."
     },
     "thickening.radiusSquaredPerMetreMm2": {
       "value": 0.7,
@@ -566,6 +566,62 @@
       "value": 0,
       "status": "provisional_design_assumption",
       "basis": "Not applicable: it throws no separate flowering side shoots."
+    },
+    "organs.winterLeafShare": {
+      "value": 0.3,
+      "status": "provisional_design_assumption",
+      "basis": "Semi-evergreen (RHS); Bean: evergreen in mild winters and losing its leaves where conditions are more severe; Virginia Tech: \"tardily deciduous\". No source gives a share. A photograph from Lublin in April (Commons: \"Akebia quinata 2016-04-19 7787.JPG\") shows a good part of the old leaves still on, purple-brown, as the new ones open; one from Toulouse in March (\"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\") shows none. Three in ten, for an average southern English winter, is a choice."
+    },
+    "organs.spurLeafLengthM": {
+      "value": [
+        0.08,
+        0.16
+      ],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "The leaves of the short branches, where most of the plant's leaves are. No flora gives them apart; in photographs of clustered leaves (Commons: \"Akebia quinata leaf.jpg\", \"Akebia gui kz.jpg\") they are as large as those of long shoots, a little less at the top of the range. Without this the engine draws them nine tenths of organs.leafLengthM, a number from the wisteria prototype."
+    },
+    "organs.leafTurnToOpenShare": {
+      "value": 0.65,
+      "status": "provisional_design_assumption",
+      "basis": "Photographs of plants on a wall and a fence (Commons: \"Akebia quinata Kew Gardens.jpg\", \"Akebia quinata (vine, fruits, flowers) 01.jpg\") show the hands of leaflets turned out to the open on their long stalks whichever way the stem runs, so that the face of the plant is a mosaic of flat leaves. A little more than the generic half; not measured."
+    },
+    "mechanics.woodSetDays": {
+      "value": 60,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Young stems are \"green when young turning brown\" (NC State) and the long shoots of the year stay supple and twine through the summer (photographs named under organs.whipLengthM). How fast the wood sets is not measured for this plant or any climber here: two months, twice the generic month, so that a long shoot stays soft and hangs while it grows."
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.1,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Leaflets papery (Flora of China). Worked out, not weighed: five leaflets 2 to 5 cm by 1.5 to 2.5 cm (Flora of China), taken as ellipses, are about 25 cm2 of blade; at 0.15 kg/m2 for a thin papery blade with its stalks that is about 0.4 g, which over the disc the engine takes for a leaf of 13 cm (0.56 of its length across, about 41 cm2) is 0.1 kg/m2, the light end of the generic range."
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.002,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "A raceme of one or two female flowers 2 to 3 cm across and four to ten male flowers about 1.3 cm across (Flora of China, Flora of North America), on a thread of a stalk: about two grams, worked out from those sizes and not weighed."
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.05,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "Worked out, not weighed: a follicle 5 to 8 cm long and 3 to 4 cm thick (Flora of China) is about an ellipsoid of 40 cm3, some 40 g of fleshy fruit; one to three to a flower (Zou et al. 2023), most often one. Fifty grams for a fruit as the engine counts it."
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.6,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "source": "https://doi.org/10.3389/ffgc.2022.836247",
+      "basis": "Not measured for this plant. Hattermann et al. 2022 found that the searcher shoots of stem twiners reach from 10 cm to 225 cm before they fall over. Photographs of Akebia quinata (Commons: \"Akebia quinata 001.JPG\", \"Akebia quinata arb Fof F.jpg\") show shoots of the year arching over within half a metre to a metre, with leaves full sized along them; 0.6 m is taken."
+    },
+    "attachment.graspReachM": {
+      "value": 0.1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How near a revolving tip must pass a support to take hold. Darwin timed the revolutions of Akebia quinata (1 h 30 m to 1 h 45 m) but gave no width for its sweep. Its shoots wind round each other and round laths readily (photographs named under organs.whipLengthM); 10 cm, a little under the generic, for a slender shoot. Not measured."
     }
   }
 }
