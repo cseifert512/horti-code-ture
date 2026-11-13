@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "taxonId": "clematis-princess-diana",
+  "characters": {
+    "habit.lifeForm": {
+      "value": "deciduous climber of herbaceous habit",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "RHS plant record: \"A deciduous climber of herbaceous habit with profuse flowers once established.\""
+    },
+    "habit.climbsBy": {
+      "value": "twining leaf stalks",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "RHS plant record, of the genus: \"mostly climbing by twining leaf-stalks\"."
+    },
+    "habit.heightM": {
+      "value": [2, 2.5],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=530",
+      "basis": "Clematis on the Web: height 2.0-2.5 metres. Graham Rice for the RHS gives the same; the RHS record's ultimate-height band is 2.5-4 m; the International Clematis Society gives 2.5 m, and 3 m in warmer climates."
+    },
+    "stem.youngDiameterMm": {
+      "value": 3.5,
+      "unit": "mm",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Taken from its parent Clematis texensis: stems \"on new growth to 3.5 mm diameter\" (A. C. Gibson, Vascular Plants of Williamson County, https://w3.biosci.utexas.edu/prc/K12/pdf/Clematis%20texensis)."
+    },
+    "stem.surface": {
+      "value": "six-sided and finely ridged, tough and wiry",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: stems \"somewhat 6-sided and inconspicuously 12-ridged ... tough\"."
+    },
+    "stem.colourYoung": {
+      "value": ["green", "purple-red on the side towards the sun"],
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: \"green often tinged purple-red on upper side\". Photographs of the cultivar (Wikimedia Commons, Category:Clematis 'Princess Diana') show maroon-purple stems, leaf stalks and flower stalks."
+    },
+    "stem.colourOld": {
+      "value": null,
+      "status": "unknown"
+    },
+    "stem.internodeLengthM": {
+      "value": [0.08, 0.16],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. In the parent C. texensis the internodes are \"to 190 mm long\" (Gibson); the cultivar's are taken as 8 to 16 cm. The same range as organs.leafSpacingM in the growth model."
+    },
+    "leaf.arrangement": {
+      "value": "opposite",
+      "status": "provisional_design_assumption",
+      "basis": "A character of the genus, plain in every photograph of the cultivar but stated in no description of it that was read. Gibson, of the parent C. texensis: \"Leaves: opposite decussate\"."
+    },
+    "leaf.division": {
+      "value": "pinnate",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "RHS, of the Texensis Group: \"deciduous climbing shrubs or subshrubs, with usually pinnate leaves\"."
+    },
+    "leaf.leafletCount": {
+      "value": [3, 5],
+      "status": "provisional_design_assumption",
+      "basis": "Leaves of three leaflets and of five are drawn. Three is published for the cultivar (\"pinnately trifoliate\": University of Nebraska-Lincoln Gardens, as Wikipedia cites it, https://en.wikipedia.org/wiki/Clematis_%27Princess_Diana%27); five is from photographs, between that and its parent C. texensis, which has four to eight leaflets (Bean, https://www.treesandshrubsonline.org/articles/clematis/clematis-texensis/). No flora gives a range for the cultivar."
+    },
+    "leaf.leafletShape": {
+      "value": ["broadly ovate", "heart-shaped at the base", "pointed"],
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Bean, of the parent C. texensis: leaflets \"ovate to roundish ... usually heart-shaped at the base\". Photographs of the cultivar show broadly ovate, pointed leaflets with a rounded to heart-shaped base."
+    },
+    "leaf.leafletLobing": {
+      "value": "mostly unlobed, sometimes with one or two lobes at the base",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Bean, of the parent C. texensis: \"sometimes two- or three-lobed\"; Gibson: \"mitten-shaped with 1-2 basal lobes\". A mitten-shaped leaflet shows in a photograph of the cultivar."
+    },
+    "leaf.leafletMargin": {
+      "value": "entire",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Bean, of the parent C. texensis: \"not toothed\". Photographs of the cultivar show no teeth."
+    },
+    "leaf.leafletLengthM": {
+      "value": [0.04, 0.075],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Bean gives \"1 to 3 in. long\" for the leaflets of the parent C. texensis; against its 5 to 6 cm flowers in photographs the cultivar's leaflets are in the upper part of that, 4 to 7.5 cm."
+    },
+    "leaf.leafletWidthToLength": {
+      "value": 0.74,
+      "status": "provisional_design_assumption",
+      "basis": "Judged from photographs of the cultivar: a leaflet about 6 cm long is about 4.5 cm wide. Gibson's leaflets of the parent species are as wide as long or wider (25-55 x 35-65 mm)."
+    },
+    "leaf.stalkLengthM": {
+      "value": [0.03, 0.055],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: \"petiole channeled, to 55 mm long\"."
+    },
+    "leaf.leafletStalkLengthM": {
+      "value": [0.012, 0.04],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: petiolule \"to 40 mm long\"; Bean: each leaflet stalk as long as its blade or longer. Photographs of the cultivar show shorter stalks to the side leaflets."
+    },
+    "leaf.colour": {
+      "value": "light to mid green",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/clematis-princess-diana/",
+      "basis": "International Clematis Society, Clematis of the Month, August 2005: the leaves are light green and set off the flowers. Photographs show a mid green with a faint grey cast, paler beneath. Its parent C. texensis is glaucous (Bean); the cultivar is less so."
+    },
+    "leaf.surface": {
+      "value": "smooth, with a net of veins and three main veins from the base",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Bean, of the parent C. texensis: \"well-marked, net-like veins, nearly hairless\"; Gibson: \"pinnately veined with 3 veined at base\". The net of veins shows in photographs of the cultivar."
+    },
+    "leaf.autumnColour": {
+      "value": null,
+      "status": "unknown"
+    },
+    "inflorescence.position": {
+      "value": "on the current year's growth, on long stalks from the leaf joints and the shoot tip",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "RHS, of the Texensis Group: \"flowers on the current year's growth in summer and autumn\". That the stalks come from the leaf joints, two to a joint, is Gibson's account of the parent C. texensis (\"cyme, terminal on axillary shoot, 1-several-flowered ... 2 cymes per node\")."
+    },
+    "inflorescence.held": {
+      "value": "upright to outward-facing",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=530",
+      "basis": "Clematis on the Web: \"Bright pink outward facing trumpet-shaped flowers\". RHS, of the Texensis Group: \"erect or nodding\". The growth model's names section records the same thing as flowerHeld: upright."
+    },
+    "flower.sizeMeasure": {
+      "value": "length of one flower, from its base to the tips of its tepals, its stalk not counted",
+      "status": "provisional_design_assumption",
+      "basis": "What organs.racemeLengthM in the growth model measures for this taxon, and so what RenderFlower.lengthM carries and the flower model is authored to: one unit of the model is this length."
+    },
+    "flower.lengthM": {
+      "value": [0.05, 0.06],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "RHS plant record: \"flowers to 6cm in length\". Clematis on the Web: tepals 5 cm long."
+    },
+    "flower.diameterM": {
+      "value": [0.05, 0.07],
+      "unit": "m",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=530",
+      "basis": "Clematis on the Web: flower diameter 5-7 cm, which is the flared flower seen from the front. The International Clematis Society gives 6 cm; the Chicago Botanic Garden trial 3 inches."
+    },
+    "flower.shape": {
+      "value": "tulip-shaped, flaring to a trumpet as it ages",
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/articles/graham-rice/10-agm-clematis",
+      "basis": "Graham Rice for the RHS: four-petalled, trumpet-shaped flowers that become more flared as they mature. RHS record: \"tulip-shaped\". Richard Hawke: the tepals \"flare outward like a trumpet as they mature\"."
+    },
+    "flower.tepalCount": {
+      "value": 4,
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=530",
+      "basis": "Clematis on the Web: \"Tepals: 4\"."
+    },
+    "flower.tepalTip": {
+      "value": "pointed and recurved",
+      "status": "published_plant_profile",
+      "source": "https://clematisontheweb.org/clemdetail/?dbkey=530",
+      "basis": "Clematis on the Web: \"recurved towards tip\". International Clematis Society: four sepals with pointed tips that recurve gently."
+    },
+    "flower.tepalWidthToLength": {
+      "value": 0.32,
+      "status": "provisional_design_assumption",
+      "basis": "Not published. Read from a photograph of three flared flowers seen from the front (Wikimedia Commons, Clematis 'Princess Diana', 1 - geograph.org.uk - 6524519.jpg): a tepal is a little over three times as long as it looks wide, and it is channelled, so somewhat wider laid flat."
+    },
+    "flower.tubeShareOfLength": {
+      "value": 0.45,
+      "status": "provisional_design_assumption",
+      "basis": "Not published. Judged from photographs taken from the side: the tepals stand together as a tube for a little under half their length before they part and turn back."
+    },
+    "flower.colourInside": {
+      "value": "luminous deep pink, slightly mauve",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/clematis-princess-diana/",
+      "basis": "The International Clematis Register, as the International Clematis Society quotes it: \"luminous deep slightly mauvish pink with deep pink bar, outside with white margin\"."
+    },
+    "flower.barColour": {
+      "value": "deep pink",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/clematis-princess-diana/",
+      "basis": "The International Clematis Register, as the International Clematis Society quotes it: \"with deep pink bar\". Graham Rice for the RHS: a slightly reddish bar through each petal."
+    },
+    "flower.colourOutside": {
+      "value": "pinkish red along the ribs, with a pale margin",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/clematis-princess-diana/",
+      "basis": "The International Clematis Register, as the International Clematis Society quotes it: \"outside with white margin\". The Society's recommended list: \"pinkish red on the outside of the sepals and intense pink on the inside\". RHS record: \"brighter pink at the margins\"."
+    },
+    "flower.stamenColours": {
+      "value": ["cream", "maroon"],
+      "status": "published_plant_profile",
+      "source": "https://www.rhs.org.uk/plants/118677/clematis-princess-diana-t/details",
+      "basis": "RHS plant record: \"with cream and maroon stamens\". Clematis on the Web: \"Cream-yellow or bright yellow stamens\"; the International Clematis Society: creamy stamens with pale yellow anthers."
+    },
+    "flower.stamenCount": {
+      "value": [30, 40],
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: \"stamens 30-40 in 3 series\"."
+    },
+    "flower.stamenLengthM": {
+      "value": [0.015, 0.02],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published. In the parent C. texensis a filament of about 8 mm carries an anther of about 7 mm (Gibson), 15 mm in all; in photographs of the cultivar the boss of stamens is about a third as long as a tepal."
+    },
+    "flower.stalkLengthM": {
+      "value": [0.1, 0.15],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Bean, of the parent C. texensis: flowers \"on a ribbed stalk 5 to 6 in. long\"; Gibson: peduncle to 170 mm. Photographs of the cultivar show stalks of that order, two flower-lengths or more."
+    },
+    "flower.bractCount": {
+      "value": 2,
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: \"bracts subtending peduncle 2 and opposite, leaflike\". A pair of small leaves on the flower stalk shows in photographs of the cultivar."
+    },
+    "flower.bractLengthM": {
+      "value": [0.02, 0.04],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published. Gibson gives a blade \"to 60 x 40 mm\" for the bracts of the parent species; those in photographs of the cultivar are smaller, about half the length of a leaflet."
+    },
+    "flower.budShape": {
+      "value": "egg-shaped and pointed, ribbed, downy; green, then pink with paler faces",
+      "status": "provisional_design_assumption",
+      "basis": "Not described in any source read. From photographs of the cultivar (Wikimedia Commons)."
+    },
+    "fruit.type": {
+      "value": "head of achenes, each with a long feathered tail",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/clematis-princess-diana/",
+      "basis": "International Clematis Society: the seed heads are \"gorgeous and persistent\"; growers call them silky and ball-shaped. That they are heads of tailed achenes is the genus's fruit: Gibson, of the parent C. texensis, \"achenes, to 30 in headlike cluster ... each achene with a long, feathery beak\"."
+    },
+    "fruit.sizeMeasure": {
+      "value": "width of the whole seed head across its tails",
+      "status": "provisional_design_assumption",
+      "basis": "What fruit.lengthM in the growth model measures for this taxon, and so what RenderFruit.lengthM carries and the seed-head model is authored to: one unit of the model is this width."
+    },
+    "fruit.lengthM": {
+      "value": [0.05, 0.07],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Width of the whole seed head across its feathered tails. Not published for the cultivar. In the parent C. texensis an achene 7.5-10 mm long carries a tail of 27-34 mm (Gibson) or \"about 1 1/2 in.\" (Bean), which makes a head 5 to 7 cm across."
+    },
+    "fruit.acheneCount": {
+      "value": [20, 30],
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: \"pistils ca. 30\" and \"achenes, to 30 in headlike cluster\"."
+    },
+    "fruit.acheneLengthM": {
+      "value": [0.0075, 0.01],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: achene \"7.5-10 x 5-6 x 2 mm\"."
+    },
+    "fruit.tailLengthM": {
+      "value": [0.027, 0.038],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Of the parent C. texensis: beak \"27-34 mm long\", \"curved to twisted (never straight)\" (Gibson); a feathery style \"about 1 1/2 in. long\" (Bean)."
+    },
+    "fruit.tailHairLengthM": {
+      "value": [0.002, 0.004],
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar. Gibson, of the parent C. texensis: the beak \"densely pilose with ascending to spreading, golden, straight hairs 2-3+ mm long\"."
+    },
+    "fruit.colourRipe": {
+      "value": "silvery, the tails with golden hairs, the achenes brown",
+      "status": "provisional_design_assumption",
+      "basis": "Not published for the cultivar beyond \"silky\". Gibson, of the parent C. texensis: achenes \"light brown to brown\", beak \"densely pilose with ... golden, straight hairs\"."
+    },
+    "fruit.persistence": {
+      "value": "persistent into winter",
+      "status": "published_plant_profile",
+      "source": "https://internationalclematissociety.org/clematis-princess-diana/",
+      "basis": "International Clematis Society: the seed heads are \"gorgeous and persistent\"."
+    }
+  }
+}
