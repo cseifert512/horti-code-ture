@@ -107,6 +107,16 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
       'leaf.petioleWingWidthM',
       'leaf.teethPerSide',
       'leaf.basalVeins',
+      'leaf.innerVeinAngleDeg',
+      'leaf.lobeBackShare',
+      'leaf.shoulderWidthShare',
+      'leaf.secondaryVeinAngleDeg',
+      'leaf.secondaryVeinSpacing',
+      'leaf.veinNetCell',
+      'leaf.bladeDropDeg',
+      'leaf.faceRiseDeg',
+      'leaf.faceRiseOpenDeg',
+      'leaf.bladeTurnDeg',
       'flower.pedicelLengthM',
       'flower.bracteoleCount',
       'flower.bracteoleLengthM',
@@ -131,20 +141,25 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
   // "leaf blades about 3-8 x 3-7.5 cm", "petioles about 2.5-3.5 cm long" (Australian Tropical Rainforest Plants)
   it('gives the leaf a stalk and a blade in the proportion of the published lengths', () => {
     const stalk = middle(characterRange(morphology, 'leaf.petioleLengthM'));
-    const blade = middle(characterRange(morphology, 'leaf.bladeLengthM'));
+    const blade_ = middle(characterRange(morphology, 'leaf.bladeLengthM'));
     for (let v = 0; v < look.leaves.default.variants; v++) {
       const g = look.leaves.default.make(v, 0);
-      // the stalk is axis; it ends where the blade begins
-      const stalkEnd = Math.max(...vertices(g).filter((x) => x.t < 0).map((x) => x.p.z));
-      expect(stalkEnd, `variant ${v}`).toBeCloseTo(stalk / (stalk + blade), 1);
+      // the stalk is axis; the blade, a part, is laid flat out from its end (the viewer hangs it): from where it joins
+      // the stalk to its tip it is as long for the stalk as the published blade
+      const blade = vertices(g).filter((x) => x.t >= 0);
+      const join = blade[0]!.pivot;
+      const bladeLength = Math.max(...blade.map((x) => x.p.z - join.z));
+      expect(stalkLength(g) / bladeLength, `variant ${v}`).toBeCloseTo(stalk / blade_, 1);
     }
-    // and the growth model's leaf, which is stalk and blade together, is made of the same two lengths
+    // and the growth model's leaf, which is the stalk and the blade hung from it (leaf.bladeDropDeg), is made of the
+    // same two lengths: the stalk and the blade's reach at that angle
     const [short, long] = param(model, 'organs.leafLengthM');
     const pet = characterRange(morphology, 'leaf.petioleLengthM');
     const bl = characterRange(morphology, 'leaf.bladeLengthM');
-    expect(short).toBeCloseTo(pet[0] + bl[0], 6);
-    expect(long).toBeLessThanOrEqual(pet[1] + bl[1] + 1e-9);
-    expect(long).toBeGreaterThan(pet[1] + middle(bl));
+    const hung = Math.cos((middle(characterRange(morphology, 'leaf.bladeDropDeg')) * Math.PI) / 180);
+    expect(short).toBeCloseTo(pet[0] + hung * bl[0], 3);
+    expect(long).toBeLessThanOrEqual(pet[1] + hung * bl[1] + 1e-3);
+    expect(long).toBeGreaterThan(pet[1] + hung * middle(bl));
   });
 
   // leaf.base: "cordate-hastate at base" (Wasshausen & Wood); "outward-pointing basal lobes" (Botany Brisbane)
@@ -152,8 +167,8 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
     const ratio = characterRange(morphology, 'leaf.widthToLength');
     for (let v = 0; v < look.leaves.default.variants; v++) {
       for (let lod = 0; lod < look.leaves.default.lods; lod++) {
-        // the blade is what carries the texture's veins; the wing of the stalk samples one row of it
-        const blade = vertices(look.leaves.default.make(v, lod)).filter((x) => x.t >= 0 && x.v > 0.15);
+        // the blade is the leaf's one part (t >= 0): the viewer turns it where it joins the stalk
+        const blade = vertices(look.leaves.default.make(v, lod)).filter((x) => x.t >= 0);
         const join = blade[0]!.pivot;
         const tip = blade.reduce((best, x) => (x.p.distanceTo(join) > best.p.distanceTo(join) ? x : best), blade[0]!).p;
         const axis = tip.clone().sub(join);
@@ -166,8 +181,12 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
         // the widest point is at the base, level with the top of the stalk, not half way up as in an oval leaf
         const widest = blade.reduce((best, x) => (Math.abs(x.p.x) > Math.abs(best.p.x) ? x : best), blade[0]!).p;
         expect(widest.clone().sub(join).dot(axis) / length, `variant ${v} level ${lod}`).toBeLessThan(0.15);
-        // and some of the blade reaches back behind the top of the stalk: the basal lobes
-        expect(Math.min(...blade.map((x) => x.p.clone().sub(join).dot(axis))) / length, `variant ${v} level ${lod}`).toBeLessThan(-0.05);
+        // and some of the blade reaches back behind the top of the stalk: the basal lobes, as far as the photographs
+        // show them (leaf.lobeBackShare)
+        const back = characterRange(morphology, 'leaf.lobeBackShare');
+        const behind = -Math.min(...blade.map((x) => x.p.clone().sub(join).dot(axis))) / length;
+        expect(behind, `variant ${v} level ${lod}`).toBeGreaterThan(back[0] * 0.8);
+        expect(behind, `variant ${v} level ${lod}`).toBeLessThan(back[1] * 1.15);
         // near the tip it is narrow: a point, not a rounded end
         const nearTip = blade.filter((x) => x.p.clone().sub(join).dot(axis) / length > 0.85).map((x) => Math.abs(x.p.x));
         expect(Math.max(...nearTip) / (width / 2), `variant ${v} level ${lod}`).toBeLessThan(0.45);
@@ -178,9 +197,12 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
   // leaf.petioleWing: "petioles ... distinctly winged over much of their length" (Australian Tropical Rainforest Plants)
   it('wings the leaf stalk, the wing widening towards the blade and no wider than recorded', () => {
     const wing = characterRange(morphology, 'leaf.petioleWingWidthM');
-    const leafM = middle(characterRange(morphology, 'leaf.petioleLengthM')) + middle(characterRange(morphology, 'leaf.bladeLengthM'));
     for (let lod = 0; lod < look.leaves.default.lods; lod++) {
-      const strip = vertices(look.leaves.default.make(1, lod)).filter((x) => x.t >= 0 && x.v < 0.1);
+      const g = look.leaves.default.make(1, lod);
+      // metres to one unit of the model: the stalk is drawn at the middle of its published length
+      const leafM = middle(characterRange(morphology, 'leaf.petioleLengthM')) / stalkLength(look.leaves.default.make(1, 0));
+      // the wing is axis, pivoting on the end of the stalk, so that it stays with the stalk when the blade is turned
+      const strip = vertices(g).filter((x) => x.t === -1 && x.pivot.length() > 1e-9);
       expect(strip.length, `level ${lod}`).toBeGreaterThan(3);
       const at = (z0: number, z1: number) => Math.max(...strip.filter((x) => x.p.z >= z0 && x.p.z <= z1).map((x) => Math.abs(x.p.x))) * 2 * leafM;
       const zs = strip.map((x) => x.p.z);
@@ -190,6 +212,30 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
       expect(wide, `level ${lod}`).toBeGreaterThan(narrow);
       expect(narrow, `level ${lod}`).toBeGreaterThan(wing[0] * 0.8);
       expect(wide, `level ${lod}`).toBeLessThan(wing[1] * 1.1);
+    }
+  });
+
+  // leaf.basalVeins (five main veins from the top of the stalk) and leaf.posture (blades hanging from their stalks and
+  // facing out), both read from photographs; TAXON_LOOKS.md section 5a
+  it('veins the blade palmately in a texture of its own, and lets the viewer hang it from its stalk as the photographs show', () => {
+    const leaf = look.leaves.default;
+    expect(leaf.texture).toBeDefined();
+    const main = leaf.texture!.lines!().filter((l) => l.kind === 'main');
+    expect(main).toHaveLength(characterNumber(morphology, 'leaf.basalVeins'));
+    // every main vein starts where the stalk joins
+    for (const l of main) expect(Math.hypot(l.points[0]![0] - 0.5, l.points[0]![1] - main[0]!.points[0]![1])).toBeLessThan(1e-9);
+    expect(leaf.hold).toBeDefined();
+    expect(leaf.hold!.unitAt).toBeCloseTo(middle(characterRange(morphology, 'leaf.bladeDropDeg')), 9);
+    expect(leaf.hold!.rise).toEqual(characterRange(morphology, 'leaf.faceRiseDeg'));
+    expect(leaf.hold!.riseOpen).toEqual(characterRange(morphology, 'leaf.faceRiseOpenDeg'));
+    // the blade alone is the part the viewer turns: one pivot, at the end of the stalk
+    for (let v = 0; v < leaf.variants; v++) {
+      for (let lod = 0; lod < leaf.lods; lod++) {
+        const parts = vertices(leaf.make(v, lod)).filter((x) => x.t >= 0);
+        for (const x of parts) expect(x.pivot.distanceTo(parts[0]!.pivot)).toBeLessThan(1e-9);
+        // laid flat out along +Z from there, upper side up
+        expect(Math.min(...parts.map((x) => x.p.z - x.pivot.z))).toBeGreaterThan(-0.12);
+      }
     }
   });
 
@@ -233,7 +279,7 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
     expect(model.names.flowerHeld).toBe('facing_out');
   });
 
-  // flower.pedicelLengthM: "on pedicels 30-95 mm long"; flower.bracteoleLengthM: "12-20 mm long" (Weeds of Australia)
+  // flower.pedicelLengthM: "on stalks (i.e. pedicels) 30-95 mm long"; flower.bracteoleLengthM: "two leafy bracts (12-20 mm long)" (Weeds of Australia)
   it('holds each flower and each capsule on a stalk of published length, in two bracts of published length', () => {
     const stalk = characterRange(morphology, 'flower.pedicelLengthM');
     const bract = characterRange(morphology, 'flower.bracteoleLengthM');
@@ -278,7 +324,7 @@ describe('Thunbergia alata: the look is drawn from morphology.json', () => {
     }
   });
 
-  // fruit.baseDiameterM, fruit.beakLengthM: "a globular base 5-10 mm across and an elongated beak 9-15 mm long";
+  // fruit.baseDiameterM, fruit.beakLengthM: "rounded (i.e. globular) base (5-10 mm across)" and "an elongated beak (9-15 mm long)";
   // fruit.baseHeightToWidth (read from a photograph)
   it('authors the capsule at the height of its low round base and its beak together, as the growth model measures it', () => {
     const across = characterRange(morphology, 'fruit.baseDiameterM');
@@ -394,7 +440,7 @@ describe('Thunbergia alata on the specimen frame, as the engine grows it', () =>
     }
   });
 
-  // fruit.colour: "ripens and dries to tan", seed "often produced late in the season" (Wisconsin Extension)
+  // fruit.colour: "ripens and dries (RC) to a tan color", seed "often produced late in the season" (Wisconsin Extension)
   it('carries capsules from late summer, ripe ones from August on, and none that outlives the plant', () => {
     expect(data.fruits.length).toBeGreaterThan(10);
     expect(fruit(day('07-01'))).toHaveLength(0);

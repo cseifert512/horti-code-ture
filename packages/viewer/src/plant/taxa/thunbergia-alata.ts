@@ -36,7 +36,7 @@ import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/thunbergia-alata/morphology.json';
 import { clamp, lerp, smoothstep } from '../../util.ts';
-import { Merge, type RGB, Surf, lin, mix } from '../kit.ts';
+import { GROUND, Merge, type PalmateVeins, type RGB, Surf, lin, mix, palmateTexture, veinUv } from '../kit.ts';
 import { type FlowerAsset, type FruitAsset, type LeafAsset, THIN_LEAF, type TaxonLook, type WoodLook } from '../look.ts';
 
 const morphology = parseMorphology(morphologyJson, 'species/thunbergia-alata/morphology.json');
@@ -44,6 +44,7 @@ const morphology = parseMorphology(morphologyJson, 'species/thunbergia-alata/mor
 const V3 = THREE.Vector3;
 type V3 = THREE.Vector3;
 const TAU = Math.PI * 2;
+const DEG = Math.PI / 180;
 const IDENTITY = new THREE.Matrix4();
 const WHITE: RGB = [1, 1, 1];
 type Range = readonly [number, number];
@@ -57,27 +58,31 @@ const within = (r: Range, t: number): number => r[0] + (r[1] - r[0]) * t;
 /** "leaf blades about 3-8 x 3-7.5 cm", on stalks "about 2.5-3.5 cm long" (Australian Tropical Rainforest Plants). */
 const BLADE_M = characterRange(morphology, 'leaf.bladeLengthM');
 const PETIOLE_M = characterRange(morphology, 'leaf.petioleLengthM');
-/** The leaf the model is drawn from: a middling stalk and a middling blade. One unit is their sum. */
-const LEAF_M = middle(PETIOLE_M) + middle(BLADE_M);
-/** The stalk's share of the leaf's length. */
-const STALK = middle(PETIOLE_M) / LEAF_M;
+/** The stalk's length for the blade's, between the middles of the two published ranges. */
+const STALK_TO_BLADE = middle(PETIOLE_M) / middle(BLADE_M);
 /** How wide the blade is for its length, across the basal lobes. */
 const WIDTH_TO_LENGTH = characterRange(morphology, 'leaf.widthToLength');
-/** Width across both wings of the stalk, at the stem and at the blade, in leaf lengths. */
-const WING = characterRange(morphology, 'leaf.petioleWingWidthM').map((w) => w / LEAF_M) as [number, number];
+/** Width across both wings of the stalk, at the stem and at the blade, as a share of the blade's length. */
+const WING = characterRange(morphology, 'leaf.petioleWingWidthM').map((w) => w / middle(BLADE_M)) as [number, number];
 const TEETH = characterRange(morphology, 'leaf.teethPerSide');
 /** Main veins spreading from the top of the stalk: the midrib and the pairs to either side. */
-const VEIN_PAIRS = (characterNumber(morphology, 'leaf.basalVeins') - 1) / 2;
+const MAIN_VEINS = characterNumber(morphology, 'leaf.basalVeins');
+/** Bearings of the main veins from the midrib, degrees: the inner pair, and the pair into the basal lobes. Read from photographs. */
+const INNER_VEIN_DEG = middle(characterRange(morphology, 'leaf.innerVeinAngleDeg'));
+/** How far behind the top of the stalk the basal lobes reach, as a share of the blade's length. Read from photographs. */
+const LOBE_BACK = characterRange(morphology, 'leaf.lobeBackShare');
+/** Where along the midrib the blade is widest above the lobes' shoulders, and how far the tip is drawn out. */
+const SHOULDER = characterRange(morphology, 'leaf.shoulderWidthShare');
 
 interface LeafForm {
   /** Width of the blade for its length. */
   ratio: number;
   /** Blunt angles on each side. */
   teeth: number;
-  /** How far the blade hangs from the line of its stalk, radians. */
-  tilt: number;
-  /** A turn of the blade about its midrib, radians. */
-  roll: number;
+  /** How far the basal lobes reach back behind the top of the stalk, in blade lengths. */
+  back: number;
+  /** Half-width at the shoulder above the lobes, as a share of the greatest half-width. */
+  shoulder: number;
   fold: number;
   arch: number;
   /** Which of the palette's two greens it leans to. */
@@ -85,65 +90,56 @@ interface LeafForm {
 }
 
 /**
- * A narrower leaf with the most angles to a side, the usual leaf, and a broad heart-shaped one with the fewest.
- * In life the blades hang at 45 degrees and more from their stalks; a leaf model has to stay nine tenths of its
- * length along +Z, which stops these at about 30.
+ * Four leaves, as the photographs show them side by side on one shoot: a narrow, arrow-shaped one with the most
+ * angles to a side, a middling one, a broad heart-shaped one, and one with an entire margin. Each blade's outline is
+ * its own: width, how far the lobes reach back, how full the shoulders are.
  */
 const LEAF_FORMS: readonly LeafForm[] = [
-  { ratio: within(WIDTH_TO_LENGTH, 0.3), teeth: Math.round(TEETH[1]), tilt: 0.5, roll: 0.12, fold: 0.14, arch: 0.05, shade: 0.25 },
-  { ratio: within(WIDTH_TO_LENGTH, 0.6), teeth: Math.round(middle(TEETH)), tilt: 0.52, roll: -0.08, fold: 0.1, arch: 0.07, shade: 0.5 },
-  { ratio: within(WIDTH_TO_LENGTH, 0.9), teeth: Math.round(TEETH[0]), tilt: 0.47, roll: 0.04, fold: 0.07, arch: 0.09, shade: 0.8 },
+  { ratio: within(WIDTH_TO_LENGTH, 0.2), teeth: Math.round(TEETH[1]), back: within(LOBE_BACK, 0.9), shoulder: within(SHOULDER, 0.1), fold: 0.12, arch: 0.08, shade: 0.1 },
+  { ratio: within(WIDTH_TO_LENGTH, 0.55), teeth: Math.round(middle(TEETH)), back: within(LOBE_BACK, 0.55), shoulder: within(SHOULDER, 0.5), fold: 0.09, arch: 0.1, shade: 0.3 },
+  { ratio: within(WIDTH_TO_LENGTH, 0.9), teeth: Math.round(TEETH[0]), back: within(LOBE_BACK, 0.2), shoulder: within(SHOULDER, 0.9), fold: 0.06, arch: 0.12, shade: 0.45 },
+  { ratio: within(WIDTH_TO_LENGTH, 0.7), teeth: 0, back: within(LOBE_BACK, 0.4), shoulder: within(SHOULDER, 0.7), fold: 0.08, arch: 0.11, shade: 0.2 },
 ];
 
-/** How far behind the top of the stalk the basal lobes reach, in blade lengths. */
-const LOBE_BACK = 0.1;
-/** The side of the blade from near the tip to the shoulder above the lobe: half-width as a share of the greatest, by distance along the midrib. */
-const SIDE: readonly P2[] = [
-  [0.1, 0.9],
-  [0.33, 0.7],
-  [0.56, 0.5],
-  [0.78, 0.3],
-  [0.95, 0.1],
-];
-function sideAt(z: number): number {
-  for (let i = 0; i < SIDE.length - 1; i++) {
-    const [xa, za] = SIDE[i]!;
-    const [xb, zb] = SIDE[i + 1]!;
-    if (z <= za && z >= zb) return lerp(xa, xb, (za - z) / (za - zb));
-  }
-  return z > SIDE[0]![1] ? SIDE[0]![0] : SIDE[SIDE.length - 1]![0];
+/** Half-width of the side of the blade as a share of the greatest, by distance along the midrib from the shoulder to the tip. */
+function sideAt(z: number, shoulder: number): number {
+  // full at the shoulder, then drawn in along a gently convex line to an acuminate tip
+  const t = clamp((z - 0.08) / 0.92, 0, 1);
+  return lerp(1, shoulder, smoothstep(0, 0.35, t)) * Math.pow(1 - t, 0.85) * (1 + 0.25 * t * (1 - t));
 }
 /** Where along the midrib the angles of one side stand, by how many there are. */
-const TOOTH_AT: readonly (readonly number[])[] = [[], [0.28], [0.5, 0.24], [0.62, 0.42, 0.22]];
+const TOOTH_AT: readonly (readonly number[])[] = [[], [0.3], [0.5, 0.26], [0.62, 0.43, 0.24]];
 
 /**
  * The right-hand half of the blade's outline, from the tip round to the back of
  * the notch where the stalk joins, as points the outline is drawn through.
  * The stalk joins at the origin; the tip is at z = 1; `w` is half the width.
  */
-function bladeKeys(w: number, teeth: number, coarse: boolean): P2[] {
-  // the basal lobe: rounded, pointing outwards, the blade widest across the two of them
+function bladeKeys(form: LeafForm, coarse: boolean): P2[] {
+  const w = form.ratio / 2;
+  const back = form.back;
+  // the basal lobe: rounded, pointing outwards and a little back, the blade widest across the two of them
   const lobe: P2[] = [
-    [w, -0.01],
-    [0.84 * w, -0.09],
-    [0.55 * w, -LOBE_BACK],
-    [0.25 * w, -0.055],
-    [0, -0.025],
+    [w, 0.0],
+    [0.9 * w, -0.6 * back],
+    [0.6 * w, -back],
+    [0.28 * w, -0.7 * back],
+    [0.05 * w, -0.15 * back],
   ];
-  if (coarse) return [[0, 1], [0.5 * w, 0.55], [0.95 * w, 0.1], lobe[0]!, lobe[1]!, lobe[3]!, lobe[4]!];
-  const at = TOOTH_AT[Math.min(TOOTH_AT.length - 1, Math.max(0, teeth))]!;
+  if (coarse) return [[0, 1], [0.55 * w, 0.5], [0.97 * w, 0.12], lobe[0]!, lobe[2]!, lobe[4]!];
+  const at = TOOTH_AT[Math.min(TOOTH_AT.length - 1, Math.max(0, form.teeth))]!;
   const side: P2[] = [];
   // plain points down the side, except where an angle stands
-  for (let z = 0.8; z > 0.15; z -= 0.1) if (!at.some((t) => Math.abs(t - z) < 0.1)) side.push([sideAt(z) * w, z]);
+  for (let z = 0.9; z > 0.1; z -= 0.08) if (!at.some((t) => Math.abs(t - z) < 0.08)) side.push([sideAt(z, form.shoulder) * w, z]);
   // an angle: the margin runs out to a blunt corner that leans towards the tip, then draws back in
-  const reach = 0.03 * (w / 0.4);
+  const reach = 0.035 * w;
   for (const t of at) {
-    side.push([sideAt(t + 0.085) * w, t + 0.085]);
-    side.push([sideAt(t + 0.015) * w + reach, t + 0.015]);
-    side.push([sideAt(t - 0.05) * w - 0.006, t - 0.05]);
+    side.push([sideAt(t + 0.06, form.shoulder) * w, t + 0.06]);
+    side.push([sideAt(t + 0.01, form.shoulder) * w + reach, t + 0.01]);
+    side.push([sideAt(t - 0.04, form.shoulder) * w - 0.004, t - 0.04]);
   }
   side.sort((a, b) => b[1] - a[1]);
-  return [[0, 1], [SIDE[0]![0] * w, SIDE[0]![1]], ...side, [SIDE[4]![0] * w, SIDE[4]![1]], ...lobe];
+  return [[0, 1], ...side, [sideAt(0.08, form.shoulder) * w, 0.08], ...lobe];
 }
 
 /** A smooth line through `keys`, `per` steps to each: Catmull-Rom, given the point before the first and after the last. */
@@ -162,10 +158,56 @@ function through(keys: readonly P2[], per: number, before: P2, after: P2): P2[] 
   return out;
 }
 
-/** The blade alone: the stalk joins at the origin, the tip is at z = 1, the upper side is +Y. A fan of spokes from the stalk to the margin. */
+/**
+ * The veins, in a texture of the leaf's own (the kit's palmateTexture): five main veins from the top of the stalk
+ * (leaf.basalVeins), the midrib, an inner pair running up into the blade and an outer pair into the basal lobes,
+ * each outer one with a branch on its lower side; secondaries leaving the midrib and the inner pair forwards and
+ * looping to the margin; and a fine net between, the blade a little puckered between its lines (leaf.surface: soft
+ * and hairy, dull). Paler than the blade (Commons: "Mosca abeja.jpg", "Black eyed susan flower in london.jpg").
+ * The flat blade's units are the blade's length from the top of the stalk to the tip.
+ */
+const VEINS: PalmateVeins = {
+  origin: 0.14,
+  span: 1.3,
+  main: [
+    { deg: -104, length: 0.42 },
+    { deg: -INNER_VEIN_DEG, length: 0.66 },
+    { deg: 0, length: 0.97 },
+    { deg: INNER_VEIN_DEG, length: 0.66 },
+    { deg: 104, length: 0.42 },
+    { deg: -140, length: 0.22, from: { vein: 0, at: 0.35 } },
+    { deg: 140, length: 0.22, from: { vein: 4, at: 0.35 } },
+  ],
+  secondary: {
+    angle: characterNumber(morphology, 'leaf.secondaryVeinAngleDeg'),
+    spacing: characterNumber(morphology, 'leaf.secondaryVeinSpacing'),
+    first: 0.3,
+    reach: 0.32,
+    curve: 22,
+  },
+  net: { cell: characterNumber(morphology, 'leaf.veinNetCell'), jitter: 0.85 },
+  width: { main: 0.018, secondary: 0.008, net: 0.0022 },
+  ground: 0.72,
+  pale: { main: 0.2, secondary: 0.12, net: 0.022 },
+  tint: { main: 0.75, secondary: 0.5, net: 0.12 },
+  relief: { vein: 0.55, pucker: 0.35 },
+  seed: 31,
+};
+if (VEINS.main.filter((m) => !m.from).length !== MAIN_VEINS) throw new Error(`the leaf's texture is drawn with a different number of main veins from the ${MAIN_VEINS} of its morphology`);
+
+/** This leaf's own bearings of the main veins, in the order of VEINS.main, so that the outer pair runs into its lobes. */
+function veinBearings(form: LeafForm): number[] {
+  const w = form.ratio / 2;
+  const lobe = Math.atan2(0.82 * w, -0.45 * form.back) / DEG;
+  const inner = INNER_VEIN_DEG * (0.9 + 0.25 * (form.ratio - 0.55));
+  return [-lobe, -inner, 0, inner, lobe, -Math.min(178, lobe + 36), Math.min(178, lobe + 36)];
+}
+
+
+/** The blade alone, flat out along +Z from where it joins its stalk (the origin) to its tip at z = 1, upper side +Y. */
 function makeBlade(form: LeafForm, lod: number): THREE.BufferGeometry {
   const w = form.ratio / 2;
-  const keys = bladeKeys(w, form.teeth, lod === 2);
+  const keys = bladeKeys(form, lod === 2);
   const tip = keys[0]!;
   const next = keys[1]!;
   const last = keys[keys.length - 2]!;
@@ -180,45 +222,60 @@ function makeBlade(form: LeafForm, lod: number): THREE.BufferGeometry {
   ];
   const nu = outline.length - 1;
   const nv = [6, 2, 1][lod]!;
-  // the main veins run from the top of the stalk: the midrib, and pairs out to the basal lobes
-  const lobeAngle = Math.atan2(w, -0.03);
-  const veins = [0, ...Array.from({ length: VEIN_PAIRS }, (_, i) => (VEIN_PAIRS === 1 ? lobeAngle : lerp(0.62, lobeAngle, i / (VEIN_PAIRS - 1))))];
+  const bearings = veinBearings(form);
   const sb = new Surf();
+  const flat: [number, number][] = [];
   sb.surf(nu, nv, (u, rho) => {
     const [ox, oz] = outline[Math.round(u * nu)]!;
     const x = ox * rho;
     const z = oz * rho;
-    // folded a little along the midrib, arched down to the tip, the basal lobes lifting
+    flat.push([x, z]);
+    // folded a little along the midrib, arched down to the tip, the basal lobes lifting a little
     let y = form.fold * Math.abs(x) - form.arch * z * Math.abs(z);
-    if (z < 0.05) y += 0.25 * (0.05 - z) * (Math.abs(x) / w) * (x > 0 ? 1 : 0.6);
-    if (lod < 2) {
-      // the blade is quilted: it rises between the main veins, which lie in furrows
-      const theta = Math.atan2(Math.abs(ox), oz);
-      for (let i = 0; i < veins.length - 1; i++) {
-        const a = veins[i]!;
-        const b = veins[i + 1]!;
-        if (theta > a && theta < b) y += (lod === 0 ? 0.019 : 0.014) * Math.pow(Math.sin((Math.PI * (theta - a)) / (b - a)), 0.8) * rho * (1 - rho * rho * rho) * 1.6;
-      }
-    }
+    if (z < 0.05) y += 0.12 * (0.05 - z) * (Math.abs(x) / w);
     // a wavy margin
-    if (lod === 0) y += 0.012 * Math.sin(u * 61 + form.shade * 9) * rho * rho * rho;
+    if (lod === 0) y += 0.01 * Math.sin(u * 47 + form.shade * 9) * rho * rho * rho;
     return { p: [x, y, z] };
   });
-  // lay the leaf texture flat over the blade, its pale midrib up the middle. Only part of its length is used, so that
-  // the blade has four or five side veins to a side, rising steeply, and not the eleven of a long pinnate leaflet
-  for (let i = 0; i < sb.uv.length / 2; i++) {
-    sb.uv[2 * i] = clamp(0.5 + (0.5 * sb.pos[3 * i]!) / w, 0.02, 0.98);
-    sb.uv[2 * i + 1] = lerp(0.2, 0.62, clamp((sb.pos[3 * i + 2]! + LOBE_BACK) / (1 + LOBE_BACK), 0, 1));
+  // the leaf's own texture, laid flat over the blade and turned on to this leaf's veins
+  for (let i = 0; i < flat.length; i++) {
+    const [x, z] = flat[i]!;
+    const [uu, vv] = veinUv(VEINS, x, z, bearings);
+    sb.uv[2 * i] = uu;
+    sb.uv[2 * i + 1] = vv;
   }
   return sb.build();
 }
 
-/** A whole leaf, one unit long: the winged stalk, then the blade hanging from it. */
+/**
+ * The angle below the line of its stalk at which each blade is measured for the leaf's one unit (BladeHold.unitAt):
+ * on the plant the blade hangs from the top of its stalk at about this angle (leaf.posture). The viewer holds the blade
+ * in the world; this keeps the length in the data what the growth model measures, from the stem to the farthest point
+ * of the leaf as it is held.
+ */
+const UNIT_AT = middle(characterRange(morphology, 'leaf.bladeDropDeg'));
+
+/** How far a flat blade of each form reaches along the stalk's line, hung at UNIT_AT, in blade lengths. */
+const REACH = LEAF_FORMS.map((form) => {
+  const g = makeBlade(form, 0);
+  const p = g.getAttribute('position');
+  const s = Math.sin(UNIT_AT * DEG);
+  const c = Math.cos(UNIT_AT * DEG);
+  let most = 0;
+  for (let i = 0; i < p.count; i++) most = Math.max(most, p.getY(i) * s + p.getZ(i) * c);
+  g.dispose();
+  return most;
+});
+
+/** A whole leaf, one unit long as held: the winged stalk, then the blade flat out from it (the viewer hangs it). */
 function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const form = LEAF_FORMS[variant]!;
+  // blade and stalk in their published proportion, sized so that the stalk and the hung blade make one unit
+  const blade = 1 / (STALK_TO_BLADE + REACH[variant]!);
+  const stalkL = STALK_TO_BLADE * blade;
   const mg = new Merge(true);
-  // the stalk bows up a little on its way out
-  const along = (t: number) => new V3(0, 0.035 * Math.sin(Math.PI * t), STALK * t);
+  // the stalk rises a little on its way out
+  const along = (t: number) => new V3(0, 0.05 * stalkL * Math.sin(Math.PI * t), stalkL * t);
   const steps = [8, 3, 1][lod]!;
   const end = along(1);
   if (lod < 2) {
@@ -228,42 +285,41 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
       pts.push(along(i / steps));
       radii.push(lerp(0.011, 0.008, i / steps));
     }
-    mg.tube(pts, radii, [5, 3][lod]!, WHITE, WHITE, [0.5, 0.02]);
+    mg.tube(pts, radii, [5, 3][lod]!, WHITE, WHITE, GROUND);
   }
-  // the wings: a strip of blade down either side of the stalk, narrow at the stem and widening into the blade
+  // the wings: a strip of green down either side of the stalk, narrow at the stem and widening towards the blade.
+  // Axis, so that it stays with the stalk when the viewer turns the blade
   const wing = new Surf();
   wing.surf(2, steps, (u01, t) => {
     const u = u01 * 2 - 1;
-    const p = along(0.05 + 0.95 * t);
-    const half = lerp(WING[0], WING[1], Math.pow(t, 1.4)) / 2;
-    return { p: [u * half, p.y + 0.3 * Math.abs(u) * half + 0.004, p.z] };
+    const p = along(0.05 + 0.9 * t);
+    const half = (lerp(WING[0], WING[1], Math.pow(t, 1.4)) * blade) / 2;
+    return { p: [u * half, p.y + 0.3 * Math.abs(u) * half + 0.003, p.z] };
   });
   for (let i = 0; i < wing.uv.length / 2; i++) {
-    wing.uv[2 * i] = 0.5 + 0.36 * (wing.uv[2 * i]! * 2 - 1);
-    wing.uv[2 * i + 1] = 0.04;
+    wing.uv[2 * i] = GROUND[0];
+    wing.uv[2 * i + 1] = GROUND[1];
   }
-  mg.add(wing.build(), IDENTITY, WHITE, end, form.shade);
+  mg.add(wing.build(), IDENTITY, WHITE, end, -1);
 
-  const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(form.tilt, 0, form.roll, 'XYZ'));
-  const s = 1 - STALK;
-  const tone = 0.96 + 0.08 * form.shade;
-  mg.add(makeBlade(form, lod), new THREE.Matrix4().compose(end, q, new V3(s, s, s)), [tone, tone, tone], end, form.shade);
+  const tone = 0.97 + 0.06 * form.shade;
+  mg.add(makeBlade(form, lod), new THREE.Matrix4().compose(end, new THREE.Quaternion(), new V3(blade, blade, blade)), [tone, tone, tone], end, form.shade);
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.55), 0.75);
+  g.boundingSphere = new THREE.Sphere(new V3(0, -0.2, 0.5), 0.85);
   return g;
 }
 
 // ---------------------------------------------------------------------------
 // What the flower and the capsule share: the stalk, and the two bracts at its end
 // ---------------------------------------------------------------------------
-/** "on pedicels 30-95 mm long" (Weeds of Australia). */
+/** "on stalks (i.e. pedicels) 30-95 mm long" (Weeds of Australia). */
 const PEDICEL_M = characterRange(morphology, 'flower.pedicelLengthM');
-/** The two bracts that clasp the tube and afterwards the capsule: "12-20 mm long"; 4 to 15 mm wide. */
+/** The two bracts that clasp the tube and afterwards the capsule: "two leafy bracts (12-20 mm long)"; 4 to 15 mm wide. */
 const BRACT_COUNT = characterNumber(morphology, 'flower.bracteoleCount');
 const BRACT_LENGTH = middle(characterRange(morphology, 'flower.bracteoleLengthM'));
 /** The broad end of the range: round the bud and the tube the two of them close into a pod. */
 const BRACT_WIDTH = characterRange(morphology, 'flower.bracteoleWidthM')[1];
-/** "the corolla tube is 15-25 mm long" */
+/** "fused into a tube (i.e. corolla tube) 15-25 mm long" */
 const TUBE = middle(characterRange(morphology, 'flower.tubeLengthM'));
 
 const GREEN = {
@@ -435,8 +491,9 @@ function makeFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry 
     // and from inside: the dark well that makes the eye
     const inner = new Surf();
     inner.surf([12, 6][lod]!, [5, 2][lod]!, (u, v) => {
-      const t = lerp(0.3, MOUTH, v);
-      const p = round(b, t * TUBE, tubeRadius(t) * WELL * (v === 0 ? 0.05 : 1), u * TAU);
+      // up to the rim and a little wider than where the lobes begin, so that no slit shows between the eye and the limb
+      const t = lerp(0.3, 1, v);
+      const p = round(b, t * TUBE, tubeRadius(Math.min(t, MOUTH)) * WELL * (v === 0 ? 0.05 : 1 + 0.07 * v * v), u * TAU);
       return { p: [p.x, p.y, p.z], c: mix(PETAL.pit, PETAL.eye, v * v) };
     });
     part(inner.build(), 0.03);
@@ -509,9 +566,9 @@ function makeFlowerGeometry(variant: number, lod: number): THREE.BufferGeometry 
 }
 
 // ---------------------------------------------------------------------------
-// Capsule: "a round base and a long beak, resembling a bird's head", between its two bracts
+// Capsule: "resembles a bird's head with a round base and a long 'beak'", between its two bracts
 // ---------------------------------------------------------------------------
-/** "a globular base 5-10 mm across and an elongated beak 9-15 mm long" (Weeds of Australia). */
+/** "rounded (i.e. globular) base (5-10 mm across)" and "an elongated beak (9-15 mm long)" (Weeds of Australia). */
 const CAPSULE_WIDTH = middle(characterRange(morphology, 'fruit.baseDiameterM'));
 const CAPSULE_BEAK = middle(characterRange(morphology, 'fruit.beakLengthM'));
 /** The base is lower than it is wide. Read from a photograph. */
@@ -527,7 +584,7 @@ function makeCapsuleGeometry(variant: number, lod: number): THREE.BufferGeometry
   const base = b.at(0).c;
   addStalk(mg, b, [5, 3, 3][lod]!);
   // the bracts stand apart, folded, either side of the capsule
-  addBracts(mg, b, ([[8, 8], [4, 3], [2, 2]] as const)[lod]!, lod === 0, 0.34, 0.7);
+  addBracts(mg, b, ([[8, 8], [4, 3], [2, 2]] as const)[lod]!, lod === 0, 0.3, 0.35);
   const sb = new Surf();
   const R = CAPSULE_WIDTH / 2;
   const H = CAPSULE_BASE;
@@ -564,13 +621,23 @@ const leaf: LeafAsset = {
   make: makeLeafGeometry,
   budget: [1900, 260, 36],
   pick: (_lengthM, r) => Math.min(LEAF_FORMS.length - 1, Math.floor(r * LEAF_FORMS.length)),
-  // a fresh mid green, dull; bright yellow green as it unfolds. It is evergreen by habit and has no autumn colour:
-  // outdoors in Britain it is green until the day the cold kills it, so the greens are given again
-  palette: { greenA: lin('#5c8c38'), greenB: lin('#74a646'), young: lin('#9cc45a'), autumnA: lin('#5c8c38'), autumnB: lin('#74a646') },
+  // "dull dark green on the upper surface" (Wisconsin Extension): a dark, slightly grey green, the veins drawn paler and yellower
+  // (greenB is the vein colour); a fresh yellow green as it unfolds. It is evergreen by habit and has no autumn
+  // colour: outdoors in Britain it is green until the day the cold kills it, so the greens are given again
+  palette: { greenA: lin('#3a5526'), greenB: lin('#6f8c45'), young: lin('#7fa448'), autumnA: lin('#3a5526'), autumnB: lin('#6f8c45') },
   // soft and hairy: no gloss
-  roughness: 0.8,
+  roughness: 0.82,
   translucency: THIN_LEAF,
   detailReach: 0.8,
+  texture: palmateTexture(VEINS, 512, 1.1),
+  // on a wall, a post or a trellis the blades hang tip down from the tops of their stalks and face out, lying over
+  // one another like tiles (leaf.posture); on a stem out in the open they face more to the sky
+  hold: {
+    unitAt: UNIT_AT,
+    rise: characterRange(morphology, 'leaf.faceRiseDeg'),
+    riseOpen: characterRange(morphology, 'leaf.faceRiseOpenDeg'),
+    turn: characterNumber(morphology, 'leaf.bladeTurnDeg'),
+  },
 };
 
 const flower: FlowerAsset = {

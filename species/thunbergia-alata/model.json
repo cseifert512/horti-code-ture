@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taxonId": "thunbergia-alata",
-  "statement": "A running model, not a calibrated one, and thinner than the wisteria model it began as a copy of. Sizes of leaf, flower and capsule, the length of stem made in a summer and the season of flowering are from published descriptions; how many stems a plant makes, how long a flower lasts, how much seed sets in Britain and every date are assumptions, and the rules by which a shoot chooses its way are still copied from wisteria. None has been measured on a plant. An annual here cannot branch or thicken in its one year, so its branches are entered as stems from the base. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
+  "statement": "A running model, not a calibrated one. Sizes of leaf, flower and capsule, the length of stem made in a summer and the season of flowering are from published descriptions; how many stems a plant makes, how long a flower lasts, how much seed sets in Britain, every date and every weight in the stem's mechanics are assumptions, and the weights in a shoot's choice of way are chosen to reproduce how a gardener trains it. None has been measured on a plant. An annual here cannot branch or thicken in its one year, so its branches are entered as stems from the base. Use its output to compare scenarios and to show what a design implies, not to predict dates, sizes or loads.",
   "names": {
     "flowerHeld": "facing_out",
     "fruitHeld": "facing_out",
@@ -12,13 +12,13 @@
       "value": 135,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Not bud break: the first day on which a plant in the ground is taken to grow, mid May. It is set out once the frosts are over (RHS Plants: \"plant out after all risk of frost has passed\"; Wisconsin Extension: when nights stay above 50 F). The day itself is a choice."
+      "basis": "Not bud break: the first day on which a plant in the ground is taken to grow, mid May. It is set out once the frosts are over (RHS Plants: planted out \"after all risk of frost has passed, 30cm (12in) apart\"; Wisconsin Extension: when nights stay above 50 F). The day itself is a choice."
     },
     "phenology.growthEndDoy": {
       "value": 290,
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Taken to go on extending until the nights turn cold in mid October: a tropical African plant rated H2, \"tolerant of low temperatures, but not surviving being frozen\" (RHS). No dated source; in a real year it is the weather that decides."
+      "basis": "Taken to go on extending until the nights turn cold in mid October: a tropical African plant rated H2, \"Tolerant of low temperatures but will not survive being frozen\" (RHS hardiness ratings, H2). No dated source; in a real year it is the weather that decides."
     },
     "phenology.leafFlushDoy": {
       "value": [
@@ -45,7 +45,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Not leaf fall: the plant is killed by the cold, taken as the first week of November, and its last day is the day it dies. RHS hardiness H2 (1 to 5 degC, \"not surviving being frozen\"). The date stands for the first hard frost, which in a real year comes when it comes."
+      "basis": "Not leaf fall: the plant is killed by the cold, taken as the first week of November, and its last day is the day it dies. RHS hardiness H2 (1 to 5 degC, \"Tolerant of low temperatures but will not survive being frozen\"). The date stands for the first hard frost, which in a real year comes when it comes."
     },
     "phenology.floralInitiationDoy": {
       "value": [
@@ -63,7 +63,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Flowers open one after another along the growing stems \"from summer to early autumn\" (RHS): taken as 1 July to 7 October. Seed houses give June or July to October; Wisconsin Extension \"from mid-summer until frost\"."
+      "basis": "Flowers open one after another along the growing stems \"from summer to early autumn\" (RHS): taken as 1 July to 7 October. Seed houses give June or July to October; Wisconsin Extension \"bloom from mid-summer to frost\"."
     },
     "phenology.petalFallDoy": {
       "value": [
@@ -88,7 +88,7 @@
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://hort.extension.wisc.edu/articles/black-eyed-susan-vine-thunbergia-alata/",
-      "basis": "The most stem one shoot makes in a summer: \"as much as 8 feet in one season under ideal conditions\" (Wisconsin Extension), which is 2.4 m; RHS \"to 2.5 m tall\". Most stems stop short of it, at the length drawn for each from architecture.leaderLengthM: the breeder gives the vine length of the Susie series as 1.8 to 2 m, and Wisconsin 3 to 5 ft as usual in the Midwest."
+      "basis": "The most stem one shoot makes in a summer: \"reaching up to 8 feet in a single season under ideal conditions\" (Wisconsin Extension), which is 2.4 m; RHS \"to 2.5 m tall\". Most stems stop short of it, at the length drawn for each from architecture.leaderLengthM: the breeder gives the vine length of the Susie series as 1.8 to 2 m, and Wisconsin 3 to 5 ft as usual in the Midwest."
     },
     "extension.lateralMPerSeasonByOrder": {
       "value": [
@@ -132,11 +132,17 @@
         0,
         0,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ],
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "Eighteen twining stems in the year it is planted, standing for the seedling's own stem and every branch it makes. It branches from the leaf axils all summer; sources say only \"many twining stems\" (SANBI, as a search result gives it: the page could not be opened) and \"one or many stems\" (Botany Brisbane). The engine cannot branch a stem in the year it is made, so every branch is entered here as a stem from the ground, and all start on planting day, which real branches do not. The number is chosen, not counted, from what the plant is said to cover: set 30 cm apart (RHS Plants) it gives \"quick cover\" (RHS) to a fence 1.5 to 2.5 m high, and a strip 0.3 m wide and 1.8 m high under two layers of leaf needs about 800 leaves of this size, which is about 35 m of stem."
+      "basis": "Twenty-four twining stems in the year it is planted, standing for the seedling's own stem and every branch it makes. It branches from the leaf axils all summer; sources say only \"many twining stems\" (SANBI, as a search result gives it: the page could not be opened) and \"one or many stems\" (Botany Brisbane). The engine cannot branch a stem in the year it is made, so every branch is entered here as a stem from the ground, and all start on planting day, which real branches do not. The number is chosen, not counted, from what the plant is said to cover and what photographs show: a spread of 0.5 to 1 m and a height of 1.5 to 2.5 m (RHS), clothed as a column of overlapping leaf two or three deep (Wikimedia Commons: \"Thunbergia alata, Hungary.jpg\", \"Climber at timber-framed house, Limburg.jpg\"). Such a column 0.6 m wide and 1.8 m high, two to three leaves deep, holds about 900 to 1300 leaves of this size, which at a pair of leaves every 9 cm is 40 to 60 m of stem; 24 stems of 1.5 to 2.5 m make about 47 m."
     },
     "architecture.nurseryCaneM": {
       "value": 0.2,
@@ -172,7 +178,7 @@
     "architecture.lateralLengthSpread": {
       "value": 0.3,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used for this plant: an annual here makes no branch from a bud, since a bud breaks only in a later spring and this plant has none (see extension.lateralMPerSeasonByOrder). The value is kept because every model carries every parameter."
     },
     "architecture.lateralChanceByParentOrder": {
       "value": [
@@ -181,7 +187,7 @@
         0.55
       ],
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used for this plant: no bud of an annual lives to a second spring to break into a branch; its branches are entered as stems from the base (architecture.trunkStemStartYears). Kept because every model carries every parameter."
     },
     "architecture.budExtraDormancyChance": {
       "value": 0,
@@ -195,27 +201,27 @@
       ],
       "unit": "years",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Not used: buds of this plant never wait a year (architecture.budExtraDormancyChance is 0). Kept because every model carries every parameter."
     },
     "architecture.maxStemsPerRoute": {
-      "value": 18,
+      "value": 24,
       "status": "provisional_design_assumption",
       "basis": "As many as the plant has. The stems are a millimetre or two thick and wind round one another as readily as round the support, so a plant given one string sends every stem up it as a single rope. Not a count from a source."
     },
     "architecture.maxStemsPerPrimaryMember": {
-      "value": 18,
+      "value": 24,
       "status": "provisional_design_assumption",
       "basis": "As many as the plant has: a gardener can tie any number of stems a millimetre or two thick up a glulam member. Not a count from a source."
     },
     "routing.occupancyCost": {
-      "value": 0.6,
+      "value": 1.5,
       "status": "provisional_design_assumption",
-      "basis": "How much a stem is put off a support by each stem already on it: little. Photographs show the stems of one plant roped together up a single cane or post into a dense column of leaf (Wikimedia Commons: \"Thunbergia alata, Hungary.jpg\", \"Black Eyed Susan (Thunbergia alata) with orange flowers.jpg\"). Lowered from the 1.6 copied from wisteria, whose leaders a gardener spaces out. A weight in the engine's choice of route, not a measurement."
+      "basis": "How much a stem is put off a support by each stem already on it. A gardener training this plant on a trellis spreads its stems across it: the RHS gives it a spread of 0.5 to 1 m beside its 1.5 to 2.5 m of height, and photographs of plants on a frame show a column of leaf as wide as a lath bay or two (Wikimedia Commons: \"Thunbergia alata, Hungary.jpg\"), not a rope. At 1.5 the first stems take the stay cable, which they twine by themselves, and the rest go to the post and the trellis, where they are tied. A weight in the engine's choice of route, not a measurement; raised from the draft's 0.6, at which twelve of eighteen stems went up the one cable."
     },
     "routing.downhillCostPerM": {
-      "value": 10.7,
+      "value": 40,
       "status": "provisional_design_assumption",
-      "basis": "Raised in step with routing.giveUpCost, so that the drop a shoot will follow before it gives up stays what it was (about 0.85 m). A twining shoot does not wind downhill; how far one of this plant will go down a support is not recorded."
+      "basis": "What a stem is put off by each metre a way runs downhill. A twining shoot does not wind downhill, and a gardener does not lead one down: at 40 a stem follows a drop of at most 0.35 m before it gives up (routing.giveUpCost), and prefers a crowded upright to a lath that runs down to the ground, which at 10.7 one stem in two dozen took. How far a shoot of this plant will go down a support is not recorded. A weight, not a measurement."
     },
     "routing.uphillBonusPerM": {
       "value": 2,
@@ -230,7 +236,7 @@
     "routing.riserBonus": {
       "value": 1.4,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "A pull towards rising members for a stem the engine marks as a riser. This plant's stems all climb by twining, and routing.uphillBonusPerM already gives every stem its wish to go up; the value is a weight in the engine's choice of route, chosen so that a riser still prefers an upright lath to a level rail. Not a measurement."
     },
     "routing.tierBonus": {
       "value": 0,
@@ -240,17 +246,17 @@
     "routing.roleDropChance": {
       "value": 0.12,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The chance that a stem marked for a level tier or a riser forgets its mark. With routing.tierBonus at 0 the mark does nothing for this plant, so the chance changes nothing that is drawn. Not a measurement."
     },
     "routing.noise": {
       "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "The chance element in a stem's choice of way at a joint. The tip of this plant circles as it grows and takes whatever it meets first (Darwin timed a circle at about three hours), so the choice between two rising ways is close to a toss; 0.9 is worth a rise of about 0.45 m at routing.uphillBonusPerM, enough to split stems between the post and the laths without sending any down. A weight, not a measurement."
     },
     "routing.giveUpCost": {
-      "value": 9,
+      "value": 14,
       "status": "provisional_design_assumption",
-      "basis": "Raised from the 4.2 copied from wisteria so that a support already carrying stems does not stop the next one: at 4.2 the third or fourth stem to reach a cable gave up, and this plant's stems wind round one another as a matter of course. A weight in the engine's choice of route, not a measurement."
+      "basis": "The cost at which a stem gives up rather than take the cheapest way on. Raised from the 4.2 copied from wisteria so that a support already carrying stems does not stop the next one: with routing.occupancyCost at 1.5 and two dozen stems from one foot, at 9 the last stem to leave the foot found every way too crowded and grew not at all. A gardener ties every stem in somewhere, and this plant's stems wind round one another as a matter of course. A weight in the engine's choice of route, not a measurement."
     },
     "attachment.maxGraspDiameterMm": {
       "value": 20,
@@ -267,7 +273,7 @@
     "attachment.pitchPerCircumference": {
       "value": 1.46,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How far a coil climbs per circumference of the support round which it winds, beyond attachment.minPitchM. No source gives the coils of this plant; on the thin cables and strings it is given, the minimum pitch decides the coil and this ratio matters only round thicker supports. Not a measurement."
     },
     "organs.leafSpacingM": {
       "value": [
@@ -280,13 +286,13 @@
     },
     "organs.leafLengthM": {
       "value": [
-        0.055,
-        0.11
+        0.044,
+        0.083
       ],
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://apps.lucidcentral.org/rainforest/text/entities/Thunbergia_alata.htm",
-      "basis": "Stalk and blade together, which is what the engine calls the length of a leaf. Blades \"about 3-8 x 3-7.5 cm\" on stalks \"about 2.5-3.5 cm long\" (Australian Tropical Rainforest Plants); the top of the blade range is taken as 7.5 cm, the \"up to 3 inches\" of Wisconsin Extension and North Carolina State, since plants of one summer in Britain do not make the largest leaves."
+      "basis": "From the stem to the farthest point of the leaf as it hangs, which is what the engine calls the length of a leaf and what the drawing measures: the stalk and the blade hung from its top at about 50 degrees below the stalk's line (morphology.json leaf.bladeDropDeg, read from photographs), so the stalk plus 0.64 of the blade. Blades \"about 3-8 x 3-7.5 cm\" on stalks \"about 2.5-3.5 cm long\" (Australian Tropical Rainforest Plants): 2.5 + 0.64 x 3 = 4.4 cm, and 3.5 + 0.64 x 7.5 = 8.3 cm, the top of the blade range taken as 7.5 cm, the \"up to 3 inches\" of Wisconsin Extension and North Carolina State, since plants of one summer in Britain do not make the largest leaves. The draft's 5.5 to 11 cm was stalk and blade laid end to end, which drew every blade a quarter too large once the viewer hung it."
     },
     "organs.leavesPerNode": {
       "value": 2,
@@ -325,7 +331,7 @@
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://keyserver.lucidcentral.org/weeds/data/media/Html/thunbergia_alata.htm",
-      "basis": "Width of the one flower across its five spread lobes: \"3-4 cm wide\" (Weeds of Australia); \"about 1 1/2 inches wide\" (Wisconsin Extension). The flowers stand singly, so one flower is one record."
+      "basis": "Width of the one flower across its five spread lobes: \"3-4 cm wide\" (Weeds of Australia); \"1½ inch wide\" (Wisconsin Extension). The flowers stand singly, so one flower is one record."
     },
     "organs.whipShareOfNodes": {
       "value": 0,
@@ -401,7 +407,7 @@
       ],
       "unit": "leaves",
       "status": "provisional_design_assumption",
-      "basis": "Not applicable to this plant (RHS: \"no pruning is needed outdoors\"); present because every model carries every parameter."
+      "basis": "Not applicable to this plant (RHS: \"No pruning required outdoors\"); present because every model carries every parameter."
     },
     "pruning.winterBudsKept": {
       "value": [
@@ -419,7 +425,7 @@
       ],
       "unit": "shoots",
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "Shoots from below a cut. Never used: the gardener does not cut this plant (RHS: no pruning needed outdoors), and no event in its routine cuts a stem. Kept because every model carries every parameter."
     },
     "thickening.tipRadiusSquaredMm2": {
       "value": 0.64,
@@ -436,7 +442,7 @@
     "thickening.branchShare": {
       "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "Copied from the Wisteria sinensis model for want of anything better. Not a measurement or a description of this plant."
+      "basis": "How a stem's thickening is shared at a fork. Never applied: stems are thickened at the year's end and this plant is killed by the cold in November (thickening.radiusSquaredPerMetreMm2). Kept because every model carries every parameter."
     },
     "fruit.setShare": {
       "value": 0.2,
@@ -468,7 +474,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "The capsule \"ripens and dries to tan\" inside its bracts (Wisconsin Extension), \"often late in the season\". Taken as August to late October; no dated British record found."
+      "basis": "The capsule \"ripens and dries (RC) to a tan color\" inside its bracts (Wisconsin Extension), \"often produced late in the season\". Taken as August to late October; no dated British record found."
     },
     "fruit.fallDoy": {
       "value": [
@@ -485,7 +491,7 @@
       ],
       "status": "published_plant_profile",
       "source": "https://hort.extension.wisc.edu/articles/black-eyed-susan-vine-thunbergia-alata/",
-      "basis": "No tendrils: \"it does not cling or use tendrils\" (Wisconsin Extension); it holds on by twining its stems."
+      "basis": "No tendrils: \"rather than by clinging or producing tendrils as some other vines do\" (Wisconsin Extension); it holds on by twining its stems."
     },
     "appendages.tendrilLengthM": {
       "value": [
@@ -571,6 +577,87 @@
     "sideShoots.terminalFlowerShare": {
       "value": null,
       "status": "unknown"
+    },
+    "mechanics.greenShootModulusMPa": {
+      "value": 300,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "basis": "How stiff the green stem is. Never measured on this plant. A soft herbaceous stem that never lignifies outdoors here; the value is the generic green shoot's, at the bottom of the searcher stiffnesses Hattermann and others measured across 29 climbers (213 to 15 479 MN/m2). Decides nothing drawn while every stem of this plant is a leader on a route: the engine lays only shoots in the air by their weight, and this plant makes none."
+    },
+    "mechanics.woodModulusMPa": {
+      "value": 400,
+      "unit": "MPa",
+      "status": "provisional_design_assumption",
+      "basis": "How stiff the stem is once set. This plant makes no wood in its one British summer, so the set stem is taken as barely stiffer than the green one; no measurement found. Decides nothing drawn while the plant makes no shoot in the air."
+    },
+    "mechanics.woodSetDays": {
+      "value": 120,
+      "unit": "days",
+      "status": "provisional_design_assumption",
+      "basis": "Days a length of stem stays green and soft: longer than this plant lives outdoors in Britain (set out mid May, killed in early November), so in effect it never sets. Not a measurement."
+    },
+    "mechanics.stemFreshDensityKgM3": {
+      "value": 1000,
+      "unit": "kg/m3",
+      "status": "provisional_design_assumption",
+      "basis": "Fresh density of the stem, taken as that of water, as for a soft herbaceous stem; not weighed."
+    },
+    "mechanics.leafFreshMassPerAreaKgM2": {
+      "value": 0.2,
+      "unit": "kg/m2",
+      "status": "provisional_design_assumption",
+      "basis": "Fresh mass of leaf for each square metre of the disc the engine takes for a leaf. A thin, soft blade (Wisconsin Extension: \"soft and hairy\"); not weighed. The generic figure, a film of water a fifth of a millimetre thick."
+    },
+    "mechanics.inflorescenceFreshMassKg": {
+      "value": 0.0015,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "One flower with its stalk and two bracts: a corolla about 3 to 4 cm across and 1.5 to 2.5 cm of tube (Weeds of Australia), taken as a gram and a half; not weighed."
+    },
+    "mechanics.fruitFreshMassKg": {
+      "value": 0.0008,
+      "unit": "kg",
+      "status": "provisional_design_assumption",
+      "basis": "One capsule, a round base 5 to 10 mm across and a beak 9 to 15 mm long (Weeds of Australia), with its bracts: taken as under a gram; not weighed."
+    },
+    "mechanics.searcherReachM": {
+      "value": 0.5,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How far a shoot holds itself out unsupported before its weight brings it over. No figure for this plant; Hattermann and others give stem twiners 0.10 to 2.25 m, and a thread of a stem a millimetre or two thick is near the bottom of that range. Not used while the plant makes no shoot in the air."
+    },
+    "tropism.turnPerM": {
+      "value": 1.5,
+      "unit": "rad/m",
+      "status": "provisional_design_assumption",
+      "basis": "How fast a free shoot turns to the vertical and the light. The generic value; no measurement of this plant. Not used while the plant makes no shoot in the air."
+    },
+    "tropism.lightShare": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "How far a free shoot leans to the light rather than straight up. The generic value; not used while the plant makes no shoot in the air."
+    },
+    "mechanics.leanDeg": {
+      "value": 4,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The lean of a shoot that would set out plumb. The generic value; not used while the plant makes no shoot in the air."
+    },
+    "mechanics.leafWeightOffsetShare": {
+      "value": 0.5,
+      "status": "provisional_design_assumption",
+      "basis": "How far off the stem a leaf's weight acts, as a share of its length. The generic value; not used while the plant makes no shoot in the air."
+    },
+    "attachment.graspReachM": {
+      "value": 0.1,
+      "unit": "m",
+      "status": "provisional_design_assumption",
+      "basis": "How wide a gap a circling tip crosses to take hold. Darwin timed this plant's tip round a circle in about three hours but gave no width for its sweep; a shoot this slender sweeps less than the hop's 19 inches. A choice, not a measurement."
+    },
+    "organs.leafTurnToOpenShare": {
+      "value": 0.8,
+      "status": "provisional_design_assumption",
+      "basis": "How far each leaf stalk is turned away from what the stem lies on, towards the open side and the light. Photographs of plants on a post and on wires show the leaves standing out from the support and lying over one another face outwards, nearly none turned in to it (Wikimedia Commons: \"Thunbergia alata, Hungary.jpg\", \"Black Eyed Susan (Thunbergia alata) with orange flowers.jpg\"). A share read from pictures, not a measurement."
     }
   }
 }
