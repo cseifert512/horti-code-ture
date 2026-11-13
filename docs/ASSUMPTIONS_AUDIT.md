@@ -646,3 +646,57 @@ The vine's own mechanics were set again with them: a shoot stays green for 120 d
 - *Every new number is a choice* except the two counts taken from Bean and the RHS.
 
 Tests: `packages/core/test/care.test.ts`, `packages/core/test/posture.test.ts`, and the changed cases in `packages/core/test/free-shoot.test.ts`.
+
+## 13. Routines of care for six more plants, and the shared tests after the eight new taxa
+
+Added 13 November 2026, after eight more climbers were merged, each built by its own agent against photographs. Six of them had a routine of care that the model did not act on, and without it some showed what the owner had objected to three times: rows of straight shoots above the timber and bare threads hanging in the air. The rule (`PROJECT_CONTEXT.md` section 3.4): the plant a client is shown is the plant as the in-house gardener keeps it.
+
+**The six routines** (`sim/scenarios.ts`, each with its dates, distances and quotations in its own comment; all six in `MODELLED_ROUTINE`, dispatched through `routineEvents` in `sim/planting.ts`; the four that are in the reference palette in its trained events). No new event type.
+
+| Plant | Routine | What it rests on |
+|---|---|---|
+| *Clematis armandii* | 20 May from the second year: free shoots beyond 0.6 m cut off (`trim_to_bounds`) | RHS: pruning limited to "restricting them to the space available"; group 1, after flowering |
+| *C. cirrhosa* 'Freckles' | Planting day: all stems to 0.3 m (`hard_prune`). 25 March from the second year: free shoots beyond 0.3 m cut off | RHS group 1: "pruned back hard the first spring after planting", to "a strong pair of leaf buds about 30cm (12in) above soil level"; prune "immediately after flowering" |
+| *Lonicera periclymenum* 'Graham Thomas' | Planting day: the nursery stem cut by two thirds. 1 March from the first year after planting: free shoots beyond 0.5 m cut off. 5 September: flowered side shoots keep 60 to 70% (`shorten_side_shoots`, `remains: 'shoot'`) | RHS honeysuckle guide: "wayward long shoots"; "Cut back flowered shoots by one-third in late summer"; at planting, cut by two thirds "to encourage strong new shoots from the base" |
+| Star jasmine | 15 April from the second year: free shoots beyond 0.3 m cut off | RHS: "Maintenance pruning, if required, should be done in spring" |
+| *Akebia quinata* | From the third year (its first flowering): 5 June beyond 0.3 m, 1 September beyond 0.5 m, cut off | RHS group 11: "Those that flower on the previous year's growth should be pruned after flowering"; the distances are the species agent's choice |
+| Trumpet vine | 25 February from the third year: every side shoot and free shoot of the year to one or two nodes, as stubs (`shorten_side_shoots`, `keepNodes` [1, 2]) | RHS: spur-prune "in late winter", "to within two or three buds of the main stems" |
+
+Two departures from the routines as handed over, both because the engine regrows a cut stem only at the start of a season (`startSeason`): the winter clematis's first cut is on planting day, not 20 March (its buds break on 16 March; cut on the 20th, the cane's stub stood bare all summer and the young stems, shorter than the cut, shot again from their tips the next spring), and so is the honeysuckle's planting cut (its season has begun by planting day). The trumpet vine's `sideShoots.lifespanYears` goes from 1 to 30, so that the cut and not the growth model sheds its shoots, as was done for the vine in section 12; an untended trumpet vine now keeps them.
+
+**Two faults the tests found in the engine, and mended.**
+
+- *A side shoot already no longer than the buds a winter cut keeps* (`keepNodes`) was left a shoot: neither cut nor a stub, it bore no new shoot from its node and flowered again at its old end. A trumpet vine, which flowers only "at the end of the current season's growth" (Bean), showed trusses on two-year-old ends. Such a shoot is now left as the stub the cut would leave.
+- *A stub came into leaf at its own nodes every spring*, on the first day of the leaf flush, ahead of the shoots it bears; the trumpet vine was then no longer late into leaf. A stub's leaves are now those of the season before the cut; the buds at its nodes break as next season's shoot, which carries the leaves. Both mends touch only the winter stub cut, so the vine's runs moved with the trumpet vine's.
+
+**A fault in the design report, mended.** Flowers sorted by height counted a flower in the year its flowering season began, the plants' yearly counts in the year it opened. For a display that runs through the new year (the winter clematis now opens from late October to mid February) the two disagreed by a third, and the January flowers were in no year's height sort. Both now count by the day a flower opened.
+
+**What the stills show** (the specimen frame, six years, trained; before stills from each species agent's folder, after stills in the integrator's scratch folder, `central/routines/<id>/`):
+
+- *Trumpet vine.* 24 February: straight shoots standing over the frame. 15 March: spurs along the framework, nothing standing. 23 August: the frame clothed and in flower, fuller than before (40 trusses open against 31).
+- *Akebia.* January and April: the bare threads hanging off the post, the arm and the frame are gone (79 free shoots beyond 0.3 m to none); flowering the same within 2%.
+- *Clematis armandii.* January: the bare dark strings among the hanging curtains mostly gone (221 free shoots to 129, those left being the summer's shoots that flower next spring); end of March: the flowering exactly as before, flower for flower.
+- *Freckles.* Tidier and thinner: in July 9,450 leaves where there were 13,450; flowering 8% less, since the March cut takes old shoots that would have carried side shoots.
+- *'Graham Thomas'.* **Does not do what it is for in winter.** The fringe of thin twigs above the top arm in January is still there. The fringe is side shoots, which `trim_to_bounds` (free shoots only) does not touch, and the September cut takes a third of the flowered ones and leaves the rest (269 unflowered of 799 in 2032). In early September the cut takes most of the fringe (15 shoots standing well above the top to 3). An existing event could say more (`shorten_side_shoots` with `withinM`, `which: 'all'` in March, as ivy's adult growth); that would be a different routine from the one handed over, and is not made.
+- *Star jasmine.* Little to see: four wayward shoots a year cut; leaves and flowers within 5%.
+
+**The shared tests.** Seventeen failed with the eight plants merged, and the routines broke three viewer tests of their own plants. Each was read for what it holds. One found the report fault above and passes untouched since; the others were changed to hold their intent for the plants as they now are, each with a comment saying what moved and why. **Design readings that changed their answer:**
+
+- *November is no longer flowerless.* 'Freckles' opens from 25 October (a nursery's "November to February", first flowers in late October some years), and on 15 November it is the one plant in flower; ivy is no longer needed to fill the gap.
+- *Winter evergreen cover, mixed vault.* From the lawn, the honeysuckle and the winter clematis together are 31.2% of the view in January: within the 25 to 40% target, where the vault was short of it from everywhere. From the approach and from inside it is still short (11.9%).
+- *Winter evergreen cover, reference palette.* Still short from every viewpoint, but from the approach no longer far short: 19.6% (it was under 12.5%). With four times the leaf and three times the shoots, the approach reads 50.2%, past the top of the target; that miss rests on the unmeasured densities. From inside and from the rim it is missed either way.
+- *Timber in high summer.* From the approach 68.6% of the glulam is seen on 15 July (more than 70% before; 57.9% without the four routines). Still most of it.
+- *Sensitivity.* Larger leaves now move the frameworks, through light: up to 6% for most plants and 22% for the winter clematis at four times the leaf, and its flowers by a third. With light left out nothing moves.
+
+**Which runs moved.** Every run that plants one of the six trained (the specimen frame, the reference palette, a planting plan); the trumpet vine untended (its shoots kept); the crimson glory vine trained (the two stub mends); the report's flowers by height wherever a display crosses the new year. A plant with no routine, alone, grows as before; in the palette its neighbours' care moves its light.
+
+**What is still wrong, or not done.**
+
+- *A side shoot that lives more than a season flowers again at its old end every year*, whether or not it grew, for every taxon with side shoots. Untended, the trumpet vine opens 353 of its 681 trusses on ends made in an earlier year; ivy, *Lonicera henryi*, the star jasmine and the untended crimson glory vine have the same rule. The gardened trumpet vine has none since the mend above. Mending it for plants that flower on the year's growth moves many runs and is left for its own step.
+- *A cut after bud burst waits a year to regrow* (`startSeason`), and `hard_prune` with all stems marks stems shorter than the cut as stubs to shoot again from their tips.
+- *The mixed vault plants 'Freckles' without its routine*, because its tests cut it by hand. Its winter reading would move with it (27.6% from the lawn).
+- *'Graham Thomas's winter fringe* (above).
+- *Every distance in a `trim_to_bounds` is a choice*; no design declares an envelope yet.
+- The species profiles still say these routines are not modelled.
+
+Tests: `packages/core/test/care.test.ts` (the six routines), and the changed cases in `annual`, `light`, `mixed`, `palette`, `report` and `sensitivity` tests and in the viewer tests of the trumpet vine and *Clematis armandii*.

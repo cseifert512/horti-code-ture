@@ -316,7 +316,10 @@ export function designReport(sim: Simulation, options: ReportOptions = {}): Desi
   const low = new Map<string, number>();
   const headroom = bower.zones.filter((z) => z.kind === 'headroom');
   for (const fl of data.flowers) {
-    if (fl.year !== year) continue;
+    // the flowers that opened in the calendar year the report describes, as the plants' yearly counts (`flowersOpened`)
+    // take them: a display that runs through the new year is counted in the year each flower opened, not the year its
+    // season began, or its January flowers would be in no year's count
+    if (cal.dateOf(fl.openDay).year !== year) continue;
     const key = `${fl.plantId}|${zoneOf(fl.position[2])}`;
     byHeight.set(key, (byHeight.get(key) ?? 0) + 1);
     // a long inflorescence reaches its own length from where it is attached: straight down where it hangs, along its direction where it is held

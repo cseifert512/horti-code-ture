@@ -300,7 +300,10 @@ describe('Clematis armandi grown on the specimen frame', () => {
   // the growth model's phenology.evergreenLeafFallDoy: "In summer the old leaves drop off the vine" (Rainyside Gardeners)
   it('keeps last year\'s leaves through winter and spring and sheds them in June and July', () => {
     const seasons = (day: number) => seasonsOf(data, cal.dateOf(day).year).get('specimen');
-    const old = data.leaves.filter((l) => l.firstYear === last - 1);
+    // Since 13 November 2026 the gardener cuts the long free shoots back on 20 May (clematisArmandiRoutine), and the old
+    // leaves on them go with them: 1960 of the 2576 here. What this asks of the leaf model is asked of the leaves the cut leaves.
+    const visit = cal.dayOf(`${last}-05-20`);
+    const old = data.leaves.filter((l) => l.firstYear === last - 1 && l.removedDay !== visit);
     const present = (iso: string) => old.filter((l) => leafState(l, seasons(cal.dayOf(iso)), cal.dayOf(iso)).present).length;
     expect(present(`${last}-01-15`)).toBeGreaterThan(300);
     expect(present(`${last}-05-31`)).toBe(present(`${last}-01-15`));

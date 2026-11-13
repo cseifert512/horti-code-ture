@@ -7,6 +7,7 @@ import { toRenderData } from '../src/sim/render-data.ts';
 import { type DesignReport, designReport, formatDesignReport } from '../src/sim/report.ts';
 import { type Growable, VAULT_VIEWPOINTS, mixedOnVault, wisteriaOnVault } from '../src/sim/scenarios.ts';
 import type { Scenario } from '../src/sim/types.ts';
+import { viewCoverage } from '../src/sim/view.ts';
 
 const speciesDir = fileURLToPath(new URL('../../../species', import.meta.url));
 const library = loadGrowable(speciesDir);
@@ -56,11 +57,27 @@ describe('what is seen through the year', () => {
     for (const v of month(mixed, 7).views) expect(v.evergreenFoliage).toBeLessThan(v.foliage);
   });
 
-  it('finds one honeysuckle short of the 25 to 40 per cent winter-evergreen design target', () => {
-    // KEY.md section 6 sets the target; this planting does not meet it as seen, and the report can now say by how much
-    // short of the target's lower end from every viewpoint. The honeysuckle's leaf is a fifth of the view from the
-    // nearest of them: a little under until its shoots in the air were laid by their mechanics, a little over since
-    for (const v of month(mixed, 1).views) expect(v.evergreenFoliage).toBeLessThan(0.25);
+  // KEY.md section 6 sets the target. Until 13 November 2026 this was "finds one honeysuckle short of the 25 to 40 per
+  // cent winter-evergreen design target": short from every viewpoint. The winter clematis, then a stand-in that added
+  // little leaf, is now modelled as the evergreen it is, and from the lawn, where it and the honeysuckle both stand,
+  // their winter leaf is 31.2% of the view on 15 January 2034 (the honeysuckle's alone 20.4%, the clematis's 15.7%):
+  // within the target. From the approach and from inside the planting is still short of it (11.9% and 11.9%). With the
+  // clematis's routine of care, which this scenario does not apply, it would be 27.6% from the lawn.
+  it('finds the honeysuckle alone short of the winter-evergreen design target, and the planting within it from the lawn', () => {
+    const jan = month(mixed, 1);
+    const lawn = jan.views.find((v) => v.viewpointId === 'lawn')!;
+    expect(lawn.evergreenFoliage).toBeGreaterThanOrEqual(0.25);
+    expect(lawn.evergreenFoliage).toBeLessThanOrEqual(0.4);
+    for (const v of jan.views) if (v.viewpointId !== 'lawn') expect(v.evergreenFoliage, v.viewpointId).toBeLessThan(0.25);
+    // the honeysuckle's leaf alone, from every viewpoint
+    const data = toRenderData(mixedSim);
+    const alone = { ...data, leaves: data.leaves.filter((l) => l.plantId === 'honeysuckle') };
+    const day = mixedSim.calendar.dayOf(jan.date);
+    for (const vp of mixedSim.scenario.viewpoints!) {
+      const [v] = viewCoverage(mixedSim.scenario.bower, alone, vp, [day], (d) => mixedSim.calendar.dateOf(d).year);
+      expect(v!.evergreenFoliage, vp.id).toBeLessThan(0.25);
+      expect(v!.evergreenFoliage, vp.id).toBeGreaterThan(0);
+    }
   });
 
   it('has something in flower in winter, spring and summer, each from a different plant', () => {

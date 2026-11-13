@@ -316,13 +316,33 @@ describe('the same plant on the north side and on the south', () => {
     // in its first years by about as much as the light it loses: a tenth or so, not a collapse
     expect(n[1]! / s[1]!).toBeGreaterThan(0.8);
     expect(n[1]! / s[1]!).toBeLessThan(0.97);
-    // and the gap closes as both near the length the model plans for them: light sets how fast, not how far
-    expect(n[5]! / s[5]!).toBeGreaterThan(n[1]! / s[1]!);
+    // and the gap closes as both near the length the model plans for them: light sets how fast, not how far. Asked of
+    // the two stems both plants start with, whose planned lengths are drawn on planting day and so are the same on both
+    // sides. Until 13 November 2026 it was asked of the whole framework, which the stand-in let close; with the plant's
+    // own model the north plant ends two laterals short (53.8 m against 62.4 m from the ninth year), because each lateral
+    // is drawn from the plant's `arch` stream in the order its growth reaches the node, and a slower plant reaches them
+    // in another order. The whole-framework ratio was 0.914 in the second year and 0.913 in the sixth; these two stems' is
+    // 0.916 and then 1.000 from the fifth year.
+    const firstTwo = (stationId: string, lightResponse = true) => {
+      const sim = new Simulation({ name: `clematis-armandi alone at ${stationId}`, start: '2027-03-01', seed: 7, bower: dome(), taxa, plantings: [{ plantId: 'plant', taxonId: 'clematis-armandi', stationId, date: '2027-03-12', tieToTimber: true }], events: [], lightResponse });
+      const two = () => [...sim.axes.values()].filter((a) => a.role === 'leader' && a.parent === null).sort((a, b) => a.bornDay - b.bornDay || (a.id < b.id ? -1 : 1)).slice(0, 2).reduce((m, a) => m + (a.alive ? a.lengthAt[a.alive - 1]! : 0), 0);
+      sim.runUntil('2028-12-31');
+      const second = two();
+      sim.runUntil('2032-12-31');
+      return [second, two()] as const;
+    };
+    const [n2, n6] = firstTwo(NORTH);
+    const [s2, s6] = firstTwo(SOUTH);
+    expect(n2 / s2).toBeLessThan(0.97);
+    expect(n6 / s6).toBeGreaterThan(n2 / s2);
+    expect(n6 / s6).toBeGreaterThan(0.99);
     const light = (sim: Simulation) => sim.light.of(sim.plants.get('plant')!, 2032);
     expect(light(north).seasonShare).toBeLessThan(light(south).seasonShare);
     expect(light(north).seasonGrowth).toBeCloseTo(light(north).seasonShare, 1);
-    // and both grow less than the model gives with light left out, because any structure takes some light
-    expect(s[5]!).toBeLessThan(framework(alone('clematis-armandi', SOUTH, { lightResponse: false }))[5]!);
+    // and both grow less than the model gives with light left out, because any structure takes some light. Asked of the
+    // same two stems in the second year, for the reason above: with light left out the whole framework is 43.7 m in the
+    // sixth year against the south plant's 53.8 m, from laterals drawn in another order (13 November 2026).
+    expect(s2).toBeLessThan(firstTwo(SOUTH, false)[0]);
   });
 
   it('still does where its profile leaves aspect open: the woodbine accepts partial shade, and has far more light than that on either side', () => {
@@ -440,7 +460,15 @@ describe('the light section of the design report', () => {
     expect(r.light.plants.find((p) => p.plantId === 'spring-clematis')!.seasonShare).toBeLessThan(1);
     const fw = (s: Simulation, id: string) => s.summaries.find((x) => x.plantId === id && x.year === 2030)!.frameworkM;
     expect(fw(acting, 'spring-clematis')).toBeLessThan(fw(still, 'spring-clematis'));
-    expect(fw(acting, 'vine')).toBe(fw(still, 'vine'));
+    // The vine, which has as much light as its profile asks for, is not slowed by it: its stems from the base are
+    // exactly as they are with light left out. Until 13 November 2026 this asked the same of its whole framework. With
+    // the woodbine beside it now modelled, light read through its leaf turns one of the vine's side shoots on to the
+    // lattice ring in 2028, so that in 2030 a lateral finds the member it would have taken full: 41.42 m of framework
+    // against 42.02 m. Light steers free shoots by design (docs/ASSUMPTIONS_AUDIT.md section 10); it does not slow this plant.
+    for (let y = 2027; y <= 2030; y++) expect(acting.light.of(acting.plants.get('vine')!, y).seasonGrowth, String(y)).toBe(1);
+    const leaders = (s: Simulation) => [...s.axes.values()].filter((a) => a.plantId === 'vine' && a.role === 'leader' && a.removedDay === null).reduce((m, a) => m + (a.alive ? a.lengthAt[a.alive - 1]! : 0), 0);
+    expect(leaders(acting)).toBe(leaders(still));
+    expect(Math.abs(fw(acting, 'vine') - fw(still, 'vine'))).toBeLessThan(0.02 * fw(still, 'vine'));
     expect(formatDesignReport(r)).toContain('was told not to act');
   });
 });

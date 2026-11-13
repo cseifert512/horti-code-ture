@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { loadGrowable } from '../src/node/load-taxa.ts';
 import { flowerState } from '../src/render/presence.ts';
 import { Simulation } from '../src/sim/engine.ts';
+import { param } from '../src/sim/model.ts';
 import { toRenderData } from '../src/sim/render-data.ts';
 import { designReport } from '../src/sim/report.ts';
 import { plantsOnHemisphere } from '../src/sim/scenarios.ts';
@@ -28,10 +29,16 @@ describe('black-eyed Susan, an annual outdoors in the UK', () => {
     for (const e of tended.events) expect(e.modelled, e.date).toBe(true);
   });
 
-  it('makes a plant of about two metres each summer, from three stems', () => {
+  // Until 13 November 2026 this asked for three stems: the stand-in's. The plant's own model now enters every branch the
+  // seedling makes in its summer as a stem from the ground, since the engine cannot branch a stem in the year it is made:
+  // 24 of them, chosen to clothe a column 0.6 m wide and 1.8 m high (its `architecture.trunkStemStartYears`, with the basis).
+  // What is held is the same: each year's plant is the model's whole number of stems, and about two metres high.
+  it('makes a plant of about two metres each summer, from the stems its model plants', () => {
+    const planted = param(taxa.get('thunbergia-alata')!.model, 'architecture.trunkStemStartYears').length;
+    expect(planted).toBe(24);
     for (const y of [2027, 2028, 2029, 2030]) {
       const stems = stemsOf(tended, y);
-      expect(stems.filter((a) => a.role === 'leader'), String(y)).toHaveLength(3);
+      expect(stems.filter((a) => a.role === 'leader'), String(y)).toHaveLength(planted);
       const top = Math.max(...stems.flatMap((a) => a.contact.map((p) => p.z)));
       expect(top, String(y)).toBeGreaterThan(1.2);
       expect(top, String(y)).toBeLessThan(2.6);
@@ -114,7 +121,8 @@ describe('a gardening calendar that misses a year', () => {
     expect(year(missed, 2029).flowersOpened).toBe(0);
     for (const y of [2027, 2028]) expect(year(missed, y)).toEqual(year(tended, y));
     expect(year(missed, 2030).flowersOpened).toBeGreaterThan(20);
-    expect(stemsOf(missed, 2030).filter((a) => a.role === 'leader')).toHaveLength(3);
+    // the year after the missed visit is a whole plant again: as many stems as the plant set out every other year (24; three before 13 November 2026)
+    expect(stemsOf(missed, 2030).filter((a) => a.role === 'leader')).toHaveLength(stemsOf(tended, 2030).filter((a) => a.role === 'leader').length);
   });
 
   it('shows in the log which visit was missing, and in the report what it cost', () => {

@@ -110,8 +110,15 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
     expect(open(palette, 'rose')).toEqual(expect.arrayContaining([9, 10]));
   });
 
-  it('leaves a gap in mid November, which ivy would fill', () => {
-    expect(palette.flowerlessMonths).toEqual([11]);
+  // Until 13 November 2026 this was "leaves a gap in mid November, which ivy would fill": the stand-in for the winter
+  // clematis opened nothing before late November. The plant's own model opens 'Freckles' from 25 October
+  // (`phenology.flowerOpenDoy`: a nursery's November to February, first flowers in late October some years), and on
+  // 15 November 2038 it has 83 flowers open, the only plant in the palette that has. So the palette has no month without
+  // a flower even without ivy, and it is the winter clematis that carries November. Ivy still adds its autumn flowers.
+  it('has something in flower in the middle of every month, November carried by the winter clematis; ivy adds its autumn flowers', () => {
+    expect(palette.flowerlessMonths).toEqual([]);
+    expect(Object.keys(palette.months[10]!.flowers)).toEqual(['winter-clematis']);
+    expect(palette.months[10]!.flowers['winter-clematis']!).toBeGreaterThan(20);
     const withIvy = designReport(new Simulation(referencePalette({ taxa, ivy: true })).runUntil(END));
     expect(withIvy.scenario).toContain('with ivy');
     expect(withIvy.plants.find((p) => p.plantId === 'north-evergreen')!.taxonId).toBe('hedera-helix');
@@ -146,13 +153,19 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
     const [lo] = WINTER_EVERGREEN_COVER.value!;
     expect(w.layoutAgainst).not.toBe('below');
     expect(w.routeHeldByEvergreens).toBeGreaterThan(lo);
-    // as seen: their leaf is well under a quarter of the view from anywhere, and hides less of the timber than that
+    // as seen: their leaf is under a quarter of the view from anywhere, and hides less of the timber than that. Until
+    // 13 November 2026 it was under half of that (12.5%) from every viewpoint. With the evergreens modelled as
+    // themselves, the approach from the south looks at the star jasmine and the two evergreen clematis, and their leaf
+    // is 19.6% of that view on 15 January 2038 (22.4% before their routines of care): short of the target, no longer far
+    // short. From inside and from the rim it is still well under half the target.
     expect(w.views).toHaveLength(3);
     for (const v of w.views) {
       expect(v.against, v.viewpointId).toBe('below');
-      expect(v.evergreen, v.viewpointId).toBeLessThan(lo / 2);
+      expect(v.evergreen, v.viewpointId).toBeLessThan(lo);
       expect(v.timberHidden, v.viewpointId).toBeLessThan(lo);
+      if (v.viewpointId !== 'approach') expect(v.evergreen, v.viewpointId).toBeLessThan(lo / 2);
     }
+    expect(w.views.find((v) => v.viewpointId === 'approach')!.evergreen).toBeGreaterThan(lo / 2);
     const text = formatDesignReport(palette);
     expect(text).toContain('WINTER EVERGREEN COVER on 2038-01-15, against the design target of 25% to 40%');
     expect(text).toMatch(/as laid out: plants that keep their leaves hold \d+% of the route {2}(within|above) the target/);
@@ -177,8 +190,11 @@ describe('the reference palette on the 15 m hemisphere, twelve years on', () => 
 
   it('leaves the timber legible: most of it is still seen in high summer', () => {
     // PROJECT_CONTEXT.md section 2: "Will the timber remain legible as designed, or become completely obscured?"
+    // Until 13 November 2026 more than 70% of the timber was seen from every viewpoint on 15 July. From the approach it is
+    // now 68.6%: the plants on the south side are fuller as themselves (57.9% before the honeysuckle, the two evergreen
+    // clematis and the star jasmine had their routines of care). Still most of it; from inside 99.0%, from the rim 96.6%.
     for (const v of palette.months[6]!.views) {
-      expect(v.timberVisible, v.viewpointId).toBeGreaterThan(0.7);
+      expect(v.timberVisible, v.viewpointId).toBeGreaterThan(v.viewpointId === 'approach' ? 0.6 : 0.9);
       expect(v.timberVisible, v.viewpointId).toBeLessThanOrEqual(1);
     }
   });
@@ -251,7 +267,9 @@ describe('a honeysuckle that flowers on both last year\'s stems and this year\'s
     const f = flush(left, 2034);
     expect(f.early).toBeGreaterThan(10);
     expect(f.late).toBeGreaterThan(5);
-    const note = left.decisions.filter((d) => d.kind === 'floral_initiated').at(-1)!.text;
+    // the note of the flowers along the stems; since 13 November 2026 the plant's own model also has flowering side
+    // shoots, whose note of the buds at their ends ("... at the ends of 479 flowering side shoots") is written after it
+    const note = left.decisions.filter((d) => d.kind === 'floral_initiated' && !d.text.includes('at the ends of')).at(-1)!.text;
     expect(note).toMatch(/\d+ on last year's stems for the first flush and \d+ on this year's growth/);
   });
 
@@ -348,10 +366,21 @@ describe('coverage seen from a viewpoint', () => {
     const yearOf = (d: number) => sim.calendar.dateOf(d).year;
     const coarse = viewCoverage(sim.scenario.bower, data, vp, [day], yearOf)[0]!;
     const fine = viewCoverage(sim.scenario.bower, data, vp, [day], yearOf, { width: 960, height: 720 })[0]!;
-    // twelve bare-stemmed plants in winter hide little of the glulam, at either resolution
-    expect(coarse.timberVisible).toBeGreaterThan(0.85);
-    expect(fine.timberVisible).toBeGreaterThan(0.85);
+    // Until 13 November 2026 this said that twelve plants in winter, as good as bare-stemmed, left more than 85% of the
+    // glulam seen. With the five evergreens modelled as themselves their winter leaf hides 21% of it from the approach
+    // (73.2% seen), so the stems are now asked about on their own: with every leaf taken out of the picture, stems
+    // thinner than a pixel still hide little of the glulam, at either resolution (91.3% and 90.5% seen).
+    const stemsOnly = { ...data, leaves: [] };
+    const bareCoarse = viewCoverage(sim.scenario.bower, stemsOnly, vp, [day], yearOf)[0]!;
+    const bareFine = viewCoverage(sim.scenario.bower, stemsOnly, vp, [day], yearOf, { width: 960, height: 720 })[0]!;
+    expect(bareCoarse.timberVisible).toBeGreaterThan(0.85);
+    expect(bareFine.timberVisible).toBeGreaterThan(0.85);
+    expect(Math.abs(bareCoarse.timberVisible - bareFine.timberVisible)).toBeLessThan(0.03);
+    // and with the leaf in, what hides the timber is the evergreen leaf, and the two resolutions agree
+    expect(coarse.timberBehindEvergreen).toBeCloseTo(coarse.timberBehindLeaf, 9);
     expect(Math.abs(coarse.timberVisible - fine.timberVisible)).toBeLessThan(0.06);
-    expect(Math.abs(coarse.evergreenFoliage - fine.evergreenFoliage)).toBeLessThan(0.01);
+    // the leaf seen (19.6% coarse, 18.5% fine) agrees within a fifteenth of itself. The old bound, one point of the view,
+    // was set when this leaf was under 12.5% of the view; a point is now a twentieth of it
+    expect(Math.abs(coarse.evergreenFoliage - fine.evergreenFoliage)).toBeLessThan(coarse.evergreenFoliage / 15);
   });
 });

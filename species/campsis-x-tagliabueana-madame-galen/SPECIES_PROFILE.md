@@ -141,3 +141,5 @@ The botanical curator should check the form described above against living plant
 - Not opened (the server refused): Flora of China, *Campsis grandiflora*. Its figures above are as Wikipedia reports them.
 
 **Status:** form and growth described from published accounts, most of them of the two parent species, and compared with photographs of the cultivar and its relatives; nothing measured on the cultivar; site fit must be reviewed.
+
+**Note of 13 November 2026: the routine of care is now modelled.** Where this profile says that no routine is modelled for this plant, or that the model does not act on its care, that was so when it was written. The trained plant now has its routine (`MODELLED_ROUTINE` in `packages/core/src/sim/planting.ts`; `docs/ASSUMPTIONS_AUDIT.md` section 13): each year from the third, on 25 February, every shoot of the year is cut back to one or two buds, and its side shoots are no longer shed by the growth model itself (`sideShoots.lifespanYears` is 30).

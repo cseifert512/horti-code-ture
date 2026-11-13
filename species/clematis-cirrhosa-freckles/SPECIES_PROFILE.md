@@ -96,3 +96,5 @@ Where the model simplifies:
 - A short shoot is drawn longer than the cluster of leaves it is on the plant, because the engine sets leaf nodes 4 cm apart.
 - The summer rest is drawn only as the fall of the oldest leaves in June to August; growth itself is spread over the season as one hump.
 - A young seed head and a ripe one are the same model, its tails spread between the two; the colour dries from green-white to buff.
+
+**Note of 13 November 2026: the routine of care is now modelled.** Where this profile says that no routine is modelled for this plant, or that the model does not act on its care, that was so when it was written. The trained plant now has its routine (`MODELLED_ROUTINE` in `packages/core/src/sim/planting.ts`; `docs/ASSUMPTIONS_AUDIT.md` section 13): all stems are cut to 0.3 m on planting day, and each later year, on 25 March, shoots that hold nothing and stand more than 0.3 m from the timber are cut off.
