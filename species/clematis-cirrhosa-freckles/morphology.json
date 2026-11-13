@@ -33,8 +33,9 @@
       "basis": "Flora of Turkey, as reproduced on the page cited: stems \"striate or smooth\". Striate: with fine lengthwise ridges."
     },
     "stem.youngColour": {
-      "value": null,
-      "status": "unknown"
+      "value": "green flushed red-purple, turning red-brown",
+      "status": "provisional_design_assumption",
+      "basis": "No flora gives it. Read from photographs: Wikimedia Commons \"Clematis cirrhosa var. purpurascens 'Freckles' (54136866406).jpg\" (the cultivar) shows the young stems red-purple where they are lit; Wikimedia Commons \"Clematis cirrhosa, jardí botànic de València.JPG\" (the species) the stems of a season or two red-brown. Bean: young stems silky-hairy, too fine to draw."
     },
     "stem.oldBark": {
       "value": "pale brown, fibrous, splitting lengthwise into strings",
@@ -51,7 +52,7 @@
       "value": "ternate",
       "status": "published_plant_profile",
       "source": "https://turkiyebitkileri.com/foto%C4%9Fraf-galerisi/ranunculaceae-du%C4%9Funcice%C4%9Figiller/clematis-akasma/clematis-cirrhosa.html",
-      "basis": "Flora of Turkey, as reproduced on the page cited: \"long shoots usually bear ternate leaves\". Flora Europaea: leaves \"simple, dentate or 3-lobed, or 1- to 2-ternate with dentate or lobed leaflets\". RHS, of the cultivar: \"divided, lobed and toothed\"."
+      "basis": "Flora of Turkey, as reproduced on the page cited: \"long shoots usually bear ternate leaves\". Flora Europaea: leaves \"simple, dentate or 3-lobed, or 1- to 2-ternate with dentate or lobed leaflets\". RHS, of the cultivar: \"divided, lobed and toothed\". Bean and the International Clematis Society call the cultivar's leaves finely divided or \"fern-leafed\", as of var. balearica; the photographs of the cultivar read here (Wikimedia Commons \"Clematis cirrhosa var. purpurascens 'Freckles' (54136866406).jpg\" (the cultivar); Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar)) show broad, toothed and shallowly lobed leaflets and simple leaves instead, and that is what is drawn."
     },
     "leaf.leafletCount": {
       "value": 3,
@@ -205,9 +206,9 @@
       "basis": "International Clematis Society, of the cultivar: flowers \"5-7.5 cm across\". The same measure as the growth model’s organs.racemeLengthM, and the unit the flower model is authored in."
     },
     "flower.mouthShareOfWidth": {
-      "value": 0.78,
+      "value": 0.9,
       "status": "provisional_design_assumption",
-      "basis": "The width the Clematis Society gives (5 to 7.5 cm) is taken to be of the flower with its sepals spread: sepals 3 to 4 cm long cannot make a bell that wide at the mouth. As the flower hangs it is a broad bell: in a photograph of the cultivar (Wikimedia Commons, \"Clematis cirrhosa var. purpurascens Freckles (54136866406).jpg\", A. Slater, 13 November 2024) the bell is about two thirds as deep as it is wide. 0.78 of the width is used for the mouth: the narrowest the drawing may be for the size it states, and with sepals of the published length it gives a bell about half as deep as wide."
+      "basis": "The width the Clematis Society gives (5 to 7.5 cm) is of the flower as it hangs open. In Wikimedia Commons \"Clematis cirrhosa var. purpurascens 'Freckles' (54136866406).jpg\" (the cultivar) and Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar) the open flowers of the cultivar are wide bells whose tepals spread at about fifty to sixty degrees from the axis, the tips turned out; their mouth is nine tenths of the published width, which with sepals 3 to 4 cm long is a bell about half as deep as wide. An earlier reading of 0.78 drew the bell too closed beside these photographs."
     },
     "flower.tepalCount": {
       "value": 4,
@@ -356,6 +357,48 @@
       "status": "published_plant_profile",
       "source": "https://plants.ces.ncsu.edu/plants/clematis-cirrhosa/",
       "basis": "North Carolina State Extension, of the species: fruit an achene, \"brown/copper\", \"dry small fruits with silky-plumose tail\". That the tails dry to pale fluff is as in other clematis and is not stated for this one."
+    },
+    "leaf.mainVeins": {
+      "value": 5,
+      "status": "provisional_design_assumption",
+      "basis": "Main veins from the top of the stalk of a leaflet or of the simple leaf: a midrib, one to each side lobe and a weaker one to each basal lobe. Read from Wikimedia Commons \"Clematis cirrhosa395.jpg\" (the species) (the large leaves at the top left, whose pale veins fan from the base). No flora describes the venation."
+    },
+    "leaf.leafletSideLobeShare": {
+      "value": 0.4,
+      "status": "provisional_design_assumption",
+      "basis": "How far a side lobe or big basal tooth reaches out beyond the body of the blade, as a share of the end lobe's reach: about a quarter on the shallowly lobed leaflets and up to a half on the deeply lobed ones in Wikimedia Commons \"Clematis cirrhosa395.jpg\" (the species) and Wikimedia Commons \"Clematis cirrhosa, jardí botànic de València.JPG\" (the species); Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar) shows simple leaves with shallow lobes. The middle, 0.4, is drawn and varied by leaf."
+    },
+    "leaf.teethPerSide": {
+      "value": [
+        3,
+        5
+      ],
+      "status": "provisional_design_assumption",
+      "basis": "Coarse teeth on each side of a leaflet between its base and its tip, counted in Wikimedia Commons \"Clematis cirrhosa395.jpg\" (the species), Wikimedia Commons \"Clematis cirrhosa, jardí botànic de València.JPG\" (the species) and Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar). Bean: \"coarsely toothed\"."
+    },
+    "leaf.faceRiseDeg": {
+      "value": [
+        10,
+        40
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far above level the upper face of a simple leaf looks where its stem lies against the frame: in Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar) (a plant on a trellis) and Wikimedia Commons \"Clematis cirrhosa, jardí botànic de València.JPG\" (the species) (on canes) the blades face out and somewhat up, their tips a little down. Read, not measured."
+    },
+    "leaf.faceRiseOpenDeg": {
+      "value": [
+        30,
+        70
+      ],
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "The same where the stem touches nothing: on the free shoots of Wikimedia Commons \"Clematis cirrhosa, jardí botànic de València.JPG\" (the species) the blades are held flatter to the sky. Read, not measured."
+    },
+    "leaf.bladeTurnDeg": {
+      "value": 25,
+      "unit": "degrees",
+      "status": "provisional_design_assumption",
+      "basis": "How far a blade is turned about its face either way from tip-straight-down: the leaves in Wikimedia Commons \"Clématite Cirrhosa Freckles.jpg\" (the cultivar) and Wikimedia Commons \"Clematis cirrhosa, jardí botànic de València.JPG\" (the species) do not all hang alike. Read, not measured."
     }
   }
 }

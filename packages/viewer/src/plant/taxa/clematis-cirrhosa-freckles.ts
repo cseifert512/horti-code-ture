@@ -33,7 +33,7 @@ import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/clematis-cirrhosa-freckles/morphology.json';
 import { RNG, hash2, lerp, smoothstep } from '../../util.ts';
-import { MIDRIB, Merge, type RGB, Surf, WHITE, lin, mix } from '../kit.ts';
+import { GROUND, Merge, type PalmateVeins, type RGB, Surf, WHITE, lin, mix, palmateTexture, veinUv } from '../kit.ts';
 import type { AppendageAsset, FlowerAsset, FruitAsset, LeafAsset, TaxonLook, WoodLook } from '../look.ts';
 
 const morphology = parseMorphology(morphologyJson, 'species/clematis-cirrhosa-freckles/morphology.json');
@@ -68,6 +68,10 @@ const LEAFLET_WIDTH = middle('leaf.leafletWidthM') / LEAFLET_M;
 const LEAFLETS = characterNumber(morphology, 'leaf.leafletCount');
 /** Bean: "broadly ovate with a heart-shaped base or three-lobed". */
 const SIMPLE_LOBES = characterNumber(morphology, 'leaf.simpleLobeCount');
+/** Read off photographs (morphology.json): how far a side lobe reaches beyond the body, for the end lobe's reach. */
+const SIDE_LOBE = characterNumber(morphology, 'leaf.leafletSideLobeShare');
+/** Read off photographs: coarse teeth on each side of a leaflet, between the stalk and the tip. */
+const TEETH = Math.round(middle('leaf.teethPerSide'));
 
 interface BladeForm {
   /** Reach of the blade between its lobes, from where the stalk joins. */
@@ -88,10 +92,42 @@ interface BladeForm {
 
 /** Segments round a blade and from its base outwards, at each level of detail. */
 const BLADE_SEGS: readonly (readonly [number, number])[] = [
-  [64, 4],
-  [20, 2],
+  [72, 4],
+  [22, 2],
   [8, 1],
 ];
+
+/** Main veins from the top of the stalk to each leaflet's lobes (morphology.json leaf.mainVeins). */
+const MAIN_VEINS = characterNumber(morphology, 'leaf.mainVeins');
+
+/**
+ * The veins of a leaflet (and of the simple leaf), drawn into a texture of the plant's own: palmate from the top of
+ * the stalk, a midrib to the tip and one strong vein to each side lobe and each basal lobe (leaf.mainVeins), with a
+ * few secondaries running forward to the coarse teeth and a fine net between. The veins are a pale grey-green on
+ * the dark glossy blade and lie a little sunk in it (Commons: "Clematis cirrhosa395.jpg", the leaf at the top left;
+ * "Clematis cirrhosa var. purpurascens 'Freckles' (54136866406).jpg"). Units: the flat blade, base of the end lobe
+ * at about 0.85 from the stalk.
+ */
+const VEINS: PalmateVeins = {
+  origin: 0.2,
+  span: 1.3,
+  main: [
+    { deg: 0, length: 0.8 },
+    { deg: -48, length: 0.46 },
+    { deg: 48, length: 0.46 },
+    { deg: -112, length: 0.2 },
+    { deg: 112, length: 0.2 },
+  ],
+  secondary: { angle: 46, spacing: 0.13, first: 0.1, reach: 0.22, curve: 25 },
+  net: { cell: 0.055, jitter: 0.8 },
+  width: { main: 0.018, secondary: 0.008, net: 0.0025 },
+  ground: 0.74,
+  pale: { main: 0.22, secondary: 0.1, net: 0.02 },
+  tint: { main: 0.8, secondary: 0.55, net: 0.08 },
+  relief: { vein: 0.3, pucker: 0.05 },
+  seed: 17,
+};
+if (VEINS.main.length !== MAIN_VEINS) throw new Error('clematis-cirrhosa-freckles: the leaf texture draws a different number of main veins from the morphology file');
 
 /**
  * A lobed, toothed blade as a fan from where its stalk joins: base at the
@@ -114,9 +150,14 @@ function lobedBlade(form: BladeForm, lod: number, seed: number): THREE.BufferGeo
     // from the stalk (0) round to the tip (1) on either side
     const s = (Math.PI - Math.abs(theta)) / Math.PI;
     const where = smoothstep(0.1, 0.22, s) * (1 - smoothstep(0.94, 1, s));
-    const phase = (s * form.teeth + hash2(seed, 5) * 0.5) % 1;
+    const pos = s * form.teeth + hash2(seed, 5) * 0.5;
+    const phase = pos % 1;
+    // each tooth a little different in depth, on each side: the photographs show no two alike
+    const depth = form.toothDepth * (0.65 + 0.7 * hash2(seed * 7 + Math.floor(pos), theta > 0 ? 3 : 4));
+    // a sharp tooth: its long edge towards the base, rounding into the notch in front of it
+    const notch = Math.pow(1 - phase, 1.6);
     // at the middle level there are too few points for teeth: the outline is drawn in a little instead
-    return fine ? 1 - form.toothDepth * where * (1 - phase) : 1 - form.toothDepth * where * 0.45;
+    return fine ? 1 - depth * where * notch : 1 - form.toothDepth * where * 0.4;
   };
   // the veins the blade folds along: the midrib and one to each side lobe
   const veins = [0, ...form.lobes.map((l) => l.angle).filter((a) => Math.abs(a) > 0.2 && Math.abs(a) < 1.9)];
@@ -135,69 +176,82 @@ function lobedBlade(form: BladeForm, lod: number, seed: number): THREE.BufferGeo
     if (fine) y += 0.012 * Math.sin(theta * 7 + seed) * rho * (1 - rho) * 4;
     return { p: [x, y, z] };
   });
-  // to the width the floras give for the length, and the leaf texture laid flat over it, stalk to tip
+  // to the width the floras give for the length
   let widest = 1e-6;
   for (let i = 0; i < sb.pos.length; i += 3) widest = Math.max(widest, Math.abs(sb.pos[i]!));
   const k = form.width / (2 * widest);
   for (let i = 0; i < sb.pos.length; i += 3) sb.pos[i] = sb.pos[i]! * k;
+  // the leaf's own texture laid flat over the blade, its main veins turned on to this blade's lobes: the bearing of
+  // each lobe from the top of the stalk, in the order of VEINS.main (the middle lobe, the side lobes, the basal lobes)
+  const z0 = back * scale;
+  const side = form.lobes.filter((l) => Math.abs(l.angle) > 0.05 && Math.abs(l.angle) < 1.5).sort((a, b) => a.angle - b.angle);
+  const basal = form.lobes.filter((l) => Math.abs(l.angle) >= 1.5).sort((a, b) => a.angle - b.angle);
+  const bearings = [0, ...side.map((l) => l.angle), ...basal.map((l) => l.angle)].map((a) => (Math.atan2(k * Math.sin(a), Math.cos(a)) * 180) / Math.PI);
   for (let i = 0; i < sb.uv.length / 2; i++) {
-    sb.uv[2 * i] = 0.5 + sb.pos[3 * i]! / form.width;
-    sb.uv[2 * i + 1] = sb.pos[3 * i + 2]!;
+    const [u, v] = veinUv(VEINS, sb.pos[3 * i]!, sb.pos[3 * i + 2]! - z0, bearings.length === VEINS.main.length ? bearings : undefined);
+    sb.uv[2 * i] = u;
+    sb.uv[2 * i + 1] = v;
   }
   return sb.build();
 }
 
 /** The end leaflet: three-lobed, the middle lobe much the longest. `cut` 0 to 1 is how deeply this leaf is lobed. */
+/**
+ * The end leaflet: ovate, the middle lobe the longest, a shallow side lobe or a big tooth on each side (`cut` 0 to 1 is
+ * how deeply), the base rounded to broadly wedge-shaped. Measured off photographs as ratios (morphology.json
+ * leaf.leafletSideLobeShare, leaf.teethPerSide): the side lobes reach a quarter to a half as far out beyond the body as
+ * the end lobe, and there are three to five coarse teeth a side.
+ */
 const endLeaflet = (cut: number): BladeForm => ({
-  body: 0.3 - 0.06 * cut,
+  body: 0.4 - 0.06 * cut,
   lobes: [
-    { angle: 0, reach: 0.72, width: 0.44 },
-    { angle: -0.92, reach: 0.3 + 0.12 * cut, width: 0.3 },
-    { angle: 0.92, reach: 0.3 + 0.12 * cut, width: 0.3 },
-    { angle: -2.0, reach: 0.1, width: 0.5 },
-    { angle: 2.0, reach: 0.1, width: 0.5 },
+    { angle: 0, reach: 0.58, width: 0.58 },
+    { angle: -0.95, reach: SIDE_LOBE * 0.58 * (0.55 + 0.9 * cut), width: 0.32 },
+    { angle: 0.95, reach: SIDE_LOBE * 0.58 * (0.55 + 0.9 * cut), width: 0.32 },
+    { angle: -2.1, reach: 0.02, width: 0.5 },
+    { angle: 2.1, reach: 0.02, width: 0.5 },
   ],
-  sinus: { depth: 0.55, width: 0.45 },
-  teeth: 8,
-  toothDepth: 0.2,
-  fold: 0.3,
-  arch: 0.14,
+  sinus: { depth: 0.2, width: 0.4 },
+  teeth: TEETH,
+  toothDepth: 0.24,
+  fold: 0.22,
+  arch: 0.12,
   width: LEAFLET_WIDTH,
 });
 
 /** A side leaflet: lopsided, its one strong lobe on the side away from the end leaflet (`outer` is -1 or 1). */
 const sideLeaflet = (cut: number, outer: number): BladeForm => ({
-  body: 0.31,
+  body: 0.4,
   lobes: [
-    { angle: 0, reach: 0.7, width: 0.46 },
-    { angle: outer * 1.0, reach: 0.3 + 0.14 * cut, width: 0.32 },
-    { angle: -outer * 0.85, reach: 0.12 + 0.08 * cut, width: 0.3 },
-    { angle: outer * 2.05, reach: 0.12, width: 0.5 },
-    { angle: -outer * 2.0, reach: 0.06, width: 0.5 },
+    { angle: 0, reach: 0.56, width: 0.58 },
+    { angle: outer * 1.0, reach: SIDE_LOBE * 0.56 * (0.6 + 0.9 * cut), width: 0.34 },
+    { angle: -outer * 0.85, reach: 0.06 + 0.06 * cut, width: 0.3 },
+    { angle: outer * 2.05, reach: 0.03, width: 0.5 },
+    { angle: -outer * 2.0, reach: 0.01, width: 0.5 },
   ],
-  sinus: { depth: 0.5, width: 0.45 },
-  teeth: 7,
-  toothDepth: 0.2,
-  fold: 0.3,
-  arch: 0.16,
+  sinus: { depth: 0.2, width: 0.4 },
+  teeth: TEETH - 1,
+  toothDepth: 0.24,
+  fold: 0.22,
+  arch: 0.14,
   width: LEAFLET_WIDTH * 0.96,
 });
 
 /** The simple leaf of a short shoot: broadly ovate and heart-shaped at the base, three-lobed (`cut` 1) or only toothed (`cut` 0). */
 const simpleBlade = (cut: number): BladeForm => ({
-  body: 0.42 - 0.06 * cut,
+  body: 0.46 - 0.06 * cut,
   lobes: [
-    { angle: 0, reach: 0.6, width: 0.5 },
-    { angle: -0.95, reach: 0.12 + 0.24 * cut, width: 0.34 },
-    { angle: 0.95, reach: 0.12 + 0.24 * cut, width: 0.34 },
-    { angle: -2.05, reach: 0.16, width: 0.55 },
-    { angle: 2.05, reach: 0.16, width: 0.55 },
+    { angle: 0, reach: 0.52, width: 0.6 },
+    { angle: -0.95, reach: SIDE_LOBE * 0.52 * (0.3 + 0.8 * cut), width: 0.36 },
+    { angle: 0.95, reach: SIDE_LOBE * 0.52 * (0.3 + 0.8 * cut), width: 0.36 },
+    { angle: -2.1, reach: 0.05, width: 0.6 },
+    { angle: 2.1, reach: 0.05, width: 0.6 },
   ],
-  sinus: { depth: 0.6, width: 0.5 },
-  teeth: 8,
-  toothDepth: 0.17,
-  fold: 0.26,
-  arch: 0.16,
+  sinus: { depth: 0.38, width: 0.42 },
+  teeth: TEETH + 1,
+  toothDepth: 0.2,
+  fold: 0.2,
+  arch: 0.14,
   width: BLADE_WIDTH,
 });
 
@@ -211,7 +265,7 @@ function leafStalk(mg: Merge, points: V3[], from: number, to: number, lod: numbe
     STALK_SIDES[lod]!,
     WHITE,
     WHITE,
-    MIDRIB,
+    GROUND,
   );
 }
 
@@ -286,10 +340,10 @@ function makeSimpleLeaf(variant: number, lod: number): THREE.BufferGeometry {
     0.01,
     lod,
   );
+  // the blade lies flat out along +Z from the end of its stalk: the viewer turns it where it joins the stalk (hold)
   const base = new V3(0, -sag, SIMPLE_STALK);
   const length = 1 - SIMPLE_STALK;
-  const q = new THREE.Quaternion().setFromAxisAngle(X_AXIS, rng.range(0.08, 0.25));
-  q.multiply(new THREE.Quaternion().setFromAxisAngle(Z_AXIS, rng.range(-0.15, 0.15)));
+  const q = new THREE.Quaternion().setFromAxisAngle(Z_AXIS, rng.range(-0.12, 0.12));
   mg.add(lobedBlade(simpleBlade(cut), lod, 23 + variant), new THREE.Matrix4().compose(base, q, new V3(length, length, length)), WHITE, base, rng.f());
   const g = mg.build();
   g.boundingSphere = new THREE.Sphere(new V3(0, 0, 0.5), 0.7);
@@ -302,26 +356,32 @@ function makeSimpleLeaf(variant: number, lod: number): THREE.BufferGeometry {
  * tinge the RHS gives it in winter is not drawn: the data gives an evergreen
  * leaf no season.
  */
+// With a texture of its own greenB is the colour a vein is drawn towards: a pale grey-green. The blade is the dark,
+// rather grey green of the photographs of the cultivar in winter light (Commons: "Clématite Cirrhosa Freckles.jpg",
+// "Clematis cirrhosa var. purpurascens 'Freckles' (54136866406).jpg"), darker than a first guess.
 const LEAF_PALETTE = {
-  greenA: lin('#35602a'),
-  greenB: lin('#4d7a30'),
-  young: lin('#a5ba60'),
-  autumnA: lin('#4d7a30'),
-  autumnB: lin('#35602a'),
+  greenA: lin('#1f3a1a'),
+  greenB: lin('#7f9468'),
+  young: lin('#9cb45c'),
+  autumnA: lin('#1f3a1a'),
+  autumnB: lin('#7f9468'),
 } as const;
+
+const LEAF_TEXTURE = palmateTexture(VEINS, 512, 0.7);
 
 const ternateLeaf: LeafAsset = {
   key: 'clematis-cirrhosa-freckles/leaf',
   variants: TERNATE_CUT.length,
   lods: 3,
   make: makeTernateLeaf,
-  budget: [1700, 320, 70],
+  budget: [2000, 380, 70],
   pick: (_lengthM, r) => Math.min(TERNATE_CUT.length - 1, Math.floor(r * TERNATE_CUT.length)),
   palette: LEAF_PALETTE,
   // glossy, and rather leathery: less light comes through than through a thin leaf
-  roughness: 0.3,
-  translucency: 0.3,
+  roughness: 0.28,
+  translucency: 0.28,
   detailReach: 0.55,
+  texture: LEAF_TEXTURE,
 };
 
 const shortShootLeaf: LeafAsset = {
@@ -329,12 +389,20 @@ const shortShootLeaf: LeafAsset = {
   variants: 3,
   lods: 3,
   make: makeSimpleLeaf,
-  budget: [600, 110, 30],
+  budget: [700, 130, 30],
   pick: (_lengthM, r) => Math.min(2, Math.floor(r * 3)),
   palette: LEAF_PALETTE,
-  roughness: 0.3,
-  translucency: 0.3,
+  roughness: 0.28,
+  translucency: 0.28,
   detailReach: 0.5,
+  texture: LEAF_TEXTURE,
+  // the simple leaves of the clusters face out from the support, their tips down a little (morphology.json leaf.faceRiseDeg)
+  hold: {
+    unitAt: 0,
+    rise: characterRange(morphology, 'leaf.faceRiseDeg'),
+    riseOpen: characterRange(morphology, 'leaf.faceRiseOpenDeg'),
+    turn: characterNumber(morphology, 'leaf.bladeTurnDeg'),
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -431,7 +499,7 @@ const FRECKLES = {
   deep: lin('#7a1a4c'),
   crimson: lin('#b32e66'),
   creamOut: lin('#f2e8c2'),
-  pink: lin('#d58fa6'),
+  pink: lin('#c46a8e'),
   baseOut: lin('#c2d08a'),
   filament: lin('#f0edc8'),
   anther: lin('#efe39a'),
@@ -507,7 +575,7 @@ const NOD = [1.45, 1.25, 1.6] as const;
 const TIP_RADIUS = [MOUTH / 2, (MOUTH / 2) * 0.98, (MOUTH / 2) * 1.06] as const;
 /** [across, along] the inner face of a tepal, its outer face, the stalk and the cup; share of the stamens drawn; styles. Level 2 has one face. */
 const FLOWER_DETAIL = [
-  { inner: [24, 40], outer: [14, 24], stalk: [6, 12], cup: [16, 5], stamens: 1, styles: 10 },
+  { inner: [32, 56], outer: [14, 24], stalk: [6, 12], cup: [16, 5], stamens: 1, styles: 10 },
   { inner: [10, 14], outer: [5, 7], stalk: [4, 6], cup: [8, 3], stamens: 0.32, styles: 0 },
   { inner: [3, 4], outer: null, stalk: [3, 3], cup: null, stamens: 0, styles: 0 },
 ] as const;
@@ -584,8 +652,9 @@ function makeFlower(variant: number, lod: number): THREE.BufferGeometry {
       // an even flush where the freckles are thickest, and over it the freckles themselves, faintly, streak for streak
       const column = i + k * 19 + variant * 7;
       const row = Math.floor((j + hash2(column, 7) * 3) / 2);
-      const fleck = hash2(column * 31 + row, 5 + k) < freckling(u, v) * 0.8 ? 0.2 : 0;
-      return mix(mix(FRECKLES.creamOut, FRECKLES.baseOut, 1 - smoothstep(0, 0.2, v)), FRECKLES.pink, 0.24 * merged(u, v) + fleck);
+      // in the photographs the freckles show through the downy outside as pink-crimson streaks on cream
+      const fleck = hash2(column * 31 + row, 5 + k) < freckling(u, v) * 0.85 ? 0.45 : 0;
+      return mix(mix(FRECKLES.creamOut, FRECKLES.baseOut, 1 - smoothstep(0, 0.2, v)), FRECKLES.pink, Math.min(0.7, 0.18 * merged(u, v) + fleck * 0.75));
     };
     // from far off the two faces are one: cream, crimson where the freckles are
     const both = (u: number, v: number): RGB => mix(FRECKLES.creamOut, mix(FRECKLES.pink, FRECKLES.crimson, 0.6), 0.2 + 0.5 * merged(u, v));
@@ -659,7 +728,7 @@ const flower: FlowerAsset = {
   variants: FLOWER_VARIANTS,
   lods: 3,
   make: makeFlower,
-  budget: [12200, 1750, 140],
+  budget: [19000, 1750, 140],
   pick: (r) => Math.min(FLOWER_VARIANTS - 1, Math.floor(r * FLOWER_VARIANTS)),
   // the width of the flower as the Clematis Society measures it, which is what the growth model's organs.racemeLengthM is for this plant
   authoredSize: 1,
@@ -695,13 +764,16 @@ const SEED_CUP = CUP_M / SEED_M;
  * achenes are, the tails paling to silky cream-white at their tips. The green
  * of each colour also says how pale that part dries (see `ripeShade`).
  */
-const SEED = { base: lin('#8fb45a'), tail: lin('#cfe0a8'), tip: lin('#f1f3e2'), achene: lin('#5d7a34'), stalk: lin('#6f8a48') };
+const SEED = { base: lin('#9cb862'), tail: lin('#dfe6c4'), tip: lin('#f4f2e4'), achene: lin('#5d7a34'), stalk: lin('#6f8a48') };
 
-/** Share of the achenes drawn, steps along a tail, vanes of hair to a tail, [around, along] an achene, the stalk and the cup, at each level of detail. */
+/**
+ * Share of the achenes drawn, steps along a tail, hairs off the thread at each step (0: the tail drawn as vanes),
+ * vanes of hair to a tail, [around, along] an achene, the stalk and the cup, at each level of detail.
+ */
 const SEED_DETAIL = [
-  { achenes: 1, steps: 10, vanes: 2, body: [4, 2], stalk: [6, 8], cup: [12, 4] },
-  { achenes: 0.55, steps: 4, vanes: 2, body: [3, 1], stalk: [4, 4], cup: [6, 2] },
-  { achenes: 0.34, steps: 2, vanes: 2, body: null, stalk: [3, 2], cup: null },
+  { achenes: 1, steps: 8, hairs: 4, vanes: 0, body: [3, 2], stalk: [6, 8], cup: [12, 4] },
+  { achenes: 0.55, steps: 4, hairs: 2, vanes: 0, body: [3, 1], stalk: [4, 4], cup: [6, 2] },
+  { achenes: 0.34, steps: 2, hairs: 0, vanes: 2, body: null, stalk: [3, 2], cup: null },
 ] as const;
 const SEED_VARIANTS = 2;
 
@@ -763,7 +835,7 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
     // the tail: it leaves along its achene's line, falls in with the others, and spreads again towards its tip
     const length = TAIL * rng.range(0.85, 1.08);
     const fall = rng.range(0.55, 0.8);
-    const flare = rng.range(0.25, 0.6) * Math.sin(lean);
+    const flare = rng.range(0.4, 0.9) * Math.sin(lean);
     const wander = new V3(rng.range(-1, 1), rng.range(-1, 1), rng.range(-1, 1)).multiplyScalar(0.22);
     const fineSteps = 24;
     const fine: V3[] = [seedEnd.clone()];
@@ -798,6 +870,36 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
       sides.push(side);
     }
     const spin = rng.range(0, TAU);
+    const colourAt = (v: number): RGB => (v < 0.25 ? mix(SEED.base, SEED.tail, v / 0.25) : mix(SEED.tail, SEED.tip, (v - 0.25) / 0.75));
+    if (detail.hairs > 0) {
+      // the feathered style as it is: a thread, and fine hairs off it on all sides leaning forward, longest past the
+      // middle; each hair a sliver, so that the head reads as silk and not as paper
+      const other0 = new V3();
+      plumes.surf(1, detail.steps, (u, v) => {
+        const j = Math.round(v * detail.steps);
+        other0.crossVectors(tangents[j]!, sides[j]!);
+        const p = points[j]!.clone().addScaledVector(other0, (u - 0.5) * 0.006);
+        return { p: [p.x, p.y, p.z], c: colourAt(v) };
+      });
+      for (let j = 1; j <= detail.steps; j++) {
+        const v = j / detail.steps;
+        for (let h = 0; h < detail.hairs; h++) {
+          const round = spin + j * 2.39996 + (h / detail.hairs) * TAU;
+          const tangent = tangents[j]!;
+          const other = new V3().crossVectors(tangent, sides[j]!);
+          const out = sides[j]!.clone().multiplyScalar(Math.cos(round)).addScaledVector(other, Math.sin(round));
+          const reach = (0.012 + 0.04 * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.7) * 0.94), 0.7)) * (0.7 + 0.6 * hash2(i * 13 + h, j));
+          const base = points[j]!;
+          const tip = base.clone().addScaledVector(out, reach).addScaledVector(tangent, reach * 2.2);
+          const c = colourAt(v);
+          plumes.surf(1, 1, (a, b) => {
+            const p = b < 0.5 ? base.clone().addScaledVector(tangent, (a - 0.5) * 0.005) : tip.clone().addScaledVector(tangent, (a - 0.5) * 0.001);
+            return { p: [p.x, p.y, p.z], c: b < 0.5 ? c : mix(c, SEED.tip, 0.35) };
+          });
+        }
+      }
+      continue;
+    }
     for (let m = 0; m < detail.vanes; m++) {
       // two vanes, one each side of the tail, so that it is a feather and not a blade
       const round = spin + (m / detail.vanes) * TAU;
@@ -810,14 +912,14 @@ function makeSeedHead(variant: number, lod: number): THREE.BufferGeometry {
         const other = new V3().crossVectors(tangent, sides[j]!);
         const out = sides[j]!.clone().multiplyScalar(Math.cos(round)).addScaledVector(other, Math.sin(round));
         // the hairs are short at the achene and longest past the middle; the edge of the vane is ragged, hair by hair
-        const reach = (0.012 + 0.05 * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.7) * 0.94), 0.7)) * broad * (lod === 0 ? (j % 2 === 0 ? 0.5 : 1) * (0.8 + 0.4 * hash2(i * 7 + m, j)) : 0.8);
+        const reach = (0.006 + 0.03 * Math.pow(Math.sin(Math.PI * Math.pow(v, 0.7) * 0.94), 0.7)) * broad * (lod === 0 ? (j % 2 === 0 ? 0.5 : 1) * (0.8 + 0.4 * hash2(i * 7 + m, j)) : 0.8);
         const p = at.clone().addScaledVector(out, reach).addScaledVector(tangent, reach * 0.7);
         return { p: [p.x, p.y, p.z], c: mix(colour, SEED.tip, 0.6) };
       });
     }
   }
-  if (detail.body) mg.add(bodies.build(), ID, WHITE, top, -1);
-  mg.add(plumes.build(), ID, WHITE, top, -1);
+  if (detail.body) mg.add(bodies.build(), ID, WHITE, top, 0.5);
+  mg.add(plumes.build(), ID, WHITE, top, 0.5);
   const g = mg.build();
   g.boundingSphere = new THREE.Sphere(top.clone().addScaledVector(axis, 0.5), 1.1);
   return g;
@@ -828,15 +930,17 @@ const seedHead: FruitAsset = {
   variants: SEED_VARIANTS,
   lods: 3,
   make: makeSeedHead,
-  budget: [2400, 520, 110],
+  budget: [3800, 720, 110],
   pick: (r) => Math.min(SEED_VARIANTS - 1, Math.floor(r * SEED_VARIANTS)),
   // one achene with its tail, which is what the growth model's fruit.lengthM measures for this plant
   authoredSize: 1,
   poise: 'hangs',
   centreAlong: 0.9,
   // the tails dry from silky green-white to pale fluff, the achenes to brown
-  ripe: lin('#f0e8d2'),
-  ripeShade: [0.1, 1.15],
+  ripe: lin('#e8dec4'),
+  ripeShade: [0.2, 0.9],
+  // the stalk and the cup of bracts stay green while the head dries
+  stalkKeepsColour: true,
   // silky: it shines
   roughness: 0.5,
   swing: 0.6,
