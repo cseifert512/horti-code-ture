@@ -278,7 +278,7 @@
       "value": 1,
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=100921",
-      "basis": "Flora of China, of the genus: leaves alternate, or clustered on short branches. One leaf to a node on a long shoot."
+      "basis": "Flora of China, of the genus: leaves \"alternate or clustered on short branches\". One leaf to a node on a long shoot."
     },
     "organs.spurChance": {
       "value": 0.9,
@@ -457,8 +457,8 @@
       ],
       "unit": "day of year",
       "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: fruiting in autumn, September and October; the same months are given for Japan. It turns from pale green to violet within them. When the few fruits set in Britain ripen is not recorded."
+      "source": "https://climbers.lsa.umich.edu/akebia-quinata/",
+      "basis": "University of Michigan CLIMBERS: the fruits \"mature in September to October\"; Virginia Tech dendrology: \"ripening in late summer\". It colours from pale green to greyish violet within these months. The Flora of China gives fruiting from June to August in China, which is the fruit growing. Flora of North America refuses automated readers and was not read. When the few fruits set in Britain ripen is not recorded."
     },
     "fruit.fallDoy": {
       "value": [

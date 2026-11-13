@@ -259,11 +259,11 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
 /** The raceme as authored: the middle of the Flora of China's 6 to 12 cm, which is what `organs.racemeLengthM` measures. */
 const RACEME_LEN = mid('inflorescence.lengthM');
 /**
- * The bare stalk of the raceme, drawn a little above the middle of its recorded range (2 to 5 cm): about 3.8 cm of the 9.
- * In photographs (Commons "Akebia quinata Akebia pieciolistkowa 2023-04-23 04.jpg") the stalk is long and slender and
- * the male flowers hang crowded at its end.
+ * The bare stalk of the raceme, drawn near the Flora of China's "ca. 2.5 cm", in the lower part of the 2 to 5 cm range:
+ * about 2.75 cm of the 9. In photographs (Commons "Akebia quinata Akebia pieciolistkowa 2023-04-23 04.jpg") the male
+ * flowers hang crowded towards its end.
  */
-const PEDUNCLE = lerp(...characterRange(morphology, 'inflorescence.peduncleLengthM'), 0.6);
+const PEDUNCLE = lerp(...characterRange(morphology, 'inflorescence.peduncleLengthM'), 0.25);
 const FEMALE_SEPALS = characterNumber(morphology, 'flower.female.sepalCount');
 const FEMALE_SEPAL = mid('flower.female.sepalLengthM');
 const FEMALE_SEPAL_HALF_WIDTH = mid('flower.female.sepalWidthM') / 2;
@@ -471,7 +471,7 @@ function makeMaleFlower(lod: number, seed: number): THREE.BufferGeometry {
       const radii: number[] = [];
       for (let i = 0; i <= rings; i++) {
         const t = i / rings;
-        // out from the middle and then curled in over it: "incurved at first" (Flora of China)
+        // out from the middle and then curled in over it: "straight at first, incurved at length" (Flora of China); drawn incurved
         pts.push(
           out
             .clone()
@@ -775,8 +775,8 @@ const fruit: FruitAsset = {
   centreAlong: (FRUIT_STALK + FRUIT_LEN / 2) / FRUIT_LEN,
   // "greyish violet or purplish" (Bean), glaucous (Flora of North America); the seam brightens as it nears splitting
   // in photographs a pale lilac under a heavy bloom where it colours fully ("Akebia quinata fruits 0s1.JPG")
-  ripe: lin('#a092b2'),
-  ripeShade: [0.55, 1.05],
+  ripe: lin('#9a90a6'),
+  ripeShade: [0.62, 0.9],
   roughness: 0.78,
   swing: 0.45,
   detailAt: [1.6, 5],

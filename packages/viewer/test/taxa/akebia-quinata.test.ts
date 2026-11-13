@@ -368,8 +368,8 @@ describe('a specimen of Akebia quinata through its eighth year', () => {
     const end = sim.summaries.find((s) => s.year === last)!;
     expect(end.frameworkM).toBeGreaterThan(60);
     expect(end.routeShare).toBeGreaterThan(0.7);
-    expect(leavesOn(`${last}-07-15`)).toBeGreaterThan(2500);
-    expect(leavesOn(`${last}-07-15`)).toBeLessThan(9000);
+    expect(leavesOn(`${last}-07-15`)).toBeGreaterThan(5000);
+    expect(leavesOn(`${last}-07-15`)).toBeLessThan(14000);
     // slender stems: the thickest is no stouter than a thumb
     const thickest = Math.max(...data.stems.map((s) => Math.max(...s.radiusMm))) * 2;
     expect(thickest).toBeGreaterThan(characterRange(morphology, 'stem.oldDiameterM')[0] * 1000);

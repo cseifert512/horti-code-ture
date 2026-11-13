@@ -6,7 +6,7 @@
       "value": "semi-evergreen woody twining climber",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/747/akebia-quinata/details",
-      "basis": "RHS plant record: a \"semi-evergreen climber\". Bean: \"a twining shrub\", evergreen in mild winters and leafless in hard ones. Flora of China, of the genus: woody climbers, \"deciduous or subevergreen\"."
+      "basis": "RHS plant record: a \"Semi-evergreen climber\". Bean: \"a twining shrub\", evergreen in mild winters and losing its leaves where conditions are more severe. Flora of China: the species \"deciduous\", the genus \"deciduous or subevergreen\"."
     },
     "habit.stemLengthM": {
       "value": [
@@ -192,14 +192,14 @@
     "leaf.leafletBase": {
       "value": "rounded to broadly wedge-shaped",
       "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: base rounded. The Flora Reipublicae Popularis Sinicae rendering: base rounded or broadly cuneate."
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
+      "basis": "Flora of China: base rounded to broadly cuneate."
     },
     "leaf.leafletMargin": {
       "value": "entire",
       "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: margins entire. NC State: margin entire."
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=100921",
+      "basis": "Flora of China, of the genus: leaflet margin entire, sinuate or undulate; A. quinata is keyed among the species with five leaflets and is not said to be toothed. Entire is drawn, as every photograph opened shows it."
     },
     "leaf.lateralVeinPairs": {
       "value": [
@@ -214,7 +214,7 @@
       "value": "papery",
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
-      "basis": "Flora of China: leaflets papery, hairless."
+      "basis": "Flora of China: leaflets papery. Bean: leaflets glabrous."
     },
     "leaf.colourAbove": {
       "value": [
@@ -289,7 +289,7 @@
       "unit": "m",
       "status": "published_plant_profile",
       "source": "https://baike.baidu.com/en/item/Akebia%20quinata/25006",
-      "basis": "The Flora Reipublicae Popularis Sinicae, in the English rendering at this address: peduncle 2 to 5 cm, its foot wrapped in bud scales. Read in translation. A reading of the Flora of China page through a search engine gave \"ca. 2.5 cm\", which lies within it."
+      "basis": "The Flora Reipublicae Popularis Sinicae, in the English rendering at this address: peduncle 2 to 5 cm, its foot wrapped in bud scales (read in translation). The Flora of China gives \"ca. 2.5 cm\". The model draws 2.75 cm, near the Flora of China figure."
     },
     "inflorescence.maleFlowerCount": {
       "value": [
@@ -318,8 +318,8 @@
     "flower.petals": {
       "value": "none",
       "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "The flowers have sepals and no petals: Flora of North America describes sepals only; NC State: \"petals are absent\", three concave sepals."
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=100921",
+      "basis": "Flora of China, of the genus: \"Petals absent\"; sepals usually 3."
     },
     "flower.scent": {
       "value": "spicy, fragrant",
@@ -333,9 +333,8 @@
         0.03
       ],
       "unit": "m",
-      "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: pistillate flowers 2 to 3 cm across. Bean: \"1 to 1 1/2 in. across\" (2.5 to 3.8 cm). Huang et al. 2022: about 2.5 cm."
+      "status": "provisional_design_assumption",
+      "basis": "Not a published figure. Bean gives female flowers \"1 to 1 1/2 in. across\" (2.5 to 3.8 cm); the Flora of China gives their sepals 1 to 2 cm long and 0.8 to 1.5 cm wide, which spread make a flower of about 2 to 3.5 cm. Flora of North America (https://floranorthamerica.org/Akebia_quinata) refuses automated readers and was not read; its figure is not relied on. Drawn at 2 to 3 cm, the lower part of that, as the flowers look in photographs (Commons \"Toulouse - Rue Villeneuve - Akebia quinata - 20250324 (1).jpg\")."
     },
     "flower.female.sepalCount": {
       "value": 3,
@@ -360,8 +359,8 @@
       ],
       "unit": "m",
       "status": "published_plant_profile",
-      "source": "https://baike.baidu.com/en/item/Akebia%20quinata/25006",
-      "basis": "The Flora Reipublicae Popularis Sinicae, in the English rendering at this address: female sepals broadly elliptic to nearly round, 1 to 2 cm long and 8 to 15 mm wide. Read in translation."
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
+      "basis": "Flora of China: female sepals dark purple, broadly elliptic to suborbicular, 1 to 2 by 0.8 to 1.5 cm."
     },
     "flower.female.sepalShape": {
       "value": "broadly elliptic, concave",
@@ -414,9 +413,8 @@
         0.016
       ],
       "unit": "m",
-      "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: staminate flowers 1.2 to 1.6 cm across. Bean gives them as only \"1/4 in. across\" (6 mm), which is nearer the length of one sepal."
+      "status": "provisional_design_assumption",
+      "basis": "Not a published figure. The Flora of China gives male sepals 6 to 8 mm by 4 to 6 mm, \"broadly cucullate-ovate\"; spreading, three such make a flower of about 1.2 to 1.6 cm. Bean gives only \"1/4 in. across\". Flora of North America (https://floranorthamerica.org/Akebia_quinata) refuses automated readers and was not read; its figure is not relied on."
     },
     "flower.male.sepalCount": {
       "value": 3,
@@ -470,7 +468,7 @@
       "value": 6,
       "status": "published_plant_profile",
       "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=200008288",
-      "basis": "Flora of China: stamens 6 (or 7), curved inwards at first, on very short filaments."
+      "basis": "Flora of China: stamens 6 (or 7), \"straight at first, incurved at length\", filaments very short."
     },
     "flower.male.stamenLengthM": {
       "value": [
@@ -478,15 +476,14 @@
         0.005
       ],
       "unit": "m",
-      "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: stamens 4 to 5 mm."
+      "status": "provisional_design_assumption",
+      "basis": "No figure that could be opened. The Flora of China says the filaments are very short and gives no length; 4 to 5 mm is about two thirds of a male sepal (6 to 8 mm, Flora of China), as the stamens stand in photographs. Flora of North America (https://floranorthamerica.org/Akebia_quinata) refuses automated readers and was not read; its figure is not relied on."
     },
     "fruit.type": {
       "value": "fleshy follicle",
       "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: follicles. Bean: \"thick and sausage-shaped\", with many seeds in white pulp."
+      "source": "https://www.efloras.org/florataxon.aspx?flora_id=2&taxon_id=100921",
+      "basis": "Flora of China, of the genus: fruit fleshy follicles, dehiscent along the abaxial suture. Bean: \"in shape like a thick sausage\"."
     },
     "fruit.lengthM": {
       "value": [
@@ -540,9 +537,8 @@
     },
     "fruit.surface": {
       "value": "glaucous",
-      "status": "published_plant_profile",
-      "source": "https://floranorthamerica.org/Akebia_quinata",
-      "basis": "Flora of North America: follicles glaucous. Purdue Arboretum: \"bloomy\"."
+      "status": "provisional_design_assumption",
+      "basis": "Glaucous, with a bloom, as photographs of ripe fruit show it (Commons \"Akebia quinata fruits 0s1.JPG\"). Flora of North America (https://floranorthamerica.org/Akebia_quinata) refuses automated readers and was not read; its figure is not relied on."
     },
     "fruit.dehiscence": {
       "value": "splits along one side when ripe, showing white pulp and black seeds",
