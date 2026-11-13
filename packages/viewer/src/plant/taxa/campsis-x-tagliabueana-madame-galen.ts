@@ -1,22 +1,26 @@
 // Campsis x tagliabuana 'Madame Galen' (a trumpet vine): deciduous, clinging weakly by aerial rootlets.
 //
-//   leaf     a whole odd-pinnate leaf: a stalk, an arching grooved axis and 7, 9 or 11 ovate leaflets in
-//            opposite pairs, each long-pointed and coarsely toothed, a vein running to every tooth. One
-//            unit long along +Z, upper side +Y.
-//   truss    a whole terminal panicle, as the render data gives it (one RenderFlower): an axis that
-//            carries on the line of its shoot and nods over, branches in opposite pairs, 7, 9 or 12
-//            flowers. Each open flower is a leathery five-toothed calyx (axis: it stays) and a trumpet
-//            (a part: it opens and drops) with its four stamens and its style inside; the youngest
-//            flowers, at the tip, are club-shaped buds. In metres; stands along +Y, droops towards -Z.
-//   pod      one or two spindle-shaped capsules, ridged along their two seams, on the stalk of the old
-//            truss. Hangs along -Y; green, drying to tan.
-//   hold     a tuft of short rootlets in two rows, pressed to the surface the stem lies on
-//   wood     green shoot, straw-coloured twig, pale tan bark that peels in thin strips
+//   leaf     a whole odd-pinnate leaf: a short stalk (axis), then the blade: the leaf's own axis and 7, 9
+//            or 11 ovate leaflets in opposite pairs, each broad-based, long-pointed and coarsely toothed,
+//            no two leaflets toothed alike, the blade puckered between its veins. One unit long along +Z,
+//            upper side +Y. The viewer holds the blade in the world where it leaves the stalk (leaf.hold):
+//            on a wall it turns out and hangs face out, the end leaflet lowest.
+//   truss    a whole terminal panicle, as the render data gives it (one RenderFlower): a bare stalk that
+//            carries on the line of its shoot and nods over, the flowers crowded on its last part in
+//            opposite branches, 7, 9 or 12 flowers. Each open flower is a calyx (axis: it stays) and a
+//            trumpet of five broad overlapping lobes (a part: it opens and drops) with its four stamens and
+//            its style inside; the youngest flowers, at the tip, are club-shaped buds. In metres; stands
+//            along +Y, droops towards -Z.
+//   pod      one or two spindle-shaped capsules, ridged along their seams, the dried calyx a dark star at
+//            the top, on the bare stalk of the old truss. Hangs along -Y; grey-green, drying to pale tan.
+//   hold     a tuft of short buff rootlets in two rows, pressed to the surface the stem lies on
+//   wood     green shoot flushed red-brown, straw-coloured twig, pale tan bark that peels in thin strips
 //
 // Every count and measured size is read from species/campsis-x-tagliabueana-madame-galen/morphology.json,
-// where each has its source; what is left here is appearance. Made from published descriptions, not from
-// specimens or photographs.
-//
+// where each has its source; what is left here is appearance. Made from published descriptions and
+// compared with photographs of the cultivar, the hybrid and C. radicans (named "reference ..." below and in
+// the morphology file); nothing is traced or sampled from them.
+
 // These shapes and colours are this plant's. No other taxon module may import this one.
 import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
@@ -66,57 +70,89 @@ const LEAF_VARIANTS: readonly number[] = [LEAFLETS_FEWEST, LEAFLETS_USUAL, LEAFL
 const LEAF_LODS = 3;
 /** Half the width of a leaflet for its length ("pinnae to 8 x 4.5 cm"). */
 const LEAFLET_HALF_WIDTH = (0.5 * num('leaf.leafletWidthMaxM')) / num('leaf.leafletLengthMaxM');
-const TEETH = num('leaf.leafletTeethPerSide');
+/** Teeth on each side of a leaflet: the fewest and the most read off photographs. Each of the three leaflet models has its own count. */
+const TEETH_RANGE = range('leaf.leafletTeethPerSide');
+/** Where along a leaflet it is widest, base to tip. */
+const LEAFLET_WIDEST = num('leaf.leafletWidestAt');
 /** The leaf stalk below the first pair of leaflets, in leaf lengths. */
 const LEAF_STALK = num('leaf.stalkShareOfLength');
-/** How far forward of square the side leaflets point, radians, from the lowest pair to the last. */
-const LEAFLET_FORWARD: readonly [number, number] = [0.32, 0.62];
+/** How far forward of square the side leaflets point, radians, from the lowest pair to the last (photographs). */
+const LEAFLET_FORWARD = range('leaf.leafletForwardDeg').map((d) => (d * Math.PI) / 180) as unknown as readonly [number, number];
 /** The length of the largest side leaflets, in leaf lengths: what gives the leaf its published width for its length. */
 const LEAFLET_LENGTH = num('leaf.widthShareOfLength') / (2 * Math.cos(mid(LEAFLET_FORWARD)));
 /** A leaflet's own stalk, in leaf lengths, for a leaf of middling size. */
 const LEAFLET_STALK = num('leaf.leafletStalkLengthM') / mid(range('leaf.lengthM'));
 /** How far the axis of the leaf arches down by its end, in leaf lengths. */
-const LEAF_ARCH = 0.2;
+const LEAF_ARCH = 0.1;
 
 interface LeafletRows {
   /** Where along the leaflet each row of points stands, base to tip. */
   v: number[];
-  /** A row at the tip of a tooth, in the notch between two teeth, or neither. */
+  /** A row at the tip of a tooth, in the notch behind one, or neither. */
   kind: ('plain' | 'notch' | 'tooth')[];
+  /** How far a tooth stands out, as a share of the coarsest. */
+  size: number[];
 }
 
-/** The rows of the finest leaflet: two to a tooth, so that each tooth has a point and a notch behind it. */
-function toothedRows(teeth: number): LeafletRows {
-  const rows: LeafletRows = { v: [0], kind: ['plain'] };
-  const from = 0.1;
-  const to = 0.76;
-  const step = (to - from) / teeth;
+/**
+ * The rows of a toothed leaflet: two to a tooth, so that each tooth has a point and a notch behind it. The teeth are
+ * coarse and angular and not all alike (the photographs: some larger, the spacing uneven, the largest about the
+ * middle of the leaflet, none on the rounded base and none on the long point).
+ */
+function toothedRows(teeth: number, seed: number): LeafletRows {
+  const rng = new RNG(seed);
+  const rows: LeafletRows = { v: [0, 0.07], kind: ['plain', 'plain'], size: [0, 0] };
+  const from = 0.14;
+  const to = 0.7;
+  // uneven spacing: each gap drawn, then scaled to fill the toothed stretch
+  const gaps = Array.from({ length: teeth }, () => rng.range(0.75, 1.3));
+  const total = gaps.reduce((a, b) => a + b, 0);
+  let at = from;
   for (let k = 0; k < teeth; k++) {
-    rows.v.push(from + k * step, from + (k + 0.7) * step);
-    rows.kind.push('notch', 'tooth');
+    const step = ((to - from) * gaps[k]!) / total;
+    const middle = 1 - Math.abs((at + step / 2 - 0.45) / 0.45);
+    // a tooth points forward: a long edge rising to its point, and the sinus just beyond it
+    rows.v.push(at + 0.62 * step, at + 0.92 * step);
+    rows.kind.push('tooth', 'notch');
+    const s = (0.85 + 0.15 * Math.max(0, middle)) * rng.range(0.85, 1.15);
+    rows.size.push(s, s);
+    at += step;
   }
   // beyond the last tooth the blade runs out into its long entire point
-  rows.v.push(to, 0.86, 0.94, 1);
-  rows.kind.push('notch', 'plain', 'plain', 'plain');
+  rows.v.push(0.87, 0.94, 1);
+  rows.kind.push('plain', 'plain', 'plain');
+  rows.size.push(0, 0, 0);
   return rows;
 }
 
-const plainRows = (v: number[]): LeafletRows => ({ v, kind: v.map(() => 'plain') });
-const LEAFLET_ROWS: readonly LeafletRows[] = [toothedRows(TEETH), plainRows([0, 0.1, 0.24, 0.4, 0.56, 0.72, 0.87, 1]), plainRows([0.02, 0.3, 1])];
-const LEAFLET_ACROSS: readonly number[] = [6, 2, 2];
+const plainRows = (v: number[]): LeafletRows => ({ v, kind: v.map(() => 'plain'), size: v.map(() => 0) });
+/** The finest leaflet has three models, each with its own teeth; the coarser ones have one, untoothed. */
+const TOOTHED_COUNTS: readonly number[] = [TEETH_RANGE[0], Math.round(mid(TEETH_RANGE)), TEETH_RANGE[1]];
+const LEAFLET_ROWS: readonly (readonly LeafletRows[])[] = [
+  TOOTHED_COUNTS.map((n, i) => toothedRows(n, 610 + 17 * i)),
+  [plainRows([0, 0.1, 0.26, 0.46, 0.66, 0.86, 1])],
+  [plainRows([0.02, 0.32, 1])],
+];
+const LEAFLET_ACROSS: readonly number[] = [5, 2, 2];
 
-/** The outline of a leaflet: ovate, widest a third of the way up, rounded at the base and drawn out to a long point. 0 to 1. */
+/**
+ * The outline of a leaflet, 0 to 1: ovate, widest a little below the middle (morphology leaf.leafletWidestAt), the
+ * base broad and rounded (not wedge-shaped), drawn out into a long narrow point (Bean, of C. radicans: "a long,
+ * often tail-like point").
+ */
 const leafletOutline = (() => {
-  const raw = (v: number) => Math.pow(v, 0.55) * Math.pow(1 - v, 1.15) * (1 - 0.32 * smoothstep(0.5, 0.92, v));
+  const a = 0.42;
+  const b = (a * (1 - LEAFLET_WIDEST)) / LEAFLET_WIDEST;
+  const raw = (v: number) => Math.pow(v, a) * Math.pow(1 - v, b) * (1 - 0.4 * smoothstep(0.55, 0.95, v));
   let most = 0;
   for (let i = 0; i <= 200; i++) most = Math.max(most, raw(i / 200));
   return (v: number) => raw(v) / most;
 })();
 
 /** One leaflet, base at the origin, tip at z = 1, upper side +Y. */
-function makeLeaflet(lod: number): THREE.BufferGeometry {
+function makeLeaflet(lod: number, model: number): THREE.BufferGeometry {
   const sb = new Surf();
-  const rows = LEAFLET_ROWS[lod]!;
+  const rows = LEAFLET_ROWS[lod]![model]!;
   const nu = LEAFLET_ACROSS[lod]!;
   const nv = rows.v.length - 1;
   const fine = lod === 0;
@@ -124,27 +160,27 @@ function makeLeaflet(lod: number): THREE.BufferGeometry {
     const j = Math.round(vj * nv);
     const v = rows.v[j]!;
     const kind = rows.kind[j]!;
+    const size = rows.size[j]!;
     const u = u01 * 2 - 1;
     const edge = Math.abs(u) > 0.999;
     // the coarser models have no teeth: they are drawn a little fuller, to cover as much
-    let half = LEAFLET_HALF_WIDTH * leafletOutline(v) * (fine ? 1 : 1.04) + 0.004;
+    let half = LEAFLET_HALF_WIDTH * leafletOutline(v) * (fine ? 1 : 1.05) + 0.004;
     let z = v;
     if (fine && edge) {
-      // a tooth stands out and points forward, towards the tip of the leaflet; the notch behind it cuts in
+      // a coarse angular tooth stands out and points forward, towards the tip; the notch behind it cuts in
       if (kind === 'tooth') {
-        half = half * 1.08 + 0.014;
-        z += 0.014;
-      } else if (kind === 'notch') half *= 0.86;
+        half += 0.03 * size;
+        z += 0.008 * size;
+      } else if (kind === 'notch') half -= 0.02 * size;
     }
     // the base is a little fuller on one side than the other
-    const x = u * half * (1 + 0.06 * u * (1 - v));
-    // nearly flat, folded a little along the midrib, the long point curling down
-    let y = 0.1 * Math.abs(x) - 0.12 * v * v - 0.07 * smoothstep(0.7, 1, v);
+    const x = u * half * (1 + 0.07 * u * (1 - v));
+    // folded a little along the midrib, the blade puckered between its sunk veins, the long point curling down
+    let y = 0.08 * Math.abs(x) - 0.1 * v * v - 0.08 * smoothstep(0.72, 1, v);
     if (fine) {
-      // a vein runs out to each tooth and is sunk in the blade; the blade between two veins stands up
-      const between = kind === 'notch' ? 1 : kind === 'tooth' ? -1 : 0;
-      y += 0.003 * between * (1 - Math.abs(u)) * Math.abs(u) * 4;
-      y += 0.012 * Math.sin(v * 8 + u * 2.2) * u * u;
+      y += 0.004 * (kind === 'notch' ? 1 : kind === 'tooth' ? -1 : 0) * (1 - Math.abs(u)) * Math.abs(u) * 4;
+      // a rugose blade: the veins sunk and the panes between them standing up
+      y += 0.009 * Math.sin(v * 22 + Math.abs(u) * 5) * Math.abs(u) * (1 - Math.abs(u)) * 4;
     }
     return { p: [x, y, z] };
   });
@@ -153,11 +189,17 @@ function makeLeaflet(lod: number): THREE.BufferGeometry {
   return sb.build();
 }
 
-const leafletCache: THREE.BufferGeometry[] = [];
+const leafletCache: THREE.BufferGeometry[][] = [];
 
+/**
+ * A whole leaf, one unit long along +Z. The stalk is axis; the rest (the leaf's axis and its leaflets) is the blade,
+ * which the viewer holds in the world (leaf.hold) by turning it where it leaves the stalk: on a wall the leaves turn
+ * out and hang face out, the end leaflet lowest (reference hyb-badduben-1). So it is drawn lying out along +Z from
+ * the end of the stalk, and every part of it pivots there.
+ */
 function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
-  leafletCache[lod] ??= makeLeaflet(lod);
-  const leaflet = leafletCache[lod]!;
+  leafletCache[lod] ??= LEAFLET_ROWS[lod]!.map((_, k) => makeLeaflet(lod, k));
+  const leaflets = leafletCache[lod]!;
   const count = LEAF_VARIANTS[variant]!;
   const pairs = (count - 1) / 2;
   const rng = new RNG(4200 + variant * 37);
@@ -165,21 +207,42 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
 
   // a leaf of fewer leaflets is a shorter leaf of leaflets the same size, so each is a larger share of it
   const size = LEAFLET_LENGTH * Math.sqrt(LEAFLETS_USUAL / count);
-  const endSize = size * 1.05;
+  const endSize = size * 1.08;
   /** Where the axis ends and the end leaflet begins. */
-  const axisEnd = 1 - endSize * 0.9;
-  const axis = (z: number) => new V3(0, -LEAF_ARCH * (z / axisEnd) ** 2, z);
-  const pitch = (z: number) => Math.atan((2 * LEAF_ARCH * z) / (axisEnd * axisEnd));
+  const axisEnd = 1 - endSize * 0.92;
+  const joint = new V3(0, 0, LEAF_STALK);
+  const archAt = (z: number) => Math.max(0, (z - LEAF_STALK) / (axisEnd - LEAF_STALK));
+  const axis = (z: number) => new V3(0, -LEAF_ARCH * archAt(z) ** 2, z);
+  const pitch = (z: number) => Math.atan((2 * LEAF_ARCH * archAt(z)) / (axisEnd - LEAF_STALK));
 
+  // the stalk: stout and swollen where it joins the stem
+  const SS = [3, 2, 1][lod]!;
+  const sides = [6, 4, 3][lod]!;
+  mg.tube(
+    Array.from({ length: SS + 1 }, (_, i) => new V3(0, 0, (LEAF_STALK * i) / SS)),
+    Array.from({ length: SS + 1 }, (_, i) => 0.0085 - 0.0017 * (i / SS) + (i === 0 ? 0.004 : 0)),
+    sides,
+    WHITE,
+    WHITE,
+    MIDRIB,
+  );
+  // the leaf's own axis, grooved above in life; part of the blade, so it turns with it
   const NS = [10, 4, 2][lod]!;
-  const pts: V3[] = [];
-  const radii: number[] = [];
-  for (let i = 0; i <= NS; i++) {
-    pts.push(axis((axisEnd * i) / NS));
-    // stout where it joins the stem, slender at the end
-    radii.push(0.0068 * (1 - 0.5 * (i / NS)) + (i === 0 ? 0.004 : 0));
+  const first = mg.n;
+  mg.tube(
+    Array.from({ length: NS + 1 }, (_, i) => axis(lerp(LEAF_STALK, axisEnd, i / NS))),
+    Array.from({ length: NS + 1 }, (_, i) => 0.0066 * (1 - 0.5 * (i / NS))),
+    sides,
+    WHITE,
+    WHITE,
+    MIDRIB,
+  );
+  for (let v = first; v < mg.n; v++) {
+    mg.part[4 * v] = joint.x;
+    mg.part[4 * v + 1] = joint.y;
+    mg.part[4 * v + 2] = joint.z;
+    mg.part[4 * v + 3] = 0.5;
   }
-  mg.tube(pts, radii, [6, 4, 3][lod]!, WHITE, WHITE, MIDRIB);
 
   const AX = new V3(1, 0, 0);
   const AY = new V3(0, 1, 0);
@@ -192,25 +255,26 @@ function makeLeafGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const put = (z: number, side: -1 | 0 | 1, sizeK: number, forward: number): void => {
     const base = axis(z);
     q.setFromAxisAngle(AX, pitch(z));
-    q.multiply(q2.setFromAxisAngle(AY, side === 0 ? rng.range(-0.1, 0.1) : side * (Math.PI / 2 - forward)));
-    // each hangs a little below the plane of the leaf, its outer half lowest
-    q.multiply(q2.setFromAxisAngle(AX, rng.range(0.04, 0.26)));
-    q.multiply(q2.setFromAxisAngle(AZ, rng.range(-0.18, 0.18) - side * 0.12));
-    const s = sizeK * rng.range(0.95, 1.05);
+    q.multiply(q2.setFromAxisAngle(AY, side === 0 ? rng.range(-0.08, 0.08) : side * (Math.PI / 2 - forward)));
+    // each droops a little below the plane of the leaf, its outer half lowest
+    q.multiply(q2.setFromAxisAngle(AX, rng.range(0.06, 0.3)));
+    q.multiply(q2.setFromAxisAngle(AZ, rng.range(-0.2, 0.2) - side * 0.14));
+    const s = sizeK * rng.range(0.93, 1.06);
     at.set(0, 0, LEAFLET_STALK).applyQuaternion(q).add(base);
-    m.compose(at, q, scl.set(s, s, s));
+    // leaflets of one leaf are not all alike: a little longer or broader, each with its own teeth
+    m.compose(at, q, scl.set(s * rng.range(0.94, 1.08), s, s));
     const tone = rng.range(0.92, 1.08);
-    mg.add(leaflet, m, [tone, tone, tone], base, rng.f());
+    mg.add(leaflets[Math.floor(rng.f() * leaflets.length)]!, m, [tone, tone, tone], joint, rng.f());
   };
   for (let i = 0; i < pairs; i++) {
     const along = pairs > 1 ? i / (pairs - 1) : 0;
-    const z = lerp(LEAF_STALK, axisEnd * 0.97, along);
+    const z = lerp(LEAF_STALK + 0.02, axisEnd * 0.96, along);
     // the lowest pair is the smallest; the pairs are not quite opposite
-    const sizeK = size * lerp(0.74, 1, smoothstep(0, 0.45, along)) * lerp(1, 0.94, smoothstep(0.7, 1, along));
+    const sizeK = size * lerp(0.72, 1, smoothstep(0, 0.45, along)) * lerp(1, 0.93, smoothstep(0.7, 1, along));
     const forward = lerp(LEAFLET_FORWARD[0], LEAFLET_FORWARD[1], along);
-    const slip = rng.range(-0.008, 0.008);
-    put(z + slip, -1, sizeK, forward + rng.range(-0.05, 0.05));
-    put(z - slip, 1, sizeK, forward + rng.range(-0.05, 0.05));
+    const slip = rng.range(-0.01, 0.01);
+    put(z + slip, -1, sizeK, forward + rng.range(-0.06, 0.06));
+    put(z - slip, 1, sizeK, forward + rng.range(-0.06, 0.06));
   }
   put(axisEnd, 0, endSize, 0);
   const g = mg.build();
@@ -235,26 +299,30 @@ const CALYX_CUT = num('flower.calyxLobing');
 /** The angle of the lowest lobe: the limb has three lobes below and two, a little smaller, above. */
 const LOBE0 = -Math.PI / 2;
 /** How far the limb reaches in the notch between two lobes, as a share of a lobe. */
-const LOBE_NOTCH = 0.3;
+const LOBE_NOTCH = 0.5;
 
+// Colours from the sources (morphology flower.colour*) as the photographs show them in daylight: a tube yellowish
+// where it leaves the calyx and orange above (reference mg-huntington, hyb-hockenheim-2018), a limb of a deep
+// salmon-red to orange-red, a throat of apricot-yellow finely lined with red (hyb-madrid-1, mg-vlasenko-a), a calyx
+// yellow-green going ochre and orange at its teeth (hyb-hockenheim-2018, mg-ubc), yellow anthers at the mouth.
 const C = {
-  tubeBase: lin('#f2b866'),
-  tube: lin('#ee8c40'),
-  throat: lin('#f7a94a'),
-  limb: lin('#d94f32'),
-  limbEdge: lin('#e3663f'),
-  vein: lin('#a52a22'),
-  calyxBase: lin('#93a052'),
-  calyx: lin('#d98a3e'),
-  calyxTip: lin('#c2632f'),
-  filament: lin('#f3e7bd'),
-  anther: lin('#e6d49a'),
+  tubeBase: lin('#f0c35e'),
+  tube: lin('#ef8f34'),
+  throat: lin('#f5ae45'),
+  limb: lin('#dc4a28'),
+  limbEdge: lin('#e2603a'),
+  vein: lin('#b8361e'),
+  calyxBase: lin('#a3a744'),
+  calyx: lin('#c8a24a'),
+  calyxTip: lin('#c9773a'),
+  filament: lin('#f2e2a6'),
+  anther: lin('#efd27a'),
   stigma: lin('#cdd58f'),
   budBase: lin('#efa450'),
   budTip: lin('#d94f38'),
-  axisA: lin('#73843f'),
-  axisB: lin('#8d8a45'),
-  stalk: lin('#a09048'),
+  axisA: lin('#7c8a3e'),
+  axisB: lin('#8f9244'),
+  stalk: lin('#98984a'),
 };
 
 interface TrussSegs {
@@ -375,19 +443,19 @@ function makeCorolla(lod: number): Corolla {
       z = TUBE * s;
       c = mix(mix(C.tubeBase, C.tube, smoothstep(0.1, 0.55, s)), C.throat, 0.5 * smoothstep(0.75, 1, s));
       // the dark lines of the throat run a little way down the tube
-      if (lod === 0 && i % 2 === 1) c = mix(c, C.vein, 0.42 * smoothstep(0.5, 1, s));
+      if (lod === 0 && i % 2 === 1) c = mix(c, C.vein, 0.26 * smoothstep(0.5, 1, s));
       pivots.push(0, 0, tubePivot(s));
     } else {
       const w = (j - tubeRows) / (along - tubeRows);
       // 1 along the middle of a lobe, 0 in the notch between two; the coarsest model has a point to a lobe and no notches
-      const lobe = sheets ? Math.pow(Math.abs(Math.cos((LOBES * off) / 2)), 0.55) : 1;
+      const lobe = sheets ? Math.pow(Math.abs(Math.cos((LOBES * off) / 2)), 0.4) : 1;
       const reach = lobeReach(upper) * (LOBE_NOTCH + (1 - LOBE_NOTCH) * lobe) * (sheets ? 1 : 0.8);
       const p = limbProfile.at(w);
       r = THROAT_RADIUS + reach * p.out;
       z = TUBE + reach * p.forward;
       if (lod === 0) z += 0.0012 * Math.sin(off * 9 + k) * w * w * lobe;
       c = mix(mix(C.throat, C.limb, smoothstep(0, 0.45, w)), C.limbEdge, 0.6 * smoothstep(0.75, 1, w));
-      if (lod === 0 && i % 2 === 1) c = mix(c, C.vein, 0.42 * (1 - smoothstep(0.25, 0.7, w)));
+      if (lod === 0 && i % 2 === 1) c = mix(c, C.vein, 0.3 * (1 - smoothstep(0.2, 0.55, w)));
       // how far out this point is, as a share of the lobe's whole way out along its middle
       const q = (reach * p.out) / (lobeReach(upper) * limbProfile.whole);
       // towards the far side of the axis, so that the lobes close over one another
@@ -482,7 +550,8 @@ function makeClub(segs: Segs): THREE.BufferGeometry {
       // five-sided where the lobes are folded
       r = dome.radius * (1 + 0.06 * Math.cos(LOBES * th));
       z = dome.z;
-      c = mix(C.throat, C.limb, smoothstep(0, 0.3, q));
+      // the folded lobes show orange, reddening at the tip (reference mg-vlasenko-a, hyb-hockenheim-2018)
+      c = mix(C.tube, C.limbEdge, 0.7 * smoothstep(0.2, 1, q));
     }
     return { p: [Math.cos(th) * r, Math.sin(th) * r, z], c };
   });
@@ -514,9 +583,9 @@ interface TrussPlan {
 }
 /** The lower branches carry a flower and one or two beside it; the upper ones a single flower; one flower ends the axis. */
 const TRUSS_PLANS: readonly TrussPlan[] = [
-  { axis: 0.86, nod: 0.95, clubs: 2, nodes: [{ at: 0.5, branch: 0.03, flowers: [1, 1] }, { at: 0.72, branch: 0.024, flowers: [1, 1] }, { at: 0.9, branch: 0.016, flowers: [1, 1] }] },
-  { axis: 0.94, nod: 1.05, clubs: 3, nodes: [{ at: 0.45, branch: 0.034, flowers: [2, 2] }, { at: 0.68, branch: 0.026, flowers: [1, 1] }, { at: 0.88, branch: 0.016, flowers: [1, 1] }] },
-  { axis: 1, nod: 1.15, clubs: 4, nodes: [{ at: 0.42, branch: 0.036, flowers: [3, 3] }, { at: 0.64, branch: 0.028, flowers: [2, 1] }, { at: 0.85, branch: 0.018, flowers: [1, 1] }] },
+  { axis: 0.7, nod: 0.75, clubs: 3, nodes: [{ at: 0.62, branch: 0.04, flowers: [1, 1] }, { at: 0.8, branch: 0.032, flowers: [1, 1] }, { at: 0.93, branch: 0.022, flowers: [1, 1] }] },
+  { axis: 0.75, nod: 0.85, clubs: 4, nodes: [{ at: 0.6, branch: 0.044, flowers: [2, 2] }, { at: 0.79, branch: 0.034, flowers: [1, 1] }, { at: 0.92, branch: 0.022, flowers: [1, 1] }] },
+  { axis: 0.8, nod: 0.95, clubs: 5, nodes: [{ at: 0.58, branch: 0.046, flowers: [3, 3] }, { at: 0.78, branch: 0.036, flowers: [2, 1] }, { at: 0.91, branch: 0.024, flowers: [1, 1] }] },
 ];
 TRUSS_PLANS.forEach((plan, variant) => {
   const flowers = 1 + plan.nodes.reduce((n, node) => n + node.flowers[0] + node.flowers[1], 0);
@@ -573,7 +642,7 @@ function makeTrussGeometry(variant: number, lod: number): THREE.BufferGeometry {
     if (seg.stalk) mg.tube([from.clone(), from.clone().addScaledVector(heading, 0.55 * reach).addScaledVector(DOWN, 0.02 * reach), end], [thick, thick * 0.9, thick * 1.05], sides, C.axisB, C.stalk);
     return end;
   };
-  const facingFrom = (heading: V3, along: V3) => heading.clone().multiplyScalar(0.8).addScaledVector(along, 0.3).addScaledVector(DOWN, 0.24).normalize();
+  const facingFrom = (heading: V3, along: V3) => heading.clone().multiplyScalar(0.75).addScaledVector(along, 0.55).addScaledVector(DOWN, 0.08).normalize();
 
   plan.nodes.forEach((node, k) => {
     const from = axisAt(node.at);
@@ -655,41 +724,68 @@ function makeTrussGeometry(variant: number, lod: number): THREE.BufferGeometry {
 const POD_LENGTH = mid(range('fruit.lengthM'));
 const POD_HALF_WIDTH = num('fruit.widthM') / 2;
 const POD_LODS = 2;
-const POD = { green: lin('#74923f'), shade: lin('#5f7c34'), seam: lin('#a8b86c'), stalk: lin('#8a8a52') };
+const POD = {
+  // grey-green while it swells, paler on its seams and ridges (reference hyb-fruit-1, the hybrid on 25 October)
+  green: lin('#93a85e'),
+  shade: lin('#7e9450'),
+  seam: lin('#b9c487'),
+  // the old truss, bare and woody, with the stubs of its flower stalks (rad-january-1); the calyx dried black-brown
+  stalk: lin('#8c7a52'),
+  calyx: lin('#3a2c20'),
+};
 
 function makePodGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const mg = new Merge(false);
-  const [around, along] = ([[14, 16], [6, 5]] as const)[lod]!;
+  const [around, along] = ([[16, 18], [6, 5]] as const)[lod]!;
   const one = (() => {
     const sb = new Surf();
     sb.surf(around, along, (u, v) => {
       const th = u * TAU;
-      // a short stalk of its own, a stout middle, a pointed end
-      // cigar-shaped: stout for most of its length, tapering to its stalk and to a point
-      const body = Math.pow(Math.sin(Math.PI * Math.pow(0.04 + 0.96 * v, 0.9)), 0.55);
-      // a little uneven over the rows of seeds
-      const r = 0.0016 * (1 - v) + POD_HALF_WIDTH * body * smoothstep(0, 0.14, v) * (1 + 0.03 * Math.sin(v * 31));
-      // round, a little flattened, with a low pale ridge along each of the two seams
-      const seam = Math.pow(Math.abs(Math.cos(th)), 6);
+      // spindle-shaped: stout through the middle, narrowing to a short stalk above and drawn out into a beak below
+      const body = Math.pow(Math.sin(Math.PI * Math.pow(0.03 + 0.97 * v, 1.08)), 0.75);
+      const r = 0.0014 * (1 - v) + POD_HALF_WIDTH * body * smoothstep(0, 0.1, v);
+      // a little flattened, a ridge along each of its two seams and fainter ones between (hyb-fruit-1)
+      const seam = Math.pow(Math.abs(Math.cos(th)), 8);
+      const ribs = lod === 0 ? 0.035 * Math.pow(Math.abs(Math.cos(2 * th)), 6) : 0;
+      const k = 1 + 0.07 * seam + ribs;
       return {
-        p: [Math.cos(th) * r * (1 + 0.05 * seam), -POD_LENGTH * v, Math.sin(th) * r * 0.9 + 0.012 * Math.sin(Math.PI * v) * Math.sin(Math.PI * v)],
-        c: mix(mix(POD.green, POD.shade, 0.6 * smoothstep(0.55, 1, v)), POD.seam, 0.8 * Math.pow(seam, 3)),
+        p: [Math.cos(th) * r * k, -POD_LENGTH * v, Math.sin(th) * r * 0.86 * k],
+        c: mix(mix(POD.green, POD.shade, 0.5 * smoothstep(0.5, 1, v) * (0.5 + 0.5 * Math.sin(th))), POD.seam, 0.85 * Math.pow(seam, 2) + 4 * ribs),
       };
     });
     return sb.build();
   })();
-  // what is left of the truss: its stalk, bent over by the weight
+  const sides = [5, 3][lod]!;
+  // what is left of the truss: its stalk, bent over by the weight, with the stubs of the flowers that fell
   const hang = [new V3(0, 0, 0), new V3(0.004, -0.014, 0.002), new V3(0.002, -0.032, 0)];
-  mg.tube(hang, [0.0024, 0.0021, 0.002], [5, 3][lod]!, POD.stalk, POD.stalk);
+  mg.tube(hang, [0.0026, 0.0022, 0.002], sides, POD.stalk, POD.stalk);
+  if (lod === 0) {
+    const rng = new RNG(5100 + variant);
+    for (let k = 0; k < 5; k++) {
+      const from = hang[1]!.clone().lerp(hang[2]!, k / 5);
+      const a = rng.range(0, TAU);
+      const reach = rng.range(0.003, 0.007);
+      const to = from.clone().add(new V3(Math.cos(a) * reach, rng.range(0.001, 0.005), Math.sin(a) * reach));
+      mg.tube([from, to], [0.0012, 0.001], 3, POD.stalk, POD.stalk);
+    }
+  }
   const m = new THREE.Matrix4();
   const e = new THREE.Euler();
   // x, y, z, rx, ry, rz, scale
-  const pods: readonly (readonly [number, number, number, number, number, number, number])[] = variant === 0 ? [[0.002, -0.032, 0, 0.06, 0.4, 0.05, 1]] : [[0.002, -0.032, 0, 0.1, 0.2, 0.16, 1], [0.003, -0.022, 0.001, -0.14, 2.6, -0.2, 0.86]];
+  const pods: readonly (readonly [number, number, number, number, number, number, number])[] = variant === 0 ? [[0.002, -0.032, 0, 0.06, 0.4, 0.05, 1]] : [[0.002, -0.032, 0, 0.1, 0.2, 0.16, 1], [0.003, -0.026, 0.001, -0.14, 2.6, -0.2, 0.9]];
   for (const [x, y, z, rx, ry, rz, s] of pods) {
     m.makeRotationFromEuler(e.set(rx, ry, rz));
     m.scale(new V3(s, s, s));
     m.setPosition(x, y, z);
     mg.add(one, m, [1, 1, 1], new V3(x, y, z), 0);
+    // the dried calyx at the top of the pod: five dark pointed teeth standing up round its stalk (hyb-fruit-1)
+    const top = new V3(0, -0.006, 0).applyMatrix4(m);
+    const up = new V3(0, 1, 0).transformDirection(m);
+    const side = new V3(1, 0, 0).transformDirection(m);
+    for (let k = 0; k < (lod === 0 ? 5 : 3); k++) {
+      const out = side.clone().applyAxisAngle(up, (k * TAU) / (lod === 0 ? 5 : 3));
+      mg.tube([top.clone().addScaledVector(up, -0.002), top.clone().addScaledVector(out, 0.007).addScaledVector(up, 0.006)], [0.0022, 0.0004], 3, POD.calyx, POD.calyx);
+    }
   }
   const g = mg.build();
   g.boundingSphere = new THREE.Sphere(new V3(0, -0.08, 0), 0.1);
@@ -704,7 +800,8 @@ function makePodGeometry(variant: number, lod: number): THREE.BufferGeometry {
 const ROOTLET_ROWS = num('holdfast.rows');
 const ROOTLETS_PER_ROW = num('holdfast.rootletsPerRow');
 const ROOTLET_LODS = 2;
-const ROOTLET = { base: lin('#cdbd92'), tip: lin('#a78f62') };
+// buff, the colour of straw, against a stem of one year (reference rad-rootlets)
+const ROOTLET = { base: lin('#dcc493'), tip: lin('#c2a46e') };
 
 function makeRootletsGeometry(variant: number, lod: number): THREE.BufferGeometry {
   const mg = new Merge(false);
@@ -741,11 +838,21 @@ const leaf: LeafAsset = {
   budget: [2300, 360, 136],
   // a short leaf has the fewest leaflets; of the rest most have the usual number
   pick: (lengthM, r) => (lengthM < 0.23 ? 0 : r < 0.7 ? 1 : 2),
-  // dark and somewhat shiny; bronze-tinged as it unfolds; yellow-green, never bright, before it drops
-  palette: { greenA: lin('#30581f'), greenB: lin('#3d6a26'), young: lin('#8a7a3c'), autumnA: lin('#c9c04a'), autumnB: lin('#a9a03a') },
-  roughness: 0.42,
+  // a mid to dark green, somewhat shiny, darker and greyer in shade (reference mg-stang-1, mg-ubc, hyb-badduben-1);
+  // bronze-tinged as it unfolds (the young leaves of mg-stang-1 are edged red-brown); yellow-green, never bright, before
+  // it drops (leaf.autumnColour)
+  palette: { greenA: lin('#304e20'), greenB: lin('#43622a'), young: lin('#7d7438'), autumnA: lin('#b3ad48'), autumnB: lin('#968c38') },
+  roughness: 0.45,
   translucency: 0.4,
   detailReach: 1,
+  // on a wall the leaves turn out and hang face out, the end leaflet lowest; out in the open they are held flatter
+  // (morphology leaf.posture). The leaf's one unit is measured with its blade straight out: the published length.
+  hold: {
+    unitAt: 0,
+    rise: characterRange(morphology, 'leaf.faceRiseDeg'),
+    riseOpen: characterRange(morphology, 'leaf.faceRiseOpenDeg'),
+    turn: num('leaf.bladeTurnDeg'),
+  },
 };
 
 const truss: FlowerAsset = {
@@ -772,15 +879,17 @@ const pod: FruitAsset = {
   variants: 2,
   lods: POD_LODS,
   make: makePodGeometry,
-  budget: [1000, 140],
+  budget: [1300, 180],
   // one pod more often than a pair
   pick: (r) => (r < 0.7 ? 0 : 1),
   authoredSize: POD_LENGTH,
   poise: 'hangs',
   centreAlong: 0.7,
-  // green, drying to tan, the seams paler
-  ripe: lin('#9a7748'),
-  ripeShade: [0.55, 1.5],
+  // grey-green, drying to a pale tan (fruit.colourRipe; rad-january-1), the seams paler
+  ripe: lin('#b08a58'),
+  ripeShade: [0.6, 1.3],
+  // the old truss and the dried calyx keep their own colours while the pod dries
+  stalkKeepsColour: true,
   roughness: 0.85,
   swing: 0.35,
   detailAt: [2.5],
@@ -795,7 +904,7 @@ const clingingRoots: AppendageAsset = {
   budget: [280, 56],
   pick: (r) => (r < 0.5 ? 0 : 1),
   // pale when new, drying brown
-  aged: lin('#8a6a44'),
+  aged: lin('#9a7a50'),
   agedDays: [90, 500],
   roughness: 0.95,
   swing: 0,
@@ -803,11 +912,16 @@ const clingingRoots: AppendageAsset = {
   detailCaps: [240],
 };
 
-/** From descriptions: a green hairless shoot, straw-coloured by its first winter, then light tan bark that peels in thin strips. */
+/**
+ * A young shoot green, flushed red-brown in the sun (reference mg-stang-0, mg-stang-1, mg-helbra-1; Missouri Plants, of
+ * C. radicans: green); straw-coloured by its first winter (Ohio State: "straw-colored branches"; rad-rootlets); then a
+ * light tan bark (University of Connecticut: "light tan") that peels in thin strips and flakes on an old trunk
+ * (rad-old-plant).
+ */
 const wood: WoodLook = {
-  young: lin('#6f8a45'),
-  mature: lin('#b59a62'),
-  old: [0.84, 0.7, 0.5],
+  young: lin('#6e7a3e'),
+  mature: lin('#c29c5c'),
+  old: [1.2, 1.0, 0.74],
   woodyDays: [80, 260],
   oldDays: [520, 1700],
   furrowDays: [420, 2200],

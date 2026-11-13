@@ -46,20 +46,33 @@ function parts(g: THREE.BufferGeometry): Map<number, ReturnType<typeof vertices>
   return out;
 }
 
+/**
+ * The leaflets of a leaf, each with the point where it joins the leaf's axis (its base: the point of it nearest the
+ * start of the leaf texture's run, on the midrib). The blade's own axis is a part too, since the whole blade turns as
+ * one where it leaves the stalk (leaf.hold); it is the one part that lies along the middle line, and is left out.
+ */
+function leafletsOf(g: THREE.BufferGeometry): { list: ReturnType<typeof vertices>; base: THREE.Vector3 }[] {
+  return [...parts(g).values()]
+    .filter((list) => Math.max(...list.map((v) => Math.abs(v.p.x))) > 0.02 || Math.min(...list.map((v) => v.p.z)) > 0.5)
+    .map((list) => ({ list, base: list.reduce((a, b) => (b.uv!.y < a.uv!.y || (b.uv!.y === a.uv!.y && Math.abs(b.uv!.x - 0.5) < Math.abs(a.uv!.x - 0.5)) ? b : a)).p }));
+}
+
 // species/campsis-x-tagliabueana-madame-galen/morphology.json: leaf.*. TAXON_LOOKS.md section 8: "counts and
 // measured sizes (leaflets, tepals, the length of a leaflet for its width) come from the file."
 describe('the leaf of Campsis x tagliabuana Madame Galen', () => {
   it('has the fewest, the usual and the most leaflets that morphology.json gives: 7, 9 and 11', () => {
     const [fewest, most] = range('leaf.leafletCount');
-    const counts = Array.from({ length: leaf.variants }, (_, v) => parts(leaf.make(v, 0)).size);
+    const counts = Array.from({ length: leaf.variants }, (_, v) => leafletsOf(leaf.make(v, 0)).length);
     expect(counts).toEqual([fewest, num('leaf.leafletCountUsual'), most]);
     // the same leaf at every level of detail
-    for (let v = 0; v < leaf.variants; v++) for (let lod = 1; lod < leaf.lods; lod++) expect(parts(leaf.make(v, lod)).size, `variant ${v} level ${lod}`).toBe(counts[v]);
+    for (let v = 0; v < leaf.variants; v++) for (let lod = 1; lod < leaf.lods; lod++) expect(leafletsOf(leaf.make(v, lod)).length, `variant ${v} level ${lod}`).toBe(counts[v]);
   });
 
   it('is odd-pinnate with its side leaflets in opposite pairs: one leaflet ends the axis and the rest stand two by two', () => {
     for (let v = 0; v < leaf.variants; v++) {
-      const joins = [...parts(leaf.make(v, 0)).values()].map((list) => ({ z: list[0]!.pivot.z, side: Math.sign(list.reduce((s, x) => s + x.p.x, 0) / list.length) })).sort((a, b) => a.z - b.z);
+      const joins = leafletsOf(leaf.make(v, 0))
+        .map(({ list, base }) => ({ z: base.z, side: Math.sign(list.reduce((s, x) => s + x.p.x, 0) / list.length) }))
+        .sort((a, b) => a.z - b.z);
       const end = joins.pop()!;
       expect(joins.length % 2).toBe(0);
       for (let i = 0; i < joins.length; i += 2) {
@@ -68,9 +81,20 @@ describe('the leaf of Campsis x tagliabuana Madame Galen', () => {
         expect(joins[i]!.side).toBe(-joins[i + 1]!.side);
       }
       // the lowest pair stands above a bare stalk
-      expect(joins[0]!.z).toBeGreaterThan(num('leaf.stalkShareOfLength') - 0.02);
+      expect(joins[0]!.z).toBeGreaterThan(num('leaf.stalkShareOfLength'));
       expect(end.z).toBeGreaterThan(joins[joins.length - 1]!.z);
     }
+  });
+
+  // TAXON_LOOKS.md section 5a: "the pivot of the parts tagged t >= 0, which must all be the one blade"
+  it('is a stalk and one blade, every part of which turns where the stalk ends, as its hold from morphology.json says', () => {
+    for (let v = 0; v < leaf.variants; v++) {
+      for (const x of vertices(leaf.make(v, 0))) {
+        if (x.t < 0) expect(x.p.z, 'the stalk').toBeLessThan(num('leaf.stalkShareOfLength') + 0.01);
+        else expect(x.pivot.distanceTo(new THREE.Vector3(0, 0, num('leaf.stalkShareOfLength')))).toBeLessThan(1e-6);
+      }
+    }
+    expect(leaf.hold).toEqual({ unitAt: 0, rise: range('leaf.faceRiseDeg'), riseOpen: range('leaf.faceRiseOpenDeg'), turn: num('leaf.bladeTurnDeg') });
   });
 
   it('is as wide for its length as morphology.json records, with the usual number of leaflets', () => {
@@ -82,25 +106,32 @@ describe('the leaf of Campsis x tagliabuana Madame Galen', () => {
     expect(width / length).toBeLessThan(num('leaf.widthShareOfLength') * 1.15);
   });
 
-  it('gives each leaflet the published width for its length, and the recorded number of teeth on each side', () => {
-    const list = [...parts(leaf.make(1, 0)).values()];
-    // the end leaflet: the one that joins the axis farthest out
-    const end = list.reduce((a, b) => (b[0]!.pivot.z > a[0]!.pivot.z ? b : a));
-    const base = end.reduce((a, b) => (b.uv!.y < a.uv!.y || (b.uv!.y === a.uv!.y && Math.abs(b.uv!.x - 0.5) < Math.abs(a.uv!.x - 0.5)) ? b : a)).p;
-    const tip = end.reduce((a, b) => (b.uv!.y > a.uv!.y ? b : a)).p;
-    const along = tip.clone().sub(base);
-    const length = along.length();
-    along.normalize();
-    const off = (p: THREE.Vector3) => p.clone().sub(base).addScaledVector(along, -p.clone().sub(base).dot(along)).length();
-    const margin = end.filter((v) => v.uv!.x === 1).sort((a, b) => a.uv!.y - b.uv!.y).map((v) => off(v.p));
-    // the smooth outline, without the teeth: the width between the notches and the points
-    const widest = 2 * Math.max(...margin);
-    const shape = num('leaf.leafletWidthMaxM') / num('leaf.leafletLengthMaxM');
-    expect(widest / length).toBeGreaterThan(shape * 0.85);
-    expect(widest / length).toBeLessThan(shape * 1.25);
-    let teeth = 0;
-    for (let i = 1; i < margin.length - 1; i++) if (margin[i]! > margin[i - 1]! && margin[i]! > margin[i + 1]!) teeth++;
-    expect(teeth).toBe(num('leaf.leafletTeethPerSide'));
+  it('gives each leaflet the published width for its length, widest where recorded, and the recorded number of teeth on each side', () => {
+    const [fewestTeeth, mostTeeth] = range('leaf.leafletTeethPerSide');
+    const seen = new Set<number>();
+    for (const { list, base } of leafletsOf(leaf.make(2, 0))) {
+      const tip = list.reduce((a, b) => (b.uv!.y > a.uv!.y ? b : a)).p;
+      const along = tip.clone().sub(base);
+      const length = along.length();
+      along.normalize();
+      const off = (p: THREE.Vector3) => p.clone().sub(base).addScaledVector(along, -p.clone().sub(base).dot(along)).length();
+      const edge = list.filter((v) => v.uv!.x === 1).sort((a, b) => a.uv!.y - b.uv!.y);
+      const margin = edge.map((v) => off(v.p));
+      const widest = 2 * Math.max(...margin);
+      const shape = num('leaf.leafletWidthMaxM') / num('leaf.leafletLengthMaxM');
+      expect(widest / length).toBeGreaterThan(shape * 0.85);
+      expect(widest / length).toBeLessThan(shape * 1.35);
+      // widest a little below the middle (leaf.leafletWidestAt), within a tooth's spacing
+      const at = edge[margin.indexOf(Math.max(...margin))]!.uv!.y;
+      expect(Math.abs(at - num('leaf.leafletWidestAt'))).toBeLessThan(0.16);
+      let teeth = 0;
+      for (let i = 1; i < margin.length - 1; i++) if (margin[i]! > margin[i - 1]! && margin[i]! > margin[i + 1]!) teeth++;
+      expect(teeth).toBeGreaterThanOrEqual(fewestTeeth);
+      expect(teeth).toBeLessThanOrEqual(mostTeeth);
+      seen.add(teeth);
+    }
+    // the leaflets of one leaf are not all toothed alike
+    expect(seen.size).toBeGreaterThan(1);
   });
 
   // TAXON_LOOKS.md section 2: a leaf is one unit long along +Z, its upper side +Y
@@ -111,7 +142,7 @@ describe('the leaf of Campsis x tagliabuana Madame Galen', () => {
       expect(g.boundingBox!.max.z).toBeGreaterThan(0.93);
       expect(g.boundingBox!.max.z).toBeLessThan(1.05);
       expect(g.boundingBox!.min.z).toBeGreaterThan(-0.02);
-      expect(g.boundingBox!.min.y).toBeLessThan(-0.15);
+      expect(g.boundingBox!.min.y).toBeLessThan(-0.08);
     }
   });
 
@@ -350,7 +381,7 @@ describe('a specimen grown on the frame for eight years', () => {
   const pods = (d: number) => data.fruits.filter((f) => fruitState(f, d).phase !== 'absent');
   const stems = new Map(data.stems.map((s) => [s.id, s]));
 
-  // RHS: "deciduous"; University of Connecticut, of the parent: "Late to leaf out in spring"
+  // RHS: "deciduous"; University of Connecticut, of the parent: "late to leaf out in spring"
   it('is bare from December to the middle of April, comes late into leaf and is in full leaf from June to October', () => {
     for (let y = first + 2; y <= last; y++) {
       for (const [m, d] of [[12, 15], [1, 15], [2, 15], [3, 15], [4, 15]] as const) expect(inLeaf(day(y, m, d)), `${y}-${m}-${d}`).toBe(0);
@@ -377,7 +408,7 @@ describe('a specimen grown on the frame for eight years', () => {
     expect(firstFlowers).toBeLessThanOrEqual(first + 3);
   });
 
-  // RHS: flowers "from late summer until the first frosts". CLAUDE.md: "A flowering month is an envelope, not a trigger."
+  // RHS plant record: flowers in "late summer or early autumn"; Bean, of C. radicans at Kew: August and September. CLAUDE.md: "A flowering month is an envelope, not a trigger."
   it('is in flower in August, September and October, and on no day before late July or after the first days of November', () => {
     for (let y = first + 3; y <= last; y++) for (const m of [8, 9, 10]) expect(open(day(y, m, 15)), `${y}-${m}`).toBeGreaterThan(0);
     for (const f of data.flowers) {
@@ -391,7 +422,7 @@ describe('a specimen grown on the frame for eight years', () => {
     for (let y = first; y <= last; y++) for (const m of [12, 1, 2, 3, 4, 5, 6]) expect(open(day(y, m, 15))).toBe(0);
   });
 
-  // Bean, of C. radicans: "borne in a terminal cluster on the current season's growth"
+  // Bean, of C. radicans: "in a cluster at the end of the current season's growth"
   it('bears every truss at the end of a shoot of the year, facing along it, and none at a leaf node', () => {
     expect(param(model, 'flowering.currentSeasonFlowersPerM')).toBe(0);
     for (const f of data.flowers) {
@@ -408,7 +439,7 @@ describe('a specimen grown on the frame for eight years', () => {
     }
   });
 
-  // Bean, of C. radicans in Britain: pods form rarely
+  // Bean, of C. radicans: pods form "Very rarely, but sometimes after unusually hot summers"
   it('sets few pods, which hang ripe through the winter and are gone before the plant is in leaf again', () => {
     expect(data.fruits.length).toBeGreaterThan(0);
     expect(data.fruits.length).toBeLessThan(0.1 * data.flowers.length);
