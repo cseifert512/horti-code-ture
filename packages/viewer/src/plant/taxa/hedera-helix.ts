@@ -166,10 +166,11 @@ const IVY_VEINS: PalmateVeins = {
     curve: 40,
   },
   net: { cell: characterNumber(morphology, 'leaf.juvenile.veinNetCell'), jitter: 0.85 },
-  width: { main: 0.02, secondary: 0.008, net: 0.0035 },
+  // the net is drawn faint and thin: beside the photographs (leaf-02, leaf-10) a stronger one read as cracked glaze
+  width: { main: 0.02, secondary: 0.008, net: 0.0026 },
   ground: 0.74,
-  pale: { main: 0.24, secondary: 0.12, net: 0.04 },
-  tint: { main: 0.85, secondary: 0.6, net: 0.22 },
+  pale: { main: 0.24, secondary: 0.12, net: 0.02 },
+  tint: { main: 0.85, secondary: 0.6, net: 0.09 },
   relief: { vein: 0.25, pucker: 0.06 },
   seed: 5,
 };
