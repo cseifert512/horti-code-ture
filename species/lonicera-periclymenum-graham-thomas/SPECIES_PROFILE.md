@@ -14,7 +14,7 @@ A selection of the native woodbine found in a Warwickshire hedge about 1960 and 
 | RHS ultimate-height envelope | RHS: 4–8 m tall, 1–1.5 m spread; 5–10 years to ultimate size. |
 | Hardiness | H6 (RHS). |
 | Leaf | Opposite, simple, entire; ovate, oval or obovate, 38–64 mm long and 25–38 mm wide, mostly pointed; lower pairs stalked, uppermost stalkless and never joined round the stem (Bean, of the species). Dark green above, whitish beneath (RHS, of the cultivar). |
-| Leaf season | New leaves begin to open in January ("in December and January from bluish-green buds" in the BSBI account) and are well grown in April; they fall in November (Beckett and Beckett 1979, of the species, as given by the Useful Temperate Plants database). No autumn colour: the leaves drop green (UConn). |
+| Leaf season | New leaves begin to open in January ("in December and January from bluish-green buds" in the BSBI account) and are well grown in April; they fall in November (Beckett and Beckett 1979, of the species, as given by the Useful Temperate Plants database). No autumn colour: "no fall color" (University of Connecticut plant database). |
 | Flower | Terminal stalked heads of close whorls, 6–20 flowers to a head; each flower 40–50 mm long, a slender tube and two rolled-back lips, the upper of four lobes, with five long stamens and a longer style (Bean; BSBI account; Flora of New Zealand). White, fading to buff yellow, with no red (RHS; Bean's supplement). Fragrant, most strongly in the evening. |
 | Flower season | If cut back in winter it "will flower from June to October" (Bean's supplement); nurseries give July to September. |
 | Fruit | "Berries red" (RHS). Of the species: "Berries, 8 mm diameter, dark red, globose and stalkless in tight clusters", "ripe from mid- to late-August onwards", some "remaining on the plant until October or even early November" (BSBI account). |
@@ -36,21 +36,21 @@ The light model shades and nothing else (CLAUDE.md, "Light is not warmth"): scor
 
 ## Form: what the model draws
 
-**Through the year.** In December the plant is a tangle of bare, slender, tan twigs on grey-brown, stringy older stems. From mid January the leaves break, bluish green, and by mid April the side shoots of earlier years are in full leaf, weeks before most climbers; new side shoots lengthen from the old stems through spring. From early June each side shoot that flowers ends in a stalked head held out on the line of the shoot, above the small round pair of leaves that stands free beneath it. The head lengthens out of a knot of erect, club-shaped, cream buds; its lowest whorl opens first, white, and has turned buff yellow by the time the next whorl opens, so a head carries both colours at once, with long stamens and longer styles standing out all round. Heads follow one another until early October, later ones on the growth of the year. Where a head has gone over, a tight cluster of glossy berries swells, green and then red, from August into November. The leaves dull and yellow a little in late October and are off by the end of November.
+**Through the year.** In December the plant is a tangle of bare, slender, tan twigs on pale grey-buff, stringy older stems twisted round one another. From mid January the leaves break, bluish green, and by mid April the side shoots of earlier years are in leaf, weeks before most climbers; new side shoots lengthen from the old stems through spring. From early June each side shoot that flowers ends in a stalked head held out on the line of the shoot, above the small round pair of leaves that stands free beneath it. The head lengthens out of a knot of erect, club-shaped, cream-green buds; its lowest whorl opens first, white, and has turned buff yellow by the time the next opens, so a head carries both colours at once, with long white stamens tipped with crosswise orange anthers and a longer style with a green stigma. The main flush is June and July on side shoots from older wood; a lighter succession follows from August into early October, as the BSBI account's second peak in September. Where a head has gone over, a tight dome of up to twenty glossy berries swells, green and then red, each with a dark crown of dried calyx, from August into November. The leaves dull a little in late October and are off by the end of November.
 
-**The parts.** Leaves stand in opposite pairs: stalked and pointed on the long shoots, stalkless and blunter on the flowering side shoots (Bean's two kinds of leaf). Stems twine in a left-handed coil where they hold a support themselves and are laid along it where a gardener ties them in. There are no tendrils, rootlets or prickles.
+**The parts.** Leaves stand in opposite pairs: elliptic to ovate and pointed, on a short stalk, on the long shoots; broader, blunter and stalkless on the flowering side shoots (Bean's two kinds of leaf). Their outline was measured off photographs (width about half the length, widest near the middle, five to seven pairs of side veins looping forward near the margin); the blade is a dark, slightly grey green with one pale midrib and faint side veins, drawn from a texture of the leaf's own. The viewer holds each blade with its face to the open side and up, as the leaves of trained plants are held in photographs. Stems twine in a left-handed coil where they hold a support themselves and are laid along it where a gardener ties them in. There are no tendrils, rootlets or prickles.
 
 **Where the model simplifies.**
 
-- One leaf size and one node spacing for the whole plant: the long shoots of the real plant have longer internodes and larger leaves than its side shoots.
-- Every pair of leaves lies in the same plane as the pair before it; on the real shoot each pair stands at right angles to the last.
-- A leaf has one colour on both faces, so the whitish underside is not drawn.
-- A side shoot is made in one season and then only re-leafs and re-flowers; on the real plant it branches and becomes part of the framework. Long shoots of the year (the RHS's "wayward long shoots") are neither shed nor clothed in later years, so the model makes few of them.
+- One leaf size and node spacing for the long shoots and another for the flowering side shoots; within each, every leaf is alike in kind.
+- Every pair of leaves lies in the same plane as the pair before it (the engine's rule); on the real shoot each pair stands at right angles to the last.
+- A leaf has one colour on both faces, so the whitish underside (RHS: "whitish beneath") is not drawn.
+- A side shoot cannot fork. It is let lengthen a little each year to 0.5 m, in leaf along its whole length, to stand for the twiggy tangle it becomes on the real plant.
 - The head is one model that opens whorl by whorl. Its flowers cannot change colour one by one, so the whorl that opened first is painted yellow from the start; the buds of the middle stay buds to the end; a spent flower drops clean instead of hanging on orange-brown.
-- A head on the growth of the year sits at a leaf node; on the real plant it ends a shoot. Heads at the ends of side shoots open evenly through the season, where the real plant has a main flush and then a succession.
-- Berries ripen within a window of dates, not a number of weeks after their own flowers.
-- The semi-evergreen habit of sheltered plants is not shown: every leaf is off by the end of November.
-- Shoots that find no support are drawn by the engine as it draws every plant's: see the run's own notes.
+- The later heads of a shoot are drawn as a second head at the same place (the engine's repeat flowering); on the real plant they end the shoots that grow on from below the first.
+- A cluster of berries ripens as a whole, within a window of dates; on the plant the outer berries colour first (reference fruit-ripe-unripe-chapeltoun) and each cluster some weeks after its own flowers.
+- The wintergreen leaves of sheltered plants (BSBI account: "Young shoots and some leaves in sheltered conditions ... remain wintergreen") are not shown: every leaf is off by the end of November.
+- Shoots that stand clear of the timber are laid by the engine's mechanics (free-shoot.ts) with this plant's own stiffness, weight and reach (model.json), not measured ones. Untended, the short shoots on the top of the frame stand as a fringe in winter; the gardener's routine below, not yet modelled, would cut them.
 
 ## Species-specific biological logic
 
@@ -69,6 +69,17 @@ Perimeter/lower-to-middle lane with flowers close enough to visitors to smell, p
 Prune/control after flowering as needed and maintain distinct lane from evergreen honeysuckle.
 
 RHS pruning group 11, after flowering: cut flowered shoots back by a third in late summer (RHS honeysuckle guide). A plant that has become congested and bare at the bottom is renovated by cutting every stem to about 60 cm in late winter and choosing among the shoots that follow. Flowering wood is recorded as both, provisionally: the RHS and Gardens Illustrated say the flowers come on side shoots from the previous year's stems, while Bean says this cultivar flowers from June to October even when cut back in winter, which means later flowers on new growth.
+
+## Care: what the gardener does
+
+The RHS record of this cultivar puts it in pruning group 11, "after flowering". The RHS honeysuckle guide splits climbing honeysuckles: those that flower on "short sideshoots on the previous season's growth" are pruned after flowering ("Cut back flowered shoots by one-third in late summer"); those that flower on the current season's growth are pruned in spring, when the gardener cuts "wayward long shoots", thins congested areas and removes weak and damaged shoots ("A hard prune will reduce flowering"). This cultivar does both (Bean: "if cut back in winter will flower from June to October"), so the routine here takes the summer cut from the first and the spring tidy from the second:
+
+- **Planting year, March:** the shoots the plant arrives with cut back by two thirds, "to encourage strong new shoots from the base" (RHS guide); tie them in to the trellis.
+- **Each year, early March (before the shoots lengthen, after the worst of winter):** cut wayward long shoots that stand clear of the structure back to where they leave it; take out weak and dead shoots; tie in the new leaders.
+- **Each year, early September (after the main flush):** cut back the side shoots that have flowered by a third.
+- **Every few years, late winter, if the plant has become "very congested and bare at the bottom":** cut every stem back to about 60 cm and keep the strongest, best-placed new stems to rebuild the framework (RHS guide). Not routine.
+
+Sources: RHS plant record https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details and RHS honeysuckle guide https://www.rhs.org.uk/plants/honeysuckle/climbing/growing-guide (both read 13 November 2026); Bean, Trees and Shrubs Online. The dates within the months are this project's choice. None of this is modelled yet (`MODELLED_ROUTINE` in `packages/core/src/sim/planting.ts` has no entry for this plant): a trained plant is tied in and never cut.
 
 ## Interactions with the broader palette
 
@@ -105,4 +116,4 @@ The botanical curator should confirm taxon/cultivar identity; attachment agent s
 - Flora Helvetica, as given by Info Flora: https://www.infoflora.ch/en/flora/lonicera-periclymenum.html
 - Ashridge Nurseries (origin of the cultivar): https://www.ashridgetrees.co.uk/p/climbing-plants/honeysuckle/graham-thomas
 
-**Status:** morphology and growth model revised from published descriptions, November 2026. No number has been measured on a plant; site fit must be reviewed.
+**Status:** morphology and growth model revised from published descriptions and compared with photographs of the species and of the similar cultivar 'Scentsation' (Wikimedia Commons; none of 'Graham Thomas' itself was found there), November 2026. No number has been measured on a plant; site fit must be reviewed.

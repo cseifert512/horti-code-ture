@@ -35,9 +35,9 @@
 import * as THREE from 'three';
 import { characterNumber, characterRange, parseMorphology } from '@horti/core';
 import morphologyJson from '../../../../../species/lonicera-periclymenum-graham-thomas/morphology.json';
-import { RNG, lerp, smoothstep } from '../../util.ts';
-import { MIDRIB, Merge, type RGB, type Segs, Surf, WHITE, lathe, lin, mix, path } from '../kit.ts';
-import { type FlowerAsset, type FruitAsset, type LeafAsset, THIN_LEAF, type TaxonLook, type WoodLook } from '../look.ts';
+import { RNG, hash2, lerp, smoothstep } from '../../util.ts';
+import { GROUND, Merge, type RGB, type Segs, Surf, WHITE, lathe, lin, mix, path } from '../kit.ts';
+import { type BladeHold, type FlowerAsset, type FruitAsset, type LeafAsset, type LeafTexture, THIN_LEAF, type TaxonLook, type WoodLook } from '../look.ts';
 
 const ID = 'lonicera-periclymenum-graham-thomas';
 const morphology = parseMorphology(morphologyJson, `species/${ID}/morphology.json`);
@@ -50,128 +50,196 @@ const TAU = Math.PI * 2;
 // ---------------------------------------------------------------------------
 // Leaf
 // ---------------------------------------------------------------------------
-/** Bean: leaves 1 1/2 to 2 1/2 in. long, 1 to 1 1/2 in. wide. */
+/** Bean: leaves 1 1/2 to 2 1/2 in. long, 1 to 1 1/2 in. wide; the outline as measured off photographs. */
+const [RATIO_LOW, RATIO_HIGH] = characterRange(morphology, 'leaf.outlineWidthToLength');
+const [WIDEST_LOW, WIDEST_HIGH] = characterRange(morphology, 'leaf.widestAt');
+/** Pairs of side veins, read off photographs. */
+const [VEIN_PAIRS_LOW, VEIN_PAIRS_HIGH] = characterRange(morphology, 'leaf.sideVeinPairs');
 const LEAF_LENGTH_M = mid(characterRange(morphology, 'leaf.lengthM'));
-const LEAF_WIDTH_M = mid(characterRange(morphology, 'leaf.widthM'));
-/** Half the blade's width as a share of the leaf's length. */
-const LEAF_HALF_WIDTH = LEAF_WIDTH_M / LEAF_LENGTH_M / 2;
 /** The stalk of the stalkless upper leaf and of the stalked lower one, as shares of the leaf's length. */
 const [STALK_SHORT, STALK_LONG] = characterRange(morphology, 'leaf.stalkLengthM').map((m) => m / LEAF_LENGTH_M) as [number, number];
 
 interface BladeShape {
-  /** How the outline closes at the base and at the tip: 1 a straight taper to a point, less a rounder end, more a drawn-out one. */
-  base: number;
+  /** Width for length, and where along the blade it is widest (0 base, 1 tip). */
+  ratio: number;
+  widest: number;
+  /** How the outline closes at the tip: about 1 a straight taper to a point, less a rounder, blunter end. */
   tip: number;
-  /** Width, as a multiple of the usual one. */
-  width: number;
-  /** How far the tip hangs below the base, in lengths. */
+  /** Small asymmetry of the two halves, and how far the tip is turned to one side, as shares of the width. */
+  skew: number;
+  /** How far the tip bends down below the blade's line, in lengths. */
   arch: number;
-  /** Undulation of the margin, and where along the leaf it starts. */
+  /** A shallow undulation of the margin. */
   wave: number;
   phase: number;
-  /** How far the blade is turned about its midrib to face the light, at its base and by its tip, in radians: no two leaves of a shoot lie quite alike. */
-  turn: readonly [number, number];
 }
 
-// The shared leaf texture has eleven pairs of side veins; this leaf has six or seven, so it is given the lower two
-// thirds of the texture.
-const TEX_FROM = 0.03;
-const TEX_SPAN = 0.64;
-// Where that puts the side veins on the blade (see makeLeafTexture): one leaves the midrib every VEIN_EVERY of the
-// blade's length, the first at VEIN_FIRST, and has run VEIN_RISE further along by the time it reaches the margin.
-const VEIN_FIRST = (14 / 256 - TEX_FROM) / TEX_SPAN;
-const VEIN_EVERY = 21 / 256 / TEX_SPAN;
-const VEIN_RISE = 34 / 256 / TEX_SPAN;
-/** How far along its run a side vein is at `a` of the way from midrib (0) to margin (1). */
-const veinRun = (a: number): number => (24 * a + 10 * a * a) / 34;
+/** Half width of a blade at `v` along it, as a share of its length; 0 at both ends. */
+function halfWidth(shape: BladeShape, v: number): number {
+  // an ellipse with full shoulders (the pressed leaves of reference leaves-chuchamel), its widest point moved to
+  // `widest`, the base tapered into the stalk and the tip pointed or blunt by `tip`
+  const t = v < shape.widest ? (0.5 * v) / shape.widest : 0.5 + (0.5 * (v - shape.widest)) / (1 - shape.widest);
+  const s = Math.sin(Math.PI * Math.min(1, Math.max(0, t)));
+  return (shape.ratio / 2) * Math.pow(s, t < 0.5 ? 0.85 : shape.tip);
+}
+
+/** The blade the leaf texture is painted for: the middle of the photographs' outlines. */
+const TEXTURE_BLADE: BladeShape = { ratio: (RATIO_LOW + RATIO_HIGH) / 2, widest: (WIDEST_LOW + WIDEST_HIGH) / 2, tip: 0.9, skew: 0, arch: 0, wave: 0, phase: 0 };
+const SIDE_VEINS = Math.round((VEIN_PAIRS_LOW + VEIN_PAIRS_HIGH) / 2);
+
+/**
+ * The leaf's own texture: feather-veined, as the shared texture is, but faint. In photographs of the cultivar's
+ * relative 'Scentsation' and of the species the blade above is a nearly even dark, slightly grey green; the midrib is
+ * the one pale line that shows, the side veins are faint and loop forward near the margin, and the fine net is all but
+ * invisible from above (reference scentsation-1, scentsation-3, leaves-chuchamel). uv is the blade laid flat: u = 0.5 + x,
+ * v = z, in lengths of the blade.
+ */
+const LEAF_TEXTURE: LeafTexture = {
+  size: 512,
+  relief: 0.7,
+  paint(colour, height, S) {
+    const toSrgb = (c: number) => Math.round(255 * Math.min(1, Math.max(0, c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055)));
+    const grey = (lum: number, tint: number) => {
+      const g = toSrgb(lum);
+      return `rgb(${g},${g},${toSrgb(lum * (1 - tint))})`;
+    };
+    const GROUND = 0.62;
+    const img = colour.createImageData(S, S);
+    const rel = height.createImageData(S, S);
+    for (let y = 0; y < S; y++) {
+      for (let x = 0; x < S; x++) {
+        // a soft mottle so the blade is not flat paint, and the blade a shade paler towards its margin
+        const u = (x + 0.5) / S;
+        const v = 1 - (y + 0.5) / S;
+        const edge = Math.abs(u - 0.5) / Math.max(0.01, halfWidth(TEXTURE_BLADE, Math.min(0.999, Math.max(0.001, v))));
+        const mottle = 1 + 0.05 * (hash2(x >> 4, y >> 4) - 0.5) + 0.03 * (hash2(x >> 2, (y >> 2) + 311) - 0.5);
+        const lum = GROUND * mottle * (1 + 0.06 * smoothstep(0.55, 1, edge));
+        const o = 4 * (y * S + x);
+        const g = toSrgb(lum);
+        img.data[o] = g;
+        img.data[o + 1] = g;
+        img.data[o + 2] = g;
+        img.data[o + 3] = 255;
+        const h = Math.round(255 * (0.5 + 0.06 * (hash2((x >> 3) + 57, y >> 3) - 0.5)));
+        rel.data[o] = rel.data[o + 1] = rel.data[o + 2] = h;
+        rel.data[o + 3] = 255;
+      }
+    }
+    colour.putImageData(img, 0, 0);
+    height.putImageData(rel, 0, 0);
+    const at = (u: number, v: number): [number, number] => [u * S, (1 - v) * S];
+    colour.lineCap = height.lineCap = 'round';
+    const stroke = (pts: [number, number][], w: number, lum: number, tint: number, groove: number) => {
+      for (const [ctx, style, width] of [
+        [height, `rgba(0,0,0,${groove})`, w * 2],
+        [colour, grey(lum, tint), w],
+      ] as const) {
+        ctx.strokeStyle = style;
+        ctx.lineWidth = Math.max(0.7, width);
+        ctx.beginPath();
+        pts.forEach(([u, v], i) => {
+          const [px, py] = at(u, v);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+      }
+    };
+    // side veins: they leave the midrib forwards at a narrow angle, arch out and run up along the margin
+    for (let i = 0; i < SIDE_VEINS; i++) {
+      const v0 = 0.06 + (0.78 * i) / SIDE_VEINS;
+      for (const side of [-1, 1]) {
+        const pts: [number, number][] = [];
+        for (let k = 0; k <= 12; k++) {
+          const t = k / 12;
+          const v = Math.min(0.97, v0 + 0.2 * t + 0.04 * t * t);
+          const reach = halfWidth(TEXTURE_BLADE, v) * (0.88 * Math.sin((Math.PI / 2) * Math.min(1, t * 1.25)));
+          pts.push([0.5 + side * reach, v]);
+        }
+        stroke(pts, S * 0.0032, GROUND + 0.06, 0.25, 0.18);
+      }
+    }
+    // the midrib: the one clear pale line, tapering to the tip
+    for (let k = 0; k < 8; k++) {
+      const v0 = k / 8;
+      const v1 = Math.min(0.97, (k + 1) / 8);
+      stroke([[0.5, v0], [0.5, v1]], S * (0.011 - 0.009 * v0), GROUND + 0.22 - 0.1 * v0, 0.4, 0.35);
+    }
+  },
+};
 
 const BLADE_SEGS: Segs[] = [
-  // the rows of the finest blade are laid along the side veins and half way between them
-  [10, Math.round((1 + VEIN_RISE) / (VEIN_EVERY / 2))],
+  [12, 18],
   [4, 6],
   [2, 3],
 ];
 
-/** A blade, base at the origin and tip at z = 1. */
+/** A blade, base at the origin and tip at z = 1, upper side +Y: lying flat out, the viewer holds it (leaf.hold). */
 function blade(shape: BladeShape, lod: number): THREE.BufferGeometry {
   const [nu, nv] = BLADE_SEGS[lod]!;
-  const { base, tip } = shape;
-  // v^base (1 - v)^tip, scaled so that its greatest value is the half width
-  const widest = base / (base + tip);
-  const peak = Math.pow(widest, base) * Math.pow(1 - widest, tip);
-  const half = LEAF_HALF_WIDTH * shape.width;
   const sb = new Surf();
-  // where along the blade each point of the surface really is, for the texture
-  const along: number[] = [];
-  // the row of the finest blade that lies on the first side vein, counted from the base
-  const firstVeinRow = Math.round((VEIN_FIRST + VEIN_RISE) / (VEIN_EVERY / 2));
+  const uvs: number[] = [];
   sb.surf(nu, nv, (u01, s) => {
     const u = u01 * 2 - 1;
     const a = Math.abs(u);
-    let v = s;
-    let quilt = 0;
-    if (lod === 0) {
-      // Rows run out from the midrib and forward, as the veins do, so that the relief of the blade can follow them:
-      // sunk a little along each vein and raised between two, as a soft leaf is.
-      const row = Math.round(s * nv);
-      const from = -VEIN_RISE + (row * (VEIN_EVERY / 2));
-      v = Math.min(1, Math.max(0, from + VEIN_RISE * veinRun(a) * (1 - smoothstep(0.7, 1, s))));
-      if (row === nv) v = 1;
-      const onVein = (row - firstVeinRow) % 2 === 0;
-      quilt = (onVein ? -0.0045 : 0.0035) * Math.pow(a, 0.8) * (1 - a ** 5) * Math.sin(Math.PI * Math.min(1, v * 1.08));
-    }
-    along.push(v);
-    const hw = (half * Math.pow(v, base) * Math.pow(1 - v, tip)) / peak + 0.006 * (1 - v) * (1 - v);
-    const x = u * hw;
-    // soft and nearly flat: a shallow keel at the midrib, the margins rolling a little down, the whole arching to its tip
-    const bend = -shape.arch * Math.pow(v, 1.7);
-    let y = 0.1 * Math.abs(x) - (0.55 * x * x) / half + quilt;
-    // the margin undulates a little, one side out of step with the other
-    if (lod < 2) y += shape.wave * Math.sin(v * 9 + shape.phase + u * 1.3) * a * a;
-    // the midrib impressed above
-    if (lod === 0) y -= 0.006 * Math.exp(-((a / 0.12) ** 2)) * (1 - 0.6 * v);
-    // the blade turned about its midrib, more by the tip
-    const turn = lerp(shape.turn[0], shape.turn[1], v);
-    const [cos, sin] = [Math.cos(turn), Math.sin(turn)];
-    return { p: [x * cos - y * sin, bend + x * sin + y * cos, v] };
+    // rows crowd towards the tip and base, where the outline turns fastest
+    const v = 0.5 - 0.5 * Math.cos(Math.PI * s);
+    const hw = halfWidth(shape, v);
+    // the two halves are not quite alike, and the tip leans a little to one side
+    const x = u * hw * (1 + shape.skew * Math.sign(u)) + shape.skew * 0.5 * shape.ratio * v * v;
+    uvs.push(0.5 + x, v);
+    // soft and nearly flat: a shallow keel along the midrib, the margins turned a little down, the tip bent down
+    let y = 0.05 * hw * (1 - a) - 0.35 * hw * a * a * a - shape.arch * v * v;
+    if (lod < 2) y += shape.wave * Math.sin(v * 11 + shape.phase + u) * a * a;
+    if (lod === 0) y -= 0.004 * Math.exp(-((a / 0.1) ** 2)) * (1 - 0.7 * v);
+    return { p: [x, y, v] };
   });
-  for (let i = 0; i < along.length; i++) sb.uv[2 * i + 1] = TEX_FROM + TEX_SPAN * along[i]!;
+  for (let i = 0; i < uvs.length; i++) sb.uv[i] = uvs[i]!;
   return sb.build();
 }
 
-/** A whole leaf, one unit long: the stalk, then the blade. `tone` places it between the two greens of the palette. */
+/** A whole leaf, one unit long with its blade turned down by UNIT_AT: the stalk, then the blade. */
 function leafOf(shape: BladeShape, stalkShare: number, lod: number, tone: number): THREE.BufferGeometry {
   const mg = new Merge(true);
-  const from = new V3(0, 0, stalkShare);
-  // the stalk is grooved above and thickens where it meets the stem; a stalkless leaf still has a millimetre of it
-  if (lod < 2) mg.tube([new V3(0, 0, 0), new V3(0, -0.002, stalkShare * 0.5), from], [0.019, 0.014, 0.012], [5, 3][lod]!, WHITE, WHITE, MIDRIB);
-  const s = 1 - stalkShare;
-  mg.add(blade(shape, lod), new THREE.Matrix4().compose(from, new THREE.Quaternion(), new V3(s, s, s)), WHITE, from, tone);
+  // the blade is drawn flat out along the stalk's line; measured turned down by UNIT_AT, the leaf is one unit long
+  const reach = stalkShare + (1 - stalkShare) * Math.cos(UNIT_AT_RAD);
+  const st = stalkShare / reach;
+  const s = (1 - stalkShare) / reach;
+  const pivot = new V3(0, 0, st);
+  // a short stalk, grooved above; a stalkless leaf still has a millimetre of it
+  if (lod < 2) mg.tube([new V3(0, 0, 0), new V3(0, 0.002, st * 0.5), pivot], [0.016, 0.012, 0.011], [5, 3][lod]!, WHITE, WHITE, GROUND);
+  mg.add(blade(shape, lod), new THREE.Matrix4().compose(pivot, new THREE.Quaternion(), new V3(s, s, s)), WHITE, pivot, tone);
   const g = mg.build();
-  g.boundingSphere = new THREE.Sphere(new V3(0, -0.05, 0.5), 0.75);
+  g.boundingSphere = new THREE.Sphere(new V3(0, -0.1, 0.5), 0.8);
   return g;
 }
 
+/** The angle below the stalk's line at which a blade is measured for the leaf's one unit (BladeHold.unitAt). */
+const UNIT_AT = mid(characterRange(morphology, 'leaf.bladeBelowStalkDeg'));
+const UNIT_AT_RAD = (UNIT_AT * Math.PI) / 180;
+
+const r = (k: number): number => lerp(RATIO_LOW, RATIO_HIGH, k);
+const w = (k: number): number => lerp(WIDEST_LOW, WIDEST_HIGH, k);
 /** Bean: "ovate, oval, or obovate, more or less tapered at the base, mostly pointed, sometimes blunt". */
 const LONG_SHOOT_LEAVES: BladeShape[] = [
-  // ovate and pointed
-  { base: 0.62, tip: 1.02, width: 1, arch: 0.24, wave: 0.02, phase: 0.4, turn: [-0.3, -0.6] },
-  // oval and pointed
-  { base: 0.8, tip: 0.95, width: 0.96, arch: 0.3, wave: 0.028, phase: 2.1, turn: [0.1, 0.25] },
-  // a broader oval with a short point
-  { base: 0.7, tip: 0.8, width: 1.06, arch: 0.18, wave: 0.016, phase: 4.0, turn: [0.35, 0.65] },
+  // elliptic, pointed: the commonest in the photographs
+  { ratio: r(0.45), widest: w(0.5), tip: 0.95, skew: 0.02, arch: 0.05, wave: 0.006, phase: 0.4 },
+  // ovate, widest below the middle, pointed
+  { ratio: r(0.8), widest: w(0.0), tip: 1.05, skew: -0.03, arch: 0.07, wave: 0.008, phase: 2.1 },
+  // narrower elliptic, drawn out to the tip
+  { ratio: r(0.1), widest: w(0.6), tip: 1.1, skew: 0.025, arch: 0.04, wave: 0.005, phase: 4.0 },
 ];
 const FLOWERING_SHOOT_LEAVES: BladeShape[] = [
-  // oval and blunt
-  { base: 0.7, tip: 0.62, width: 1.02, arch: 0.22, wave: 0.018, phase: 1.2, turn: [0.3, 0.6] },
+  // broad oval, blunt
+  { ratio: r(1), widest: w(0.6), tip: 0.62, skew: -0.02, arch: 0.05, wave: 0.006, phase: 1.2 },
   // obovate: widest beyond the middle, tapered to the base, blunt
-  { base: 1.0, tip: 0.55, width: 1, arch: 0.28, wave: 0.022, phase: 3.3, turn: [-0.1, -0.25] },
-  // oval with a short point
-  { base: 0.78, tip: 0.85, width: 0.94, arch: 0.16, wave: 0.014, phase: 5.2, turn: [-0.35, -0.7] },
+  { ratio: r(0.8), widest: w(1), tip: 0.6, skew: 0.03, arch: 0.06, wave: 0.007, phase: 3.3 },
+  // elliptic with a short point
+  { ratio: r(0.6), widest: w(0.5), tip: 0.8, skew: -0.025, arch: 0.04, wave: 0.005, phase: 5.2 },
 ];
 const LEAF_LODS = 3;
-const makeLongShootLeaf = (variant: number, lod: number): THREE.BufferGeometry => leafOf(LONG_SHOOT_LEAVES[variant]!, lerp(STALK_SHORT, STALK_LONG, 0.6 + 0.2 * variant), lod, 0.2 + 0.3 * variant);
-const makeFloweringShootLeaf = (variant: number, lod: number): THREE.BufferGeometry => leafOf(FLOWERING_SHOOT_LEAVES[variant]!, STALK_SHORT, lod, 0.25 + 0.3 * variant);
+const makeLongShootLeaf = (variant: number, lod: number): THREE.BufferGeometry => leafOf(LONG_SHOOT_LEAVES[variant]!, lerp(STALK_SHORT, STALK_LONG, 0.6 + 0.2 * variant), lod, 0.1 + 0.2 * variant);
+const makeFloweringShootLeaf = (variant: number, lod: number): THREE.BufferGeometry => leafOf(FLOWERING_SHOOT_LEAVES[variant]!, Math.max(STALK_SHORT, 0.02), lod, 0.15 + 0.2 * variant);
 
 // ---------------------------------------------------------------------------
 // One flower. Its base (the top of the ovary) is at the origin, it runs out
@@ -209,9 +277,9 @@ const PAINT = {
   style: lin('#e6eebc'),
   stigma: lin('#86a845'),
   // the bud: cream, green at the base, the swollen end a little yellow
-  budBase: lin('#b9cc86'),
-  bud: lin('#f1eabd'),
-  budTip: lin('#f3e39b'),
+  budBase: lin('#a6bf78'),
+  bud: lin('#e2e4ae'),
+  budTip: lin('#ece08f'),
   // what stays: stalk, ovaries, the pair of leaves beneath
   stalkLow: lin('#7d9450'),
   stalkHigh: lin('#a3b566'),
@@ -346,7 +414,7 @@ function makeBud(lod: number): THREE.BufferGeometry {
     const th = u * TAU;
     // the club is widest four fifths of the way along and closes to a blunt point
     const club = Math.pow(Math.sin(Math.PI * Math.pow(v, 2.4)), 0.8);
-    const r = (TUBE_BASE_W / 2) * (1 + 0.25 * v) + 0.0026 * club * (lod === 2 ? 1.3 : 1);
+    const r = (TUBE_BASE_W / 2) * (1 + 0.25 * v) + 0.0019 * club * (lod === 2 ? 1.3 : 1);
     const y = 0.16 * BUD_LENGTH * v * v;
     const colour = v < 0.3 ? mix(PAINT.budBase, PAINT.bud, v / 0.3) : mix(PAINT.bud, PAINT.budTip, (v - 0.3) / 0.7);
     return { p: [Math.cos(th) * r * (v > 0.995 ? 0.05 : 1), y + Math.sin(th) * r * (v > 0.995 ? 0.05 : 1), BUD_LENGTH * v], c: colour };
@@ -384,11 +452,13 @@ interface HeadSpec {
   /** Length of the stalk, as a share of the way from the shortest to the longest recorded. */
   stalk: number;
 }
+// Heads of the similar cultivar 'Scentsation' hold ten to sixteen flowers open or opening round six to ten erect buds
+// (reference scentsation-0, scentsation-1, scentsation-2); every head here stays inside the floras' count.
 const HEADS: HeadSpec[] = [
-  { whorls: [6, 6], buds: 4, stalk: 0.38 },
-  { whorls: [6, 3], buds: 3, stalk: 0.25 },
-  { whorls: [6, 6, 3], buds: 4, stalk: 0.5 },
-  { whorls: [6], buds: 3, stalk: 0.3 },
+  { whorls: [6, 6], buds: 6, stalk: 0.38 },
+  { whorls: [6, 5], buds: 5, stalk: 0.25 },
+  { whorls: [6, 6, 2], buds: 6, stalk: 0.5 },
+  { whorls: [6, 3], buds: 5, stalk: 0.3 },
 ].filter((h) => {
   const n = h.whorls.reduce((a, b) => a + b, 0) + h.buds;
   return n >= FLOWERS_FEWEST && n <= FLOWERS_MOST;
@@ -502,19 +572,23 @@ const BERRY_D = characterNumber(morphology, 'fruit.berryDiameterM');
 const [BERRIES_FEWEST, BERRIES_MOST] = characterRange(morphology, 'fruit.berriesPerCluster');
 /** The width of a cluster: what the growth model's fruit.lengthM measures, and the size the model is authored at. */
 const CLUSTER_WIDTH = mid(characterRange(morphology, 'fruit.clusterWidthM'));
-/** Berries in each tier of a cluster, the lowest first: a ring round the end of the stalk, a smaller one on it, one at the top. */
-const CLUSTERS: number[][] = [[5, 1], [6, 3], [4], [6, 3, 1], [3]].filter((tiers) => {
+/**
+ * Berries in each tier of a cluster, the lowest first: a ring round the end of the stalk, smaller ones on it, one at the
+ * top. A full cluster is a tight dome of up to twenty (reference fruit-ripe-unripe-chapeltoun).
+ */
+const CLUSTERS: number[][] = [[8, 5, 1], [7, 4], [9, 6, 3, 1], [6, 3, 1], [5, 2]].filter((tiers) => {
   const n = tiers.reduce((a, b) => a + b, 0);
   return n >= BERRIES_FEWEST && n <= BERRIES_MOST;
 });
 const BERRY_LODS = 3;
+const CALYX_LOBE_M = mid(characterRange(morphology, 'flower.calyxLobeLengthM'));
 
 // The fruit program turns every point to the ripe colour, scaled by the green of its unripe colour. So what should stay
 // dark when the berries are red (the stalk, the dried calyx on each berry) is painted with little green in it.
 const BERRY = {
   green: lin('#86a13f'),
   greenPale: lin('#a9bd5c'),
-  calyx: lin('#4a3320'),
+  calyx: lin('#3b1d0f'),
   stalk: lin('#7a5f3a'),
 };
 
@@ -522,12 +596,22 @@ function makeBerry(lod: number): THREE.BufferGeometry {
   const sb = new Surf();
   const r = BERRY_D / 2;
   // globose, a touch flattened at the crown, where the dried calyx sits in a dimple
-  lathe(sb, ([[14, 10], [7, 4], [5, 3]] as const)[lod]!, (v) => {
+  lathe(sb, ([[12, 7], [6, 4], [4, 2]] as const)[lod]!, (v) => {
     const a = Math.PI * v;
-    const dimple = lod === 0 ? 0.07 * r * Math.exp(-(((1 - v) / 0.08) ** 2)) : 0;
+    const dimple = lod === 0 ? 0.08 * r * Math.exp(-(((1 - v) / 0.1) ** 2)) : 0;
     return [r * Math.sin(a) * (1 + 0.04 * Math.sin(a)), -r * Math.cos(a) * 0.97 - dimple];
-    // the dried calyx is no more than a dark point in the dimple at the crown
-  }, (u, v) => mix(mix(BERRY.green, BERRY.greenPale, 0.5 + 0.5 * Math.sin(u * TAU + 1) * Math.sin(v * Math.PI)), BERRY.calyx, lod === 0 ? smoothstep(0.945, 0.985, v) : 0));
+  }, (u, v) => mix(mix(BERRY.green, BERRY.greenPale, 0.5 + 0.5 * Math.sin(u * TAU + 1) * Math.sin(v * Math.PI)), BERRY.calyx, lod < 2 ? smoothstep(0.9, 0.97, v) : 0));
+  if (lod === 0) {
+    // the persistent calyx: a small dark crown of five teeth standing up from the dimple (reference
+    // fruit-ripe-unripe-chapeltoun; Flora of New Zealand: calyx lobes 1 to 2 mm)
+    const tooth = CALYX_LOBE_M;
+    sb.surf(10, 1, (u, v) => {
+      const th = u * TAU;
+      const spike = Math.pow(Math.abs(Math.cos(th * 2.5)), 3);
+      const rr = r * (0.16 + 0.1 * v) + 0.25 * tooth * v * spike;
+      return { p: [Math.cos(th) * rr, r * 0.9 + v * tooth * (0.4 + 0.6 * spike), Math.sin(th) * rr], c: BERRY.calyx };
+    });
+  }
   return sb.build();
 }
 
@@ -572,15 +656,31 @@ function makeCluster(variant: number, lod: number): THREE.BufferGeometry {
 // ---------------------------------------------------------------------------
 // The look
 // ---------------------------------------------------------------------------
-// "Oval, dark green leaves whitish beneath" (RHS record of the cultivar): soft and dull, not glossy. The leaf
+// "oval, dark green leaves whitish beneath" (RHS record of the cultivar): soft and dull, not glossy. The leaf
 // program has one colour for both faces, so the pale underside is not drawn. New leaves break bluish green (BSBI
-// account); the leaves have no autumn colour and drop still green (UConn), dulling and yellowing a little first.
+// account); the leaves have "no fall color" (University of Connecticut plant database), dulling a little first.
 const LEAF_PALETTE: LeafAsset['palette'] = {
-  greenA: [0.085, 0.185, 0.066],
-  greenB: [0.115, 0.238, 0.082],
-  young: [0.17, 0.31, 0.15],
-  autumnA: [0.34, 0.33, 0.1],
-  autumnB: [0.24, 0.27, 0.09],
+  // a dark, slightly grey green (reference scentsation-1, scentsation-3, leaves-chuchamel); greenB is also where the
+  // texture draws its pale midrib and veins, so the leaves are toned close to greenA
+  greenA: lin('#304a2b'),
+  greenB: lin('#6c8656'),
+  // new leaves break bluish green (BSBI account) and paler (reference stem-liana, winter-geograph)
+  young: lin('#7d9978'),
+  // "no fall color" (University of Connecticut plant database): a slight dulling, still green, before they drop
+  autumnA: lin('#566a33'),
+  autumnB: lin('#7c8046'),
+};
+
+/**
+ * How a blade is held: face to the open side and tilted up, the tip as low as it goes. In photographs of trained
+ * plants the leaves of a pair spread nearly level with their faces to the open and up (reference habit-harlow,
+ * habit-trellis-boreham, scentsation-3). Angles are in morphology.json.
+ */
+const LEAF_HOLD: BladeHold = {
+  unitAt: UNIT_AT,
+  rise: characterRange(morphology, 'leaf.faceRiseDeg'),
+  riseOpen: characterRange(morphology, 'leaf.faceRiseOpenDeg'),
+  turn: 35,
 };
 
 const longShootLeaf: LeafAsset = {
@@ -588,12 +688,14 @@ const longShootLeaf: LeafAsset = {
   variants: LONG_SHOOT_LEAVES.length,
   lods: LEAF_LODS,
   make: makeLongShootLeaf,
-  budget: [440, 64, 12],
+  budget: [500, 64, 12],
   pick: (_lengthM, r) => Math.min(LONG_SHOOT_LEAVES.length - 1, Math.floor(r * LONG_SHOOT_LEAVES.length)),
   palette: LEAF_PALETTE,
-  roughness: 0.72,
+  roughness: 0.62,
   translucency: THIN_LEAF,
   detailReach: 0.6,
+  texture: LEAF_TEXTURE,
+  hold: LEAF_HOLD,
 };
 
 const floweringShootLeaf: LeafAsset = {
@@ -601,12 +703,14 @@ const floweringShootLeaf: LeafAsset = {
   variants: FLOWERING_SHOOT_LEAVES.length,
   lods: LEAF_LODS,
   make: makeFloweringShootLeaf,
-  budget: [440, 64, 12],
+  budget: [500, 64, 12],
   pick: (_lengthM, r) => Math.min(FLOWERING_SHOOT_LEAVES.length - 1, Math.floor(r * FLOWERING_SHOOT_LEAVES.length)),
   palette: LEAF_PALETTE,
-  roughness: 0.72,
+  roughness: 0.62,
   translucency: THIN_LEAF,
   detailReach: 0.6,
+  texture: LEAF_TEXTURE,
+  hold: LEAF_HOLD,
 };
 
 const head: FlowerAsset = {
@@ -633,7 +737,7 @@ const berries: FruitAsset = {
   variants: CLUSTERS.length,
   lods: BERRY_LODS,
   make: makeCluster,
-  budget: [2900, 600, 320],
+  budget: [3990, 1000, 420],
   pick: (r) => Math.min(CLUSTERS.length - 1, Math.floor(r * CLUSTERS.length)),
   authoredSize: CLUSTER_WIDTH,
   poise: 'held',
@@ -641,6 +745,8 @@ const berries: FruitAsset = {
   // "Berries red" (RHS record of the cultivar); dark red and glossy in the species
   ripe: lin('#c0161c'),
   ripeShade: [0.3, 2.1],
+  // the woody stalk the head stood on stays brown under red berries
+  stalkKeepsColour: true,
   roughness: 0.22,
   swing: 0.2,
   detailAt: [1.2, 3.4],
@@ -649,14 +755,14 @@ const berries: FruitAsset = {
 
 /**
  * Young shoots green, more or less purplish "where exposed to direct sun"
- * (Flora of New Zealand); "twining, thin stems, tan colored, glabrous" (UConn). The old
- * bark is drawn grey-brown and stringy, in long strips, which no flora read
- * describes: see stem.oldBark in the morphology file. The stems stay round.
+ * (Flora of New Zealand); "twining, thin stems" (University of Connecticut plant database), tan twigs. The old
+ * bark is drawn pale grey-buff and stringy, in long strips, as photographs show it (reference stem-liana); no flora read
+ * describes it: see stem.oldBark in the morphology file. The stems stay round.
  */
 const wood: WoodLook = {
   young: lin('#7f8a52'),
   mature: lin('#9a8262'),
-  old: [0.9, 0.82, 0.7],
+  old: [0.96, 0.9, 0.8],
   woodyDays: [60, 240],
   oldDays: [420, 1300],
   furrowDays: [500, 2200],
