@@ -14,10 +14,10 @@ A selection of the native woodbine found in a Warwickshire hedge about 1960 and 
 | RHS ultimate-height envelope | RHS: 4–8 m tall, 1–1.5 m spread; 5–10 years to ultimate size. |
 | Hardiness | H6 (RHS). |
 | Leaf | Opposite, simple, entire; ovate, oval or obovate, 38–64 mm long and 25–38 mm wide, mostly pointed; lower pairs stalked, uppermost stalkless and never joined round the stem (Bean, of the species). Dark green above, whitish beneath (RHS, of the cultivar). |
-| Leaf season | New leaves begin to open in January (December in the BSBI account) and are well grown in April; they fall in November (Beckett and Beckett 1979, of the species). No autumn colour: the leaves drop green (UConn). |
+| Leaf season | New leaves begin to open in January ("in December and January from bluish-green buds" in the BSBI account) and are well grown in April; they fall in November (Beckett and Beckett 1979, of the species, as given by the Useful Temperate Plants database). No autumn colour: the leaves drop green (UConn). |
 | Flower | Terminal stalked heads of close whorls, 6–20 flowers to a head; each flower 40–50 mm long, a slender tube and two rolled-back lips, the upper of four lobes, with five long stamens and a longer style (Bean; BSBI account; Flora of New Zealand). White, fading to buff yellow, with no red (RHS; Bean's supplement). Fragrant, most strongly in the evening. |
-| Flower season | "If cut back in winter will flower from June to October" (Bean's supplement); nurseries give July to September. |
-| Fruit | Red berries (RHS), 8 mm across, globose, stalkless in tight clusters, ripe from mid to late August, some hanging until October or early November (BSBI account, of the species). |
+| Flower season | If cut back in winter it "will flower from June to October" (Bean's supplement); nurseries give July to September. |
+| Fruit | "Berries red" (RHS). Of the species: "Berries, 8 mm diameter, dark red, globose and stalkless in tight clusters", "ripe from mid- to late-August onwards", some "remaining on the plant until October or even early November" (BSBI account). |
 | Aspect and exposure | Full sun or partial shade; any aspect; exposed or sheltered (RHS). See "Light, aspect and shelter". |
 | Soil | Fertile, moist and well-drained; chalk, clay, loam or sand, any pH (RHS). |
 
@@ -29,7 +29,7 @@ A selection of the native woodbine found in a Warwickshire hedge about 1960 and 
 - **Aspect:** north-, west-, south- or east-facing (RHS record): every aspect is accepted, so no aspect is asked for, whether for light, for warmth or for shelter. The plant is hardy to H6.
 - **Exposure:** exposed or sheltered (RHS record); the RHS also suggests it for coastal sites.
 - **What shade does to growth:** the species persists in deep shade, as a sparse, few-leaved plant whose stems creep and root along the ground instead of climbing (BSBI account, after Grime). Plants succeed even in quite deep shade (Grey-Wilson and Matthews 1983, as given by the Useful Temperate Plants database).
-- **What shade does to flowering:** the RHS honeysuckle guide has "the best show of flowers" in dappled shade and warns that "too much shade will result in an absence of flowers". Of the wild plant: "plants in deeper shade do not flower at all", while plants in full open sunlight flower from May to late September (BSBI account). Flowering therefore answers to light, though the profile's one-line aspect sentence does not say so.
+- **What shade does to flowering:** the RHS honeysuckle guide has "the best show of flowers" in dappled shade and warns that "too much shade will result in an absence of flowers". Of the wild plant: "Plants in deeper levels of shade do not flower at all", while "Plants in open, full sunlight flower from May to late September" (BSBI account). Flowering therefore answers to light, though the profile's one-line aspect sentence does not say so.
 - **What too much sun does:** on a south-facing wall, in sun all day, "the leaves may be scorched and the plant more prone to powdery mildew"; honeysuckles are "more prone to powdery mildew during hot dry weather", and the foot of a wall is dry (RHS honeysuckle guide). The remedy given is moisture at the root: a mulch, and the old rule of roots in shade and shoots in the sun (Huxley 1992, in the Useful Temperate Plants database). The condition is heat and dryness at the root, not light as such.
 
 The light model shades and nothing else (CLAUDE.md, "Light is not warmth"): scorch, mildew and drought at a wall foot are reported here and are not modelled.

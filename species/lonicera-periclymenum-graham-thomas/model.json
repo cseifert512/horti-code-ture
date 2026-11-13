@@ -23,13 +23,13 @@
     },
     "phenology.leafFlushDoy": {
       "value": [
-        15,
+        20,
         105
       ],
       "unit": "day of year",
       "status": "published_plant_profile",
       "source": "https://temperate.theferns.info/plant/Lonicera+periclymenum",
-      "basis": "Of the species. Beckett and Beckett, Planting Native Trees and Shrubs (1979), as given by the Useful Temperate Plants database: \"New leaves often start to open in January with well-grown leaves in April\". The BSBI account of the species in Fermanagh (after Lang 1987) has them opening in December and January. Taken as 15 January to 15 April."
+      "basis": "Of the species. Beckett and Beckett, Planting Native Trees and Shrubs (1979), as given by the Useful Temperate Plants database: new leaves often start to open in January and are well grown in April. The BSBI account of the species in Fermanagh (after Lang 1987): \"New leaves open in December and January from bluish-green buds\". Taken as 20 January to 15 April. The day in January is a choice, and is put after the middle of the month on purpose: the design report reads winter cover on 15 January and counts any leaf that has begun to open, and buds that have only just broken are not cover."
     },
     "phenology.autumnColourDoy": {
       "value": [
@@ -38,7 +38,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "It has no autumn colour to speak of: the University of Connecticut plant database says of the species \"No fall color. Leaves drop while still green\". A dulling and slight yellowing over the three weeks before the fall is assumed, so that the plant is seen to go over. No dated source."
+      "basis": "It has no autumn colour to speak of: the University of Connecticut plant database says of the species that it has no autumn colour and that its leaves drop while still green. A dulling and slight yellowing over the three weeks before the fall is assumed, so that the plant is seen to go over. No dated source."
     },
     "phenology.leafFallDoy": {
       "value": [
@@ -188,7 +188,7 @@
     "architecture.maxStemsPerRoute": {
       "value": 3,
       "status": "provisional_design_assumption",
-      "basis": "The stems of this species wrap round their support and round each other (BSBI account: they \"wrap tightly around supports or themselves\"), so one lath or cable carries several. Three is a choice."
+      "basis": "The stems of this species wrap round their support and round each other (BSBI account: they twine \"tightly around supporting stems (or around itself)\"), so one lath or cable carries several. Three is a choice."
     },
     "architecture.maxStemsPerPrimaryMember": {
       "value": 4,
@@ -281,7 +281,7 @@
       "value": 2,
       "status": "published_plant_profile",
       "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
-      "basis": "Of the species. BSBI account: leaves \"borne in opposite pairs, each pair at right angles to the next\". The engine sets every pair in the same plane."
+      "basis": "Of the species. BSBI account: leaves \"in opposite pairs\", with \"each pair at right-angles to the next\". The engine sets every pair in the same plane."
     },
     "organs.spurChance": {
       "value": 0,
@@ -431,7 +431,7 @@
     "fruit.setShare": {
       "value": 0.45,
       "status": "provisional_design_assumption",
-      "basis": "The share of heads that leave a cluster of berries. The RHS record of this cultivar says the flowers are \"followed by red berries\"; no source read says how freely. Under half, as a choice."
+      "basis": "The share of heads that leave a cluster of berries. The RHS record of this cultivar has \"Berries red\"; no source read says how freely. Under half, as a choice."
     },
     "fruit.lengthM": {
       "value": [
@@ -458,7 +458,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Berries are \"ripe from mid- to late August onwards\" (BSBI account). The window runs from 15 August to 2 November so that the berries of the last heads still ripen in their own year: the engine holds fruit that is full grown after the window green until the next one. The engine also spreads ripening to the end of the window, so most clusters here are red in October, later than the real plant; a real berry ripens some weeks after its own flower, which a window of dates cannot say."
+      "basis": "Berries \"are ripe from mid- to late-August onwards\" (BSBI account). The window runs from 15 August to 2 November so that the berries of the last heads still ripen in their own year: the engine holds fruit that is full grown after the window green until the next one. The engine also spreads ripening to the end of the window, so most clusters here are red in October, later than the real plant; a real berry ripens some weeks after its own flower, which a window of dates cannot say."
     },
     "fruit.fallDoy": {
       "value": [
@@ -467,7 +467,7 @@
       ],
       "unit": "day of year",
       "status": "provisional_design_assumption",
-      "basis": "Birds take the berries through the autumn and \"some fruit remains until October or early November\" (BSBI account). From 7 September to 26 November, the later end allowing for the berries of the last heads."
+      "basis": "Birds take the berries through the autumn, some fruit \"remaining on the plant until October or even early November\" (BSBI account). From 7 September to 26 November, the later end allowing for the berries of the last heads."
     },
     "appendages.tendrilNodePattern": {
       "value": [
@@ -475,7 +475,7 @@
       ],
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "A stem twiner (RHS record: \"twining, deciduous climber\"): it has no tendrils."
+      "basis": "A stem twiner (RHS record: \"A large twining deciduous climber\"): it has no tendrils."
     },
     "appendages.tendrilLengthM": {
       "value": [

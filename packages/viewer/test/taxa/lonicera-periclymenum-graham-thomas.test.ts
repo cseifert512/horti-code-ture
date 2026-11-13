@@ -94,7 +94,7 @@ describe("the woodbine's leaf, against its morphology file", () => {
     }
   });
 
-  // BSBI account: leaves "simple ... entire". Bean's oak-leaved f. quercina is another plant.
+  // BSBI account: "Leaves are sub-sessile, simple, lanceolate, entire". Bean's oak-leaved f. quercina is another plant.
   it('is simple and entire: one blade, its outline without tooth or lobe', () => {
     expect(characterText(morphology, 'leaf.division')).toBe('simple');
     expect(characterText(morphology, 'leaf.margin')).toBe('entire');
@@ -147,7 +147,7 @@ describe("the woodbine's flower head, against its morphology file", () => {
     expect(taxon.model.names.flowerHeld).toBe('facing_out');
   });
 
-  // BSBI account: "whorls of 6-15"; Flora of New Zealand: a head "of up to 20"
+  // BSBI account: "in simple umbel clusters or whorls of 6-15"; Flora of New Zealand: a head of up to 20
   it('has flowers in whorls of three and six, no more in a head than the floras count', () => {
     for (let v = 0; v < head.variants; v++) {
       const open = partsOf(head.make(v, 0)).size;
@@ -157,7 +157,7 @@ describe("the woodbine's flower head, against its morphology file", () => {
     }
   });
 
-  // BSBI account: flowers 40 to 50 mm long, "five stamens; one style"; corolla two-lipped
+  // BSBI account: flowers "40-50 mm long", the corolla "2-lipped"; "Stamens are five; style and stigma are both solitary"
   it('gives each flower a tube, two lips, five stamens with their anthers, and a style with its stigma', () => {
     const stamens = characterNumber(morphology, 'flower.stamenCount');
     expect(stamens).toBe(5);
@@ -174,7 +174,7 @@ describe("the woodbine's flower head, against its morphology file", () => {
     }
   });
 
-  // Bean's supplement: the flowers of this cultivar have no red; RHS: white, fading to buff yellow
+  // Bean's supplement: the flowers of this cultivar have no red; RHS: "fragrant white flowers which soon turn to buff-yellow"
   it('is white and yellow, with no red or purple anywhere on it', () => {
     expect(characterText(morphology, 'flower.redFlush')).toBe('none');
     for (let v = 0; v < head.variants; v++) {
@@ -218,7 +218,7 @@ describe("the woodbine's berries, against its morphology file", () => {
     expect(taxon.model.names.fruitHeld).toBe('facing_out');
   });
 
-  // BSBI account: "Berries are 8 mm in diameter, dark red, globose, and stalkless, in tight clusters"
+  // BSBI account: "Berries, 8 mm diameter, dark red, globose and stalkless in tight clusters"
   it('is a tight cluster of round berries of about 8 mm on the end of a stalk', () => {
     let widest = 0;
     for (let v = 0; v < berries.variants; v++) {
@@ -238,7 +238,7 @@ describe("the woodbine's berries, against its morphology file", () => {
     expect(widest / berries.authoredSize).toBeLessThan(1.2);
   });
 
-  // RHS record of the cultivar: "followed by red berries"
+  // RHS record of the cultivar: "Berries red"
   it('ripens from green to red', () => {
     const g = berries.make(0, 0);
     const colour = g.getAttribute('color');
@@ -326,8 +326,8 @@ describe('a woodbine grown on the specimen frame', () => {
     expect(leavesOn(day(`${last}-07-15`))).toBeGreaterThan(2500);
   });
 
-  // RHS record: deciduous. Beckett (1979): "New leaves often start to open in January with well-grown leaves in
-  // April"; the leaves fall in November.
+  // RHS record: deciduous. Beckett and Beckett (1979), as the Useful Temperate Plants database gives them: new leaves
+  // often start to open in January and are well grown in April; the leaves fall in November.
   it('is bare in December, breaks leaf in January, is in full leaf from April and drops its leaves in November', () => {
     expect(taxon.profile.leafHabit.value).toBe('deciduous');
     for (let d = day(`${last - 1}-12-01`); d <= day(`${last}-01-10`); d++) expect(leavesOn(d), cal.dateOf(d).iso).toBe(0);
@@ -401,8 +401,8 @@ describe('a woodbine grown on the specimen frame', () => {
     }
   });
 
-  // BSBI account: berries "ripe from mid- to late August onwards ... Some fruit remains until October or early
-  // November"; CONSTRAINTS_AND_PHENOLOGY.md: fruit follows a flower that opened and went over, never the calendar.
+  // BSBI account: berries "are ripe from mid- to late-August onwards", some "remaining on the plant until October or
+  // even early November"; CONSTRAINTS_AND_PHENOLOGY.md: fruit follows a flower that opened and went over, never the calendar.
   it('sets berries only where a head has gone over, ripens them from mid August and has lost them by midwinter', () => {
     expect(data.fruits.length).toBeGreaterThan(50);
     // a place to a hundredth of a millimetre, which is what the data gives a fruit's

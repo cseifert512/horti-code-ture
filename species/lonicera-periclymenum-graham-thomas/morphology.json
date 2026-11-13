@@ -6,7 +6,7 @@
       "value": "deciduous twining climber",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "RHS record of this cultivar: \"A large, twining, deciduous climber\". Bean, of the species: \"A twining shrub scrambling in the wild over bushes and hedgerows\"."
+      "basis": "RHS record of this cultivar: \"A large twining deciduous climber\". Bean, of the species: \"A twining shrub scrambling in the wild over bushes and hedgerows\"."
     },
     "habit.vigour": {
       "value": "exceptionally vigorous",
@@ -83,7 +83,7 @@
       "value": "opposite, each pair at right angles to the next",
       "status": "published_plant_profile",
       "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
-      "basis": "Of the species. BSBI account of the species in Fermanagh: leaves simple, entire, without stipules, \"borne in opposite pairs, each pair at right angles to the next\"."
+      "basis": "Of the species. BSBI account of the species in Fermanagh: \"Leaves are sub-sessile, simple, lanceolate, entire, without stipules and in opposite pairs\", with \"each pair at right-angles to the next\"."
     },
     "leaf.division": {
       "value": "simple",
@@ -95,7 +95,7 @@
       "value": ["ovate", "oval", "obovate"],
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
-      "basis": "Of the species. Bean: \"Leaves ovate, oval, or obovate\". The RHS record of this cultivar says oval."
+      "basis": "Of the species. Bean: \"Leaves ovate, oval, or obovate\". The RHS record of this cultivar says oval; the BSBI account calls the leaf of the wild plant lanceolate."
     },
     "leaf.base": {
       "value": "more or less tapered",
@@ -145,13 +145,13 @@
       "value": "dark green",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "RHS record of this cultivar: \"oval, dark green leaves that are whitish beneath\". A nursery (Ashridge) calls them mid-green."
+      "basis": "RHS record of this cultivar: \"A large twining deciduous climber with oval, dark green leaves whitish beneath\". A nursery (Ashridge) calls them mid-green."
     },
     "leaf.colourBeneath": {
       "value": "whitish, glaucous",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "RHS record of this cultivar: leaves \"whitish beneath\". Bean, of the species: \"rather glaucous beneath\". The viewer's leaf program gives a leaf one colour on both faces, so this is recorded and not drawn."
+      "basis": "RHS record of this cultivar: \"dark green leaves whitish beneath\". Bean, of the species: \"rather glaucous beneath\". The viewer's leaf program gives a leaf one colour on both faces, so this is recorded and not drawn."
     },
     "leaf.surface": {
       "value": "slightly downy or glabrous",
@@ -169,7 +169,7 @@
       "value": "none: the leaves drop while still green",
       "status": "published_plant_profile",
       "source": "https://plantdatabase.uconn.edu/detail.php?pid=266",
-      "basis": "Of the species. University of Connecticut plant database: \"No fall color. Leaves drop while still green\". The model lets a leaf dull and yellow a little before it goes."
+      "basis": "Of the species. The University of Connecticut plant database records no autumn colour, the leaves dropping while still green. The model lets a leaf dull and yellow a little before it goes."
     },
     "leaf.belowHead": {
       "value": "small, nearly circular, the pair free",
@@ -181,13 +181,13 @@
       "value": "terminal stalked head of close whorls",
       "status": "published_plant_profile",
       "source": "https://www.treesandshrubsonline.org/articles/lonicera/lonicera-periclymenum/",
-      "basis": "Of the species. Bean: flowers \"in a series of close whorls at the end of the shoot, forming a terminal stalked inflorescence\". The RHS record of this cultivar: \"in terminal clusters\"."
+      "basis": "Of the species. Bean: the flowers are in \"a series of close whorls\", \"at the end of the shoot, forming a terminal stalked inflorescence\". The RHS record of this cultivar: \"terminal clusters of fragrant white flowers\"."
     },
     "inflorescence.flowerCount": {
       "value": [6, 20],
       "status": "published_plant_profile",
       "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
-      "basis": "Of the species. BSBI account: \"umbel-like clusters or whorls of 6-15\". The Flora of New Zealand: a head \"of up to 20\", sometimes with a smaller whorl below. The US plant patent of the similar cultivar 'Scentsation' counts 23 to 25. No count for this cultivar was found."
+      "basis": "Of the species. BSBI account: \"in simple umbel clusters or whorls of 6-15, terminating the younger shoots\". The Flora of New Zealand: a head of up to 20, sometimes with a smaller whorl below. The US plant patent of the similar cultivar 'Scentsation' counts 23 to 25. No count for this cultivar was found."
     },
     "inflorescence.stalkLengthM": {
       "value": [0.001, 0.05],
@@ -218,19 +218,19 @@
       "value": "a slender tapering tube opening into two lips, the upper of four lobes, the lower single",
       "status": "published_plant_profile",
       "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
-      "basis": "Of the species. BSBI account: corolla \"a long, slender, funnel-shaped tube, two-lipped: the upper lip has four lobes and the lower lip is solitary\". Bean: \"two-lipped, the tube slender, tapering\". The Flora of New Zealand: lobes becoming reflexed."
+      "basis": "Of the species. BSBI account: the corolla \"has a long slender funnel-shaped tube and is 2-lipped\", \"the upper lip with four lobes, the lower lip solitary\". Bean: \"two-lipped, the tube slender, tapering\". The Flora of New Zealand: lobes becoming reflexed."
     },
     "flower.upperLipLobes": {
       "value": 4,
       "status": "published_plant_profile",
       "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
-      "basis": "Of the species. BSBI account: \"the upper lip has four lobes\"."
+      "basis": "Of the species. BSBI account: \"the upper lip with four lobes, the lower lip solitary\"."
     },
     "flower.stamenCount": {
       "value": 5,
       "status": "published_plant_profile",
       "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
-      "basis": "Of the species. BSBI account: \"Five stamens; one style and one stigma\". The Flora of New Zealand: stamens exserted, style often long-exserted."
+      "basis": "Of the species. BSBI account: \"Stamens are five; style and stigma are both solitary\". The Flora of New Zealand: stamens exserted, style often long-exserted."
     },
     "flower.tubeShareOfLength": {
       "value": 0.55,
@@ -277,13 +277,13 @@
       "value": "white",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "RHS record of this cultivar: \"Fragrant white flowers in terminal clusters fade to buff-yellow\". Bean's supplement: they open pale whitish-cream."
+      "basis": "RHS record of this cultivar: \"terminal clusters of fragrant white flowers which soon turn to buff-yellow\". Bean's supplement: they open pale whitish-cream."
     },
     "flower.colourAged": {
       "value": "buff yellow",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "RHS record of this cultivar: the white flowers \"fade to buff-yellow\". Bean's supplement: they darken to yellow. In the species a flower is yellow from its second evening (BSBI account, after Knight 1996)."
+      "basis": "RHS record of this cultivar: white flowers \"which soon turn to buff-yellow\". Bean's supplement: they darken to yellow. In the species, by the next evening \"the corolla colour has darkened to a golden yellow\" (BSBI account, after Knight 1996)."
     },
     "flower.redFlush": {
       "value": "none",
@@ -301,7 +301,7 @@
       "value": "erect in bud, level when open, the style curving down below the anthers",
       "status": "published_plant_profile",
       "source": "https://bsbi.org/in-your-area/local-botany/co-fermanagh/fermanagh-species-accounts/lonicera-periclymenum-l",
-      "basis": "Of the species. BSBI account, after Knight (1996): buds erect in the evening; on opening \"the corolla then turns from vertical to horizontal\" and the style curves down past the lower lip and below the anthers."
+      "basis": "Of the species. BSBI account, after Knight (1996): buds erect in the evening; on opening \"The corolla then moves from the vertical to the horizontal\" and the style curves down past the lower lip and below the anthers."
     },
     "flower.surfaceOutside": {
       "value": "glandular-downy",
@@ -326,7 +326,7 @@
       "value": "berry",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "RHS record of this cultivar: the flowers are \"followed by red berries\"."
+      "basis": "RHS record of this cultivar: \"Berries red\"."
     },
     "fruit.berryDiameterM": {
       "value": 0.008,
@@ -345,7 +345,7 @@
       "value": "red",
       "status": "published_plant_profile",
       "source": "https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details",
-      "basis": "RHS record of this cultivar: \"red berries\". Of the species: dark red (BSBI account), glossy (RHS record of the species)."
+      "basis": "RHS record of this cultivar: \"Berries red\". Of the species: \"Berries, 8 mm diameter, dark red, globose and stalkless in tight clusters\" (BSBI account); glossy (RHS record of the species)."
     },
     "fruit.colourUnripe": {
       "value": "green",

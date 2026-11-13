@@ -74,12 +74,20 @@ interface BladeShape {
 }
 
 // The shared leaf texture has eleven pairs of side veins; this leaf has six or seven, so it is given the lower two
-// thirds of the texture. The veins are in the texture and its relief; the blade itself is only bent.
+// thirds of the texture.
 const TEX_FROM = 0.03;
 const TEX_SPAN = 0.64;
+// Where that puts the side veins on the blade (see makeLeafTexture): one leaves the midrib every VEIN_EVERY of the
+// blade's length, the first at VEIN_FIRST, and has run VEIN_RISE further along by the time it reaches the margin.
+const VEIN_FIRST = (14 / 256 - TEX_FROM) / TEX_SPAN;
+const VEIN_EVERY = 21 / 256 / TEX_SPAN;
+const VEIN_RISE = 34 / 256 / TEX_SPAN;
+/** How far along its run a side vein is at `a` of the way from midrib (0) to margin (1). */
+const veinRun = (a: number): number => (24 * a + 10 * a * a) / 34;
 
 const BLADE_SEGS: Segs[] = [
-  [10, 20],
+  // the rows of the finest blade are laid along the side veins and half way between them
+  [10, Math.round((1 + VEIN_RISE) / (VEIN_EVERY / 2))],
   [4, 6],
   [2, 3],
 ];
@@ -93,13 +101,31 @@ function blade(shape: BladeShape, lod: number): THREE.BufferGeometry {
   const peak = Math.pow(widest, base) * Math.pow(1 - widest, tip);
   const half = LEAF_HALF_WIDTH * shape.width;
   const sb = new Surf();
-  sb.surf(nu, nv, (u01, v) => {
+  // where along the blade each point of the surface really is, for the texture
+  const along: number[] = [];
+  // the row of the finest blade that lies on the first side vein, counted from the base
+  const firstVeinRow = Math.round((VEIN_FIRST + VEIN_RISE) / (VEIN_EVERY / 2));
+  sb.surf(nu, nv, (u01, s) => {
     const u = u01 * 2 - 1;
     const a = Math.abs(u);
+    let v = s;
+    let quilt = 0;
+    if (lod === 0) {
+      // Rows run out from the midrib and forward, as the veins do, so that the relief of the blade can follow them:
+      // sunk a little along each vein and raised between two, as a soft leaf is.
+      const row = Math.round(s * nv);
+      const from = -VEIN_RISE + (row * (VEIN_EVERY / 2));
+      v = Math.min(1, Math.max(0, from + VEIN_RISE * veinRun(a) * (1 - smoothstep(0.7, 1, s))));
+      if (row === nv) v = 1;
+      const onVein = (row - firstVeinRow) % 2 === 0;
+      quilt = (onVein ? -0.0045 : 0.0035) * Math.pow(a, 0.8) * (1 - a ** 5) * Math.sin(Math.PI * Math.min(1, v * 1.08));
+    }
+    along.push(v);
     const hw = (half * Math.pow(v, base) * Math.pow(1 - v, tip)) / peak + 0.006 * (1 - v) * (1 - v);
     const x = u * hw;
     // soft and nearly flat: a shallow keel at the midrib, the margins rolling a little down, the whole arching to its tip
-    let y = 0.1 * Math.abs(x) - (0.55 * x * x) / half - shape.arch * Math.pow(v, 1.7);
+    const bend = -shape.arch * Math.pow(v, 1.7);
+    let y = 0.1 * Math.abs(x) - (0.55 * x * x) / half + quilt;
     // the margin undulates a little, one side out of step with the other
     if (lod < 2) y += shape.wave * Math.sin(v * 9 + shape.phase + u * 1.3) * a * a;
     // the midrib impressed above
@@ -107,10 +133,9 @@ function blade(shape: BladeShape, lod: number): THREE.BufferGeometry {
     // the blade turned about its midrib, more by the tip
     const turn = lerp(shape.turn[0], shape.turn[1], v);
     const [cos, sin] = [Math.cos(turn), Math.sin(turn)];
-    const bend = -shape.arch * Math.pow(v, 1.7);
-    return { p: [x * cos - (y - bend) * sin, bend + x * sin + (y - bend) * cos, v] };
+    return { p: [x * cos - y * sin, bend + x * sin + y * cos, v] };
   });
-  for (let i = 1; i < sb.uv.length; i += 2) sb.uv[i] = TEX_FROM + TEX_SPAN * sb.uv[i]!;
+  for (let i = 0; i < along.length; i++) sb.uv[2 * i + 1] = TEX_FROM + TEX_SPAN * along[i]!;
   return sb.build();
 }
 
@@ -160,9 +185,9 @@ const LIP_LENGTH = FLOWER_LENGTH - TUBE_LENGTH;
 const [TUBE_BASE_W, TUBE_W] = characterRange(morphology, 'flower.tubeWidthM');
 const UPPER_LIP_W = mid(characterRange(morphology, 'flower.upperLipWidthM'));
 const LOWER_LIP_W = characterNumber(morphology, 'flower.lowerLipWidthM');
-/** "The upper lip has four lobes and the lower lip is solitary" (BSBI account). */
+/** "The upper lip with four lobes, the lower lip solitary" (BSBI account). */
 const UPPER_LIP_LOBES = characterNumber(morphology, 'flower.upperLipLobes');
-/** "Five stamens; one style" (BSBI account). */
+/** "Stamens are five; style and stigma are both solitary" (BSBI account). */
 const STAMENS = characterNumber(morphology, 'flower.stamenCount');
 const STAMEN_LENGTH = mid(characterRange(morphology, 'flower.stamenLengthM'));
 const STYLE_LENGTH = characterNumber(morphology, 'flower.styleLengthM');
@@ -170,11 +195,11 @@ const BUD_LENGTH = characterNumber(morphology, 'flower.budLengthM');
 
 /** How much the tube rises along its length, as a share of that length: flowers stand level and lift a little. */
 const TUBE_RISE = 0.13;
-/** Radius of the mouth of the tube: "a long, slender, funnel-shaped tube" (BSBI account), widening where the lips part. */
+/** Radius of the mouth of the tube: "a long slender funnel-shaped tube" (BSBI account), widening where the lips part. */
 const THROAT_R = TUBE_W * 1.05;
 
 const PAINT = {
-  // the fresh flower: white with cream in it ("pale whitish-cream", Bean), greenish at the base of the tube
+  // the fresh flower: white with cream in it (Bean's supplement has it open pale whitish-cream), greenish at the base of the tube
   tubeBase: lin('#cdd79a'),
   tube: lin('#f6ebbd'),
   lip: lin('#fdf5d6'),
@@ -472,7 +497,7 @@ function makeHead(variant: number, lod: number): THREE.BufferGeometry {
 // ---------------------------------------------------------------------------
 // Berries
 // ---------------------------------------------------------------------------
-/** "Berries are 8 mm in diameter, dark red, globose, and stalkless, in tight clusters" (BSBI account). */
+/** "Berries, 8 mm diameter, dark red, globose and stalkless in tight clusters" (BSBI account). */
 const BERRY_D = characterNumber(morphology, 'fruit.berryDiameterM');
 const [BERRIES_FEWEST, BERRIES_MOST] = characterRange(morphology, 'fruit.berriesPerCluster');
 /** The width of a cluster: what the growth model's fruit.lengthM measures, and the size the model is authored at. */
@@ -547,7 +572,7 @@ function makeCluster(variant: number, lod: number): THREE.BufferGeometry {
 // ---------------------------------------------------------------------------
 // The look
 // ---------------------------------------------------------------------------
-// "Oval, dark green leaves that are whitish beneath" (RHS record of the cultivar): soft and dull, not glossy. The leaf
+// "Oval, dark green leaves whitish beneath" (RHS record of the cultivar): soft and dull, not glossy. The leaf
 // program has one colour for both faces, so the pale underside is not drawn. New leaves break bluish green (BSBI
 // account); the leaves have no autumn colour and drop still green (UConn), dulling and yellowing a little first.
 const LEAF_PALETTE: LeafAsset['palette'] = {
@@ -613,7 +638,7 @@ const berries: FruitAsset = {
   authoredSize: CLUSTER_WIDTH,
   poise: 'held',
   centreAlong: 0.6,
-  // "red berries" (RHS record of the cultivar); dark red and glossy in the species
+  // "Berries red" (RHS record of the cultivar); dark red and glossy in the species
   ripe: lin('#c0161c'),
   ripeShade: [0.3, 2.1],
   roughness: 0.22,
@@ -623,8 +648,8 @@ const berries: FruitAsset = {
 };
 
 /**
- * Young shoots green, "more or less purplish where exposed to direct sun"
- * (Flora of New Zealand); twigs "thin, tan colored, glabrous" (UConn). The old
+ * Young shoots green, more or less purplish "where exposed to direct sun"
+ * (Flora of New Zealand); "twining, thin stems, tan colored, glabrous" (UConn). The old
  * bark is drawn grey-brown and stringy, in long strips, which no flora read
  * describes: see stem.oldBark in the morphology file. The stems stay round.
  */
