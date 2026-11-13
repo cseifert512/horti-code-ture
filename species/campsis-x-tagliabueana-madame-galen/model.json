@@ -554,10 +554,10 @@
       "basis": "Havlis nursery catalogue, of this cultivar: \"New twigs grow about 60-80 cm before the flower buds appear\" (checked 13 November 2026)."
     },
     "sideShoots.lifespanYears": {
-      "value": 1,
+      "value": 30,
       "unit": "growing seasons",
       "status": "provisional_design_assumption",
-      "basis": "A shoot of the year is shed before the next spring. On a pruned plant that is the late-winter spur prune (RHS); on an unpruned one the shoot would stay as wood and branch, which the engine cannot do."
+      "basis": "Left uncut, a shoot of the year stays on the plant as its own wood (the RHS spur-prunes the side shoots because they would otherwise stay: \"Plants can be pruned annually to keep them within bounds\"). No source read says how long such a shoot lives; 30 seasons is longer than any run here, so nothing is shed in a run. On the gardened plant the late-winter spur prune (trumpetVineRoutine, RHS: \"cutting back all the sideshoots to within two or three buds of the main stems\") takes the year's shoots back to stubs, and next year's shoots break from the stubs. Until 13 November 2026 this was 1, a stand-in for that cut."
     },
     "sideShoots.terminalFlowerShare": {
       "value": 0.6,

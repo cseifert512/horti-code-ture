@@ -168,6 +168,149 @@ export function ivyRoutine(plantId: string, plantingYear: number, years: number)
   return events;
 }
 
+/**
+ * Clematis armandii's routine (RHS pruning group 1, "immediately after flowering in mid- to late spring"), as taken for a
+ * Bower in its profile:
+ *   20 May, every year from the second   every long shoot that holds nothing and stands more than 0.6 m from where it
+ *                       left the structure is cut off there (`trim_to_bounds`). The RHS limits pruning of this plant to
+ *                       "restricting them to the space available"; the group 1 guide says "Trim overlong branches". The
+ *                       model's last flowers are over by the end of April, so the visit is after flowering; the shoots
+ *                       that will flower next spring are this summer's, still short on the day, and are kept. 0.6 m is
+ *                       this project's choice of the line a design allows: the model has no declared envelope.
+ * Not modelled: the first spring's cut to "a strong pair of leaf buds about 30cm (12in) above soil level" (the profile
+ * leaves it out for this plant), removing wind-scorched leaves, thinning dead stems.
+ * Sources: https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide and the RHS plant record, quoted in
+ * species/clematis-armandi/SPECIES_PROFILE.md, "Care: what the gardener does".
+ */
+export function clematisArmandiRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+  const events: GardenerEvent[] = [];
+  for (let y = 1; y < years; y++) {
+    const year = plantingYear + y;
+    events.push({ id: `armandi-bounds-${year}-${plantId}`, date: `${year}-05-20`, type: 'trim_to_bounds', plantId, freeBeyondM: 0.6, author: 'gardener', reason: 'RHS group 1, after flowering: restricted to the space available; long free shoots more than 0.6 m out cut back to the structure' });
+  }
+  return events;
+}
+
+/**
+ * Clematis cirrhosa 'Freckles''s routine (RHS pruning group 1), as taken for a Bower in its profile:
+ *   planting day, 12 March   every stem cut to 0.3 m (`hard_prune`, all stems): group 1 clematis are "pruned back hard
+ *                       the first spring after planting", to "a strong pair of leaf buds about 30cm (12in) above soil
+ *                       level" (RHS group 1 guide), so that the plant branches from the base. The species agent put the
+ *                       cut on 20 March; it is made on planting day instead, because the engine regrows a cut stem at
+ *                       the start of a season (`startSeason`), and this plant's buds break on day 75 (16 March). Cut on
+ *                       20 March (tried), the cane's stub stood bare until the next spring, and the new stems of that
+ *                       spring, still shorter than the cut, were left uncut but shot again from their tips a year later.
+ *   25 March, every later year   free shoots standing out more than 0.3 m and holding nothing cut back to the support
+ *                       (`trim_to_bounds`): prune "immediately after flowering" and once the danger of frost has passed;
+ *                       "Trim overlong branches" (RHS). The model's last flowers fall by day 80 (21 March). 0.3 m is the
+ *                       profile's "beyond about 30 cm", a choice.
+ * Not modelled: renovation of a congested plant every eight to ten years; removing dead and frost-damaged shoots.
+ * Sources: https://www.rhs.org.uk/plants/clematis/group-one-pruning-guide ;
+ * https://internationalclematissociety.org/?p=742 ; species/clematis-cirrhosa-freckles/SPECIES_PROFILE.md.
+ */
+export function clematisCirrhosaRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+  const events: GardenerEvent[] = [{ id: `cirrhosa-first-${plantingYear}-${plantId}`, date: `${plantingYear}-03-12`, type: 'hard_prune', plantId, target: { allStems: true }, keepM: 0.3, author: 'gardener', reason: 'RHS group 1: pruned back hard the first spring after planting, to a strong pair of buds about 30 cm above the soil' }];
+  for (let y = 1; y < years; y++) {
+    const year = plantingYear + y;
+    events.push({ id: `cirrhosa-bounds-${year}-${plantId}`, date: `${year}-03-25`, type: 'trim_to_bounds', plantId, freeBeyondM: 0.3, author: 'gardener', reason: 'RHS group 1: immediately after flowering, once frost is past, overlong branches trimmed; free shoots more than 0.3 m out cut back to the support' });
+  }
+  return events;
+}
+
+/**
+ * Lonicera periclymenum 'Graham Thomas''s routine (RHS pruning group 11, "after flowering"; the RHS honeysuckle guide),
+ * as taken for a Bower in its profile:
+ *   planting day, 12 March   the stem it arrives with cut back by two thirds (`hard_prune`, all stems, to a third of the
+ *                       0.6 m nursery cane, `architecture.nurseryCaneM`), "to encourage strong new shoots from the base"
+ *                       (RHS guide). The engine regrows a cut stem at the start of the season; this plant's season has
+ *                       begun by planting day (bud burst on day 60), so the cut is made on the day it goes in.
+ *   1 March, every year from the first after planting   "wayward long shoots" cut (RHS guide, of the honeysuckles pruned
+ *                       in spring): free shoots standing out more than 0.5 m and holding nothing cut back to where they
+ *                       leave the structure (`trim_to_bounds`). 0.5 m is the species agent's choice.
+ *   5 September, the same years   "Cut back flowered shoots by one-third in late summer" (RHS guide): each side shoot
+ *                       that has flowered keeps 60 to 70 per cent of its length, and stays a shoot (`shorten_side_shoots`,
+ *                       `remains: 'shoot'`).
+ * The cultivar flowers on old and new wood (Bean: "if cut back in winter will flower from June to October"), so it gets
+ * the spring tidy of the one group and the late-summer cut of the other. Not modelled: thinning congested or weak shoots,
+ * and the occasional renovation to about 60 cm. The dates within the months are this project's choice.
+ * Sources: https://www.rhs.org.uk/plants/74793/lonicera-periclymenum-graham-thomas/details ,
+ * https://www.rhs.org.uk/plants/honeysuckle/climbing/growing-guide ; species/lonicera-periclymenum-graham-thomas/SPECIES_PROFILE.md.
+ */
+export function honeysuckleGrahamThomasRoutine(plantId: string, plantingYear: number, years: number, model?: GrowthModel): GardenerEvent[] {
+  // the nursery cane is the growth model's; left out, its value as of this writing
+  const caneM = model ? param(model, 'architecture.nurseryCaneM') : 0.6;
+  const events: GardenerEvent[] = [{ id: `woodbine-planting-${plantingYear}-${plantId}`, date: `${plantingYear}-03-12`, type: 'hard_prune', plantId, target: { allStems: true }, keepM: caneM / 3, author: 'gardener', reason: 'RHS honeysuckle guide: at planting, shoots cut back by two thirds to encourage strong new shoots from the base' }];
+  for (let y = 1; y < years; y++) {
+    const year = plantingYear + y;
+    events.push({ id: `woodbine-spring-${year}-${plantId}`, date: `${year}-03-01`, type: 'trim_to_bounds', plantId, freeBeyondM: 0.5, author: 'gardener', reason: 'RHS honeysuckle guide, spring: wayward long shoots cut; free shoots more than 0.5 m out cut back to the structure' });
+    events.push({ id: `woodbine-summer-${year}-${plantId}`, date: `${year}-09-05`, type: 'shorten_side_shoots', plantId, keepShare: [0.6, 0.7], which: 'flowered', remains: 'shoot', author: 'gardener', reason: 'RHS honeysuckle guide: cut back flowered shoots by one-third in late summer' });
+  }
+  return events;
+}
+
+/**
+ * Star jasmine's routine (Trachelospermum jasminoides; RHS pruning group 11), as taken for a Bower in its profile:
+ *   15 April, every year from the second   wayward free shoots standing out more than 0.3 m and holding nothing cut back
+ *                       to the structure (`trim_to_bounds`). RHS growing guide: "Maintenance pruning, if required, should
+ *                       be done in spring"; "Any wayward stems can easily be tied in place, to keep the plant neat". The
+ *                       model cannot tie a free shoot in after the event, so wayward shoots are cut. 0.3 m is a choice.
+ * Not modelled: thinning congested, weak or damaged shoots; the renovation by two thirds, which is for a neglected plant.
+ * Source: the RHS growing guide, quoted in species/trachelospermum-jasminoides/SPECIES_PROFILE.md.
+ */
+export function starJasmineRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+  const events: GardenerEvent[] = [];
+  for (let y = 1; y < years; y++) {
+    const year = plantingYear + y;
+    events.push({ id: `jasmine-spring-${year}-${plantId}`, date: `${year}-04-15`, type: 'trim_to_bounds', plantId, freeBeyondM: 0.3, author: 'gardener', reason: 'RHS: maintenance pruning in spring; wayward stems tied in or cut; free shoots more than 0.3 m out cut back to the structure' });
+  }
+  return events;
+}
+
+/**
+ * Akebia's routine (Akebia quinata; RHS pruning group 11, "after flowering"), as taken for a Bower in its profile, every
+ * year from the third, when the plant first flowers (`flowering.competenceYears` 2):
+ *   5 June       long shoots that hold nothing and stand more than 0.3 m out cut off where they leave the timber
+ *                       (`trim_to_bounds`): "Those that flower on the previous year's growth should be pruned after
+ *                       flowering" (RHS established-pruning guide); the racemes are over by mid May in the model.
+ *   1 September  the long shoots made since, the same way, more than 0.5 m out: the guide's trim to keep the plant to
+ *                       its space.
+ * The RHS gives no distances: 0.3 m and 0.5 m are the species agent's choices. Shoots that twined on to the lattice and
+ * the short branches that carry next year's flowers are left.
+ * Sources: https://www.rhs.org.uk/plants/types/climbers/established-pruning-guide ,
+ * https://www.rhs.org.uk/plants/747/akebia-quinata/details ; species/akebia-quinata/SPECIES_PROFILE.md.
+ */
+export function akebiaRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+  const events: GardenerEvent[] = [];
+  for (let y = 2; y < years; y++) {
+    const year = plantingYear + y;
+    events.push({ id: `akebia-after-flowering-${year}-${plantId}`, date: `${year}-06-05`, type: 'trim_to_bounds', plantId, freeBeyondM: 0.3, author: 'gardener', reason: 'RHS group 11, after flowering: long free shoots more than 0.3 m out cut back to the timber' });
+    events.push({ id: `akebia-late-summer-${year}-${plantId}`, date: `${year}-09-01`, type: 'trim_to_bounds', plantId, freeBeyondM: 0.5, author: 'gardener', reason: 'RHS group 11: trimmed to keep it to its space; long free shoots made since June, more than 0.5 m out, cut back to the timber' });
+  }
+  return events;
+}
+
+/**
+ * The trumpet vine's routine (Campsis x tagliabueana 'Madame Galen'; RHS pruning group 12), as taken for a Bower in its
+ * profile:
+ *   25 February, every year from the third   once the framework is made, every side shoot, and every free shoot of the
+ *                       year, cut back to one or two nodes (`shorten_side_shoots`, `keepNodes` [1, 2], stubs): "Once a
+ *                       framework is established, usually in two to three years, 'spur-prune' the sideshoots annually
+ *                       in late winter. This involves cutting back all the sideshoots to within two or three buds of
+ *                       the main stems" (RHS growing guide). Its leaves are opposite, so two or three buds are one or two
+ *                       nodes. Late February is before its buds break (day 102) and after the worst frost. The plant
+ *                       flowers first in its third season (`flowering.competenceYears` 2), on the shoots of the year.
+ * The framework is not cut. Not modelled: removing weak growth, the renovation to 30 cm.
+ * Sources: the RHS growing guide, Bean and Havlis, quoted in species/campsis-x-tagliabueana-madame-galen/SPECIES_PROFILE.md.
+ */
+export function trumpetVineRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
+  const events: GardenerEvent[] = [];
+  for (let y = 2; y < years; y++) {
+    const year = plantingYear + y;
+    events.push({ id: `campsis-spur-${year}-${plantId}`, date: `${year}-02-25`, type: 'shorten_side_shoots', plantId, keepNodes: [1, 2], which: 'all', freeShoots: true, remains: 'stub', author: 'gardener', reason: 'RHS: once the framework is established, side shoots spur-pruned in late winter to within two or three buds of the main stems' });
+  }
+  return events;
+}
+
 /** An annual is set out again each year in late spring (RHS: once the risk of frost has passed). */
 export function annualRoutine(plantId: string, plantingYear: number, years: number): GardenerEvent[] {
   const events: GardenerEvent[] = [];
@@ -212,7 +355,8 @@ export function mixedOnVault(options: VaultScenarioOptions): Scenario {
     { plantId: 'wisteria.1', taxonId: 'wisteria-sinensis', stationId: 'station.1', date, tieToTimber },
     { plantId: 'honeysuckle', taxonId: 'lonicera-henryi', stationId: 'station.2', date, tieToTimber },
     { plantId: 'clematis', taxonId: 'clematis-viticella-etoile-violette', stationId: 'station.3', date, tieToTimber },
-    // Group 1: pruned lightly after flowering if at all, which the model does not act on yet, so it has no routine here
+    // Group 1: its routine (`clematisCirrhosaRoutine`) is not applied in this scenario, whose winter-clematis tests
+    // (mixed.test.ts) cut it by hand to see what a cut in the wrong season costs
     { plantId: 'winter-clematis', taxonId: 'clematis-cirrhosa-freckles', stationId: 'station.4', date, tieToTimber },
   ];
   const events = care === 'trained' ? [...wisteriaRoutine('wisteria.0', plantingYear, years), ...wisteriaRoutine('wisteria.1', plantingYear, years), ...groupThreeRoutine('clematis', plantingYear, years)] : [];
@@ -322,7 +466,9 @@ export function referencePalette(options: PaletteOptions): Scenario {
   need(taxa, ...plan.map((p) => p.taxonId));
   const bower = makeHemisphereBower({ diameterM: 15, stations: plan.length });
   const plantings: Planting[] = plan.map((p) => ({ plantId: p.plantId, taxonId: p.taxonId, stationId: bower.rootStations[p.meridian]!.id, date: `${plantingYear}-03-12`, tieToTimber: care === 'trained' }));
-  // only the routines the model acts on: the wisterias' two prunes a year, the summer clematis's cut-down, the rose's, the vine's and the ivy's
+  // only the routines the model acts on: the wisterias' two prunes a year, the summer clematis's cut-down, the rose's,
+  // the vine's, the ivy's, the honeysuckle's, the two group 1 clematis' and the star jasmine's. The evergreen
+  // honeysuckle (Lonicera henryi) and the climbing hydrangea have none yet.
   const events =
     care === 'trained'
       ? [
@@ -332,6 +478,10 @@ export function referencePalette(options: PaletteOptions): Scenario {
           ...climbingRoseRoutine('rose', plantingYear, years),
           ...vineRoutine('vine', plantingYear, years, taxa.get('vitis-coignetiae')!.model),
           ...(ivy ? ivyRoutine('north-evergreen', plantingYear, years) : []),
+          ...honeysuckleGrahamThomasRoutine('honeysuckle', plantingYear, years, taxa.get('lonicera-periclymenum-graham-thomas')!.model),
+          ...clematisArmandiRoutine('spring-clematis', plantingYear, years),
+          ...starJasmineRoutine('star-jasmine', plantingYear, years),
+          ...clematisCirrhosaRoutine('winter-clematis', plantingYear, years),
         ]
       : [];
   return { name: `The reference palette on the 15 m hemisphere${ivy ? ', with ivy' : ''}, ${care}`, start: `${plantingYear}-03-01`, seed, bower, taxa, plantings, events, viewpoints: HEMISPHERE_VIEWPOINTS, ...placed(options) };
